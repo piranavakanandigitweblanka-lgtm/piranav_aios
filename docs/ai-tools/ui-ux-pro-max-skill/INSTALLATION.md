@@ -4,111 +4,101 @@
 
 ## Purpose of This File
 
-This document covers how to install the upstream UI UX Pro Max skill (v2.8.8) into this machine and integrate it with the piranav Mini-AIOS workspace so Claude Code can query it.
+This document explains how to integrate the UI UX Pro Max Skill into a Mini-AIOS workspace so that it is queryable, evidence-backed, and usable from the first session.
 
 ---
 
 ## Prerequisites
 
-| Requirement | Check Command | Expected |
+Before using this skill, the following must be in place:
+
+| Requirement | Location | Check |
 |---|---|---|
-| Node.js installed | `node --version` | v18+ |
-| npm installed | `npm --version` | v9+ |
-| Python 3.x installed | `python3 --version` | v3.8+ (no external deps needed) |
-| Mini-AIOS workspace exists | `Test-Path "C:\Users\PC\Documents\piranav_aios\README.md"` | `True` |
+| Mini-AIOS workspace initialised | `C:\Users\PC\Documents\piranav_aios\` | `README.md` exists |
+| Session protocol understood | `START_HERE.md` | Read and followed |
+| Evidence rules understood | `evidence/README.md` | Read |
+| Duplicate-risk register understood | `duplicate-risk/README.md` | Read |
+| Shopify CLI authenticated | Terminal | `shopify auth whoami` returns a store |
+| Shopify MCP connected (optional, for GraphQL) | Claude Code settings | MCP server listed |
 
 ---
 
-## Step 1 — Install the Upstream CLI
+## Step 1 — Verify the Source Guide Exists
 
-```bash
-npm install -g ui-ux-pro-max-cli
-```
-
-Then initialise for Claude Code:
-
-```bash
-uipro init --ai claude
-```
-
-Or as a one-liner:
-
-```bash
-npx ui-ux-pro-max-cli init --ai claude
-```
-
-This installs the skill's data files, Python search engine, and Claude integration files into the current project. Run it from the AIOS root:
+The queryable content source for this skill is:
 
 ```
-C:\Users\PC\Documents\piranav_aios
+C:\Users\PC\Desktop\shopify_seo_ui_ux_guide.md
 ```
 
----
-
-## Step 2 — Verify the Data Files Are Present
-
-After installation, confirm the core data directory exists:
+Verify it is present before any session that uses this skill:
 
 ```powershell
-Test-Path "src/ui-ux-pro-max/data/styles.csv"
+Test-Path "C:\Users\PC\Desktop\shopify_seo_ui_ux_guide.md"
 ```
 
-Expected: `True`
+Expected output: `True`
 
-Key data files that must be present:
-
-| File | Domain | Content |
-|---|---|---|
-| `data/products.csv` | `product` | 161 product category reasoning rules |
-| `data/styles.csv` | `style` | 84 UI styles |
-| `data/colors.csv` | `color` | 161 colour palettes |
-| `data/typography.csv` | `typography` | Font pairing data |
-| `data/google-fonts.csv` | `typography` | Google Fonts pairings |
-| `data/charts.csv` | `chart` | 25 chart types |
-| `data/ux-guidelines.csv` | `ux` | 99 UX guidelines |
-| `data/landing.csv` | `landing` | Landing page patterns |
-| `data/app-interface.csv` | `style` | App interface patterns |
-| `data/design.csv` | `style` | Design patterns |
-| `data/ui-reasoning.csv` | `product` | UI reasoning rules |
-| `data/react-performance.csv` | `ux` | React performance patterns |
-| `data/icons.csv` | `style` | Icon library references |
-| `data/stacks/` | all | 17 tech-stack-specific data files |
+If `False`: the source guide is missing. Do not proceed. Log the blocker in the session's closure entry and notify Varmen.
 
 ---
 
-## Step 3 — Verify the Search Engine
-
-```bash
-python3 src/ui-ux-pro-max/scripts/search.py "beauty spa" --domain product
-```
-
-Expected output: a ranked list of recommended styles, colour palettes, and font pairings for a beauty spa product category.
-
-If this errors: Python 3 is not installed or the `src/` path is not resolved. Re-run `uipro init --ai claude` from the correct directory.
-
----
-
-## Step 4 — Verify Claude Code Integration
-
-After `uipro init --ai claude`, a `.claude/` folder is populated with skill configuration. Confirm:
+## Step 2 — Verify the Skill Folder Exists
 
 ```powershell
-Test-Path ".claude/skills/"
+Test-Path "C:\Users\PC\Documents\piranav_aios\docs\ai-tools\ui-ux-pro-max-skill\README.md"
 ```
 
-Expected: `True`
+Expected output: `True`
 
-Claude Code will auto-activate the skill when handling UI/UX design requests.
+If `False`: run the setup from the AIOS workspace root:
+
+```powershell
+New-Item -ItemType Directory -Force "C:\Users\PC\Documents\piranav_aios\docs\ai-tools\ui-ux-pro-max-skill"
+```
+
+Then re-clone or re-pull the `master` branch of `aios-piranav` to restore the folder.
 
 ---
 
-## Step 5 — Register in AIOS Source Map
+## Step 3 — Verify the PowerPoint Is Present
 
-Add the installed skill path to `source-map/README.md`:
+```powershell
+Test-Path "C:\Users\PC\Documents\piranav_aios\docs\ai-tools\ui-ux-pro-max-skill\uiux-skill-shopify-final.pptx"
+```
 
+Expected output: `True`
+
+If `False`: copy from the original location:
+
+```powershell
+Copy-Item "C:\Users\PC\Downloads\uiux-skill-shopify-final.pptx" `
+  "C:\Users\PC\Documents\piranav_aios\docs\ai-tools\ui-ux-pro-max-skill\uiux-skill-shopify-final.pptx"
 ```
-| UI UX Pro Max skill | src/ui-ux-pro-max/ | Upstream: github.com/nextlevelbuilder/ui-ux-pro-max-skill |
-```
+
+**Note:** The PowerPoint is a binary asset. It cannot be queried by Claude Code. All queryable content is in `shopify_seo_ui_ux_guide.md` and `ARCHITECTURE.md`.
+
+---
+
+## Step 4 — Read the Architecture Map
+
+Before applying the skill, read `ARCHITECTURE.md` to understand the 8 domains and their task scoring. This replaces reading the full source guide every session — use the source guide only when you need the full checklist or tutorial for a specific task.
+
+---
+
+## Step 5 — Read the Claude Rules
+
+Before Claude Code applies any fix using this skill, `CLAUDE_RULES.md` must be read in full. These rules govern how the skill is applied in AIOS sessions.
+
+---
+
+## Step 6 — Register Usage in Evidence
+
+Every session that applies this skill must:
+
+1. Log the applied task in `evidence/README.md` under the Evidence Index.
+2. Record the importance score of the task applied.
+3. Link to the fix report or validation file created.
 
 ---
 
@@ -116,42 +106,20 @@ Add the installed skill path to `source-map/README.md`:
 
 - [ ] Read `README.md` (this folder)
 - [ ] Read `START_HERE.md` (AIOS root)
-- [ ] Install Node.js (v18+) and Python 3.x
-- [ ] Run `npx ui-ux-pro-max-cli init --ai claude` from AIOS root
-- [ ] Verify data files with `Test-Path "src/ui-ux-pro-max/data/styles.csv"`
-- [ ] Run a test search query (Step 3 above)
-- [ ] Read `ARCHITECTURE.md` — understand the 7 search domains
+- [ ] Verify `shopify_seo_ui_ux_guide.md` is present on this machine
+- [ ] Read `ARCHITECTURE.md` — understand the 8 domains
 - [ ] Read `CLAUDE_RULES.md` — understand operating rules
-- [ ] Read `SHOPIFY_WORKFLOW.md` — understand how to apply output to Shopify
-
----
-
-## Upgrading the Skill
-
-Check the upstream version:
-
-```bash
-npm info ui-ux-pro-max-cli version
-```
-
-To upgrade:
-
-```bash
-npm install -g ui-ux-pro-max-cli@latest
-uipro init --ai claude
-```
-
-After upgrading: bump the version in `CHANGELOG.md` with the new upstream version number and what changed.
-
-Track releases at: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/releases
+- [ ] Read `SHOPIFY_WORKFLOW.md` — understand the execution workflow
+- [ ] Run `shopify auth whoami` — confirm Shopify CLI is authenticated
+- [ ] Complete at least one practice task and log evidence before working on production
 
 ---
 
 ## Known Limitations
 
-- The `uipro init` command overwrites the `.claude/skills/` integration files — any local customisations will be lost on upgrade. Document customisations in `CLAUDE_RULES.md` before upgrading.
-- The Python search engine requires Python 3 on the same machine. It cannot be run via Claude Code's tool calls — piranav must run it manually and paste results into the session.
-- On Windows, use `python` instead of `python3` if the alias is not configured.
+- This skill is tied to the machine at `C:\Users\PC`. If deployed on a new machine, the source guide path must be updated.
+- The Shopify CLI authentication is per-machine and per-store. Re-authentication may be required after OAuth expiry (see `handover/shopify-mcp-reconnect.md`).
+- If Shopify releases breaking theme API changes, the tutorials in the source guide may become outdated. Version bump required in `CHANGELOG.md`.
 
 ---
 
@@ -161,5 +129,4 @@ Track releases at: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/relea
 |---|---|
 | Installed By | piranav |
 | Reviewer | Varmen |
-| Upstream Version | 2.8.8 |
 | Install Date | 2026-06-26 |

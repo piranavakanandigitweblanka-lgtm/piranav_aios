@@ -4,147 +4,161 @@
 
 ## Purpose of This File
 
-This document maps the full structure of the UI UX Pro Max Skill — its data sources, search domains, capability counts, tech stack coverage, and how the two knowledge layers (upstream skill + local Shopify SEO reference) relate to each other.
+This document maps the full structure of the UI UX Pro Max Skill — its 8 domains, all task areas, their importance scores, and how the content model is organised. Use this file to quickly locate the relevant domain and task without reading the full source guide.
 
 ---
 
-## Two Knowledge Layers
+## Content Model
 
-This AIOS integration combines two distinct sources. Do not confuse them:
+Each task entry in the source guide follows this structure:
 
-| Layer | Source | Type | Queryable By |
-|---|---|---|---|
-| **Layer 1 — Upstream Skill** | `src/ui-ux-pro-max/` (installed via `npx ui-ux-pro-max-cli init`) | AI design intelligence: styles, palettes, fonts, UX rules | Python search engine |
-| **Layer 2 — Shopify SEO Reference** | `C:\Users\PC\Desktop\shopify_seo_ui_ux_guide.md` | Shopify-specific SEO & UI/UX checklists (28 scored tasks) | Direct file read |
-
-Layer 1 generates design systems. Layer 2 validates Shopify implementation quality.
-
----
-
-## Layer 1 — Upstream Skill Architecture
-
-### Capability Summary
-
-| Capability | Count | CSV Source |
-|---|---|---|
-| UI Styles | 84 | `data/styles.csv`, `data/app-interface.csv`, `data/design.csv` |
-| Colour Palettes | 161 | `data/colors.csv` |
-| Font Pairings | 73 | `data/typography.csv`, `data/google-fonts.csv` |
-| Chart Types | 25 | `data/charts.csv` |
-| UX Guidelines | 99 | `data/ux-guidelines.csv`, `data/react-performance.csv` |
-| Product Categories | 161 | `data/products.csv`, `data/ui-reasoning.csv` |
-| Tech Stacks | 17 | `data/stacks/` |
-
-### Data File Map
-
-```
-src/ui-ux-pro-max/
-├── data/
-│   ├── products.csv          ← 161 product category → design pattern mappings
-│   ├── styles.csv            ← 84 UI style definitions (Glassmorphism, Brutalism, etc.)
-│   ├── colors.csv            ← 161 colour palettes with hex values and industry tags
-│   ├── typography.csv        ← Font pairing data (heading + body combinations)
-│   ├── google-fonts.csv      ← Google Fonts specific pairings
-│   ├── charts.csv            ← 25 chart types with use-case guidance
-│   ├── ux-guidelines.csv     ← 99 UX best practices and anti-patterns
-│   ├── landing.csv           ← Landing page section patterns
-│   ├── app-interface.csv     ← App UI interface patterns
-│   ├── design.csv            ← General design patterns
-│   ├── ui-reasoning.csv      ← 161 industry-specific reasoning rules
-│   ├── react-performance.csv ← React performance patterns
-│   ├── icons.csv             ← Icon library references
-│   ├── draft.csv             ← Draft pattern templates
-│   ├── _sync_all.py          ← Asset sync utility
-│   └── stacks/               ← 17 tech-stack-specific data files
-├── scripts/
-│   └── search.py             ← BM25 + regex search engine (no external deps)
-└── templates/                ← Output templates for design system generation
-```
-
-### Search Domains
-
-The Python search engine supports 7 queryable domains:
-
-| Domain Flag | Searches In | Example Query |
-|---|---|---|
-| `--domain product` | `products.csv`, `ui-reasoning.csv` | `"beauty spa"`, `"SaaS dashboard"` |
-| `--domain style` | `styles.csv`, `app-interface.csv`, `design.csv` | `"glassmorphism"`, `"dark mode"` |
-| `--domain color` | `colors.csv` | `"warm neutrals"`, `"electric blue tech"` |
-| `--domain typography` | `typography.csv`, `google-fonts.csv` | `"luxury serif"`, `"modern sans"` |
-| `--domain landing` | `landing.csv` | `"SaaS hero section"`, `"e-commerce above fold"` |
-| `--domain chart` | `charts.csv` | `"revenue comparison"`, `"funnel analysis"` |
-| `--domain ux` | `ux-guidelines.csv`, `react-performance.csv` | `"checkout flow"`, `"form validation"` |
-
-### Search Command Format
-
-```bash
-python3 src/ui-ux-pro-max/scripts/search.py "<query>" --domain <domain>
-```
-
-Examples:
-
-```bash
-# For a Shopify lighting store (LEDsone):
-python3 src/ui-ux-pro-max/scripts/search.py "LED lighting e-commerce UK" --domain product
-python3 src/ui-ux-pro-max/scripts/search.py "industrial tech" --domain color
-python3 src/ui-ux-pro-max/scripts/search.py "dark mode grid" --domain style
-
-# For a general landing page:
-python3 src/ui-ux-pro-max/scripts/search.py "product hero section" --domain landing
-```
-
-### Tech Stack Coverage
-
-The 17 supported stacks (in `data/stacks/`):
-
-| Category | Stacks |
+| Field | Description |
 |---|---|
-| Web — React ecosystem | React, Next.js, shadcn/ui |
-| Web — Vue ecosystem | Vue, Nuxt |
-| Web — Other | Svelte, HTML + Tailwind |
-| Mobile — Native | SwiftUI, React Native, Flutter |
-| Component libraries | shadcn/ui, and stack-specific variants |
-
-### UI Styles Covered (Examples from 84 total)
-
-Glassmorphism · Claymorphism · Neumorphism · Brutalism · Minimalism · Maximalism · Bento Grid · Dark Mode · AI-Native UI · Retro/Y2K · Organic/Blob · Corporate Flat · Material Design · Fluent Design · Skeuomorphism · Memphis Design · Swiss/International · Cyberpunk · Vaporwave · and more.
+| **Explanation** | What the task is and why it matters |
+| **Importance Score** | Priority weight out of 25 — higher = more critical |
+| **Best Practice** | The recommended approach |
+| **Guideline** | The rule to apply |
+| **Checklist** | Tick-box verification steps |
+| **Tutorial (Shopify)** | Step-by-step Shopify Admin / Liquid implementation |
+| **Do's and Don'ts** | Common correct and incorrect approaches |
 
 ---
 
-## Layer 2 — Shopify SEO Reference Architecture
+## Domain Map
 
-The `shopify_seo_ui_ux_guide.md` file provides scored implementation checklists across 8 domains. This is NOT part of the upstream skill — it is used after the design system is generated to validate Shopify-specific implementation quality.
+### Domain 1 — Technical SEO
 
-| Domain | Task Areas | When to Use |
+> Foundational crawlability and indexing. Fix these first — they affect all other SEO work.
+
+| Task | Importance | Key Action |
 |---|---|---|
-| 1. Technical SEO | Crawl, robots.txt, canonicals, hreflang | After any Shopify theme change |
-| 2. On-Page SEO | Meta, headings, alt text, schema, duplicates | After content or template changes |
-| 3. Performance | LCP, CLS, INP, images, JS/CSS, third-party | After adding sections or apps |
-| 4. Shopify-Specific SEO | URLs, pagination, filters, blog | After collection/product template changes |
-| 5. Design & Layout | Homepage, mobile, CTA, typography | After applying a design system |
-| 6. CRO | Cart, trust signals, upsell, sticky header | After conversion-affecting changes |
-| 7. Theme Customisation | Liquid, sections, navigation, footer | After Liquid code edits |
-| 8. Accessibility | Contrast, keyboard nav, ARIA | After any UI change |
-
-Importance scoring: 25/25 = Critical → 18/25 = Normal. Tasks scored 25/25 must be fixed before all others.
+| 1.1 Fix crawl errors, broken links (404s), redirect chains | 22/25 | Single-hop 301 redirects, GSC monitoring |
+| 1.2 Optimise robots.txt and sitemap.xml | 24/25 | Block cart/checkout/search from crawlers |
+| 1.3 Canonical tag audits & fixes | 25/25 | Point all product canonicals to `/products/name` |
+| 1.4 Hreflang setup for multilingual stores | 20/25 (25/25 if international) | Use Shopify Markets for automation |
 
 ---
 
-## How the Two Layers Work Together
+### Domain 2 — On-Page SEO
 
-```
-1. Identify project / product category
-        ↓
-2. Query Layer 1 (upstream skill) → get design system:
-   style + colour palette + font pairing + UX rules
-        ↓
-3. Apply design system to Shopify theme (Liquid / CSS)
-        ↓
-4. Validate with Layer 2 (Shopify SEO reference):
-   run the 8-domain checklist on the changed templates
-        ↓
-5. Evidence + closure
-```
+> Content signals for search engines. Affects click-through rate and keyword rankings.
+
+| Task | Importance | Key Action |
+|---|---|---|
+| 2.1 Meta titles & descriptions optimisation | 23/25 | Unique, keyword-led, under 60/160 chars |
+| 2.2 Heading structure (H1–H6) cleanup | 21/25 | Exactly one H1 per page |
+| 2.3 Image alt text audits | 18/25 | Descriptive, no keyword stuffing |
+| 2.4 Schema/structured data (Product, Breadcrumb, FAQ, Review) | 24/25 | JSON-LD, validate with Rich Results Test |
+| 2.5 Duplicate content fixes | 22/25 | Canonical tags, noindex filter URLs |
+
+---
+
+### Domain 3 — Performance (Core Web Vitals)
+
+> Google ranking signals. Affects both SEO and user experience directly.
+
+| Task | Importance | Key Action |
+|---|---|---|
+| 3.1 Page speed audits (LCP, CLS, FID/INP) | 25/25 | LCP < 2.5s, CLS < 0.1, INP < 200ms |
+| 3.2 Image compression & lazy loading | 23/25 | Eager-load LCP image, lazy-load all others |
+| 3.3 Unused JS/CSS removal | 22/25 | Audit app remnants in theme.liquid |
+| 3.4 Third-party script impact analysis | 21/25 | Delay non-essential scripts post-interaction |
+
+---
+
+### Domain 4 — Shopify-Specific SEO
+
+> Shopify platform peculiarities that cause common SEO errors if not handled.
+
+| Task | Importance | Key Action |
+|---|---|---|
+| 4.1 Collection & product URL structure | 25/25 | Use `product.url` not `product.url \| within: collection` |
+| 4.2 Pagination handling | 19/25 | Self-referencing canonicals on `?page=N` |
+| 4.3 Duplicate URLs from faceted navigation / filters | 23/25 | Noindex multi-param filter URLs |
+| 4.4 Blog SEO optimisation | 20/25 | Long-tail keywords, Article schema, internal links |
+
+---
+
+### Domain 5 — Design & Layout
+
+> Visual and structural UX. Affects conversions and user trust.
+
+| Task | Importance | Key Action |
+|---|---|---|
+| 5.1 Homepage, collection, product page layout improvements | 24/25 | Visual hierarchy: product → price → CTA |
+| 5.2 Mobile responsiveness fixes | 25/25 | Mobile-first, 44×44px tap targets, 16px min body text |
+| 5.3 CTA placement & design | 25/25 | High-contrast, above-fold, one primary CTA per view |
+| 5.4 Typography & colour consistency | 20/25 | 2 font families max, WCAG AA contrast |
+
+---
+
+### Domain 6 — Conversion Optimisation (CRO)
+
+> Remove purchase friction. Highest direct revenue impact.
+
+| Task | Importance | Key Action |
+|---|---|---|
+| 6.1 Cart & checkout flow improvements | 25/25 | Drawer cart, express checkout, visible shipping cost |
+| 6.2 Product page trust signals | 24/25 | Reviews near CTA, return guarantees, secure checkout badges |
+| 6.3 Sticky headers, floating cart, quick view | 19/25 | Sticky header compact; no floating element over Add to Cart |
+| 6.4 Upsell / cross-sell UI | 23/25 | Relevant recommendations, in-cart upsells |
+
+---
+
+### Domain 7 — Theme Customisation
+
+> Technical Liquid / theme development patterns. Used when a fix requires code-level changes.
+
+| Task | Importance | Key Action |
+|---|---|---|
+| 7.1 Liquid template edits | 18/25 | Backup theme first; conditional Liquid logic |
+| 7.2 Custom sections & blocks | 22/25 | JSON schema with settings/presets; no hardcoded content |
+| 7.3 Navigation menu restructuring | 24/25 | Mega menu for deep catalogs; 5–7 top-level items max |
+| 7.4 Footer & header redesigns | 20/25 | Header: Logo + Menu + Search + Account + Cart |
+
+---
+
+### Domain 8 — Accessibility
+
+> Legal compliance and inclusive design. Also a ranking signal via Core Web Vitals.
+
+| Task | Importance | Key Action |
+|---|---|---|
+| 8.1 Colour contrast fixes | 22/25 | WCAG 2.1 AA: 4.5:1 normal text, 3:1 large text |
+| 8.2 Keyboard navigation | 21/25 | Remove `outline: none` from `:focus`; add "Skip to content" link |
+| 8.3 ARIA label improvements | 20/25 | Label all icon-only buttons; toggle `aria-expanded` |
+
+---
+
+## Importance Score Priority Grid
+
+Use this to prioritise which tasks to run first when entering a new store or audit:
+
+| Score | Priority | Action |
+|---|---|---|
+| 25/25 | Critical | Fix before all other work |
+| 23–24/25 | High | Fix in same sprint |
+| 20–22/25 | Medium | Schedule in next sprint |
+| 18–19/25 | Normal | Fix opportunistically or when flagged |
+
+**Tasks scored 25/25:**
+- Canonical tag audits (1.3)
+- Page speed / Core Web Vitals (3.1)
+- Collection & product URL structure (4.1)
+- Mobile responsiveness (5.2)
+- CTA placement & design (5.3)
+- Cart & checkout flow (6.1)
+
+---
+
+## Source File Reference
+
+| Asset | Path |
+|---|---|
+| Full source guide | `C:\Users\PC\Desktop\shopify_seo_ui_ux_guide.md` |
+| Source PowerPoint | `docs/ai-tools/ui-ux-pro-max-skill/uiux-skill-shopify-final.pptx` |
+
+The source guide is the single source of truth for checklists and tutorials. This architecture document is a navigation aid only — it does not replace the source guide.
 
 ---
 
@@ -154,5 +168,4 @@ Importance scoring: 25/25 = Critical → 18/25 = Normal. Tasks scored 25/25 must
 |---|---|
 | Authored | piranav |
 | Reviewer | Varmen |
-| Upstream Version Tracked | 2.8.8 |
 | Last Updated | 2026-06-26 |
