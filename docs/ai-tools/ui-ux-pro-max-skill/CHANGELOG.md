@@ -4,17 +4,18 @@
 
 ## Purpose of This File
 
-This file records all version changes to the UI UX Pro Max Skill documentation and source content. When the source guide (`shopify_seo_ui_ux_guide.md`) is updated, or when the skill's markdown documentation is revised, a version entry must be added here.
+This file records all version changes to the AIOS documentation for the UI UX Pro Max Skill, and tracks the upstream skill version at each point. When the upstream releases a new version, add an entry here after updating the docs.
 
 ---
 
 ## Versioning Format
 
 ```
-[MAJOR].[MINOR].[PATCH]
+AIOS Docs version — tracks documentation changes
+Upstream version  — tracks https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
 
-MAJOR — breaking structural change (domain added/removed, scoring model changed)
-MINOR — new task entries added or existing entries substantially revised
+MAJOR — breaking structural change (upstream architecture changes, domain removed)
+MINOR — new capabilities added, upstream version bump with new data
 PATCH — wording corrections, typo fixes, path updates, evidence log entries
 ```
 
@@ -24,33 +25,62 @@ PATCH — wording corrections, typo fixes, path updates, evidence log entries
 
 ---
 
-### v1.0.0 — 2026-06-26
+### v2.0.0 — 2026-06-26
+
+**Type:** Major update — full rewrite to match upstream v2.8.8  
+**Author:** piranav  
+**Reviewer:** Varmen (pending — AMBER)  
+**Upstream Version:** 2.8.8  
+**Status:** ACTIVE
+
+**What changed:**
+
+The v1.0.0 docs described the skill as a Shopify SEO checklist reference only. After fetching the upstream GitHub repository (`https://github.com/nextlevelbuilder/ui-ux-pro-max-skill`), the actual skill is an AI-powered design intelligence system with CSV databases and a Python search engine. All documentation was rewritten to reflect this.
+
+**Specific changes per file:**
+
+| File | Change |
+|---|---|
+| `README.md` | Full rewrite — purpose updated from "Shopify SEO reference" to "AI design intelligence"; capability table updated to 84 styles / 161 palettes / 73 fonts / 25 charts / 99 UX guidelines; official GitHub, homepage, and MIT license added |
+| `INSTALLATION.md` | Full rewrite — added `npx ui-ux-pro-max-cli init --ai claude` install command; Python 3 requirement; data file verification steps; upgrade workflow |
+| `ARCHITECTURE.md` | Full rewrite — two-layer model introduced (upstream skill + Shopify SEO reference); data file map (14 CSVs + stacks/); 7 search domains documented; Shopify SEO domains retained as Layer 2 |
+| `SHOPIFY_WORKFLOW.md` | Full rewrite — added skill search step before theme edits; LEDsone-specific search queries; design system → theme application patterns; 8-step workflow updated |
+| `CLAUDE_RULES.md` | Full rewrite — rule count 12 → 14; added Rule 2 (use skill output not memory), Rule 3 (two layers distinct), Rule 9 (anti-patterns), Rule 13 (version must match), Rule 14 (Layer 2 adjusts Layer 1) |
+| `CHANGELOG.md` | This entry |
+| `EVIDENCE.md` | Update entry added (see below) |
+
+**Upstream discovery details:**
+
+| Field | v1.0.0 (what we assumed) | v2.8.8 (actual) |
+|---|---|---|
+| Skill type | Static Shopify SEO checklist | AI design intelligence with CSV + Python search |
+| UI Styles | N/A | 84 |
+| Colour Palettes | N/A | 161 |
+| Font Pairings | N/A | 73 |
+| UX Guidelines | N/A | 99 |
+| Chart Types | N/A | 25 |
+| Tech Stacks | N/A | 17 |
+| Install method | N/A | `npx ui-ux-pro-max-cli init --ai claude` |
+| Search engine | N/A | `python3 src/ui-ux-pro-max/scripts/search.py` |
+| Platforms | Claude Code only | 19 platforms (Claude, Cursor, Windsurf, Copilot, etc.) |
+
+---
+
+### v1.0.0 — 2026-06-25
 
 **Type:** Initial integration  
 **Author:** piranav  
-**Reviewer:** Varmen (pending — AMBER)  
-**Status:** ACTIVE
+**Upstream Version:** Unknown at integration time  
+**Status:** SUPERSEDED by v2.0.0
 
-**Changes:**
-- Created `docs/ai-tools/ui-ux-pro-max-skill/` folder in `piranav_aios`
-- Created `README.md` — purpose, orientation, file index, known limitations
-- Created `INSTALLATION.md` — onboarding steps, prerequisite checklist, path verification
-- Created `ARCHITECTURE.md` — 8-domain map, all 28 task entries with importance scores, priority grid
-- Created `SHOPIFY_WORKFLOW.md` — 8-step application workflow, Shopify CLI commands, common code patterns
-- Created `CLAUDE_RULES.md` — 12 operating rules for Claude Code when using this skill
-- Created `EVIDENCE.md` — integration evidence, source asset discovery log, duplicate risk entries
-- Created `CHANGELOG.md` — this file
-- Copied `uiux-skill-shopify-final.pptx` from `C:\Users\PC\Downloads\` into skill folder
+**What existed at v1.0.0:**
+- Docs written against `shopify_seo_ui_ux_guide.md` (local Shopify SEO guide) as the primary source
+- Architecture described 8 Shopify-specific SEO domains with importance scores
+- No upstream skill install process documented
+- No Python search engine documented
+- 12 Claude Rules
 
-**Source Content Version:**
-- Source guide: `C:\Users\PC\Desktop\shopify_seo_ui_ux_guide.md`
-- Source PowerPoint: `uiux-skill-shopify-final.pptx`
-- Source guide last-modified date at integration: 2026-06-26 (date confirmed by file system)
-
-**Known gaps at v1.0.0:**
-- Varmen review not yet completed — AMBER status
-- Shopify Plus-specific content not covered
-- No skill usage evidence yet — first live session pending
+**Reason superseded:** Upstream repository was fetched on 2026-06-26 and revealed the skill is fundamentally different from what v1.0.0 described. Full rewrite was necessary.
 
 ---
 
@@ -62,35 +92,31 @@ PATCH — wording corrections, typo fixes, path updates, evidence log entries
 **Type:** [patch / minor / major]
 **Author:** piranav
 **Reviewer:** Varmen
+**Upstream Version:** [version from npm info ui-ux-pro-max-cli version]
 **Status:** [ACTIVE / DRAFT / DEPRECATED]
 
-**Changes:**
-- [What changed and why]
+**What changed:**
+- [File]: [change description]
 
-**Source Content Version:**
-- Source guide modification date: [date]
-- PowerPoint version: [filename or "unchanged"]
-
-**Known gaps:**
-- [Any outstanding issues at this version]
+**Upstream changes in this release:**
+- [What the upstream added/changed]
 ```
 
 ---
 
 ## Update Triggers
 
-A new version entry is required when any of the following occur:
-
-| Trigger | Version Bump |
+| Trigger | Bump |
 |---|---|
-| Source guide (`shopify_seo_ui_ux_guide.md`) content updated | MINOR |
-| New domain or task added | MINOR |
-| Existing task importance score changed | MINOR |
-| Shopify platform change makes a tutorial outdated | PATCH or MINOR |
-| Wording or typo fix in any markdown file | PATCH |
-| New Claude rule added to `CLAUDE_RULES.md` | PATCH |
-| PowerPoint replaced with a newer version | MINOR |
-| Domain removed from scope | MAJOR |
+| Upstream releases new version | MINOR (check for new capabilities) |
+| New data domain added upstream | MINOR |
+| Capability count changes (more styles/palettes/etc.) | PATCH |
+| New Claude rule added | PATCH |
+| Wording fix | PATCH |
+| Upstream removes a domain or breaking change | MAJOR |
+| AIOS workflow restructured | MAJOR |
+
+Check upstream releases at: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/releases
 
 ---
 
@@ -100,5 +126,6 @@ A new version entry is required when any of the following occur:
 |---|---|
 | Maintained By | piranav |
 | Reviewer | Varmen |
-| Current Version | 1.0.0 |
+| Current AIOS Docs Version | 2.0.0 |
+| Current Upstream Version | 2.8.8 |
 | Last Updated | 2026-06-26 |

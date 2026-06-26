@@ -75,7 +75,8 @@ A new duplicate risk was identified and must be logged in `duplicate-risk/README
 
 | Date | Session / Requirement ID | Domain Applied | Task | Importance Score | Fix Report Path | Status |
 |---|---|---|---|---|---|---|
-| 2026-06-26 | UIUX-SKILL-INT-001 — Integration | N/A | Skill integration and documentation | N/A | `docs/ai-tools/ui-ux-pro-max-skill/EVIDENCE.md` | PASS |
+| 2026-06-26 | UIUX-SKILL-INT-001 — Integration | N/A | Skill integration and documentation (v1.0.0) | N/A | `docs/ai-tools/ui-ux-pro-max-skill/EVIDENCE.md` | PASS |
+| 2026-06-26 | UIUX-SKILL-UPD-001 — Upstream sync | N/A | Full rewrite to match upstream v2.8.8 from github.com/nextlevelbuilder/ui-ux-pro-max-skill | N/A | `docs/ai-tools/ui-ux-pro-max-skill/CHANGELOG.md` (v2.0.0 entry) | PASS |
 | _(next use)_ | | | | | | |
 
 ---

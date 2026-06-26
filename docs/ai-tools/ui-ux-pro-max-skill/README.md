@@ -4,9 +4,9 @@
 
 ## Purpose
 
-The UI UX Pro Max Skill is a structured, queryable knowledge base of Shopify SEO and UI/UX best practices integrated into piranav's Mini-AIOS workspace. It gives Claude Code and human reviewers a single, scored reference for every Shopify front-end task — from crawl error fixes to accessibility improvements — eliminating the need to re-derive standards from scratch each session.
+The UI UX Pro Max Skill is an AI-powered design intelligence system integrated into piranav's Mini-AIOS workspace. It gives Claude Code a searchable database of UI styles, colour palettes, font pairings, chart types, UX guidelines, and industry-specific reasoning rules — enabling it to generate complete, tailored design systems in seconds.
 
-This is a **read-and-apply** asset. Claude Code queries it when auditing or fixing a Shopify theme. Varmen references it when reviewing piranav's output quality.
+This is an **active skill**, not a static reference. Claude Code queries it to recommend design patterns and generate design systems matched to the product category and tech stack. Varmen references it when reviewing design decisions.
 
 ---
 
@@ -14,53 +14,64 @@ This is a **read-and-apply** asset. Claude Code queries it when auditing or fixi
 
 | Field | Value |
 |---|---|
-| Asset Type | Queryable knowledge base |
-| Domain | Shopify SEO + UI/UX |
-| Source Guide | `C:\Users\PC\Desktop\shopify_seo_ui_ux_guide.md` |
-| Source PowerPoint | `docs/ai-tools/ui-ux-pro-max-skill/uiux-skill-shopify-final.pptx` |
-| Version | 1.0.0 |
+| Asset Type | AI-powered design intelligence skill |
+| Upstream Author | NextLevelBuilder |
+| Official GitHub | https://github.com/nextlevelbuilder/ui-ux-pro-max-skill |
+| Homepage | https://uupm.cc |
+| License | MIT |
+| Upstream Version | 2.8.8 (released 2026-06-26) |
+| AIOS Docs Version | 2.0.0 |
 | Status | ACTIVE |
 | Owner | piranav |
 | Reviewer | Varmen |
-| Integrated | 2026-06-26 |
+| Docs Last Updated | 2026-06-26 |
 
 ---
 
-## What This Skill Covers
+## What This Skill Contains
 
-The skill organises all Shopify work into **8 domains**, each with scored tasks (out of 25):
-
-| Domain | Task Areas | Top-Scored Task |
+| Asset | Count | Description |
 |---|---|---|
-| 1. Technical SEO | Crawl errors, robots.txt, canonicals, hreflang | Canonical tags (25/25) |
-| 2. On-Page SEO | Meta titles, headings, alt text, schema, duplicate content | Schema / structured data (24/25) |
-| 3. Performance — Core Web Vitals | Page speed, image loading, unused JS/CSS, third-party scripts | LCP / CLS / INP (25/25) |
-| 4. Shopify-Specific SEO | URL structure, pagination, faceted nav, blog SEO | Collection URL structure (25/25) |
-| 5. Design & Layout | Homepage/collection/product layouts, mobile, CTA, typography | Mobile responsiveness (25/25), CTA (25/25) |
-| 6. Conversion Optimisation (CRO) | Cart/checkout flow, trust signals, sticky header, upsell UI | Cart & checkout flow (25/25) |
-| 7. Theme Customisation | Liquid edits, custom sections/blocks, navigation, header/footer | Navigation restructuring (24/25) |
-| 8. Accessibility | Colour contrast, keyboard navigation, ARIA labels | Colour contrast (22/25) |
-
-Each task entry contains:
-- Explanation
-- Importance Score (out of 25)
-- Best Practice
-- Guideline
-- Checklist
-- Shopify Tutorial (step-by-step)
-- Do's and Don'ts
+| UI Styles | 84 | Glassmorphism, Claymorphism, Brutalism, Bento Grid, AI-Native, Dark Mode, and more |
+| Colour Palettes | 161 | Industry-aligned palettes matched to product categories |
+| Font Pairings | 73 | Heading + body font combinations by industry and style |
+| Chart Types | 25 | Data visualisation patterns by use case |
+| UX Guidelines | 99 | Best practices, anti-patterns, and accessibility rules |
+| Tech Stacks | 17 | React, Next.js, Vue, Nuxt, Svelte, SwiftUI, React Native, Flutter, HTML+Tailwind, shadcn/ui, and more |
+| Product Categories | 161 | Industry-specific reasoning rules for automatic pattern matching |
 
 ---
 
-## How to Use This Skill
+## How the Skill Works
 
-1. **Identify the task type** — match the current Shopify problem to one of the 8 domains above.
-2. **Query the source guide** — open `shopify_seo_ui_ux_guide.md` or reference the relevant section in `ARCHITECTURE.md`.
-3. **Apply the checklist** — verify each checklist item before closing the task.
-4. **Record evidence** — every applied fix must be logged in `evidence/README.md` per AIOS rules.
-5. **Follow Claude Rules** — see `CLAUDE_RULES.md` for how Claude Code must handle this skill.
+1. You describe the project (e.g. "landing page for a beauty spa").
+2. The skill's reasoning engine matches it against 161 product categories.
+3. It recommends the optimal UI style, colour palette, font pairing, and effects.
+4. It flags anti-patterns to avoid.
+5. You apply the generated design system to the Shopify theme or front-end stack.
 
-For Shopify-specific execution steps, see `SHOPIFY_WORKFLOW.md`.
+The search engine uses BM25 ranking + regex matching across 7 queryable domains:
+
+| Domain | What It Returns |
+|---|---|
+| `product` | Industry-matched design patterns for the product category |
+| `style` | Recommended UI styles (Glassmorphism, Minimalism, etc.) |
+| `color` | Colour palette recommendations |
+| `typography` | Font pairing recommendations |
+| `landing` | Landing page layout and section patterns |
+| `chart` | Data visualisation patterns |
+| `ux` | UX guidelines and anti-patterns |
+
+---
+
+## How to Use This Skill in a Session
+
+1. **Identify the design problem** — product category, target audience, tech stack.
+2. **Run the search** — see `SHOPIFY_WORKFLOW.md` for the exact command.
+3. **Apply the recommended system** — style + palette + font + UX rules.
+4. **Validate against UX guidelines** — run the pre-delivery checklist (99 rules).
+5. **Record evidence** — log every application in `evidence/README.md`.
+6. **Follow Claude Rules** — see `CLAUDE_RULES.md`.
 
 ---
 
@@ -68,51 +79,42 @@ For Shopify-specific execution steps, see `SHOPIFY_WORKFLOW.md`.
 
 | File | Purpose |
 |---|---|
-| `README.md` | This file. Overview, purpose, orientation. |
-| `INSTALLATION.md` | How to onboard this skill into AIOS. |
-| `ARCHITECTURE.md` | Domain structure, task scoring map, content model. |
-| `SHOPIFY_WORKFLOW.md` | Step-by-step workflow for applying this skill to a Shopify store. |
+| `README.md` | This file. Overview, orientation, version. |
+| `INSTALLATION.md` | How to install the upstream skill and integrate it into AIOS. |
+| `ARCHITECTURE.md` | Data files, search domains, capability map. |
+| `SHOPIFY_WORKFLOW.md` | Workflow for applying design system output to Shopify themes. |
 | `CLAUDE_RULES.md` | Rules Claude Code must follow when using this skill. |
-| `EVIDENCE.md` | Evidence log for this skill's integration and usage. |
-| `CHANGELOG.md` | Version history. |
-| `uiux-skill-shopify-final.pptx` | Source PowerPoint presentation for this skill. |
+| `EVIDENCE.md` | Evidence log for integration and usage. |
+| `CHANGELOG.md` | Version history for AIOS docs and upstream tracking. |
+| `uiux-skill-shopify-final.pptx` | Local PowerPoint reference asset. |
 
 ---
 
-## Official GitHub
+## Supplementary Shopify SEO Reference
 
-| Field | Value |
-|---|---|
-| Repository | `https://github.com/piranavakanandigitweblanka-lgtm/aios-piranav` |
-| Branch | `master` |
-| Path in repo | `Documents/piranav_aios/docs/ai-tools/ui-ux-pro-max-skill/` |
+The file `C:\Users\PC\Desktop\shopify_seo_ui_ux_guide.md` is a separate Shopify-specific SEO and UI/UX checklist (28 tasks, importance-scored). It is NOT part of the upstream skill — it is a local reference used alongside it. See `ARCHITECTURE.md` for the distinction.
 
 ---
 
 ## Known Limitations
 
-- The source guide (`shopify_seo_ui_ux_guide.md`) is not versioned — any updates to it will not be reflected here automatically. See `CHANGELOG.md` for version tracking.
-- Importance scores (out of 25) are static — they were set at the time the source guide was authored and may not reflect future Shopify platform or Google algorithm changes.
-- The PowerPoint (`uiux-skill-shopify-final.pptx`) is a binary file and cannot be searched or queried by Claude Code. Use `ARCHITECTURE.md` and the source guide for queryable content.
-- This skill does not cover Shopify Plus-specific features (Scripts, Checkout UI Extensions, B2B).
+- The skill's CSV databases are installed on the local machine — Claude Code cannot query them directly without the Python search script being available.
+- The upstream skill version (2.8.8) and numbers (84 styles, 73 fonts, etc.) may advance with new releases — check `https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/releases` and bump `CHANGELOG.md` when they do.
+- Tech stack coverage is optimised for web frameworks. Native mobile (SwiftUI, Flutter) and React Native support exists but is less detailed.
+- The Shopify SEO checklist (`shopify_seo_ui_ux_guide.md`) covers performance and technical SEO tasks that the upstream skill does not.
 
 ---
 
 ## Next Steps
 
-1. Add evidence entries to `EVIDENCE.md` after first application in a live Shopify session.
-2. Link this skill to the relevant closure entry each time it is applied.
-3. Varmen to review and confirm PASS status on first use.
-4. If the source guide is updated, bump the version in `CHANGELOG.md`.
+1. Install the upstream skill locally — see `INSTALLATION.md`.
+2. Run the first search query and log output in `EVIDENCE.md`.
+3. Varmen to confirm PASS status on first applied session.
+4. Track upstream releases at https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/releases.
 
 ---
 
 ## Pass / Fail Rule
 
-This skill PASSES review if:
-- A developer can understand its purpose and apply it using only this folder's documentation.
-- Every application of the skill produces an evidence entry in `evidence/README.md`.
-
-This skill FAILS review if:
-- Fixes are applied without referencing the checklist from this skill.
-- No evidence entry exists after a skill-guided task is completed.
+PASSES if: a developer can install, query, and apply the skill using only this folder's documentation.
+FAILS if: fixes are applied without referencing the skill's domain output, or no evidence is logged.

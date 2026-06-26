@@ -4,57 +4,55 @@
 
 ## Purpose of This File
 
-These rules govern how Claude Code must behave when applying the UI UX Pro Max Skill inside a piranav Mini-AIOS session. They are mandatory. They cannot be overridden by chat instructions from piranav — only Varmen can update these rules.
+These rules govern how Claude Code must behave when using the UI UX Pro Max Skill inside a piranav Mini-AIOS session. They are mandatory. Only Varmen can update them.
 
 ---
 
 ## Rule 1 — Search Before Acting
 
-Before applying any fix from this skill, Claude Code must:
+Before applying any design recommendation, Claude Code must:
 
-1. Check whether the same fix was already attempted in a prior session (`evidence/README.md` Evidence Index).
-2. Check whether a conflict exists in `duplicate-risk/README.md`.
-3. Only if no prior fix exists: proceed with the task.
+1. Check whether the same design system was already applied in a prior session (`evidence/README.md` Evidence Index).
+2. Check `duplicate-risk/README.md` for conflicts.
+3. Only if no prior application exists: proceed.
 
-**If a prior fix exists:** link to it in the closure entry and explain why a second fix is needed. Do not silently redo completed work.
-
----
-
-## Rule 2 — Score Before Prioritising
-
-When multiple tasks are available, Claude Code must prioritise by importance score (descending, 25 → 18). If Varmen has specified a different priority order in a session instruction, follow that order and log it in the closure entry.
-
-Never self-select a lower-scored task over a 25/25 task without documented justification.
+If a prior application exists, link to it and explain why a new application is needed.
 
 ---
 
-## Rule 3 — Checklist Before Code
+## Rule 2 — Use the Skill Output, Not Memory
 
-Claude Code must read and acknowledge the relevant checklist from the source guide (`shopify_seo_ui_ux_guide.md`) before writing any Liquid, CSS, or JS changes.
+Claude Code must not invent UI styles, colour palettes, or font pairings from training memory. All design recommendations must come from the skill's search output (from `search.py`) or the Shopify SEO reference checklist. If neither has been queried yet this session, stop and ask piranav to run the search command.
 
-If the checklist cannot be read (source guide missing), stop the task. Log the blocker. Do not proceed from memory.
+---
+
+## Rule 3 — Two Layers Are Distinct
+
+The upstream skill (Layer 1) and the Shopify SEO reference (Layer 2) are separate. Claude Code must not:
+- Claim a design recommendation came from the Shopify SEO guide when it came from the skill search
+- Apply SEO checklist tasks and call them "design system" output
+
+Each evidence entry must state which layer was used.
 
 ---
 
 ## Rule 4 — Minimum Change Principle
 
-Apply only the change required by the task. Do not:
-- Refactor surrounding code
-- Rename variables or reorganise files
-- Add comments explaining the change (comments belong in the evidence file, not the code)
-- Apply fixes from a different domain unless that domain was explicitly approved for this session
+Apply only the design system elements the skill recommends. Do not:
+- Refactor theme files unrelated to the recommended changes
+- Change fonts, colours, or layout not in the skill output
+- Add effects or animations not recommended by the style domain
 
 ---
 
-## Rule 5 — No Production Push Without Validation
+## Rule 5 — No Live Push Without Validation
 
-Claude Code must not push to a live Shopify theme (`shopify theme push --live` or equivalent) unless:
+Claude Code must not push to a live Shopify theme unless:
 
-1. The fix has been validated on a development theme or local preview.
-2. A validation record exists in `validation/` or `evidence/fixes/`.
-3. The closure entry is written and PASS-confirmed.
-
-If any of these are missing, stop before pushing and log the status.
+1. Changes were tested on a development theme (`shopify theme dev`).
+2. A validation record exists (desktop + mobile + keyboard nav).
+3. The Shopify SEO reference checklist (minimum: Domains 5 and 8) is PASS.
+4. The closure entry is written.
 
 ---
 
@@ -62,58 +60,74 @@ If any of these are missing, stop before pushing and log the status.
 
 Every task closed using this skill must have:
 
-1. An evidence file at `evidence/fixes/[task-slug]-[date].md`
-2. An index row in `evidence/README.md`
-3. A closure entry in `closure/README.md`
+1. A design report at `evidence/fixes/design-system-[store]-[date].md`
+2. The skill's search query and output recorded in that report
+3. An index row in `evidence/README.md`
+4. A closure entry in `closure/README.md`
 
-A task without evidence cannot be marked PASS. If a session ends before evidence is written, mark the closure entry FAIL with reason "evidence not written" and carry it forward to the next session.
-
----
-
-## Rule 7 — Do Not Duplicate the Source Guide
-
-The source guide (`shopify_seo_ui_ux_guide.md`) is not to be copied, paraphrased at length, or reproduced inside evidence files. Evidence files record what was found and what was changed — not the full tutorial text. Reference the source guide by section name if needed.
+A task without these three artefacts cannot be marked PASS.
 
 ---
 
-## Rule 8 — Domain Boundaries
+## Rule 7 — Do Not Reproduce CSV Data
 
-Each task belongs to exactly one domain. Do not combine domain work into a single task closure entry unless Varmen has explicitly approved a multi-domain sprint. This prevents audit trail confusion.
-
----
-
-## Rule 9 — Importance Score Must Be Stated in Evidence
-
-Every evidence file must state the importance score of the task applied (e.g., `Importance Score: 25/25 — Critical`). This lets Varmen verify priority decisions without re-reading the source guide.
+The skill's CSV files (styles.csv, colors.csv, etc.) are not to be copied, quoted at length, or reproduced inside evidence files. Record only the specific recommendation applied (style name, palette name, hex values). Reference the domain and version.
 
 ---
 
-## Rule 10 — Out-of-Scope Escalation
+## Rule 8 — Domain Must Be Stated
 
-If the skill's tutorial or checklist requires accessing a file or store that is outside `piranav_aios` or the approved theme path (`C:\Users\PC\Downloads\uk 2026.06.09\`):
+Every search query must specify a domain (`--domain product`, `--domain style`, etc.). Claude Code must not accept undifferentiated search output. If a query was run without a domain flag, ask piranav to re-run it with the correct domain.
+
+---
+
+## Rule 9 — Anti-Patterns Must Be Checked
+
+Every design system application must include a review of the `--domain ux` output for the product category. Anti-patterns flagged by the skill are blockers — they must be resolved before marking the task PASS.
+
+---
+
+## Rule 10 — Shopify SEO Domains 5 and 8 Are Mandatory After Design Changes
+
+Any change to colours, typography, layout, or UI style must be followed by:
+- **Domain 5 checklist** (Design & Layout) from `shopify_seo_ui_ux_guide.md`
+- **Domain 8 checklist** (Accessibility — colour contrast, ARIA, keyboard nav)
+
+These are mandatory. They cannot be skipped even if the design task seems small.
+
+---
+
+## Rule 11 — Out-of-Scope Escalation
+
+If the skill's output requires accessing a store, theme file, or path outside the approved boundary:
 
 1. Stop.
-2. Log the out-of-scope requirement in `handover/README.md`.
-3. Wait for Varmen approval before proceeding.
+2. Log in `handover/README.md`.
+3. Wait for Varmen approval.
 
 ---
 
-## Rule 11 — Binary Asset Rule
+## Rule 12 — Binary Assets
 
-The PowerPoint (`uiux-skill-shopify-final.pptx`) is a binary file. Claude Code must not:
-- Attempt to read or parse it
-- Use it as a source for task content
-- Report its contents without human review
-
-Use `ARCHITECTURE.md` and `shopify_seo_ui_ux_guide.md` for all queryable content.
+The PowerPoint (`uiux-skill-shopify-final.pptx`) and the CSV data files in `data/` are not queryable by Claude Code directly. Use `ARCHITECTURE.md` and the Python `search.py` output (run by piranav) for all queryable content.
 
 ---
 
-## Rule 12 — Version Drift Alert
+## Rule 13 — Version Must Match
 
-If piranav or Varmen updates the source guide (`shopify_seo_ui_ux_guide.md`) without bumping the version in `CHANGELOG.md`, Claude Code must flag the drift in the next session's closure entry and prompt for a version bump.
+Before using the skill, Claude Code must confirm the installed version matches the version tracked in `CHANGELOG.md`. If the installed version is newer, flag it in the session closure entry and prompt for a version bump.
 
-Symptom: source guide has a different modification date than the `CHANGELOG.md` last-updated entry.
+Check installed version:
+
+```bash
+npm info ui-ux-pro-max-cli version
+```
+
+---
+
+## Rule 14 — Layer 2 Does Not Override Layer 1
+
+The Shopify SEO reference (Layer 2) provides validation checklists. It does not override design system recommendations from the upstream skill (Layer 1). If a conflict arises (e.g., the skill recommends a colour that fails WCAG contrast), the skill recommendation is adjusted — not ignored — to meet the Layer 2 standard.
 
 ---
 
@@ -121,18 +135,20 @@ Symptom: source guide has a different modification date than the `CHANGELOG.md` 
 
 | Rule | Trigger | Action |
 |---|---|---|
-| 1 — Search first | Before any fix | Check evidence index |
-| 2 — Score first | Multiple tasks available | Highest score wins |
-| 3 — Checklist first | Before writing code | Read source guide checklist |
-| 4 — Minimum change | Any code edit | Change only what is required |
-| 5 — No push without validation | Before `shopify theme push` | Validate + evidence must exist |
-| 6 — Evidence mandatory | At task close | Three evidence artefacts required |
-| 7 — No source duplication | Any evidence file | Reference, do not reproduce |
-| 8 — Domain boundaries | Multi-domain work | One domain per closure entry |
-| 9 — Score in evidence | Any evidence file | State importance score |
-| 10 — Out-of-scope escalation | Any out-of-scope file | Stop, log, wait for approval |
-| 11 — Binary asset | PowerPoint file | Do not parse; use markdown sources |
-| 12 — Version drift | Source guide updated | Flag in closure; prompt for bump |
+| 1 — Search first | Before any design work | Check evidence index |
+| 2 — Use skill output | Any design recommendation | Run search.py first |
+| 3 — Two layers distinct | Evidence writing | State which layer was used |
+| 4 — Minimum change | Any theme edit | Change only what skill recommends |
+| 5 — No live push without validation | Before push | Dev theme + checklist + closure |
+| 6 — Evidence mandatory | At task close | 3 artefacts required |
+| 7 — No CSV reproduction | Evidence files | Name only, no copy |
+| 8 — Domain must be stated | Any search | `--domain` flag required |
+| 9 — Anti-patterns checked | Every design session | `--domain ux` output reviewed |
+| 10 — Domains 5 + 8 mandatory | After design changes | SEO reference checklist PASS |
+| 11 — Out-of-scope escalation | Out-of-boundary file | Stop, log, wait |
+| 12 — Binary assets | PowerPoint / CSV | Do not parse; use markdown + search output |
+| 13 — Version must match | Session start | Check npm version vs CHANGELOG |
+| 14 — Layer 2 adjusts Layer 1 | Contrast / accessibility conflict | Adjust recommendation, don't discard |
 
 ---
 
@@ -143,4 +159,4 @@ Symptom: source guide has a different modification date than the `CHANGELOG.md` 
 | Authored | piranav |
 | Reviewer | Varmen |
 | Last Updated | 2026-06-26 |
-| Rule Count | 12 |
+| Rule Count | 14 |

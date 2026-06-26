@@ -60,7 +60,8 @@ All evidence must be one of the following:
 | Date | Task / Requirement ID | Evidence Type | Evidence Path / Commit | Status |
 |---|---|---|---|---|
 | 2026-06-25 | AIOS-STARTER-001 — Mini-AIOS starter build | Evidence markdown | `piranav_aios/README.md`, `START_HERE.md`, folder READMEs | PASS — files created, git status clean |
-| 2026-06-26 | UIUX-SKILL-INT-001 — UI UX Pro Max Skill integration | Evidence markdown | `docs/ai-tools/ui-ux-pro-max-skill/EVIDENCE.md` | PASS — 7 .md files + PowerPoint created; source guide referenced not copied |
+| 2026-06-26 | UIUX-SKILL-INT-001 — UI UX Pro Max Skill integration (v1.0.0) | Evidence markdown | `docs/ai-tools/ui-ux-pro-max-skill/EVIDENCE.md` | PASS — 7 .md files + PowerPoint created; source guide referenced not copied |
+| 2026-06-26 | UIUX-SKILL-UPD-001 — Upstream sync to v2.8.8 | Evidence markdown | `docs/ai-tools/ui-ux-pro-max-skill/CHANGELOG.md` (v2.0.0 entry) | PASS — all 6 docs rewritten; upstream fetched from github.com/nextlevelbuilder/ui-ux-pro-max-skill |
 
 ---
 
