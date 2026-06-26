@@ -47,6 +47,8 @@ These risks do NOT exist yet but will arise if the wrong approach is taken when 
 | DR-005 | Closure fields duplicated in both daily log (Desktop) and `closure/README.md` | Future sessions write closure in two places | MEDIUM | `closure/README.md` is the single closure authority from 2026-06-25 onwards; Desktop daily logs are narrative, not the closure record |
 | DR-006 | Workflow doc created inside `piranav_aios/prompts/` that duplicates the Shopify CLI doc in Desktop | New prompt template replicates existing workflow content | MEDIUM | Before creating any prompt template, search for existing content first (per START_HERE.md Step 1) |
 | DR-007 | Two handover notes exist for the same session — one in chat, one as a file | Handover note is written as chat text AND saved as a file | LOW | Save as file only; do not rely on chat history as a handover record |
+| DR-008 | Source guide `shopify_seo_ui_ux_guide.md` on Desktop could be copied into AIOS docs | 2026-06-26 UI UX skill integration — guide is referenced, not copied | MEDIUM | Always reference by absolute path from `ARCHITECTURE.md`; never copy the source guide file |
+| DR-009 | `uiux-skill-shopify-final.pptx` exists in Downloads, Teams (×2), and now skill folder | PowerPoint copied to skill folder 2026-06-26 | LOW — binary, not queryable | Canonical copy is `docs/ai-tools/ui-ux-pro-max-skill/uiux-skill-shopify-final.pptx`; Downloads copy retained for reference |
 
 ---
 

@@ -60,6 +60,7 @@ All evidence must be one of the following:
 | Date | Task / Requirement ID | Evidence Type | Evidence Path / Commit | Status |
 |---|---|---|---|---|
 | 2026-06-25 | AIOS-STARTER-001 — Mini-AIOS starter build | Evidence markdown | `piranav_aios/README.md`, `START_HERE.md`, folder READMEs | PASS — files created, git status clean |
+| 2026-06-26 | UIUX-SKILL-INT-001 — UI UX Pro Max Skill integration | Evidence markdown | `docs/ai-tools/ui-ux-pro-max-skill/EVIDENCE.md` | PASS — 7 .md files + PowerPoint created; source guide referenced not copied |
 
 ---
 
