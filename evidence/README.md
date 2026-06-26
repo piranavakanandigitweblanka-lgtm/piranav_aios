@@ -61,6 +61,9 @@ All evidence must be one of the following:
 |---|---|---|---|---|
 | 2026-06-25 | AIOS-STARTER-001 — Mini-AIOS starter build | Evidence markdown | `piranav_aios/README.md`, `START_HERE.md`, folder READMEs | PASS — files created, git status clean |
 | 2026-06-26 | UIUX-SKILL-INT-001 — UI UX Pro Max Skill integration | Evidence markdown | `docs/ai-tools/ui-ux-pro-max-skill/EVIDENCE.md` | PASS — 7 .md files + PowerPoint created; source guide referenced not copied |
+| 2026-06-26 | THEME-VER-001 — LEDsone UK theme setup verification | Evidence markdown | `evidence/2026-06-26_theme_setup_verification.md` | PARTIAL — all 7 folders present, CLI 4.2.0, no shopify.theme.toml |
+| 2026-06-26 | SECTION-DOC-001 — Modern Product Section documentation | Evidence markdown | `docs/shopify-sections/MODERN_PRODUCT_SECTION.md` | PASS — full schema, features, duplicate risk GREEN, queryability complete |
+| 2026-06-26 | SECTION-CREATE-001 — modern-product-showcase.liquid created | Source file + evidence markdown | `shopify_projects/ledsone-uk-theme/sections/modern-product-showcase.liquid` + `evidence/2026-06-26_modern-product-showcase-creation.md` | STRUCTURAL PASS / LIVE UNTESTED — dev theme push required |
 
 ---
 
