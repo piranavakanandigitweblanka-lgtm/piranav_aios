@@ -64,6 +64,7 @@ All evidence must be one of the following:
 | 2026-06-26 | THEME-VER-001 — LEDsone UK theme setup verification | Evidence markdown | `evidence/2026-06-26_theme_setup_verification.md` | PARTIAL — all 7 folders present, CLI 4.2.0, no shopify.theme.toml |
 | 2026-06-26 | SECTION-DOC-001 — Modern Product Section documentation | Evidence markdown | `docs/shopify-sections/MODERN_PRODUCT_SECTION.md` | PASS — full schema, features, duplicate risk GREEN, queryability complete |
 | 2026-06-26 | SECTION-CREATE-001 — modern-product-showcase.liquid created | Source file + evidence markdown | `shopify_projects/ledsone-uk-theme/sections/modern-product-showcase.liquid` + `evidence/2026-06-26_modern-product-showcase-creation.md` | STRUCTURAL PASS / LIVE UNTESTED — dev theme push required |
+| 2026-06-29 | IMAGE-FIX-001 — Variant image display fix (PDP images not showing) | Evidence markdown | `evidence/shopify_variant_image_display_fix_2026-06-29.md` | PARTIAL PASS — fix documented, product URL + ID recorded; screenshots pending |
 
 ---
 
