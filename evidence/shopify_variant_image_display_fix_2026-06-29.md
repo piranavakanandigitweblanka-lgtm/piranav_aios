@@ -37,8 +37,8 @@ This is a data-layer issue, not a theme code issue. The theme was reading images
 | After fix — images visible on PDP | Confirmed by visual check of live product page | PASS | After screenshot not saved |
 | Product URL | https://ledsone.co.uk/products/water-lily-iron-wire-cage-lamp-industrial-lighting-decoration-shade | PASS | — |
 | Product ID (GID) | `gid://shopify/Product/4417288732768` | PASS | — |
-| Before screenshot path | Not saved to disk | FAIL | `C:\Users\PC\Desktop\screenshots\2026-06-29-before-variant-image.png` — required |
-| After screenshot path | Not saved to disk | FAIL | `C:\Users\PC\Desktop\screenshots\2026-06-29-after-variant-image.png` — required |
+| Before screenshot path | `C:\Users\PC\Downloads\water-lily-iron-wire-cage-lamp-industrial-lighting-decoration-shade -before .png` | PASS | — |
+| After screenshot path | `C:\Users\PC\Downloads\water-lily-iron-wire-cage-lamp-industrial-lighting-decoration-shade -after .png` | PASS | — |
 | Fixed by | Piranavakanan / Digitweblanka | PASS | — |
 | Date fixed | 2026-06-29 | PASS | — |
 
@@ -89,11 +89,11 @@ Steps performed:
 | Fix is documented outside chat/verbal memory | PASS |
 | Product URL recorded | PASS — https://ledsone.co.uk/products/water-lily-iron-wire-cage-lamp-industrial-lighting-decoration-shade |
 | Product ID recorded | PASS — `gid://shopify/Product/4417288732768` |
-| Before screenshot saved to disk | FAIL — gap, must be filled |
-| After screenshot saved to disk | FAIL — gap, must be filled |
+| Before screenshot saved to disk | PASS — `...\water-lily-...-before .png` |
+| After screenshot saved to disk | PASS — `...\water-lily-...-after .png` |
 | A clean LLM reading this tomorrow can reproduce the fix | PASS |
 
-**Current status: PARTIAL PASS — structural record saved. Evidence gaps (product URL, ID, screenshots) must be filled before this task can be marked fully CLOSED.**
+**Current status: PASS — all required evidence recorded. Product URL, ID, before/after screenshots all present. Task is fully CLOSED.**
 
 ---
 
