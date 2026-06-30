@@ -1,0 +1,123 @@
+
+.deals__product--countdown {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+@media only screen and (max-width: 767px) {
+  .deals__product--countdown {
+    bottom: 15px;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .deals__product--countdown {
+    bottom: 14px;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .deals__product--countdown {
+    display: none;
+  }
+}
+
+.deals__product--countdown .countdown__item {
+  text-align: center;
+  margin-right: 10px;
+  padding-right: 0;
+}
+
+.deals__product--countdown .countdown__item:last-child {
+  margin-right: 0;
+}
+
+.deals__product--countdown .countdown__item::before {
+  display: none;
+}
+
+@media only screen and (min-width: 768px) {
+  .deals__product--countdown .countdown__item {
+    margin-right: 8px;
+  }
+}
+
+@media only screen and (min-width: 992px) {
+  .deals__product--countdown .countdown__item {
+    margin-right: 6px;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .deals__product--countdown .countdown__item {
+    margin-right: 10px;
+  }
+}
+.countdown__item > span{
+	display: block;
+}
+
+.deals__product--countdown .countdown__number {
+  width: 4rem;
+  height: 3.2rem;
+  line-height: 3.2rem;
+  font-size: 1.5rem;
+  background: rgba(var(--color-button),var(--alpha-button-background));
+  color: rgb(var(--color-button-text));
+  font-weight: 700;
+  -webkit-transition: .3s;
+  transition: .3s;
+  border-radius: 10px 0;
+}
+
+@media only screen and (min-width: 768px) {
+  .deals__product--countdown .countdown__number {
+    width: 4rem;
+    height: 3rem;
+    line-height: 3rem;
+  }
+}
+
+@media only screen and (min-width: 992px) {
+  .deals__product--countdown .countdown__number {
+    width: 4.2rem;
+    height: 3rem;
+    line-height: 3rem;
+    font-size: 1.5rem;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .deals__product--countdown .countdown__number {
+    font-size: 1.6rem;
+    width: 4.3rem;
+    height: 3.2rem;
+    line-height: 3.2rem;
+  }
+}
+
+.deals__product--countdown .countdown__text {
+  text-transform: uppercase;
+  font-size: 1.2rem;
+  margin-top: 4px;
+  line-height: 1.8rem;
+}
+
+@media only screen and (min-width: 992px) {
+  .deals__product--countdown .countdown__text {
+    font-size: 1.2rem;
+    margin-top: 4px;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .deals__product--countdown .countdown__text {
+    font-size: 1.3rem;
+    margin-top: 5px;
+  }
+}

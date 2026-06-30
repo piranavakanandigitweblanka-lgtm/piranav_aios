@@ -1,0 +1,14 @@
+a.instagram__feed--image {
+    max-width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    border-radius: 5px;
+}
+a.instagram__feed--image > img {
+  max-width: 100%;
+  transition: var(--transition);
+    }
+
+a.instagram__feed--image:hover img {
+  transform: scale(1.05);
+}

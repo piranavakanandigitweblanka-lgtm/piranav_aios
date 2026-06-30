@@ -1,0 +1,278 @@
+{%- comment -%}
+  Only show this section if the metafield is true
+  Using metafield key: custom.collection_card_slider
+{%- endcomment -%}
+
+{%- assign current_collection = collection -%}
+{%- unless current_collection.metafields.custom.collection_card_slider1 == true -%}
+  {%- comment -%} Skip rendering if metafield is not true {%- endcomment -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} {
+    padding: 50px 0;
+  }
+
+  .collection-slider-1 {
+    max-width: 1555px;
+    margin: 0 auto;
+    position: relative;
+    padding: 0 20px;
+  }
+  
+  .collection-slider__container {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 20px;
+    scrollbar-width: none;
+  }
+  
+  .collection-slider__container::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .collection-card {
+    flex: 0 0 200.75px;
+    height: 200.75px;
+    scroll-snap-align: start;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .collection-card__link {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .collection-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  .collection-card:hover .collection-card__image {
+    transform: scale(1.05);
+  }
+  
+  .collection-card__title {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    margin: 0;
+    padding: 0 10px;
+  }
+  
+  .slider-nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 30px;
+  }
+  
+  .slider-nav__dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ddd;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .slider-nav__dot.active {
+    background: #333;
+  }
+  
+  @media (max-width: 749px) {
+    .collection-slider-1 {
+      padding: 0 15px;
+    }
+    
+    .collection-card {
+      flex: 0 0 150px;
+      height: 150px;
+    }
+    
+    .collection-card__title {
+      font-size: 12px;
+      bottom: 15px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="collection-slider-1">
+  <div class="collection-slider__container" id="slider-{{ section.id }}">
+    {%- for block in section.blocks -%}
+      {%- assign featured_collection = collections[block.settings.collection] -%}
+      <div class="collection-card" {{ block.shopify_attributes }}>
+        <a href="{{ featured_collection.url }}" class="collection-card__link">
+          {%- if block.settings.collection_image != blank -%}
+            <img class="collection-card__image" 
+                 src="{{ block.settings.collection_image | img_url: '800x800', crop: 'center' }}" 
+                 alt="{{ featured_collection.title | escape }}" 
+                 loading="lazy">
+          {%- elsif featured_collection.image -%}
+            <img class="collection-card__image" 
+                 src="{{ featured_collection.image | img_url: '800x800', crop: 'center' }}" 
+                 alt="{{ featured_collection.title | escape }}" 
+                 loading="lazy">
+          {%- else -%}
+            <img class="collection-card__image" 
+                 src="{{ featured_collection.products.first.featured_image | img_url: '800x800', crop: 'center' }}" 
+                 alt="{{ featured_collection.title | escape }}" 
+                 loading="lazy">
+          {%- endif -%}
+          <h3 class="collection-card__title">{{ featured_collection.title }}</h3>
+        </a>
+      </div>
+    {%- endfor -%}
+  </div>
+  
+  <div class="slider-nav">
+    {%- for block in section.blocks -%}
+      <div class="slider-nav__dot {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}"></div>
+    {%- endfor -%}
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const slider = document.getElementById('slider-{{ section.id }}');
+  const dots = document.querySelectorAll('#shopify-section-{{ section.id }} .slider-nav__dot');
+  let autoSlideInterval;
+  const autoSlideDelay = 5000; // 5 seconds between slides
+  
+  if (slider && dots.length > 0) {
+    // Calculate slide width including gap
+    const firstSlide = slider.querySelector('.collection-card');
+    if (!firstSlide) return;
+    
+    const slideStyle = window.getComputedStyle(firstSlide);
+    const gap = parseInt(window.getComputedStyle(slider).gap) || 30;
+    const slideWidth = firstSlide.offsetWidth + gap;
+    let currentIndex = 0;
+    const totalSlides = dots.length;
+    
+    // Handle dot clicks
+    dots.forEach(dot => {
+      dot.addEventListener('click', function() {
+        const index = parseInt(this.dataset.index);
+        goToSlide(index);
+      });
+    });
+    
+    // Handle scroll events
+    let scrollTimeout;
+    slider.addEventListener('scroll', function() {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const newIndex = Math.round(slider.scrollLeft / slideWidth);
+        if (newIndex !== currentIndex) {
+          currentIndex = newIndex;
+          updateDots(currentIndex);
+          resetAutoSlide();
+        }
+      }, 100);
+    });
+    
+    // Auto-slide functionality
+    function startAutoSlide() {
+      autoSlideInterval = setInterval(() => {
+        currentIndex = (currentIndex + 1) % totalSlides;
+        goToSlide(currentIndex);
+      }, autoSlideDelay);
+    }
+    
+    function resetAutoSlide() {
+      clearInterval(autoSlideInterval);
+      startAutoSlide();
+    }
+    
+    function goToSlide(index) {
+      slider.scrollTo({
+        left: index * slideWidth,
+        behavior: 'smooth'
+      });
+      currentIndex = index;
+      updateDots(index);
+    }
+    
+    function updateDots(index) {
+      dots.forEach(dot => dot.classList.remove('active'));
+      if (dots[index]) dots[index].classList.add('active');
+    }
+    
+    // Pause auto-slide on hover
+    slider.addEventListener('mouseenter', () => {
+      clearInterval(autoSlideInterval);
+    });
+    
+    slider.addEventListener('mouseleave', () => {
+      startAutoSlide();
+    });
+    
+    // Start auto-slide initially
+    startAutoSlide();
+  }
+});
+</script>
+
+{% schema %}
+{
+  "name": "Collection Card Slider",
+  "max_blocks": 12,
+  "settings": [],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "collection_image",
+          "label": "Custom Collection Image",
+          "info": "Optional: Select a custom image for this collection card. If not set, the collection's default image or first product image will be used."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Card Slider1",
+      "category": "Collections",
+      "blocks": [
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

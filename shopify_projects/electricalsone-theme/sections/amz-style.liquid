@@ -1,0 +1,342 @@
+{% schema %}
+{
+  "name": "Custom Product Like",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "product_collection",
+      "label": "Select Collection"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Best Sellers in Computers & Accessories"
+    },
+    {
+      "type": "color",
+      "id": "header_color",
+      "label": "Header Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "header_size",
+      "label": "Header Font Size (px)",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Number of products to show",
+      "min": 2,
+      "max": 18,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_desktop",
+      "label": "Enable Desktop View",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_mobile",
+      "label": "Enable Mobile View",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_name",
+      "label": "Show Product Name",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show Product Price",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Product Like",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
+
+<div class="custom-product-like-section-{{ section.id }}">
+  {% if section.settings.product_collection %}
+    <a href="{{ section.settings.product_collection.url }}" class="collection-header-link">
+      <h2 style="color: {{ section.settings.header_color }}; font-size: {{ section.settings.header_size }}px;">{{ section.settings.heading }}</h2>
+    </a>
+  {% else %}
+    <h2 style="color: {{ section.settings.header_color }}; font-size: {{ section.settings.header_size }}px;">{{ section.settings.heading }}</h2>
+  {% endif %}
+  
+  <div class="slider-wrap-{{ section.id }}" style="display: {% unless section.settings.enable_desktop %}none{% endunless %};">
+    <div class="slider-container-{{ section.id }}">
+      <div class="slider-track-{{ section.id }}">
+        {% if section.settings.product_collection %}
+          {% for product in section.settings.product_collection.products limit: section.settings.products_to_show %}
+            <div class="slide-{{ section.id }}">
+              <a href="{{ product.url | within: collection }}" aria-label="{{ product.title }}">
+                <img src="{{ product.featured_image | img_url: '300x300' }}"
+                     alt="{{ product.title }}"
+                     loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                     width="300"
+                     height="300"
+                     style="width: 100%; height: auto; aspect-ratio: 1/1; object-fit: cover;">
+              </a>
+              {% if section.settings.show_name %}
+                <p class="product-name">{{ product.title }}</p>
+              {% endif %}
+              {% if section.settings.show_price %}
+                <p class="product-price">{{ product.price | money }}</p>
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+    <button class="slider-nav prev-{{ section.id }}" aria-label="Previous products">❮</button>
+    <button class="slider-nav next-{{ section.id }}" aria-label="Next products">❯</button>
+  </div>
+</div>
+
+<style>
+.custom-product-like-section-{{ section.id }} {
+  position: relative;
+  max-width: 1460px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+  margin-top:22px;
+  margin-bottom:30px;
+}
+
+.collection-header-link {
+  text-decoration: none;
+  display: inline-block;
+}
+
+.collection-header-link:hover h2 {
+  opacity: 0.8;
+}
+
+.slider-wrap-{{ section.id }} {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.slider-container-{{ section.id }} {
+  overflow: hidden;
+  width: 100%;
+}
+
+.slider-track-{{ section.id }} {
+  display: flex;
+  transition: transform 0.5s ease;
+  will-change: transform;
+  gap: 20px;
+  touch-action: pan-y;
+}
+
+.slide-{{ section.id }} {
+  flex: 0 0 calc(16.666% - 17px);
+  min-width: 0;
+  text-align: center;
+}
+
+.slider-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 1;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slider-nav:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.prev-{{ section.id }} {
+  left: 0;
+}
+
+.next-{{ section.id }} {
+  right: 0;
+}
+
+.product-name {
+  margin: 5px 0;
+  font-size: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  height: 2.8em;
+}
+
+.product-price {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .slide-{{ section.id }} {
+    flex: 0 0 calc(20% - 16px);
+  }
+}
+
+@media (max-width: 992px) {
+  .slide-{{ section.id }} {
+    flex: 0 0 calc(25% - 15px);
+  }
+}
+
+@media (max-width: 768px) {
+  .custom-product-like-section-{{ section.id }} {
+    padding: 0 15px;
+  }
+  
+  .slider-wrap-{{ section.id }} {
+    display: {% unless section.settings.enable_mobile %}none{% endunless %};
+  }
+  
+  .slide-{{ section.id }} {
+    flex: 0 0 calc(33.333% - 14px);
+  }
+  
+  .slider-nav {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .slide-{{ section.id }} {
+    flex: 0 0 calc(50% - 10px);
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const sections = document.querySelectorAll('[id^="shopify-section-"]');
+  
+  sections.forEach(section => {
+    const sectionId = section.id.replace('shopify-section-', '');
+    const sliderTrack = document.querySelector(`.slider-track-${sectionId}`);
+    const slides = document.querySelectorAll(`.slide-${sectionId}`);
+    const prevBtn = document.querySelector(`.prev-${sectionId}`);
+    const nextBtn = document.querySelector(`.next-${sectionId}`);
+    
+    if (!sliderTrack || slides.length === 0) return;
+    
+    let currentIndex = 0;
+    const slideCount = slides.length;
+    const visibleSlides = () => {
+      if (window.innerWidth >= 1200) return 6;
+      if (window.innerWidth >= 992) return 5;
+      if (window.innerWidth >= 768) return 4;
+      if (window.innerWidth >= 576) return 3;
+      return 2;
+    };
+    
+    function updateSlider() {
+      const slidesToShow = visibleSlides();
+      const maxIndex = Math.max(0, slideCount - slidesToShow);
+      currentIndex = Math.max(0, Math.min(currentIndex, maxIndex));
+      
+      const slideWidth = slides[0].offsetWidth + 20;
+      const offset = -currentIndex * slideWidth;
+      
+      sliderTrack.style.transition = 'transform 0.3s ease';
+      sliderTrack.style.transform = `translateX(${offset}px)`;
+      
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex >= maxIndex;
+    }
+    
+    prevBtn.addEventListener('click', () => {
+      currentIndex--;
+      updateSlider();
+    });
+    
+    nextBtn.addEventListener('click', () => {
+      currentIndex++;
+      updateSlider();
+    });
+    
+    // Swipe functionality for mobile
+    let touchStartX = 0;
+    let touchCurrentX = 0;
+    let isSwiping = false;
+    let initialTranslate = 0;
+    
+    sliderTrack.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      isSwiping = true;
+      initialTranslate = parseFloat(sliderTrack.style.transform.replace('translateX(', '').replace('px)', '')) || 0;
+      sliderTrack.style.transition = 'none';
+    }, { passive: true });
+    
+    sliderTrack.addEventListener('touchmove', (e) => {
+      if (!isSwiping) return;
+      e.preventDefault();
+      touchCurrentX = e.changedTouches[0].screenX;
+      const deltaX = touchCurrentX - touchStartX;
+      const slideWidth = slides[0].offsetWidth + 20;
+      sliderTrack.style.transform = `translateX(${initialTranslate + deltaX}px)`;
+    }, { passive: false });
+    
+    sliderTrack.addEventListener('touchend', (e) => {
+      if (!isSwiping) return;
+      isSwiping = false;
+      touchCurrentX = e.changedTouches[0].screenX;
+      const swipeDistance = touchStartX - touchCurrentX;
+      const slideWidth = slides[0].offsetWidth + 20;
+      const minSwipeDistance = slideWidth * 0.3;
+      
+      if (Math.abs(swipeDistance) > minSwipeDistance) {
+        if (swipeDistance > 0) {
+          currentIndex++;
+        } else {
+          currentIndex--;
+        }
+      }
+      updateSlider();
+    }, { passive: true });
+    
+    updateSlider();
+    
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        updateSlider();
+      }, 250);
+    });
+  });
+});
+</script>

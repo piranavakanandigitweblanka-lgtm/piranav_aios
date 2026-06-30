@@ -1,0 +1,34 @@
+button.dropdown__open_label {
+    background: none;
+    border: none;
+  }
+  button.dropdown__open_label  svg{
+    height: 10px;
+  }
+  a.dropdown__list__item {
+    padding: 5px 10px;
+    display: block;
+    color:black;
+    border-radius: 5px;
+  }
+  /* Add hover effect for text color */
+a.dropdown__list__item:hover {
+    color: black;
+}
+    .dropdown__open_list {
+    position: absolute;
+    top: 100%;
+    background: white;
+    left: 0;
+    width: 22rem;
+    z-index: 99;
+    border-radius: 5px;
+    max-height: 19rem;
+    overflow-y: auto;
+  }
+   .dropdown__list__item:hover, .dropdown__list__item.active {
+    color: rgba(var(--color-background))
+  }
+  .disclosure {
+    position: relative;
+  }

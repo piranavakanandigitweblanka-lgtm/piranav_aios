@@ -1,0 +1,495 @@
+{% comment %}
+  Just For You - Product Grid Section
+  Displays a responsive product grid with discount badges, ratings, and prices
+  Compatible with Shopify 2.0 Online Store
+{% endcomment %}
+
+<section class="jfy-section" id="just-for-you-{{ section.id }}">
+  <div class="jfy-container">
+    <h2 class="jfy-heading">{{ section.settings.heading }}</h2>
+
+    <div class="jfy-grid">
+      {% assign collection = collections[section.settings.collection] %}
+      {% if collection != blank %}
+        {% assign products_to_show = section.settings.products_count %}
+        {% for product in collection.products limit: products_to_show %}
+          {% assign compare_price = product.compare_at_price %}
+          {% assign sale_price = product.price %}
+          {% assign discount = 0 %}
+          {% if compare_price > sale_price %}
+            {% assign discount = compare_price | minus: sale_price | times: 100 | divided_by: compare_price %}
+          {% endif %}
+
+          <div class="jfy-card">
+            <a href="{{ product.url }}" class="jfy-card__link">
+              <div class="jfy-card__image-wrap">
+                {% if product.featured_image %}
+                  <img
+                    src="{{ product.featured_image | img_url: '300x300', crop: 'center' }}"
+                    alt="{{ product.featured_image.alt | escape }}"
+                    class="jfy-card__image"
+                    loading="lazy"
+                    width="300"
+                    height="300"
+                  >
+                {% else %}
+                  {{ 'product-1' | placeholder_svg_tag: 'jfy-card__placeholder' }}
+                {% endif %}
+
+                {% if compare_price > sale_price %}
+                  <span class="jfy-card__badge">-{{ discount }}%</span>
+                {% endif %}
+
+                {% if product.available == false %}
+                  <span class="jfy-card__badge jfy-card__badge--sold-out">Sold Out</span>
+                {% endif %}
+              </div>
+
+              <div class="jfy-card__info">
+                <h3 class="jfy-card__title">{{ product.title }}</h3>
+
+                <div class="jfy-card__price-row">
+                  <span class="jfy-card__price">{{ sale_price | money }}</span>
+                  {% if compare_price > sale_price %}
+                    <span class="jfy-card__compare-price">{{ compare_price | money }}</span>
+                    <span class="jfy-card__discount">-{{ discount }}%</span>
+                  {% endif %}
+                </div>
+              </div>
+            </a>
+
+            {% if section.settings.show_add_to_cart %}
+              <div class="jfy-card__cart">
+                {% if product.available %}
+                  <button
+                    class="jfy-card__atc-btn"
+                    data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+                    data-product-title="{{ product.title | escape }}"
+                    onclick="jfyAddToCart(this)"
+                  >
+                    <svg class="jfy-btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                      <line x1="3" y1="6" x2="21" y2="6"/>
+                      <path d="M16 10a4 4 0 01-8 0"/>
+                    </svg>
+                    <span class="jfy-btn-text">Add to Cart</span>
+                  </button>
+                {% else %}
+                  <button class="jfy-card__atc-btn jfy-card__atc-btn--disabled" disabled>Sold Out</button>
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+      {% else %}
+        {% for i in (1..12) %}
+          <div class="jfy-card jfy-card--placeholder">
+            <div class="jfy-card__image-wrap">
+              {{ 'product-1' | placeholder_svg_tag: 'jfy-card__placeholder' }}
+            </div>
+            <div class="jfy-card__info">
+              <div class="jfy-placeholder-line"></div>
+              <div class="jfy-placeholder-line jfy-placeholder-line--short"></div>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    {% if section.settings.show_view_all and collection != blank %}
+      <div class="jfy-view-all">
+        <a href="{{ collection.url }}" class="jfy-view-all__btn">View All</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<div id="jfy-toast" class="jfy-toast" aria-live="polite"></div>
+
+<style>
+  .jfy-section {
+    padding: 32px 0;
+    background: #f5f5f5;
+  }
+  .jfy-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+  .jfy-heading {
+    font-size: 22px;
+    font-weight: 700;
+    color: #222;
+    margin: 0 0 20px 0;
+  }
+
+  /* Grid */
+  .jfy-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+  @media (max-width: 1200px) { .jfy-grid { grid-template-columns: repeat(5, 1fr); } }
+  @media (max-width: 1024px) { .jfy-grid { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 768px)  { .jfy-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 480px)  { .jfy-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; } }
+
+  /* Card */
+  .jfy-card {
+    background: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .jfy-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+  }
+  .jfy-card__link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  /* Image */
+  .jfy-card__image-wrap {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    overflow: hidden;
+    background: #f9f9f9;
+  }
+  .jfy-card__image,
+  .jfy-card__placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  .jfy-card:hover .jfy-card__image { transform: scale(1.04); }
+
+  /* Badge */
+  .jfy-card__badge {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background: #f05d23;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 2px;
+    line-height: 1.4;
+    z-index: 1;
+  }
+  .jfy-card__badge--sold-out {
+    background: #666;
+    left: auto;
+    right: 6px;
+  }
+
+  /* Info */
+  .jfy-card__info {
+    padding: 8px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+  .jfy-card__title {
+    font-size: 12px;
+    font-weight: 400;
+    color: #333;
+    margin: 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Price */
+  .jfy-card__price-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 2px;
+  }
+  .jfy-card__price {
+    font-size: 14px;
+    font-weight: 700;
+    color: #f05d23;
+  }
+  .jfy-card__compare-price {
+    font-size: 11px;
+    color: #999;
+    text-decoration: line-through;
+  }
+  .jfy-card__discount {
+    font-size: 11px;
+    color: #f05d23;
+    font-weight: 600;
+  }
+
+  /* Button */
+  .jfy-card__cart { padding: 0 10px 10px; }
+  .jfy-card__atc-btn {
+    width: 100%;
+    background: #f05d23;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    padding: 7px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  .jfy-card__atc-btn:hover:not(:disabled) { background: #d94e1a; }
+  .jfy-card__atc-btn--disabled,
+  .jfy-card__atc-btn[disabled] { background: #ccc; cursor: not-allowed; }
+  .jfy-card__atc-btn--loading { opacity: 0.75; pointer-events: none; }
+  .jfy-card__atc-btn--success { background: #2a9d5c !important; pointer-events: none; }
+
+  /* Spinner */
+  .jfy-spinner {
+    width: 13px;
+    height: 13px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: jfy-spin 0.6s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes jfy-spin { to { transform: rotate(360deg); } }
+
+  .jfy-check { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* Toast */
+  .jfy-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #222;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 6px;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+    white-space: nowrap;
+    max-width: 90vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .jfy-toast--show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .jfy-toast--error { background: #c0392b; }
+
+  /* Shimmer */
+  .jfy-placeholder-line {
+    height: 10px;
+    background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+    margin-top: 6px;
+  }
+  .jfy-placeholder-line--short { width: 60%; }
+  @keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* View All */
+  .jfy-view-all { text-align: center; margin-top: 24px; }
+  .jfy-view-all__btn {
+    display: inline-block;
+    padding: 10px 36px;
+    background: #fff;
+    color:rgb(19, 14, 12);
+    border: 1.5px solidrgb(102, 91, 87);
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+  }
+  .jfy-view-all__btn:hover { background: #f05d23; color: #fff; }
+</style>
+
+<script>
+(function() {
+
+  var toastTimer;
+  function jfyShowToast(msg, isError) {
+    var el = document.getElementById('jfy-toast');
+    if (!el) return;
+    clearTimeout(toastTimer);
+    el.textContent = msg;
+    el.className = 'jfy-toast' + (isError ? ' jfy-toast--error' : '');
+    void el.offsetWidth; // force reflow
+    el.classList.add('jfy-toast--show');
+    toastTimer = setTimeout(function() {
+      el.classList.remove('jfy-toast--show');
+    }, 3000);
+  }
+
+  function jfyUpdateCartCount(count) {
+    // Covers Dawn, Debut, Brooklyn, Craft, Impulse, and most paid themes
+    var selectors = [
+      '.cart-count-bubble span[aria-hidden]',
+      '.cart-count-bubble',
+      '[data-cart-count]',
+      '.cart__count',
+      '.cart-item-count',
+      '#CartCount',
+      '.cart_count',
+      'a[href="/cart"] .count',
+      '.header__cart-count',
+      '.site-header__cart-count',
+      '.cart-link__bubble-num'
+    ];
+    selectors.forEach(function(sel) {
+      document.querySelectorAll(sel).forEach(function(el) {
+        el.textContent = count;
+      });
+    });
+    // Bubble visibility for Dawn theme
+    var bubble = document.querySelector('.cart-count-bubble');
+    if (bubble) {
+      bubble.classList.toggle('hidden', count === 0);
+    }
+    // Dispatch event so custom theme JS can react
+    document.dispatchEvent(new CustomEvent('jfy:cart:updated', { detail: { count: count } }));
+  }
+
+  window.jfyAddToCart = function(btn) {
+    var variantId = parseInt(btn.getAttribute('data-variant-id'), 10);
+    var title     = btn.getAttribute('data-product-title') || 'Item';
+    if (!variantId) return;
+
+    var iconSVG =
+      '<svg class="jfy-btn-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+        '<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>' +
+        '<line x1="3" y1="6" x2="21" y2="6"/>' +
+        '<path d="M16 10a4 4 0 01-8 0"/>' +
+      '</svg>';
+
+    // Loading state
+    btn.classList.add('jfy-card__atc-btn--loading');
+    btn.innerHTML = '<span class="jfy-spinner"></span><span class="jfy-btn-text">Adding...</span>';
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({ id: variantId, quantity: 1 })
+    })
+    .then(function(res) {
+      if (!res.ok) {
+        return res.json().then(function(data) {
+          throw new Error(data.description || 'Could not add to cart');
+        });
+      }
+      return res.json();
+    })
+    .then(function() {
+      // Fetch fresh cart for accurate count
+      return fetch('/cart.js', { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(cart) {
+      jfyUpdateCartCount(cart.item_count);
+
+      // Success state
+      btn.classList.remove('jfy-card__atc-btn--loading');
+      btn.classList.add('jfy-card__atc-btn--success');
+      btn.innerHTML =
+        '<svg class="jfy-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">' +
+          '<polyline points="20 6 9 17 4 12"/>' +
+        '</svg>' +
+        '<span class="jfy-btn-text">Added!</span>';
+
+      jfyShowToast('\u2713 ' + title + ' added to cart');
+
+      // Reset after 2.5s
+      setTimeout(function() {
+        btn.classList.remove('jfy-card__atc-btn--success');
+        btn.innerHTML = iconSVG + '<span class="jfy-btn-text">Add to Cart</span>';
+      }, 2500);
+    })
+    .catch(function(err) {
+      btn.classList.remove('jfy-card__atc-btn--loading');
+      btn.innerHTML = iconSVG + '<span class="jfy-btn-text">Add to Cart</span>';
+      jfyShowToast(err.message || 'Error adding to cart', true);
+    });
+  };
+
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Just For You",
+  "tag": "section",
+  "class": "just-for-you-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "Just For You"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection to Display"
+    },
+    {
+      "type": "range",
+      "id": "products_count",
+      "label": "Number of Products",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "show_add_to_cart",
+      "label": "Show Add to Cart Button",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show View All Button",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Just For You",
+      "category": "Product Grid"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,122 @@
+<div class="bulb-wrap" aria-hidden="true">
+
+  <style>
+    .bulb-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 0 auto 36px;
+      position: relative;
+    }
+    .bulb-svg { overflow: visible; }
+
+    /* Smoke wisps */
+    @keyframes smoke-rise {
+      0%   { opacity: 0;   transform: translateY(0)   scaleX(1); }
+      20%  { opacity: 0.5; }
+      80%  { opacity: 0.2; transform: translateY(-22px) scaleX(1.4); }
+      100% { opacity: 0;   transform: translateY(-30px) scaleX(1.6); }
+    }
+    .smoke { animation: smoke-rise 2.8s ease-out infinite; transform-origin: bottom center; }
+    .sm1  { animation-delay: 0s;    transform-origin: 58px 88px; }
+    .sm2  { animation-delay: 0.9s;  transform-origin: 64px 84px; }
+    .sm3  { animation-delay: 1.6s;  transform-origin: 56px 86px; }
+
+    /* Spark pop at break point */
+    @keyframes spark-pop {
+      0%,85%  { opacity: 0; transform: translate(0,0) scale(0); }
+      88%     { opacity: 1; transform: translate(var(--tx), var(--ty)) scale(1); }
+      96%     { opacity: 0.6; }
+      100%    { opacity: 0; transform: translate(var(--tx2), var(--ty2)) scale(0.2); }
+    }
+    .spark { animation: spark-pop 2.8s ease-out infinite; opacity: 0; }
+    .sp1 { --tx:-7px; --ty:-5px; --tx2:-12px; --ty2:-10px; animation-delay:0s; }
+    .sp2 { --tx: 7px; --ty:-4px; --tx2: 13px; --ty2:-9px;  animation-delay:0.04s; }
+    .sp3 { --tx:-4px; --ty: 5px; --tx2:-8px;  --ty2: 10px; animation-delay:0.08s; }
+    .sp4 { --tx: 5px; --ty: 6px; --tx2: 9px;  --ty2: 11px; animation-delay:0.02s; }
+
+    /* Faint glow pulse behind bulb */
+    @keyframes glow-breathe {
+      0%,100% { opacity: 0.15; r: 38px; }
+      50%     { opacity: 0.28; r: 44px; }
+    }
+    .bulb-glow { animation: glow-breathe 3s ease-in-out infinite; }
+  </style>
+
+  <svg class="bulb-svg" viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg" width="120" height="200">
+    <defs>
+      <!-- Blackened burnt glass gradient -->
+      <radialGradient id="burnGrad" cx="42%" cy="32%" r="62%">
+        <stop offset="0%"   stop-color="#5a4a3a"/>
+        <stop offset="45%"  stop-color="#2e2218"/>
+        <stop offset="100%" stop-color="#1a1208"/>
+      </radialGradient>
+      <!-- Glass glint -->
+      <linearGradient id="glintGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%"  stop-color="rgba(255,255,255,0.18)"/>
+        <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+      </linearGradient>
+      <!-- Smoke gradient -->
+      <radialGradient id="smokeGrad" cx="50%" cy="80%" r="50%">
+        <stop offset="0%"   stop-color="#888" stop-opacity="0.5"/>
+        <stop offset="100%" stop-color="#aaa" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+
+    <!-- Soft amber glow circle behind bulb -->
+    <circle class="bulb-glow" cx="60" cy="66" r="40" fill="rgba(200,120,20,0.18)"/>
+
+    <!-- ── BULB GLASS (dark/burnt) ── -->
+    <path d="M60 14 C33 14 15 36 15 61 C15 80 27 95 41 106 L41 124 C41 129 45 133 50 133 L70 133 C75 133 79 129 79 124 L79 106 C93 95 105 80 105 61 C105 36 87 14 60 14 Z"
+      fill="url(#burnGrad)" stroke="#3a2e20" stroke-width="1.5"/>
+
+    <!-- Glass glint overlay (gives it a glass feel even when dark) -->
+    <path d="M60 14 C33 14 15 36 15 61 C15 80 27 95 41 106 L41 124 C41 129 45 133 50 133 L70 133 C75 133 79 129 79 124 L79 106 C93 95 105 80 105 61 C105 36 87 14 60 14 Z"
+      fill="url(#glintGrad)" opacity="0.7"/>
+
+    <!-- Left-side shine streak -->
+    <path d="M34 34 C30 46 29 60 34 72" stroke="rgba(255,255,255,0.12)" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+    <!-- ── VISIBLE CRACK (diagonal, clear) ── -->
+    <path d="M52 40 L62 54 L56 62 L67 78" stroke="#6b5030" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Crack branch -->
+    <path d="M62 54 L72 50" stroke="#6b5030" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+
+    <!-- ── BROKEN FILAMENT ── -->
+    <!-- Left half — drooping down-left -->
+    <path d="M50 118 L52 104 L55 110 L58 96" stroke="#c8a060" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Right half — drooping down-right -->
+    <path d="M62 96 L65 110 L68 104 L70 118" stroke="#c8a060" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- GAP at break — clear empty space at 60,96 with a tiny bright char dot -->
+    <circle cx="60" cy="96" r="2.5" fill="#ff8c00" opacity="0.9"/>
+    <circle cx="60" cy="96" r="1.2" fill="#ffdd88"/>
+
+    <!-- Filament support wires -->
+    <line x1="52" y1="118" x2="52" y2="124" stroke="#a08040" stroke-width="1.3"/>
+    <line x1="68" y1="118" x2="68" y2="124" stroke="#a08040" stroke-width="1.3"/>
+
+    <!-- ── SMOKE WISPS rising from break ── -->
+    <ellipse class="smoke sm1" cx="58" cy="88" rx="3" ry="5" fill="url(#smokeGrad)"/>
+    <ellipse class="smoke sm2" cx="64" cy="84" rx="2.5" ry="4.5" fill="url(#smokeGrad)"/>
+    <ellipse class="smoke sm3" cx="56" cy="86" rx="2" ry="4" fill="url(#smokeGrad)"/>
+
+    <!-- ── SPARKS at break point ── -->
+    <circle class="spark sp1" cx="58" cy="96" r="2"   fill="#ff8c00"/>
+    <circle class="spark sp2" cx="62" cy="96" r="1.8" fill="#ffcc44"/>
+    <circle class="spark sp3" cx="59" cy="97" r="1.5" fill="#ff8c00"/>
+    <circle class="spark sp4" cx="61" cy="95" r="1.5" fill="#ffcc44"/>
+
+    <!-- ── BASE segments ── -->
+    <rect x="46" y="133" width="28" height="7"  rx="2" fill="#c8bca8"/>
+    <rect x="48" y="140" width="24" height="7"  rx="2" fill="#bbb0a0"/>
+    <rect x="50" y="147" width="20" height="7"  rx="2" fill="#afa498"/>
+    <rect x="52" y="154" width="16" height="5"  rx="2" fill="#a09080"/>
+    <!-- Screw thread lines on base -->
+    <line x1="47" y1="136" x2="73" y2="136" stroke="rgba(0,0,0,0.08)" stroke-width="0.8"/>
+    <line x1="49" y1="143" x2="71" y2="143" stroke="rgba(0,0,0,0.08)" stroke-width="0.8"/>
+    <line x1="51" y1="150" x2="69" y2="150" stroke="rgba(0,0,0,0.08)" stroke-width="0.8"/>
+
+    <!-- X mark overlay on glass — unmistakable "broken/off" signal -->
+    <line x1="44" y1="44" x2="54" y2="56" stroke="rgba(255,100,60,0.55)" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="54" y1="44" x2="44" y2="56" stroke="rgba(255,100,60,0.55)" stroke-width="2.5" stroke-linecap="round"/>
+  </svg>
+</div>

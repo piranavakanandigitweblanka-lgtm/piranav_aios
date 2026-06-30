@@ -1,0 +1,262 @@
+{{ 'featured-promotion.css' | asset_url | stylesheet_tag }}
+
+
+<style>
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.mobile_padding_top }}px;
+    padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+  .section-{{ section.id }}-padding.shipping__style3{
+    margin-bottom: -{{ section.settings.margin }}px;
+  }
+    
+   
+</style>
+
+<div class="shipping__section2 section-{{ section.id }}-padding  shipping__style3">
+  <div class="container">
+    <div class="shipping__section2--inner shipping__style3--inner d-flex justify-content-between color-{{ section.settings.color_scheme }}">
+      
+      {%- for block in section.blocks -%}
+      {%- case block.type -%}
+      {%- when 'featured_promotion' -%}
+      <div class="shipping__items2 d-flex align-items-center" {{ block.shopify_attributes }}>
+        <div class="{% if block.settings.icon_type == "icon" %}shipping__items--icon {% else %} shipping__items2--icon {% endif %} mb-0">
+          {%- if block.settings.icon_type == "icon" -%}
+          {%- render 'icon-featured-promotion', icon: block.settings.icon -%}
+          {%- else -%}
+          {%- if block.settings.image -%}
+          <img
+               src="{{ block.settings.image | img_url: '50x' }}"
+               alt="{{ block.settings.image.alt | escape }}"
+               width="50"
+               height="{{ 50 | divided_by: block.settings.image.aspect_ratio | ceil }}"
+               loading="lazy"
+               >
+          {%- endif -%}
+          {%- endif -%}
+        </div>
+        <div class="shipping__items2--content">
+          <h2 class="shipping__items2--content__title h3">{{ block.settings.heading }}</h2>
+          <p class="shipping__items2--content__desc">{{ block.settings.subheading }}</p>
+        </div>
+      </div>
+      {%- endcase -%}
+      {%- endfor -%}
+      
+    </div>
+  </div>
+</div>
+
+
+{% schema %}
+  {
+    "name": "Featured promotion two",
+    "settings": [
+	   {
+        "type": "header",
+        "content": "Section margin"
+      },
+	  {
+            "type": "range",
+            "id": "margin",
+            "min": 0,
+            "max": 150,
+            "step": 5,
+            "unit": "px",
+            "label": "Margin bottom minus value",
+            "default": 0
+          },
+	   {
+          "type": "select",
+          "id": "color_scheme",
+          "options": [
+            {
+              "value": "accent-1",
+              "label": "t:sections.header.settings.color_scheme.options__1.label"
+            },
+            {
+              "value": "accent-2",
+              "label": "t:sections.header.settings.color_scheme.options__2.label"
+            },
+            {
+              "value": "background-1",
+              "label": "t:sections.header.settings.color_scheme.options__3.label"
+            },
+            {
+              "value": "background-2",
+              "label": "t:sections.header.settings.color_scheme.options__4.label"
+            },
+            {
+              "value": "inverse",
+              "label": "t:sections.header.settings.color_scheme.options__5.label"
+            }
+          ],
+          "default": "background-1",
+          "label": "t:sections.header.settings.color_scheme.label"
+        },
+	  {
+        "type": "header",
+        "content": "Section padding"
+      },
+      {
+            "type": "paragraph",
+            "content": "Desktop"
+          },
+          {
+            "type": "range",
+            "id": "padding_top",
+            "min": 0,
+            "max": 150,
+            "step": 5,
+            "unit": "px",
+            "label": "Padding top",
+            "default": 0
+          },
+          {
+            "type": "range",
+            "id": "padding_bottom",
+            "min": 0,
+            "max": 150,
+            "step": 5,
+            "unit": "px",
+            "label": "Padding bottom",
+            "default": 0
+          },
+          {
+            "type": "paragraph",
+            "content": "Mobile"
+          },
+          {
+            "type": "range",
+            "id": "mobile_padding_top",
+            "min": 0,
+            "max": 150,
+            "step": 5,
+            "unit": "px",
+            "label": "Padding top",
+            "default": 0
+          },
+          {
+            "type": "range",
+            "id": "mobile_padding_bottom",
+            "min": 0,
+            "max": 150,
+            "step": 5,
+            "unit": "px",
+            "label": "Padding bottom",
+            "default": 0
+          }
+	],
+    "blocks": [
+      {
+        "type": "featured_promotion",
+        "name": "Featured promotion",
+        "settings": [
+          {
+            "type": "text",
+            "id": "heading",
+            "default": "Heading",
+            "label": "Heading"
+          },
+		  {
+            "type": "text",
+            "id": "subheading",
+            "default": "subheading promotion",
+            "label": "Subheading"
+          },
+		  {
+            "type": "select",
+            "id": "icon_type",
+            "options": [
+              {
+                "value": "icon",
+                "label": "Icon "
+              },
+              {
+                "value": "image",
+                "label": "Image"
+              }
+            ],
+            "default": "icon",
+            "label": "Icon type"
+          },
+		  {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image icon"
+          },
+		  {
+            "type": "select",
+            "id": "icon",
+            "options": [
+              {
+                "value": "truck",
+                "label": "Truck"
+              },
+              {
+                "value": "return",
+                "label": "Return"
+              },
+              {
+                "value": "payment",
+                "label": "Payment"
+              },
+              {
+                "value": "gift",
+                "label": "Payment"
+              }
+            ],
+            "default": "truck",
+            "label": "Icon"
+          }
+        ]
+      }
+    ],
+	"presets": [
+      {
+        "name": "Featured promotion two",
+		"blocks":[
+            {
+                "type": "featured_promotion",
+				"settings":{
+                     "heading":"Free Shipping",
+					 "subheading":"On all orders over $75.00",
+					 "icon": "truck"
+                }
+            },
+			{
+                "type": "featured_promotion",
+				"settings":{
+                     "heading":"Free Returns",
+					 "subheading":"On all orders over $75.00",
+					 "icon": "return"
+                }
+            },
+			{
+                "type": "featured_promotion",
+				"settings":{
+                     "heading":"Secure Payment",
+					 "subheading":"On all orders over $75.00",
+					 "icon": "payment"
+                }
+            },
+			{
+                "type": "featured_promotion",
+				"settings":{
+                     "heading":"Gift Service",
+					 "subheading":"On all orders over $75.00",
+					 "icon": "gift"
+                }
+            }
+          ]
+      }
+    ]
+  }
+{% endschema %}

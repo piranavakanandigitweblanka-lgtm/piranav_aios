@@ -1,0 +1,431 @@
+{% comment %}
+  Featured Products Slider Section
+  Replicates the horizontal product card layout with a slider.
+{% endcomment %}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .featured-products-slider {
+    max-width: 1440px; /* Widened to comfortably fit 4 cards */
+    margin: 0 auto;
+    padding: 0 40px; /* Extra padding for arrows */
+    position: relative;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .fps-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .fps-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #0b2545; /* Dark navy */
+  }
+
+  .fps-view-all {
+    text-decoration: none;
+    color: #0d6efd;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+  }
+
+  .fps-view-all:hover {
+    text-decoration: underline;
+  }
+
+  /* Swiper Container */
+  .fps-swiper {
+    overflow: hidden;
+    position: relative;
+    padding-bottom: 45px !important;
+  }
+
+  .fps-product-card {
+    background: #fff;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    display: flex !important;
+    padding: 10px;
+    height: 100%;
+    box-sizing: border-box;
+    transition: box-shadow 0.3s ease;
+    position: relative;
+    gap: 10px;
+  }
+
+  .fps-product-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .fps-card-image-wrapper {
+    flex: 0 0 35%;
+    max-width: 35%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fps-card-image-wrapper img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .fps-card-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .fps-wishlist-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: #a0a0a0;
+    transition: color 0.2s;
+  }
+
+  .fps-wishlist-btn:hover {
+    color: #0d6efd;
+  }
+
+  .fps-product-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: #0b2545;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-height: calc(13px * 1.4 * 2);
+    min-height: 0;
+  }
+
+  .fps-sku {
+    font-size: 10px;
+    color: #777;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .fps-price-wrapper {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  .fps-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0b2545;
+  }
+
+  .fps-price-suffix {
+    font-size: 11px;
+    color: #666;
+  }
+
+  .fps-add-to-cart {
+    background-color: #0d6efd; /* Bright blue from screenshot */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    /* padding: 10px 12px; */
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    transition: background 0.2s;
+  }
+
+  .fps-add-to-cart:hover {
+    background-color: #0b5ed7;
+  }
+
+  /* Navigation Buttons */
+  .fps-nav-prev, .fps-nav-next {
+    position: absolute;
+    top: calc(50% - 20px);
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    background: #fff;
+    border: 1px solid #eaeaea;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    color: #333;
+  }
+
+  .fps-nav-prev { left: 0; }
+  .fps-nav-next { right: 0; }
+
+  .fps-nav-prev:after, .fps-nav-next:after {
+    font-size: 14px !important;
+    font-weight: bold;
+  }
+
+  /* Pagination Dots */
+  .fps-pagination {
+    bottom: 0 !important;
+  }
+
+  .swiper-pagination-bullet {
+    width: 6px !important;
+    height: 6px !important;
+    background: #d0d0d0 !important;
+    opacity: 1 !important;
+  }
+
+  .swiper-pagination-bullet-active {
+    background: #0d6efd !important;
+    width: 16px !important;
+    border-radius: 4px !important;
+  }
+
+  @media screen and (max-width: 749px) {
+    .featured-products-slider { padding: 0 35px; } /* Space for arrows on mobile */
+    .fps-nav-prev { left: 0; }
+    .fps-nav-next { right: 0; }
+    .fps-product-card { padding: 8px; gap: 8px; }
+    .fps-price { font-size: 16px; }
+    .fps-title { font-size: 18px; }
+    .fps-view-all-text { display: none; } /* Show only arrow or shorter text on mobile if desired */
+  }
+{%- endstyle -%}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+<div class="featured-products-slider section-{{ section.id }}-padding">
+  <div class="fps-header">
+    <h2 class="fps-title">{{ section.settings.title }}</h2>
+    {%- if section.settings.collection != blank -%}
+      <a href="{{ section.settings.collection.url }}" class="fps-view-all">
+        <span class="fps-view-all-text">View all products</span>
+        <span class="fps-view-all-mobile" style="display: none;">View all</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </a>
+    {%- endif -%}
+  </div>
+
+  <div class="swiper fps-swiper">
+    <div class="swiper-wrapper">
+      {%- assign collection = section.settings.collection -%}
+      {%- if collection != blank -%}
+        {%- for product in collection.products limit: section.settings.products_to_show -%}
+          <div class="swiper-slide">
+            <div class="fps-product-card">
+              <button class="fps-wishlist-btn" aria-label="Add to wishlist">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              </button>
+              
+              <div class="fps-card-image-wrapper">
+                <a href="{{ product.url }}">
+                  <img 
+                    src="{{ product.featured_media | image_url: width: 300 }}" 
+                    alt="{{ product.title | escape }}"
+                    loading="lazy"
+                    width="150"
+                    height="150"
+                  >
+                </a>
+              </div>
+
+              <div class="fps-card-info">
+                <div>
+                  <h3 class="fps-product-title">
+                    <a href="{{ product.url }}" style="text-decoration: none; color: inherit;">{{ product.title }}</a>
+                  </h3>
+                  <div class="fps-sku">
+                    SKU: {{ product.selected_or_first_available_variant.sku | default: 'N/A' }}
+                  </div>
+                </div>
+
+                <div>
+                  <div class="fps-price-wrapper">
+                    <span class="fps-price">{{ product.price | money }}</span>
+                    <span class="fps-price-suffix">/ each</span>
+                  </div>
+
+                  <form method="post" action="/cart/add" style="margin: 0;">
+                    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                    <button type="submit" class="fps-add-to-cart">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                      Add to Cart
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for i in (1..4) -%}
+          <div class="swiper-slide">
+            <div class="fps-product-card">
+              <button class="fps-wishlist-btn" aria-label="Add to wishlist">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              </button>
+              <div class="fps-card-image-wrapper">
+                {{ 'product-' | append: i | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+              <div class="fps-card-info">
+                <div>
+                  <h3 class="fps-product-title">LED Filament GLS Bulb E27 8W 2700K</h3>
+                  <div class="fps-sku">SKU: LED-GLS-E27-8W</div>
+                </div>
+                <div>
+                  <div class="fps-price-wrapper">
+                    <span class="fps-price">£2.45</span>
+                    <span class="fps-price-suffix">/ each</span>
+                  </div>
+                  <button class="fps-add-to-cart">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+    
+    <div class="fps-pagination swiper-pagination"></div>
+  </div>
+
+  <div class="fps-nav-prev swiper-button-prev"></div>
+  <div class="fps-nav-next swiper-button-next"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const swiper = new Swiper('.fps-swiper', {
+      slidesPerView: 1,
+      spaceBetween: 15,
+      pagination: {
+        el: '.fps-pagination',
+        clickable: true,
+      },
+      navigation: {
+        nextEl: '.fps-nav-next',
+        prevEl: '.fps-nav-prev',
+      },
+      breakpoints: {
+        640: {
+          slidesPerView: 2,
+          spaceBetween: 15,
+        },
+        800: {
+          slidesPerView: 3,
+          spaceBetween: 20,
+        },
+        1024: {
+          slidesPerView: 4,
+          spaceBetween: 20,
+        }
+      }
+    });
+
+    // Fix for dynamic text on mobile view
+    if(window.innerWidth < 750) {
+      document.querySelectorAll('.fps-view-all-text').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.fps-view-all-mobile').forEach(el => el.style.display = 'inline');
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Featured Products Slider",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Featured Products"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 8,
+      "label": "Products to show"
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Products Slider"
+    }
+  ]
+}
+{% endschema %}

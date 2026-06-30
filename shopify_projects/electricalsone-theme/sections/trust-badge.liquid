@@ -1,0 +1,188 @@
+{%- style -%}
+  .trust-badges-section {
+    background-color: #f5f5f5;
+    padding: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 1665px;
+    height: 77.28px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+
+  .trust-badges-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1365px;
+    width: 100%;
+    height: 40.28px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .trust-badge-block {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    white-space: nowrap;
+  }
+
+  .trust-badge-block img {
+    width: 157px;
+    height: 44px;
+    object-fit: contain;
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 767px) {
+    .trust-badges-section {
+      height: auto;
+      padding: 15px 0;
+    }
+
+    .trust-badges-content {
+      flex-direction: column;
+      height: auto;
+      gap: 15px;
+      padding: 0 15px;
+      align-items: center;
+    }
+
+    .trust-badge-block {
+      font-size: 13px;
+      justify-content: center;
+      text-align: center;
+      flex-direction: column;
+      gap: 8px;
+      white-space: normal;
+    }
+
+    .trust-badge-block img {
+      width: auto;
+      height: 36px;
+      max-width: 100%;
+    }
+
+    {% unless section.settings.show_on_mobile %}
+      .trust-badges-section {
+        display: none;
+      }
+    {% endunless %}
+  }
+
+  /* Tablet Responsiveness */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .trust-badges-content {
+      gap: 15px;
+      padding: 0 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .trust-badge-block {
+      font-size: 13px;
+    }
+  }
+
+  /* Desktop Responsiveness */
+  @media (min-width: 1024px) {
+    {% unless section.settings.show_on_desktop %}
+      .trust-badges-section {
+        display: none;
+      }
+    {% endunless %}
+  }
+{%- endstyle -%}
+
+{% if section.settings.show_on_desktop or section.settings.show_on_mobile %}
+  <section class="trust-badges-section">
+    <div class="trust-badges-content">
+      {% for block in section.blocks %}
+        <div class="trust-badge-block" {{ block.shopify_attributes }}>
+          {% if block.settings.image %}
+            <img src="{{ block.settings.image | img_url: '24x24' }}" alt="{{ block.settings.text | escape }}" loading="lazy" width="24" height="24">
+          {% endif %}
+          <span>{{ block.settings.text }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Trust Badges",
+  "tag": "section",
+  "class": "trust-badges-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_on_desktop",
+      "label": "Show on desktop",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_mobile",
+      "label": "Show on mobile",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "badge",
+      "name": "Badge",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Icon"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Badge Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trust Badges",
+      "blocks": [
+        {
+          "type": "badge",
+          "settings": {
+            "text": "Rated 4.5* 1000s Happy Customers"
+          }
+        },
+        {
+          "type": "badge",
+          "settings": {
+            "text": "PayPal Accepted The Safe, Easy Way to Pay Online Couhef"
+          }
+        },
+        {
+          "type": "badge",
+          "settings": {
+            "text": "Google & Apple Pay With Your Digital Wallet hts"
+          }
+        },
+        {
+          "type": "badge",
+          "settings": {
+            "text": "Est. 2010 UK Pioneer of EBD Lights"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

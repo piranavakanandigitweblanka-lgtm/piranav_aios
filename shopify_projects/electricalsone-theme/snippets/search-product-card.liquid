@@ -1,0 +1,98 @@
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign product_available = product.available
+  assign on_sale = false
+  if product.compare_at_price > product.price and product_available
+    assign on_sale = true
+  endif
+-%}
+
+<article class="srp-card" aria-label="{{ product.title | escape }}">
+
+  <a href="{{ product.url }}" class="srp-card__media-link" tabindex="-1" aria-hidden="true">
+    <div class="srp-card__media">
+      {%- if product.featured_image -%}
+        <img
+          src="{{ product.featured_image | image_url: width: 400 }}"
+          srcset="
+            {{ product.featured_image | image_url: width: 200 }} 200w,
+            {{ product.featured_image | image_url: width: 400 }} 400w,
+            {{ product.featured_image | image_url: width: 600 }} 600w
+          "
+          sizes="(max-width: 767px) calc(50vw - 24px),
+                 (max-width: 989px) calc(33vw - 24px),
+                 calc(25vw - 28px)"
+          alt="{{ product.featured_image.alt | default: product.title | escape }}"
+          loading="lazy"
+          width="{{ product.featured_image.width }}"
+          height="{{ product.featured_image.height }}"
+          class="srp-card__img"
+        >
+      {%- else -%}
+        <div class="srp-card__img-placeholder">
+          {{ 'product-1' | placeholder_svg_tag }}
+        </div>
+      {%- endif -%}
+      {%- if on_sale -%}
+        <span class="srp-card__badge" aria-label="On sale">Sale</span>
+      {%- endif -%}
+    </div>
+  </a>
+
+  <div class="srp-card__body">
+    <h3 class="srp-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+
+    <div class="srp-card__footer">
+
+      <div class="srp-card__price">
+        {%- if on_sale -%}
+          <span class="srp-card__price--sale">{{ product.price | money }}</span>
+          <span class="srp-card__price--compare"><s>{{ product.compare_at_price | money }}</s></span>
+        {%- else -%}
+          <span class="srp-card__price--regular">{{ product.price | money }}</span>
+        {%- endif -%}
+      </div>
+
+      <div class="srp-card__stock">
+        {%- if product_available -%}
+          <span class="srp-card__stock--in">&#10003; In Stock</span>
+        {%- else -%}
+          <span class="srp-card__stock--out">Out of Stock</span>
+        {%- endif -%}
+      </div>
+
+      {%- if product.has_only_default_variant -%}
+        <product-form>
+          <form action="/cart/add" method="post" enctype="multipart/form-data" data-type="add-to-cart-form">
+            <input type="hidden" name="id" value="{{ variant.id }}">
+            <button
+              type="submit"
+              name="add"
+              class="srp-card__atc"
+              aria-label="{% if product_available %}{{ 'products.product.add_to_cart' | t }}: {{ product.title | escape }}{% else %}{{ 'products.product.sold_out' | t }}: {{ product.title | escape }}{% endif %}"
+              {% unless product_available %}disabled{% endunless %}
+            >
+              {%- if product_available -%}
+                {{ 'products.product.add_to_cart' | t }}
+              {%- else -%}
+                {{ 'products.product.sold_out' | t }}
+              {%- endif -%}
+            </button>
+          </form>
+        </product-form>
+      {%- else -%}
+        <a
+          href="{{ product.url }}"
+          class="srp-card__atc srp-card__atc--options"
+          aria-label="{{ 'products.product.select_options' | t }}: {{ product.title | escape }}"
+        >
+          {{ 'products.product.select_options' | t }}
+        </a>
+      {%- endif -%}
+
+    </div>
+  </div>
+
+</article>

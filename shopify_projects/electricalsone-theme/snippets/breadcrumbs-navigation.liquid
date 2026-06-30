@@ -1,0 +1,280 @@
+{% comment %} <nav class="breadcrumbs" aria-label="Breadcrumb">
+  <ol class="breadcrumbs__list">
+    <li class="breadcrumbs__item">
+      <a href="{{ routes.root_url }}">Home</a>
+    </li>
+
+    {% if template.name == 'collection' %}
+      <li class="breadcrumbs__item" aria-current="page">
+        {{ collection.title }}
+      </li>
+
+    {% elsif template.name == 'product' %}
+      {% if collection %}
+        <li class="breadcrumbs__item">
+          <a href="{{ collection.url }}">{{ collection.title }}</a>
+        </li>
+      {% endif %}
+      <li class="breadcrumbs__item" aria-current="page">
+        {{ product.title }}
+      </li>
+
+    {% elsif template.name == 'page' %}
+      <li class="breadcrumbs__item" aria-current="page">
+        {{ page.title }}
+      </li>
+    {% endif %}
+  </ol>
+</nav>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "{{ shop.url }}"
+    }
+    {% if collection %}
+    ,{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ collection.title }}",
+      "item": "{{ shop.url }}{{ collection.url }}"
+    }
+    {% endif %}
+    ,{
+      "@type": "ListItem",
+      "position": 3,
+      "name": "{{ page_title }}",
+      "item": "{{ canonical_url }}"
+    }
+  ]
+}
+</script>
+<style>
+    .breadcrumbs {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.breadcrumbs__list {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+}
+
+.breadcrumbs__item::after {
+  content: "›";
+  margin-left: 8px;
+}
+
+.breadcrumbs__item:last-child::after {
+  content: "";
+}
+
+.breadcrumbs a {
+  color: #1a73e8;
+  text-decoration: none;
+}
+
+.breadcrumbs [aria-current="page"] {
+  color: #555;
+  font-weight: 500;
+}
+
+</style> {% endcomment %}
+
+{% if template != 'index' %}
+
+<nav class="breadcrumb-wrapper" aria-label="Breadcrumb">
+  <ol class="breadcrumb-list">
+
+    <!-- Home -->
+    <li>
+      <a href="{{ routes.root_url }}">Home</a>
+    </li>
+
+    {% if template contains 'collection' %}
+
+      <li>›</li>
+      <li>
+        <span>{{ collection.title }}</span>
+      </li>
+
+    {% elsif template contains 'product' %}
+
+  {% assign breadcrumb_collection = collection %}
+
+  {% if breadcrumb_collection == nil and product.collections.size > 0 %}
+    {% assign breadcrumb_collection = product.collections.first %}
+  {% endif %}
+
+  {% if breadcrumb_collection %}
+    <li>›</li>
+    <li>
+      <a href="{{ breadcrumb_collection.url }}">
+        {{ breadcrumb_collection.title }}
+      </a>
+    </li>
+  {% endif %}
+
+  <li>›</li>
+  <li>
+    <span>{{ product.title }}</span>
+  </li>
+
+
+    {% elsif template contains 'page' %}
+
+      <li>›</li>
+      <li>
+        <span>{{ page.title }}</span>
+      </li>
+
+    {% endif %}
+
+  </ol>
+</nav>
+
+{% endif %}
+{% if template contains 'product' %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "{{ shop.url }}"
+    }
+
+    {% assign schema_collection = collection %}
+
+    {% if schema_collection == nil and product.collections.size > 0 %}
+      {% assign schema_collection = product.collections.first %}
+    {% endif %}
+
+    {% if schema_collection %}
+    ,
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ schema_collection.title | escape }}",
+      "item": "{{ shop.url }}{{ schema_collection.url }}"
+    }
+    {% endif %}
+    ,
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "{{ product.title | escape }}",
+      "item": "{{ canonical_url }}"
+    }
+
+  ]
+}
+</script>
+
+{% elsif template contains 'collection' %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "{{ shop.url }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ collection.title | escape }}",
+      "item": "{{ canonical_url }}"
+    }
+
+  ]
+}
+</script>
+
+{% elsif template contains 'page' %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "{{ shop.url }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ page.title | escape }}",
+      "item": "{{ canonical_url }}"
+    }
+
+  ]
+}
+</script>
+
+{% endif %}
+
+<style>
+  /* Breadcrumb Styling */
+
+.breadcrumb-wrapper {
+  max-width: 1200px;
+  margin: 15px auto;
+  padding: 0 15px;
+  font-size: 14px;
+}
+
+.breadcrumb-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.breadcrumb-list li {
+  color: #666;
+}
+
+.breadcrumb-list a {
+  color: #222;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.breadcrumb-list a:hover {
+  color: #007aff;
+  text-decoration: underline;
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+  .breadcrumb-wrapper {
+    font-size: 13px;
+  }
+}
+
+  </style>

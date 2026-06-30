@@ -1,0 +1,197 @@
+{%- if section.settings.announcement_enable and section.blocks.size >= 1 -%}
+{{ 'announcement-bar.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'announcement-bar.js' | asset_url }}" defer="defer"></script>
+<div class="announcement__wrapper" data-section-id="{{ section.id }}" data-section-type="announcement_bar">
+  {%- for block in section.blocks -%}
+  {%- case block.type -%}
+  {%- when 'announcement' -%}
+  {%- liquid
+        assign page = false 
+
+        unless request.page_type == "index"
+        assign page = block.settings.index
+        endunless
+        
+         if request.page_type == "index"
+         assign page = block.settings.no_index
+         endif
+    -%}
+  {%- unless page == true -%}
+  <announcement-bar>
+    <div class="announcement-bar color-{{ block.settings.color_scheme }} {% if block.settings.link == blank %}py-1{% endif %}" role="region" aria-label="{{ 'sections.header.announcement' | t }}" {{ block.shopify_attributes }}>
+      {%- if block.settings.text != blank -%}
+      {%- if block.settings.link != blank -%}
+      <a href="{{ block.settings.link }}" class="announcement-bar__link link--text focus-inset animate-arrow">
+        {%- endif -%}
+        <p class="announcement-bar__message h4">
+          <span class="announcement__text_inner">
+            {% if block.settings.image != blank %}
+            <img class="cart-notification-product__image"
+                 src="{{ block.settings.image | img_url: '50x' }}"
+                 alt="{{ block.settings.image.alt | escape }}"
+                 width="35"
+                 height="{{ 35 | divided_by: block.settings.image.aspect_ratio | ceil }}"
+                 loading="lazy"
+                 >
+            {% endif %}
+            {{ block.settings.text | escape }}
+            {%- if block.settings.link != blank -%}
+            {% render 'icon-arrow', icon_class: "button__icon--arrow_svg" %}
+            {%- endif -%}
+          </span>
+        </p>
+        {%- if block.settings.link != blank -%}
+      </a>
+      {%- endif -%}
+      {%- endif -%}
+      {%- if block.settings.enable_close_btn -%}
+      <button type="button" class="close__announcement--bar modal__close-button link">
+        {%- render 'icon-close' -%}
+      </button>
+      {%- endif -%}
+    </div>
+  </announcement-bar>
+  {%- endunless -%}
+  {%- endcase -%}
+  {%- endfor -%}
+</div>
+<style>
+  .announcement-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  button.close__announcement--bar {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 9;
+  }
+  button.close__announcement--bar.modal__close-button.link {
+    width: 60px;
+    height: 42px;
+  }
+  .announcement__image {
+    line-height: 1;
+  }
+  #shopify-section-announcement-bar {
+    z-index: 4;
+  }
+  .announcement__icon--arrow{
+    width: 3.5rem;
+  }
+  .button__icon--arrow_svg{
+    max-width: 2.5rem;
+  }
+  .announcement-bar {
+    border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
+      color: rgb(var(--color-foreground));
+        }
+
+  .announcement-bar__message {
+    text-align: center;
+    padding: 0 10px;
+    margin: 0;
+  }
+  @media only screen and (min-width: 750px){
+    .announcement-bar__message {
+      padding: 0 30px;
+    }
+  }
+
+</style>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.announcement-bar.name",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "announcement_enable",
+      "label": "Show announcement",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "t:sections.announcement-bar.blocks.announcement.name",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "index",
+          "label": "Show on home page only",
+          "default": true
+        },
+		{
+          "type": "checkbox",
+          "id": "no_index",
+          "label": "Hide on home page only",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "color_scheme",
+          "options": [
+              {
+                "value": "background-1",
+                "label": "t:sections.announcement-bar.blocks.announcement.settings.color_scheme.options__1.label"
+              },
+              {
+                "value": "background-2",
+                "label": "t:sections.announcement-bar.blocks.announcement.settings.color_scheme.options__2.label"
+              },
+              {
+                "value": "inverse",
+                "label": "t:sections.announcement-bar.blocks.announcement.settings.color_scheme.options__3.label"
+              },
+              {
+                "value": "accent-1",
+                "label": "t:sections.announcement-bar.blocks.announcement.settings.color_scheme.options__4.label"
+              },
+              {
+                "value": "accent-2",
+                "label": "t:sections.announcement-bar.blocks.announcement.settings.color_scheme.options__5.label"
+              }
+            ],
+            "default": "accent-1",
+            "label": "t:sections.announcement-bar.blocks.announcement.settings.color_scheme.label"
+          },
+          {
+            "type": "textarea",
+            "id": "text",
+            "default": "Welcome to our store",
+            "label": "t:sections.announcement-bar.blocks.announcement.settings.text.label"
+          },
+             {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "checkbox",
+            "id": "enable_close_btn",
+            "label": "Enable close button",
+            "default": true
+          },
+          {
+            "type": "url",
+            "id": "link",
+            "label": "t:sections.announcement-bar.blocks.announcement.settings.link.label"
+          }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      {
+        "type": "announcement"
+      }
+    ]
+  }
+}
+{% endschema %}

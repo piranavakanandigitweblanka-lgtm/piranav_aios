@@ -1,0 +1,51 @@
+{%- liquid
+  assign matched_variant = product.selected_or_first_available_variant
+  if search_terms != blank
+    assign search_terms_down = search_terms | downcase
+    for variant in product.variants
+      assign variant_title_down = variant.title | downcase
+      if variant_title_down contains search_terms_down or search_terms_down contains variant_title_down
+        assign matched_variant = variant
+        break
+      else
+        assign variant_matched = false
+        for option in variant.options
+          assign option_down = option | downcase
+          if search_terms_down contains option_down
+            assign variant_matched = true
+            break
+          endif
+        endfor
+        if variant_matched
+          assign matched_variant = variant
+          break
+        endif
+      endif
+    endfor
+  endif
+
+  assign img = matched_variant.image | default: product.featured_image
+  assign item_url = matched_variant.url
+  
+  assign display_title = product.title
+  unless matched_variant.title == 'Default Title'
+    assign display_title = display_title | append: ', ' | append: matched_variant.title
+  endunless
+-%}
+<a href="{{ item_url }}" class="bls__product-item list-view-item">
+  <div class="bls__product-img">
+    {%- if img != blank -%}
+      <img src="{{ img | image_url: width: 150 }}" alt="{{ display_title | escape }}" width="60" height="60" style="object-fit: contain;">
+    {%- else -%}
+      {%- render 'placeholder-render' | type: 'product' -%}
+    {%- endif -%}
+  </div>
+  <div class="bls__product-details">
+    <h3 class="bls__product-name regular">
+      {{ display_title }}
+    </h3>
+    <div class="bls__product-price">
+      {{ matched_variant.price | money }}
+    </div>
+  </div>
+</a>

@@ -1,0 +1,92 @@
+<div class="dropdown__categories--menu color-{{ section.settings.color_scheme }}">
+  <ul class="d-none d-md-block">
+    {%- for block in section.blocks -%}
+    {%- case block.type -%}
+    {%- when 'category_menu' -%}
+    <li class="categories__menu--items color-foreground-accent-1">
+      <a class="categories__menu--link" href="{{  block.settings.cat_menu_url }}"> 
+        {{ block.settings.svg_icon }}
+        {%- if block.settings.image != blank -%}
+        <img class="cart-notification-product__image"
+             src="{{ block.settings.image | img_url: '30x' }}"
+             alt="{{ block.settings.image.alt | escape }}"
+             width="30"
+             height="{{ 30 | divided_by: block.settings.image.aspect_ratio | ceil }}"
+             loading="lazy"
+             >
+        {%- endif -%}
+        {{ block.settings.cat_menu_name }}
+        {%- if block.settings.menu.links != blnak -%}
+        <div class="cat__has--submenu-icon"><svg class="categories__menu--right__arrow--icon" xmlns="http://www.w3.org/2000/svg" width="17.007" height="16.831" viewBox="0 0 512 512"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="48" d="M184 112l144 144-144 144"/></svg></div>
+        {%- endif -%}
+      </a>
+
+      {%- if block.settings.menu.links != blank -%}
+      <ul class="categories__submenu border-radius-10 d-flex justify-content-between color-{{ section.settings.color_scheme }}">
+        {%- for link in block.settings.menu.links -%}
+        <li class="categories__submenu--items">
+          {%- if link.links != blank -%}
+          <a class="categories__submenu--items__text" href="{{ link.url }}"><strong>{{ link.title | escape }}</strong></a>
+          <ul class="categories__submenu--child">
+            {%- for childlink in link.links -%}
+            <li class="categories__submenu--child__items"><a class="categories__submenu--child__items--link" href="{{ childlink.url }}">{{ childlink.title | escape }} </a></li>
+            {% endfor %}
+          </ul>
+          {%- else -%}
+          <a class="categories__submenu--items__text" href="{{ link.url }}"><strong>{{ link.title | escape }}</strong></a>
+          {%- endif -%}
+        </li>
+        {%- endfor -%}
+      </ul>
+      {%- endif -%}
+
+    </li>
+    {%- endcase -%}
+    {%- endfor -%}
+  </ul>
+  <nav class="category__mobile--menu">
+    <ul class="category__mobile--menu_ul">
+      {%- for block in section.blocks -%}
+      {%- case block.type -%}
+      {%- when 'category_menu' -%}
+      <li class="categories__menu--items color-foreground-accent-1">
+        <a class="categories__menu--link" href="{{  block.settings.cat_menu_url }}"> 
+          {{ block.settings.svg_icon }}
+          {%- if block.settings.image != blank -%}
+          <img
+               src="{{ block.settings.image | img_url: '30x' }}"
+               alt="{{ block.settings.image.alt | escape }}"
+               width="30"
+               height="{{ 30 | divided_by: block.settings.image.aspect_ratio | ceil }}"
+               loading="lazy"
+               >
+          {%- endif -%}
+          {{ block.settings.cat_menu_name }}
+        </a>
+
+        {%- if block.settings.menu.links != blank -%}
+        <ul class="category__sub--menu color-{{ section.settings.color_scheme }}">
+          {%- for link in block.settings.menu.links -%}
+          <li class="categories__submenu--items">
+            {%- if link.links != blank -%}
+            <a class="categories__submenu--items__text" href="{{ link.url }}"><strong>{{ link.title | escape }}</strong></a>
+            <ul class="category__sub--menu">
+              {%- for childlink in link.links -%}
+              <li class="categories__submenu--child__items"><a class="categories__submenu--child__items--link" href="{{ childlink.url }}">{{ childlink.title | escape }} </a></li>
+              {% endfor %}
+            </ul>
+            {%- else -%}
+            <a class="categories__submenu--items__text" href="{{ link.url }}"><strong>{{ link.title | escape }}</strong></a>
+            {%- endif -%}
+          </li>
+          {%- endfor -%}
+        </ul>
+        {%- endif -%}
+
+      </li>
+      {%- endcase -%}
+      {%- endfor -%}
+
+    </ul>
+  </nav>
+</div>

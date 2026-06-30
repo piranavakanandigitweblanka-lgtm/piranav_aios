@@ -1,0 +1,495 @@
+{% schema %}
+{
+  "name": "Compact Pendant Builder",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Design Your Pendant Light"
+    },
+    {
+      "type": "collection",
+      "id": "ceiling_roses_collection",
+      "label": "Ceiling Roses Collection"
+    },
+    {
+      "type": "collection",
+      "id": "cables_collection",
+      "label": "Cables Collection"
+    },
+    {
+      "type": "collection",
+      "id": "pendant_holders_collection",
+      "label": "Pendant Holders Collection"
+    },
+    {
+      "type": "collection",
+      "id": "lamp_shades_collection",
+      "label": "Lamp Shades Collection"
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .compact-builder {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: sans-serif;
+  }
+  
+  /* Step rows */
+  .step-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    align-items: center;
+  }
+  
+  .step-number {
+    background: #333;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  
+  /* Searchable dropdown */
+  .search-container {
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+  }
+  
+  .search-input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat 95% center;
+    padding-right: 40px;
+  }
+  
+  .clear-btn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 18px;
+    display: none;
+  }
+  
+  .clear-btn:hover {
+    color: #666;
+  }
+  
+  .dropdown-options {
+    display: none;
+    position: absolute;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 100;
+    top: 100%;
+  }
+  
+  .product-option {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .product-option:hover {
+    background: #f9f9f9;
+  }
+  
+  .product-option img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    margin-right: 10px;
+    border-radius: 3px;
+  }
+  
+  .product-info {
+    flex: 1;
+  }
+  
+  .product-name {
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+  
+  .product-price {
+    font-size: 13px;
+    color: #3a7d44;
+  }
+  
+  /* Preview area */
+  .preview-area {
+    text-align: center;
+    padding: 20px;
+    margin: 20px 0;
+    background: #f9f9f9;
+    border-radius: 8px;
+    min-height: 100px;
+  }
+  
+  .preview-placeholder {
+    color: #999;
+    font-style: italic;
+  }
+  
+  .preview-components {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  .preview-component {
+    text-align: center;
+  }
+  
+  .preview-component img {
+    max-height: 80px;
+    max-width: 100%;
+  }
+  
+  .preview-component p {
+    margin: 5px 0 0;
+    font-size: 12px;
+  }
+  
+  /* Bottom bar */
+  .bottom-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+  }
+  
+  .total-price {
+    font-weight: bold;
+    font-size: 18px;
+  }
+  
+  #add-to-cart {
+    background: #3a7d44;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  #add-to-cart:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+</style>
+
+<div class="compact-builder">
+  <h1 style="text-align: center; margin-bottom: 25px;">{{ section.settings.title }}</h1>
+  
+  <!-- Step 1: Ceiling Rose -->
+  <div class="step-row">
+    <div class="step-number">1</div>
+    <div class="search-container" data-step="ceiling-rose">
+      <input type="text" class="search-input" placeholder="Search ceiling roses..." readonly>
+      <button class="clear-btn" data-step="ceiling-rose">&times;</button>
+      <div class="dropdown-options" id="ceiling-rose-options">
+        {% for product in collections[section.settings.ceiling_roses_collection].products %}
+          <div class="product-option" 
+               data-id="{{ product.id }}" 
+               data-img="{{ product.featured_image | img_url: '200x' }}"
+               data-price="{{ product.price | money_without_currency }}"
+               data-title="{{ product.title }}">
+            <img src="{{ product.featured_image | img_url: '100x' }}" alt="{{ product.title }}">
+            <div class="product-info">
+              <div class="product-name">{{ product.title }}</div>
+              <div class="product-price">{{ product.price | money }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  
+  <!-- Step 2: Cable -->
+  <div class="step-row">
+    <div class="step-number">2</div>
+    <div class="search-container" data-step="cable">
+      <input type="text" class="search-input" placeholder="Search cables..." readonly>
+      <button class="clear-btn" data-step="cable">&times;</button>
+      <div class="dropdown-options" id="cable-options">
+        {% for product in collections[section.settings.cables_collection].products %}
+          <div class="product-option" 
+               data-id="{{ product.id }}" 
+               data-img="{{ product.featured_image | img_url: '200x' }}"
+               data-price="{{ product.price | money_without_currency }}"
+               data-title="{{ product.title }}">
+            <img src="{{ product.featured_image | img_url: '100x' }}" alt="{{ product.title }}">
+            <div class="product-info">
+              <div class="product-name">{{ product.title }}</div>
+              <div class="product-price">{{ product.price | money }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  
+  <!-- Preview Area -->
+  <div class="preview-area">
+    <div id="preview-placeholder" class="preview-placeholder">
+      Your design will appear here
+    </div>
+    <div id="preview-components" class="preview-components" style="display: none;"></div>
+  </div>
+  
+  <!-- Step 3: Pendant Holder -->
+  <div class="step-row">
+    <div class="step-number">3</div>
+    <div class="search-container" data-step="pendant-holder">
+      <input type="text" class="search-input" placeholder="Search pendant holders..." readonly>
+      <button class="clear-btn" data-step="pendant-holder">&times;</button>
+      <div class="dropdown-options" id="pendant-holder-options">
+        {% for product in collections[section.settings.pendant_holders_collection].products %}
+          <div class="product-option" 
+               data-id="{{ product.id }}" 
+               data-img="{{ product.featured_image | img_url: '200x' }}"
+               data-price="{{ product.price | money_without_currency }}"
+               data-title="{{ product.title }}">
+            <img src="{{ product.featured_image | img_url: '100x' }}" alt="{{ product.title }}">
+            <div class="product-info">
+              <div class="product-name">{{ product.title }}</div>
+              <div class="product-price">{{ product.price | money }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  
+  <!-- Step 4: Lamp Shade -->
+  <div class="step-row">
+    <div class="step-number">4</div>
+    <div class="search-container" data-step="lamp-shade">
+      <input type="text" class="search-input" placeholder="Search lamp shades..." readonly>
+      <button class="clear-btn" data-step="lamp-shade">&times;</button>
+      <div class="dropdown-options" id="lamp-shade-options">
+        {% for product in collections[section.settings.lamp_shades_collection].products %}
+          <div class="product-option" 
+               data-id="{{ product.id }}" 
+               data-img="{{ product.featured_image | img_url: '200x' }}"
+               data-price="{{ product.price | money_without_currency }}"
+               data-title="{{ product.title }}">
+            <img src="{{ product.featured_image | img_url: '100x' }}" alt="{{ product.title }}">
+            <div class="product-info">
+              <div class="product-name">{{ product.title }}</div>
+              <div class="product-price">{{ product.price | money }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <div class="total-price">
+      Total: $<span id="total-price">0.00</span>
+    </div>
+    <button id="add-to-cart" disabled>
+      Add to Cart
+    </button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const selectedProducts = {};
+  let totalPrice = 0;
+  
+  // Initialize all search containers
+  document.querySelectorAll('.search-container').forEach(container => {
+    const step = container.dataset.step;
+    const searchInput = container.querySelector('.search-input');
+    const clearBtn = container.querySelector('.clear-btn');
+    const optionsContainer = container.querySelector('.dropdown-options');
+    const options = optionsContainer.querySelectorAll('.product-option');
+    
+    // Toggle dropdown on input click
+    searchInput.addEventListener('click', function(e) {
+      e.stopPropagation();
+      optionsContainer.style.display = optionsContainer.style.display === 'block' ? 'none' : 'block';
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function() {
+      optionsContainer.style.display = 'none';
+    });
+    
+    // Prevent closing when clicking inside dropdown
+    optionsContainer.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+    
+    // Search functionality
+    searchInput.addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      
+      options.forEach(option => {
+        const title = option.querySelector('.product-name').textContent.toLowerCase();
+        option.style.display = title.includes(searchTerm) ? 'flex' : 'none';
+      });
+    });
+    
+    // Handle product selection
+    options.forEach(option => {
+      option.addEventListener('click', function() {
+        const productId = this.dataset.id;
+        const productImg = this.dataset.img;
+        const productPrice = parseFloat(this.dataset.price);
+        const productTitle = this.dataset.title;
+        
+        // Update selected product
+        selectedProducts[step] = {
+          id: productId,
+          img: productImg,
+          price: productPrice,
+          title: productTitle
+        };
+        
+        // Update UI
+        searchInput.value = productTitle;
+        clearBtn.style.display = 'block';
+        updatePreview();
+        calculateTotal();
+        checkCompletion();
+        
+        // Close dropdown
+        optionsContainer.style.display = 'none';
+      });
+    });
+    
+    // Clear button functionality
+    clearBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      
+      // Remove the selected product
+      delete selectedProducts[step];
+      
+      // Reset the input field
+      searchInput.value = '';
+      
+      // Hide the clear button
+      this.style.display = 'none';
+      
+      // Update UI
+      updatePreview();
+      calculateTotal();
+      checkCompletion();
+      
+      // Close dropdown if open
+      optionsContainer.style.display = 'none';
+    });
+  });
+  
+  // Update the visual preview
+  function updatePreview() {
+    const previewContainer = document.getElementById('preview-components');
+    const placeholder = document.getElementById('preview-placeholder');
+    
+    // Clear previous preview
+    previewContainer.innerHTML = '';
+    
+    // Check if any products are selected
+    const hasSelection = Object.keys(selectedProducts).length > 0;
+    
+    if (hasSelection) {
+      placeholder.style.display = 'none';
+      previewContainer.style.display = 'flex';
+      
+      // Add selected products to preview
+      for (const [step, product] of Object.entries(selectedProducts)) {
+        const component = document.createElement('div');
+        component.className = 'preview-component';
+        component.innerHTML = `
+          <img src="${product.img}" alt="${product.title}">
+          <p>${product.title}</p>
+        `;
+        previewContainer.appendChild(component);
+      }
+    } else {
+      placeholder.style.display = 'block';
+      previewContainer.style.display = 'none';
+    }
+    
+    // Update clear buttons visibility
+    document.querySelectorAll('.search-container').forEach(container => {
+      const step = container.dataset.step;
+      const clearBtn = container.querySelector('.clear-btn');
+      clearBtn.style.display = selectedProducts[step] ? 'block' : 'none';
+    });
+  }
+  
+  // Calculate total price
+  function calculateTotal() {
+    totalPrice = Object.values(selectedProducts).reduce((sum, product) => sum + product.price, 0);
+    document.getElementById('total-price').textContent = totalPrice.toFixed(2);
+  }
+  
+  // Enable/disable Add to Cart button
+  function checkCompletion() {
+    const requiredSteps = ['ceiling-rose', 'cable', 'pendant-holder', 'lamp-shade'];
+    const isComplete = requiredSteps.every(step => selectedProducts[step]);
+    document.getElementById('add-to-cart').disabled = !isComplete;
+  }
+  
+  // Add to cart functionality
+  document.getElementById('add-to-cart').addEventListener('click', function() {
+    const items = Object.values(selectedProducts).map(product => {
+      return {
+        id: product.id,
+        quantity: 1
+      };
+    });
+    
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ items: items })
+    })
+    .then(response => response.json())
+    .then(data => {
+      window.location.href = '/cart';
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error adding to cart. Please try again.');
+    });
+  });
+});
+</script>

@@ -1,0 +1,165 @@
+{%- schema -%}
+{
+  "name": "Custom Image Banner",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Banner Image"
+    },
+    {
+      "type": "url",
+      "id": "image_link",
+      "label": "Image Link"
+    },
+    {
+      "type": "header",
+      "content": "Desktop Settings"
+    },
+    {
+      "type": "select",
+      "id": "desktop_alignment",
+      "label": "Desktop Content Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "desktop_image_size",
+      "label": "Desktop Image Size",
+      "min": 50,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Mobile Settings"
+    },
+    {
+      "type": "select",
+      "id": "mobile_alignment",
+      "label": "Mobile Content Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "mobile_image_size",
+      "label": "Mobile Image Size",
+      "min": 50,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Image Banner",
+      "category": "Image"
+    }
+  ]
+}
+{%- endschema -%}
+
+{%- liquid
+  assign desktop_alignment = section.settings.desktop_alignment
+  assign mobile_alignment = section.settings.mobile_alignment
+  assign desktop_image_size = section.settings.desktop_image_size | append: '%'
+  assign mobile_image_size = section.settings.mobile_image_size | append: '%'
+  assign aspect_ratio = section.settings.image.width | divided_by: section.settings.image.height | default: 1
+-%}
+
+<style>
+  .custom-image-banner {
+    width: 100%;
+    overflow: hidden;
+    text-align: {{ desktop_alignment }};
+  }
+
+  .custom-image-banner__link {
+    display: inline-block;
+    max-width: 100%;
+  }
+
+  .custom-image-banner__image {
+    max-width: {{ desktop_image_size }};
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    aspect-ratio: {{ aspect_ratio }};
+  }
+
+  .custom-image-banner__placeholder {
+    max-width: {{ desktop_image_size }};
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    aspect-ratio: {{ aspect_ratio }};
+  }
+
+  @media screen and (max-width: 749px) {
+    .custom-image-banner {
+      text-align: {{ mobile_alignment }};
+    }
+
+    .custom-image-banner__image,
+    .custom-image-banner__placeholder {
+      max-width: {{ mobile_image_size }};
+    }
+  }
+</style>
+
+<div class="custom-image-banner">
+  {%- if section.settings.image != blank -%}
+    {%- if section.settings.image_link != blank -%}
+      <a href="{{ section.settings.image_link }}" class="custom-image-banner__link">
+    {%- endif -%}
+
+    <img src="{{ section.settings.image | image_url: width: section.settings.image.width }}"
+          alt="{{ section.settings.image.alt | escape }}"
+          class="custom-image-banner__image"
+          fetchpriority="high"
+          loading="lazy"
+          width="{{ section.settings.image.width }}"
+          height="{{ section.settings.image.height }}"
+          sizes="(max-width: 749px) {{ mobile_image_size }}, {{ desktop_image_size }}"
+          style="aspect-ratio: {{ aspect_ratio }};">
+
+    {%- if section.settings.image_link != blank -%}
+      </a>
+    {%- endif -%}
+  {%- else -%}
+    <div class="custom-image-banner__placeholder">
+      {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+    </div>
+  {%- endif -%}
+</div>

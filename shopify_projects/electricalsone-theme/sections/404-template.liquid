@@ -1,0 +1,322 @@
+<style type="text/css">
+  .template-404 .title + * {
+    margin-top: 1rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .template-404 .title + * {
+      margin-top: 2rem;
+    }
+  }
+  .template-404{
+  	height: 70vh;
+  }
+   .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.mobile_padding_top }}px;
+      padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+    }
+    @media screen and (min-width: 750px) {
+      .section-{{ section.id }}-padding {
+        padding-top: {{ section.settings.padding_top }}px;
+        padding-bottom: {{ section.settings.padding_bottom }}px;
+      }
+    }
+</style>
+
+
+<div style="display: none;">
+<div class="template-404 text-center color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding d-flex align-items-center">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h1 class="title">
+          {{ 'templates.404.title' | t }}
+        </h1>
+        <p>
+          {{ 'templates.404.subtext' | t }}
+        </p>
+        <a href="{{ routes.all_products_collection_url }}" class="button">
+          {{ 'general.continue_shopping' | t }}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% schema %}
+  {
+    "name": "404",
+    "settings": [
+		{
+          "type": "select",
+          "id": "color_scheme",
+          "options": [
+            {
+              "value": "accent-1",
+              "label": "t:sections.main-password-footer.settings.color_scheme.options__1.label"
+            },
+            {
+              "value": "accent-2",
+              "label": "t:sections.main-password-footer.settings.color_scheme.options__2.label"
+            },
+            {
+              "value": "background-1",
+              "label": "t:sections.main-password-footer.settings.color_scheme.options__3.label"
+            },
+            {
+              "value": "background-2",
+              "label": "t:sections.main-password-footer.settings.color_scheme.options__4.label"
+            },
+            {
+              "value": "inverse",
+              "label": "t:sections.main-password-footer.settings.color_scheme.options__5.label"
+            }
+          ],
+          "default": "background-1",
+          "label": "t:sections.main-password-footer.settings.color_scheme.label"
+        },
+         {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+          "type": "paragraph",
+          "content": "Desktop"
+        },
+        {
+          "type": "range",
+          "id": "padding_top",
+          "min": 0,
+          "max": 150,
+          "step": 5,
+          "unit": "px",
+          "label": "Padding top",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "padding_bottom",
+          "min": 0,
+          "max": 150,
+          "step": 5,
+          "unit": "px",
+          "label": "Padding bottom",
+          "default": 0
+        },
+		{
+          "type": "paragraph",
+          "content": "Mobile"
+        },
+		{
+          "type": "range",
+          "id": "mobile_padding_top",
+          "min": 0,
+          "max": 150,
+          "step": 5,
+          "unit": "px",
+          "label": "Padding top",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "mobile_padding_bottom",
+          "min": 0,
+          "max": 150,
+          "step": 5,
+          "unit": "px",
+          "label": "Padding bottom",
+          "default": 0
+        }
+	]
+  }
+{% endschema %}
+<!-- script added 22.04.2025 by sarankan -->
+<!-- <script>
+  document.addEventListener('DOMContentLoaded', async function() {
+    // Track 404 error
+    if (typeof gtag === 'function') {
+      gtag('event', '404_error', {
+        'event_category': 'Error',
+        'event_label': window.location.pathname,
+        'non_interaction': true
+      });
+    }
+
+    // Create notification element with animations
+    const notificationEl = document.createElement('div');
+    notificationEl.style.cssText = `
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      padding: 15px 25px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 9999;
+      font-family: sans-serif;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    `;
+    
+    // Add loading spinner
+    const spinner = document.createElement('div');
+    spinner.style.cssText = `
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(0,0,0,0.1);
+      border-radius: 50%;
+      border-top-color: #000;
+      animation: spin 1s linear infinite;
+    `;
+    
+    notificationEl.appendChild(spinner);
+    notificationEl.innerHTML += 'Finding matching page...';
+    document.body.appendChild(notificationEl);
+    
+    // Add CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      @keyframes pulse {
+        0% { opacity: 0.6; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.05); }
+        100% { opacity: 0.6; transform: scale(1); }
+      }
+      .notification-pulse {
+        animation: pulse 1.5s infinite ease-in-out;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Fade in notification
+    setTimeout(() => {
+      notificationEl.style.opacity = '1';
+      notificationEl.classList.add('notification-pulse');
+    }, 100);
+
+    // Clean URL from wpm@ pattern
+    function cleanWpmUrl(url) {
+      const wpmPattern = /\/wpm@[^\/]+\/web-pixel-shopify-custom-pixel@[^\/]+\/sandbox/;
+      if (wpmPattern.test(url)) {
+        const parts = url.split('/sandbox');
+        if (parts.length > 1) return parts[1];
+      }
+      return url;
+    }
+
+    // Rest of your existing functions remain exactly the same
+    function extractCollectionName(url) {
+      const match = url.match(/\/(collections?[s]*)\/([^\/]+)/i);
+      if (!match) return null;
+      return '/collections/' + match[2];
+    }
+
+    function extractKeywords(url) {
+      const slug = url.split('/products/')[1]?.replace(/-\d+$/, '') || '';
+      return slug.split('-')
+        .filter(part => part.length > 3)
+        .map(word => word.toLowerCase());
+    }
+
+    function scoreProduct(product, keywords) {
+      const title = product.querySelector('.product-title')?.textContent?.toLowerCase() || '';
+      const handle = product.href.split('/products/')[1]?.toLowerCase() || '';
+      
+      if (handle.includes(keywords.join('-'))) return 100;
+      if (keywords.every(kw => title.includes(kw))) return 90;
+      
+      const matchedKeywords = keywords.filter(kw => 
+        title.includes(kw) || handle.includes(kw)
+      ).length;
+      return (matchedKeywords / keywords.length) * 80;
+    }
+
+    async function findBestRedirect() {
+      const cleanPath = cleanWpmUrl(window.location.pathname);
+      if (cleanPath !== window.location.pathname) {
+        return cleanPath;
+      }
+
+      const correctCollectionUrl = extractCollectionName(window.location.pathname);
+      if (correctCollectionUrl && correctCollectionUrl !== window.location.pathname) {
+        try {
+          const response = await fetch(correctCollectionUrl);
+          if (response.ok) return correctCollectionUrl;
+        } catch (e) {
+          console.log("Collection doesn't exist, falling back to product search");
+        }
+      }
+
+      const keywords = extractKeywords(window.location.pathname);
+      if (!keywords.length) return '/';
+      
+      try {
+        const searchUrl = `/search?q=${keywords.join('+')}&type=product`;
+        const response = await fetch(searchUrl);
+        const html = await response.text();
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        
+        const products = Array.from(doc.querySelectorAll('a[href^="/products/"]'));
+        if (!products.length) return '/search?q=' + keywords.join('+');
+        
+        const scoredProducts = products.map(product => ({
+          product,
+          score: scoreProduct(product, keywords)
+        })).filter(p => p.score > 40);
+        
+        if (!scoredProducts.length) return '/search?q=' + keywords.join('+');
+        
+        scoredProducts.sort((a, b) => b.score - a.score);
+        return scoredProducts[0].product.href;
+        
+      } catch (e) {
+        console.error('Redirect error:', e);
+        return '/search?q=' + keywords.join('+');
+      }
+    }
+
+    // Execute with delay
+    setTimeout(async () => {
+      const newUrl = await findBestRedirect();
+      
+      // Update notification with success animation
+      notificationEl.classList.remove('notification-pulse');
+      spinner.style.animation = 'none';
+      spinner.innerHTML = '✓';
+      spinner.style.cssText = `
+        width: 20px;
+        height: 20px;
+        color: #4CAF50;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `;
+      
+      if (newUrl.includes('/collections/')) {
+        notificationEl.innerHTML = '✓ Found matching collection<br>Redirecting...';
+      } else if (newUrl === cleanWpmUrl(window.location.pathname)) {
+        notificationEl.innerHTML = '✓ Found clean URL<br>Redirecting...';
+      } else {
+        notificationEl.innerHTML = '✓ Found best matching product<br>Redirecting...';
+      }
+      
+      // Add fade out before redirect
+      setTimeout(() => {
+        notificationEl.style.opacity = '0';
+        notificationEl.style.transform = 'translateX(-50%) translateY(-20px)';
+      }, 1000);
+      
+      // Redirect after animations complete
+      setTimeout(() => {
+        window.location.href = newUrl;
+      }, 1500);
+    }, 1000);
+  });
+</script> -->

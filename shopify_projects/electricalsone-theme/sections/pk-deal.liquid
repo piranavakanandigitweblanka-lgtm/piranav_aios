@@ -1,0 +1,312 @@
+{% comment %}
+  Deals Banner Strip
+  - Left vertical tab (e.g. "DEALS")
+  - Configurable promo banner blocks in the middle
+  - Right vertical tab (e.g. "REQUEST A QUOTE")
+{% endcomment %}
+
+<div class="deals-strip" style="--deals-bg: {{ section.settings.strip_bg }};">
+  {% if section.settings.left_tab_text != blank %}
+    <a
+      href="{{ section.settings.left_tab_link }}"
+      class="deals-tab deals-tab--left"
+      style="--tab-bg: {{ section.settings.left_tab_bg }}; --tab-color: {{ section.settings.left_tab_color }};"
+    >
+      <span>{{ section.settings.left_tab_text }}</span>
+    </a>
+  {% endif %}
+
+  <div class="deals-cards">
+    {% for block in section.blocks %}
+      {% liquid
+        assign has_link = false
+        if block.settings.link != blank
+          assign has_link = true
+        endif
+      %}
+
+      {% if has_link %}<a href="{{ block.settings.link }}"{% else %}<div{% endif %}
+        class="deals-card"
+        style="--card-bg: {{ block.settings.bg_color }};"
+        {{ block.shopify_attributes }}
+      >
+        {% if block.settings.image != blank %}
+          <div class="deals-card__media">
+            <img
+              src="{{ block.settings.image | image_url: width: 600 }}"
+              alt="{{ block.settings.heading | escape }}"
+              loading="lazy"
+              width="300"
+              height="120"
+            >
+          </div>
+        {% endif %}
+
+        <div class="deals-card__content" style="--content-color: {{ block.settings.text_color }};">
+          {% if block.settings.badge != blank %}
+            <span
+              class="deals-card__badge"
+              style="--badge-bg: {{ block.settings.badge_bg }}; --badge-color: {{ block.settings.badge_color }};"
+            >{{ block.settings.badge }}</span>
+          {% endif %}
+
+          {% if block.settings.heading != blank %}
+            <p class="deals-card__heading">{{ block.settings.heading }}</p>
+          {% endif %}
+
+          {% if block.settings.subheading != blank %}
+            <p class="deals-card__subheading">{{ block.settings.subheading }}</p>
+          {% endif %}
+
+          {% if block.settings.price != blank %}
+            <p class="deals-card__price">
+              {% if block.settings.compare_price != blank %}
+                <s>{{ block.settings.compare_price }}</s>
+              {% endif %}
+              <strong>{{ block.settings.price }}</strong>
+            </p>
+          {% endif %}
+
+          {% if block.settings.button_text != blank %}
+            <span
+              class="deals-card__button"
+              style="--btn-bg: {{ block.settings.button_bg }}; --btn-color: {{ block.settings.button_color }};"
+            >
+              {{ block.settings.button_text }}
+              <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6"/>
+              </svg>
+            </span>
+          {% endif %}
+        </div>
+      {% if has_link %}</a>{% else %}</div>{% endif %}
+    {% endfor %}
+  </div>
+
+  {% if section.settings.right_tab_text != blank %}
+    <a
+      href="{{ section.settings.right_tab_link }}"
+      class="deals-tab deals-tab--right"
+      style="--tab-bg: {{ section.settings.right_tab_bg }}; --tab-color: {{ section.settings.right_tab_color }};"
+    >
+      <span>{{ section.settings.right_tab_text }}</span>
+    </a>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+.deals-strip {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  background: var(--deals-bg, #ffffff);
+  padding: 10px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.deals-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  flex: 0 0 30px;
+  background: var(--tab-bg, #c8102e);
+  color: var(--tab-color, #ffffff);
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.deals-tab span {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  padding: 8px 0;
+}
+
+.deals-tab--right span {
+  transform: none;
+}
+
+.deals-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.deals-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 6px;
+  background: var(--card-bg, #f3f4f6);
+  text-decoration: none;
+  overflow: hidden;
+  min-height: 96px;
+}
+
+.deals-card__media {
+  flex: 0 0 90px;
+}
+
+.deals-card__media img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.deals-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--content-color, #111827);
+  min-width: 0;
+}
+
+.deals-card__badge {
+  align-self: flex-start;
+  background: var(--badge-bg, #facc15);
+  color: var(--badge-color, #111827);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-bottom: 2px;
+}
+
+.deals-card__heading {
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.deals-card__subheading {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.deals-card__price {
+  font-size: 16px;
+  margin: 2px 0 0;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.deals-card__price s {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.deals-card__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  margin-top: 6px;
+  background: var(--btn-bg, #c8102e);
+  color: var(--btn-color, #ffffff);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 6px 12px;
+  border-radius: 999px;
+  transition: filter 0.15s ease;
+}
+
+.deals-card:hover .deals-card__button {
+  filter: brightness(1.1);
+}
+
+@media (max-width: 900px) {
+  .deals-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .deals-strip {
+    flex-wrap: wrap;
+  }
+  .deals-tab {
+    width: 100%;
+    flex: 1 1 100%;
+    height: 36px;
+  }
+  .deals-tab span {
+    writing-mode: horizontal-tb;
+    transform: none;
+    padding: 0;
+  }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Deals Banner",
+  "tag": "section",
+  "class": "deals-banner-section",
+  "settings": [
+    { "type": "header", "content": "Strip" },
+    { "type": "color", "id": "strip_bg", "label": "Background", "default": "#ffffff" },
+    { "type": "header", "content": "Left Tab" },
+    { "type": "text", "id": "left_tab_text", "label": "Text", "default": "DEALS" },
+    { "type": "url", "id": "left_tab_link", "label": "Link" },
+    { "type": "color", "id": "left_tab_bg", "label": "Background", "default": "#c8102e" },
+    { "type": "color", "id": "left_tab_color", "label": "Text color", "default": "#ffffff" },
+    { "type": "header", "content": "Right Tab" },
+    { "type": "text", "id": "right_tab_text", "label": "Text", "default": "REQUEST A QUOTE" },
+    { "type": "url", "id": "right_tab_link", "label": "Link" },
+    { "type": "color", "id": "right_tab_bg", "label": "Background", "default": "#facc15" },
+    { "type": "color", "id": "right_tab_color", "label": "Text color", "default": "#111827" }
+  ],
+  "blocks": [
+    {
+      "type": "promo",
+      "name": "Promo Card",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "color", "id": "bg_color", "label": "Card background", "default": "#f3f4f6" },
+        { "type": "color", "id": "text_color", "label": "Text color", "default": "#111827" },
+        { "type": "text", "id": "badge", "label": "Badge text" },
+        { "type": "color", "id": "badge_bg", "label": "Badge background", "default": "#facc15" },
+        { "type": "color", "id": "badge_color", "label": "Badge text color", "default": "#111827" },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "EVO Smart Charger" },
+        { "type": "text", "id": "subheading", "label": "Subheading" },
+        { "type": "text", "id": "compare_price", "label": "Compare-at price" },
+        { "type": "text", "id": "price", "label": "Price" },
+        { "type": "text", "id": "button_text", "label": "Button text", "default": "LEARN MORE" },
+        { "type": "color", "id": "button_bg", "label": "Button background", "default": "#c8102e" },
+        { "type": "color", "id": "button_color", "label": "Button text color", "default": "#ffffff" },
+        { "type": "url", "id": "link", "label": "Card link" }
+      ]
+    }
+  ],
+  "max_blocks": 3,
+  "presets": [
+    {
+      "name": "Deals Banner",
+      "blocks": [
+        { "type": "promo", "settings": { "bg_color": "#7cb342", "text_color": "#ffffff", "badge": "Limited Offer", "heading": "EVO Smart Charger", "compare_price": "was £334.95", "price": "£296.95 ex Vat", "button_text": "Get yours now" } },
+        { "type": "promo", "settings": { "bg_color": "#1f2937", "text_color": "#ffffff", "badge": "Best Price", "heading": "JCC | Leviton", "button_text": "Order & Save", "button_bg": "#f59e0b" } },
+        { "type": "promo", "settings": { "bg_color": "#2563eb", "text_color": "#ffffff", "heading": "Trade Accounts Open One Today", "subheading": "30-day terms. No delays. Keep working.", "button_text": "Learn More" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

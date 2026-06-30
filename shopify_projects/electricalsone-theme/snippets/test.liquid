@@ -1,0 +1,43 @@
+<ul class="header__menu_ul" role="list">
+  {%- for link in section.settings.menu.links -%}
+  <li class="header__menu_li {% if link.levels == 1 %} menu__item_has_children header__menu_li_child_sub_menu {% elsif link.levels == 2 %} menu__item_has_children header__menu_li_child_mega_menu {% endif %}  {% if link.current %} header__menu_li--active{% endif %}">
+    {%- if link.links != blank -%}
+    <a href="{{ link.url }}" class="header__menu_item">
+      {{ link.title | escape }}<span class="submenu__icon"> {% render 'icon-caret' %} </span>
+    </a>
+    {% if link.levels == 2 %} 
+    <div class="header__mega_menu color-{{ section.settings.color_scheme }}">
+      <div class="container">
+    {% endif %}
+      
+    <ul class=" {% if link.levels == 2 %}header__mega_menu--inner{% endif %}  {% if link.levels == 1 %} header__sub_menu color-{{ section.settings.color_scheme }} {% endif %}">
+      {%- for childlink in link.links -%}
+      {%- if childlink.links != blank -%}
+      <li class="header__mega_menu_li">
+        <a href="{{ childlink.url }}" class="header__mega_menu_item">{{ childlink.title | escape }}</a>
+        <ul class="header__mega_sub_menu">
+          {%- for grandchildlink in childlink.links -%}
+          <li class="header__mega_sub_menu_li">
+            <a class="header__mega_sub_menu_item" href="{{ grandchildlink.url }}">{{ grandchildlink.title | escape }}</a>
+          </li>
+          {%- endfor -%}
+        </ul>
+      </li>
+      {%- else -%}
+      <li class="{% if link.levels == 2 %} header__mega_menu_li {% elsif link.levels == 1 %} header__sub_menu_li {%- endif -%}">
+        <a href="{{ childlink.url }}" class="{% if link.levels == 2 %} header__mega_menu_item {% elsif link.levels == 1 %} header__sub_menu_item {%- endif -%}">{{ childlink.title | escape }}</a>
+      </li>
+      {%- endif -%}
+      {% endfor %}
+    </ul>
+    {% if link.levels == 2 %} 
+      </div>
+     </div>
+      {% endif %}
+      
+    {%- else -%}
+    <a class="header__menu_item" href="{{ link.url }}"> {{ link.title | escape }}</a>
+    {%- endif -%}
+  </li>
+  {%- endfor -%}
+</ul>

@@ -1,0 +1,157 @@
+<link rel="stylesheet" href="{{ 'mobile-offcanvas-menu.css' | asset_url }}" media="print" onload="this.media='all'">
+<noscript>{{ 'mobile-offcanvas-menu.css' | asset_url | stylesheet_tag }}</noscript>
+
+<style>
+.offcanvas-header {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  right: auto;
+  left: 0;
+  width: 100%;
+  max-width: 320px;
+  max-height: 100vh;
+  transition: var(--transition);
+  transform: translateX(-100%);
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  overflow-y: scroll;
+  visibility: hidden;
+}
+.offcanvas-overlay {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  width: 100%;
+  height: 100%;
+  transition: var(--transition);
+  opacity: 0;
+  background-color: #000;
+}
+
+.offcanvas__inner {
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Offacnvas Logo */
+.offcanvas__logo {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+.offcanvas__logo_link {
+    position: relative;
+    display: flex;
+    max-width: 100%;
+    word-break: break-word;
+    padding-right: 10px;
+}
+.offcanvas__close_btn {
+    position: relative;
+    align-self: center;
+    width: 30px;
+    height: 24px;
+    padding: 0;
+    text-indent: -9999px;
+    border: none;
+    background-color: transparent;
+    flex-shrink: 0;
+}
+.offcanvas__close_btn::before, .offcanvas__close_btn::after {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  margin-top: -1px;
+  content: "";
+  transform: rotate(45deg);
+  background-color: #000;
+}
+.offcanvas__close_btn::after {
+  transform: rotate(-45deg);
+}
+
+/* Mobile Menu */
+.offcanvas__menu {
+  overflow-y: auto;
+  height: 100%;
+}
+
+.offcanvas__menu_ul {
+  overflow: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.offcanvas__menu_li {
+  position: relative;
+  border-bottom: 1px solid #ededed;
+}
+.offcanvas__menu_li:first-child {
+  border-top: 1px solid #ededed;
+}
+.offcanvas__menu_item {
+  line-height: 1;
+  display: block;
+  padding: 15px 20px;
+  text-transform: uppercase;
+  word-break: break-word;
+}
+/* Mobile Sub Menu */
+.offcanvas__sub_menu {
+  display: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.offcanvas__sub_menu_toggle {
+  font-size: 20px;
+  position: absolute;
+  z-index: 9;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 46px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+}
+.offcanvas__sub_menu_toggle::before, .offcanvas__sub_menu_toggle::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 2px;
+  content: "";
+  transition: var(--transition);
+  transform: translateX(-50%) translateY(-50%);
+  background-color: #2c2c2c;
+}
+.offcanvas__sub_menu_toggle:not(.active)::after {
+  transform: translateX(-50%) translateY(-50%) rotate(90deg);
+}
+.offcanvas__logo span.h2 {
+    margin: 0;
+}
+</style>
+
+<div class="offcanvas-header" tabindex="-1">
+  <div class="offcanvas__inner">
+    <div class="offcanvas__logo">
+      {%- render 'header-logo', className: 'offcanvas__logo_link' -%}
+      <button class="offcanvas__close_btn">close</button>
+    </div>
+    <nav class="offcanvas__menu">
+      {%- render 'mobile-menu-nav', account_icon: account_icon, wishlist_icon: wishlist_icon -%}
+    </nav>
+  </div>
+</div>
+<div class="offcanvas-overlay"></div>

@@ -1,0 +1,475 @@
+{%- liquid
+  assign section_id = section.id | replace: '_', '' | downcase
+  assign products_per_page = section.settings.products_per_page | default: 16
+-%}
+
+{% style %}
+  .main-collection-show-{{ section_id }} {
+    display: block;
+    width: 100%;
+    padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px 0;
+    background-color: {{ section.settings.background_color }};
+  }
+
+  .main-collection-show__container-{{ section_id }} {
+    max-width: {{ section.settings.container_width }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .main-collection-show__header-{{ section_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .main-collection-show__title-{{ section_id }} {
+    font-size: {{ section.settings.heading_size }}px;
+    color: {{ section.settings.heading_color }};
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .main-collection-show__filters-{{ section_id }} {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    padding: 15px 0;
+  }
+
+  .main-collection-show__grid-{{ section_id }} {
+    display: grid;
+    grid-template-columns: repeat({{ section.settings.columns_desktop }}, 1fr);
+    gap: {{ section.settings.grid_gap }}px;
+  }
+
+  .main-collection-show__product-{{ section_id }} {
+    position: relative;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .main-collection-show__product-{{ section_id }}:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+  }
+
+  .main-collection-show__image-wrapper-{{ section_id }} {
+    position: relative;
+    padding-top: 100%;
+    background: #f8f8f8;
+    cursor: pointer;
+  }
+
+  .main-collection-show__image-{{ section_id }} {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: contain;
+    padding: 15px;
+    transition: transform 0.5s ease;
+  }
+
+  .main-collection-show__product-{{ section_id }}:hover .main-collection-show__image-{{ section_id }} {
+    transform: scale(1.05);
+  }
+
+  .main-collection-show__info-{{ section_id }} {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .main-collection-show__p-title-{{ section_id }} {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    min-height: 2.8em;
+  }
+
+  .main-collection-show__price-wrapper-{{ section_id }} {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+  }
+
+  .main-collection-show__price-{{ section_id }} {
+    font-size: 18px;
+    font-weight: 700;
+    color: {{ section.settings.accent_color }};
+  }
+
+  .main-collection-show__compare-price-{{ section_id }} {
+    font-size: 14px;
+    color: #999;
+    text-decoration: line-through;
+  }
+
+  .main-collection-show__add-btn-{{ section_id }} {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #222;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 15px;
+  }
+
+  .main-collection-show__add-btn-{{ section_id }}:hover {
+    background: {{ section.settings.accent_color }};
+  }
+
+  /* Variant Modal Styling */
+  .vmodal-overlay-{{ section_id }} {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 10000;
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+  }
+
+  .vmodal-overlay-{{ section_id }}.active { display: flex; }
+
+  .vmodal-content-{{ section_id }} {
+    background: #fff;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 40px;
+    position: relative;
+  }
+
+  .vmodal-close-{{ section_id }} {
+    position: absolute;
+    top: 20px; right: 20px;
+    border: none; background: none;
+    font-size: 24px; cursor: pointer;
+  }
+
+  @media screen and (max-width: 768px) {
+    .main-collection-show__grid-{{ section_id }} {
+      grid-template-columns: repeat({{ section.settings.columns_mobile }}, 1fr);
+    }
+    .main-collection-show__title-{{ section_id }} { font-size: 24px; }
+  }
+{% endstyle %}
+
+<div class="main-collection-show-{{ section_id }}" id="MainCollectionShow-{{ section.id }}">
+  <div class="main-collection-show__container-{{ section_id }}">
+    
+    <div class="main-collection-show__header-{{ section_id }}">
+      <h1 class="main-collection-show__title-{{ section_id }}">
+        {{ collection.title | default: 'Collection' }}
+      </h1>
+      
+      {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
+        <div class="main-collection-show__filters-wrapper-{{ section_id }}">
+          {% render 'facets', results: collection, enable_filtering: section.settings.enable_filtering, enable_sorting: section.settings.enable_sorting, filter_type: 'horizontal' %}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div id="ProductGridContainer">
+      {%- paginate collection.products by products_per_page -%}
+        {%- if collection.products.size > 0 -%}
+          <div class="main-collection-show__grid-{{ section_id }}" id="product-grid" data-id="{{ section.id }}">
+            {%- for product in collection.products -%}
+              <div class="main-collection-show__product-{{ section_id }}" data-product-json="{{ product | json | escape }}">
+                <div class="main-collection-show__image-wrapper-{{ section_id }}" onclick="window.location.href='{{ product.url }}'">
+                  {%- if product.featured_image != blank -%}
+                    <img src="{{ product.featured_image | img_url: '500x' }}" 
+                         alt="{{ product.featured_image.alt | default: product.title | escape }}" 
+                         class="main-collection-show__image-{{ section_id }}"
+                         loading="lazy"
+                         width="500"
+                         height="500">
+                  {%- else -%}
+                    {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                  {%- endif -%}
+                </div>
+                <div class="main-collection-show__info-{{ section_id }}">
+                  <h3 class="main-collection-show__p-title-{{ section_id }}">
+                    <a href="{{ product.url }}" style="text-decoration:none; color:inherit;">{{ product.title | escape }}</a>
+                  </h3>
+                  <div class="main-collection-show__price-wrapper-{{ section_id }}">
+                    <span class="main-collection-show__price-{{ section_id }}">{{ product.price | money }}</span>
+                    {%- if product.compare_at_price > product.price -%}
+                      <span class="main-collection-show__compare-price-{{ section_id }}">{{ product.compare_at_price | money }}</span>
+                    {%- endif -%}
+                  </div>
+                  
+                  {%- if product.available -%}
+                    {%- if product.variants.size > 1 -%}
+                      <button class="main-collection-show__add-btn-{{ section_id }}" data-action="open-variants">Select Options</button>
+                    {%- else -%}
+                      <button class="main-collection-show__add-btn-{{ section_id }}" data-action="add-to-cart" data-variant-id="{{ product.selected_or_first_available_variant.id }}">Add to Cart</button>
+                    {%- endif -%}
+                  {%- else -%}
+                    <button class="main-collection-show__add-btn-{{ section_id }}" disabled>Sold Out</button>
+                  {%- endif -%}
+                </div>
+              </div>
+        {%- endfor -%}
+      </div>
+
+        {%- if paginate.pages > 1 -%}
+          <div class="pagination-wrapper" style="margin-top: 50px; text-align: center;">
+            {{ paginate | default_pagination }}
+          </div>
+        {%- endif -%}
+      {%- else -%}
+        <div class="collection-empty" style="text-align:center; padding:50px;">
+          <p>No products found.</p>
+          <a href="{{ collection.url }}" class="button" style="text-decoration:underline;">Clear all filters</a>
+        </div>
+      {%- endif -%}
+    {%- endpaginate -%}
+    </div>
+  </div>
+</div>
+
+<!-- Variant Modal -->
+<div class="vmodal-overlay-{{ section_id }}" id="VModal-{{ section_id }}">
+  <div class="vmodal-content-{{ section_id }}">
+    <button class="vmodal-close-{{ section_id }}" onclick="this.closest('.vmodal-overlay-{{ section_id }}').classList.remove('active')">&times;</button>
+    <div id="VModalBody-{{ section_id }}"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const sectionId = '{{ section_id }}';
+  const container = document.getElementById('MainCollectionShow-{{ section.id }}');
+  
+  function decodeHtml(html) {
+    const txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+  }
+
+  // AJAX Add to Cart
+  async function addToCart(variantId, qty = 1) {
+    try {
+      const res = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: [{ id: variantId, quantity: qty }] })
+      });
+      const cart = await res.json();
+      
+      // Update theme cart counts
+      document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart } }));
+      document.dispatchEvent(new CustomEvent('theme:cart:update', { detail: { cart } }));
+      
+      // Refresh Dawn/OS2.0 cart bubble if present
+      if (window.Shopify && window.Shopify.reloadSection) {
+        window.Shopify.reloadSection('cart-icon-bubble');
+      }
+      
+      alert('Added to cart!');
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  container.addEventListener('click', function(e) {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    
+    if (btn.dataset.action === 'add-to-cart') {
+      addToCart(btn.dataset.variantId);
+    } else if (btn.dataset.action === 'open-variants') {
+      const card = btn.closest('.main-collection-show__product-' + sectionId);
+      const product = JSON.parse(decodeHtml(card.dataset.productJson));
+      openModal(product);
+    }
+  });
+
+  function openModal(product) {
+    const modal = document.getElementById('VModal-' + sectionId);
+    const body = document.getElementById('VModalBody-' + sectionId);
+    
+    let variantsHtml = `<h2>${product.title}</h2><div style="display:grid; gap:15px; margin-top:20px;">`;
+    product.variants.forEach(v => {
+      variantsHtml += `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border:1px solid #eee; border-radius:8px;">
+          <span>${v.title} - £${(v.price/100).toFixed(2)}</span>
+          <button onclick="addToCart(${v.id})" style="padding:5px 15px; background:#222; color:#fff; border:none; border-radius:4px; cursor:pointer;">Add</button>
+        </div>
+      `;
+    });
+    variantsHtml += '</div>';
+    
+    body.innerHTML = variantsHtml;
+    modal.classList.add('active');
+    
+    // Inject addToCart to window for the inline onclick
+    window.addToCart = addToCart;
+  }
+
+  // Sort By Logic
+  const sortSelect = document.getElementById('SortBy-' + sectionId);
+  if (sortSelect) {
+    sortSelect.addEventListener('change', function() {
+      const url = new URL(window.location.href);
+      url.searchParams.set('sort_by', this.value);
+      window.location.href = url.href;
+    });
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Main Collection Show",
+  "settings": [
+    {
+      "type": "range",
+      "id": "container_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 10,
+      "unit": "px",
+      "label": "Container Width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 4,
+      "max": 48,
+      "step": 4,
+      "label": "Products per page",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "Columns (Desktop)",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns (Mobile)",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "label": "Grid Gap",
+      "default": 20
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#e64545"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 16,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading Size",
+      "default": 32
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_filtering",
+      "default": true,
+      "label": "Enable filtering"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "default": true,
+      "label": "Enable sorting"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 50
+    }
+  ],
+  "presets": [
+    {
+      "name": "Main Collection Show"
+    }
+  ]
+}
+{% endschema %}

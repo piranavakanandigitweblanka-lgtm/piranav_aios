@@ -1,0 +1,158 @@
+{{ 'instafeed.css' | asset_url | stylesheet_tag }}
+
+<style>
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.mobile_padding_top }}px;
+    padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  } 
+</style>
+
+{%- liquid 
+	assign container = ''
+  	if section.settings.container == "container"
+    assign container = 'container'
+    elsif section.settings.container == "container-fluid"
+    assign container = 'container-fluid'
+    else
+    assign container = 'container-fluid px-0'
+    endif
+
+-%}
+
+
+
+<div class="instagram__section section-{{ section.id }}-padding" data-section-id="{{ section.id }}" data-section-type="instagram" data-accesstoken="{{ section.settings.accesstoken }}" data-limit={{ section.settings.limit }}>
+  <div class="{{ container }}">
+    <div class="section-heading text-center mb-30">
+      <span class="section-heading__sub_title h6">{{- section.settings.subtitle -}}</span>
+      <h2 class="section-heading__title h3">{{- section.settings.title -}}</h2>
+    </div>
+
+    <div class="instagram--activation swiper">
+      <div id="instafeed" class="d-flex instagram__grid swiper-wrapper"></div>
+      <div class="swiper__nav--btn swiper-button-next  color-{{ section.settings.color_scheme_navigation }}"></div>
+      <div class="swiper__nav--btn swiper-button-prev  color-{{ section.settings.color_scheme_navigation }}"></div>
+    </div>
+  </div>
+</div>
+{% schema %}
+  {
+    "name": "Instagram",
+    "settings": [
+	{
+          "type": "select",
+          "id": "container",
+          "label": "Container type",
+          "default": "container",
+          "options": [
+              {
+              "value": "container",
+              "label": "Container"
+              },
+              {
+              "value": "container-fluid",
+              "label": "Full width"
+              },
+              {
+              "value": "no-offset",
+              "label": "Full width without offset"
+              }
+            ]
+          },
+    {
+      "type": "textarea",
+      "id": "title",
+      "default": "Follow us on instagram",
+      "label": "t:sections.featured-collection.settings.title.label"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "default": "Recently added our store",
+      "label": "Subheading"
+    },
+	{
+      "type": "header",
+      "content": "Instagram settings"
+    },
+      {
+        "type": "textarea",
+        "id": "accesstoken",
+        "label": "Instagram accesstoken",
+		"default": "IGQVJYSXBZAaW9nTFNZAWVR1U1ppMVBIUTRmZAXptRWZACdHlRX2ZAsM1hTdmZAKdHRLUTNiWkRSVUhSZAW0yMXNDSjVpbFVIcWZAiWldkb3NKTHhhSHJjeGp1WTFZARE9LQk9INnFmNmtUU1RuZAzJ6ZAEVwQUpOeQZDZD"
+      },
+	  {
+        "type": "range",
+        "id": "limit",
+        "min": 2,
+        "max": 100,
+        "step": 1,
+        "default": 5,
+        "label": "Display a maximum of this many posts"
+      },
+	  {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+          "type": "paragraph",
+          "content": "Desktop"
+        },
+        {
+          "type": "range",
+          "id": "padding_top",
+          "min": 0,
+          "max": 150,
+          "step": 5,
+          "unit": "px",
+          "label": "Padding top",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "padding_bottom",
+          "min": 0,
+          "max": 150,
+          "step": 5,
+          "unit": "px",
+          "label": "Padding bottom",
+          "default": 0
+        },
+		{
+          "type": "paragraph",
+          "content": "Mobile"
+        },
+		{
+          "type": "range",
+          "id": "mobile_padding_top",
+          "min": 0,
+          "max": 150,
+          "step": 5,
+          "unit": "px",
+          "label": "Padding top",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "mobile_padding_bottom",
+          "min": 0,
+          "max": 150,
+          "step": 5,
+          "unit": "px",
+          "label": "Padding bottom",
+          "default": 0
+        }
+	],
+	"presets": [
+      {
+        "name": "Instagram" 
+      }
+    ]
+  }
+{% endschema %}

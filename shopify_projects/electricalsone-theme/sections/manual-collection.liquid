@@ -1,0 +1,477 @@
+{% schema %}
+{
+  "name": "Manual Collection Cards",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Related Collections"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns (desktop)",
+      "min": 2,
+      "max": 7,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "mobile_columns",
+      "label": "Columns (mobile)",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border width (px)",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border radius (px)",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 8
+    }
+  ],
+  "blocks": [
+    {
+      "type": "bulbs",
+      "name": "Bulbs Collections",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Collection name"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Collection link"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Collection image"
+        }
+      ]
+    },
+    {
+      "type": "holders",
+      "name": "Holders Collections",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Collection name"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Collection link"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Collection image"
+        }
+      ]
+    },
+    {
+      "type": "cable",
+      "name": "Cable Collections",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Collection name"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Collection link"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Collection image"
+        }
+      ]
+    },
+    {
+      "type": "transformer",
+      "name": "Transformer Collections",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Collection name"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Collection link"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Collection image"
+        }
+      ]
+    },
+    {
+      "type": "fixings-accessories",
+      "name": "Lighting Sets",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Collection name"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Collection link"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Collection image"
+        }
+      ]
+    },
+    {
+      "type": "ceiling-rose",
+      "name": "Ceiling Rose ",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Collection name"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Collection link"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Collection image"
+        }
+      ]
+    },
+    {
+      "type": "lamp-shades",
+      "name": "Lamp Shades",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Collection name"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Collection link"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Collection image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Manual Collection Cards",
+      "category": "Collection"
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .contextual-collections-{{ section.id }} {
+    max-width: 1350px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    text-align: center;
+  }
+  
+  .contextual-collections-{{ section.id }} h2 {
+    margin-bottom: 30px;
+    font-size: 16px;
+  }
+  
+  .collection-cards-{{ section.id }} {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  /* Card sizing based on number of items */
+  .collection-card-{{ section.id }} {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease;
+    border: {{ section.settings.border_width }}px solid {{ section.settings.border_color }};
+    border-radius: {{ section.settings.border_radius }}px;
+    overflow: hidden;
+    background: white;
+    height: 100%;
+    /* Flexible width based on number of items */
+    flex: 1 1 calc((100% / {{ section.settings.columns }}) - 20px);
+    min-width: calc((100% / {{ section.settings.columns }}) - 20px);
+    max-width: calc((100% / {{ section.settings.columns }}) - 20px);
+  }
+  
+  /* Specific adjustments for different numbers of cards */
+  /* When there are 3 cards */
+  .collection-cards-{{ section.id }}[data-count="3"] .collection-card-{{ section.id }} {
+    flex: 1 1 calc((100% / 3) - 20px);
+    min-width: calc((100% / 3) - 20px);
+    max-width: calc((100% / 3) - 20px);
+  }
+  
+  /* When there are 4 cards */
+  .collection-cards-{{ section.id }}[data-count="4"] .collection-card-{{ section.id }} {
+    flex: 1 1 calc((100% / 4) - 20px);
+    min-width: calc((100% / 4) - 20px);
+    max-width: calc((100% / 4) - 20px);
+  }
+  
+  /* When there are 5 cards */
+  .collection-cards-{{ section.id }}[data-count="5"] .collection-card-{{ section.id }} {
+    flex: 1 1 calc((100% / 5) - 20px);
+    min-width: calc((100% / 5) - 20px);
+    max-width: calc((100% / 5) - 20px);
+  }
+  
+  /* When there are 6 cards */
+  .collection-cards-{{ section.id }}[data-count="6"] .collection-card-{{ section.id }} {
+    flex: 1 1 calc((100% / 6) - 20px);
+    min-width: calc((100% / 6) - 20px);
+    max-width: calc((100% / 6) - 20px);
+  }
+  
+  /* When there are 7 cards */
+  .collection-cards-{{ section.id }}[data-count="7"] .collection-card-{{ section.id }} {
+    flex: 1 1 calc((100% / 7) - 20px);
+    min-width: calc((100% / 7) - 20px);
+    max-width: calc((100% / 7) - 20px);
+  }
+  
+  .collection-card-{{ section.id }}:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .collection-card-{{ section.id }} img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    margin-bottom: 5px;
+    border-bottom: {{ section.settings.border_width }}px solid {{ section.settings.border_color }};
+  }
+  
+  .collection-card-{{ section.id }} span {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 15px;
+  }
+  
+  /* Mobile Slider Styles - Fixed version */
+  @media (max-width: 749px) {
+    .collection-cards-{{ section.id }} {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 15px;
+      padding-bottom: 15px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      justify-content: flex-start;
+    }
+    
+    .collection-cards-{{ section.id }}::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .collection-card-{{ section.id }} {
+      scroll-snap-align: start;
+      flex: 0 0 calc((100% / {{ section.settings.mobile_columns }}) - 15px);
+      min-width: calc((100% / {{ section.settings.mobile_columns }}) - 15px);
+      max-width: calc((100% / {{ section.settings.mobile_columns }}) - 15px);
+      /* Reset desktop styles */
+      flex-basis: auto !important;
+      min-width: auto !important;
+      max-width: none !important;
+    }
+    
+    .collection-card-{{ section.id }} img {
+      height: 150px;
+    }
+    
+    .collection-card-{{ section.id }} span {
+      padding: 10px;
+      font-size: 13px;
+    }
+  }
+  
+  /* Very small mobile devices */
+  @media (max-width: 480px) {
+    .collection-card-{{ section.id }} {
+      flex: 0 0 calc((100% / {{ section.settings.mobile_columns | at_most: 2 }}) - 10px) !important;
+      min-width: calc((100% / {{ section.settings.mobile_columns | at_most: 2 }}) - 10px) !important;
+    }
+  }
+</style>
+
+<div class="contextual-collections contextual-collections-{{ section.id }}">
+  <h2>{{ section.settings.heading }}</h2>
+  
+  {% assign current_collection_handle = collection.handle %}
+  
+  {% assign show_bulbs = false %}
+  {% assign show_holders = false %}
+  {% assign show_cable = false %}
+  {% assign show_transformer = false %}
+  {% assign show_fixings_accessories = false %}
+  {% assign show_ceiling_rose = false %}
+  {% assign show_lamp_shades = false %}
+  
+  {% if current_collection_handle contains 'bulb' or current_collection_handle contains 'strip' or current_collection_handle contains 'module' or current_collection_handle contains 'panel' %}
+    {% assign show_bulbs = true %}
+  {% elsif current_collection_handle contains 'holder' or current_collection_handle contains 'fixture' %}
+    {% assign show_holders = true %}
+  {% elsif current_collection_handle contains 'cable'  %}
+    {% assign show_cable = true %}
+  {% elsif current_collection_handle contains 'transformer' or current_collection_handle contains 'driver' %}
+    {% assign show_transformer = true %}
+  {% elsif current_collection_handle contains 'fixings' or current_collection_handle contains 'accessories' or current_collection_handle contains 'plug-in-pendant'or current_collection_handle contains 'wall-arm'or current_collection_handle contains 'wire-connectors'  or current_collection_handle contains 'switches'%}
+    {% assign show_fixings_accessories = true %}
+  {% elsif current_collection_handle contains 'ceiling' or current_collection_handle contains 'rose' %}
+    {% assign show_ceiling_rose = true %}
+  {% elsif current_collection_handle contains 'shade' or current_collection_handle contains 'lamp' %}
+    {% assign show_lamp_shades = true %}
+  {% endif %}
+  
+  {% comment %} Count how many blocks will be displayed {% endcomment %}
+  {% assign visible_blocks_count = 0 %}
+  {% for block in section.blocks %}
+    {% if block.type == 'bulbs' and show_bulbs %}
+      {% assign visible_blocks_count = visible_blocks_count | plus: 1 %}
+    {% elsif block.type == 'holders' and show_holders %}
+      {% assign visible_blocks_count = visible_blocks_count | plus: 1 %}
+    {% elsif block.type == 'cable' and show_cable %}
+      {% assign visible_blocks_count = visible_blocks_count | plus: 1 %}
+    {% elsif block.type == 'transformer' and show_transformer %}
+      {% assign visible_blocks_count = visible_blocks_count | plus: 1 %}
+    {% elsif block.type == 'fixings-accessories' and show_fixings_accessories %}
+      {% assign visible_blocks_count = visible_blocks_count | plus: 1 %}
+    {% elsif block.type == 'ceiling-rose' and show_ceiling_rose %}
+      {% assign visible_blocks_count = visible_blocks_count | plus: 1 %}
+    {% elsif block.type == 'lamp-shades' and show_lamp_shades %}
+      {% assign visible_blocks_count = visible_blocks_count | plus: 1 %}
+    {% endif %}
+  {% endfor %}
+  
+  <div class="collection-cards collection-cards-{{ section.id }}" data-count="{{ visible_blocks_count }}">
+    {% for block in section.blocks %}
+      {% if block.type == 'bulbs' and show_bulbs %}
+        <a href="{{ block.settings.link }}" class="collection-card collection-card-{{ section.id }}" {{ block.shopify_attributes }}>
+          {% if block.settings.image != blank %}
+            {{ block.settings.image | image_url: width: 400 | image_tag:
+              loading: 'lazy',
+              alt: block.settings.image.alt | escape
+            }}
+          {% endif %}
+          <span>{{ block.settings.title }}</span>
+        </a>
+      {% elsif block.type == 'holders' and show_holders %}
+        <a href="{{ block.settings.link }}" class="collection-card collection-card-{{ section.id }}" {{ block.shopify_attributes }}>
+          {% if block.settings.image != blank %}
+            {{ block.settings.image | image_url: width: 400 | image_tag:
+              loading: 'lazy',
+              alt: block.settings.image.alt | escape
+            }}
+          {% endif %}
+          <span>{{ block.settings.title }}</span>
+        </a>
+      {% elsif block.type == 'cable' and show_cable %}
+        <a href="{{ block.settings.link }}" class="collection-card collection-card-{{ section.id }}" {{ block.shopify_attributes }}>
+          {% if block.settings.image != blank %}
+            {{ block.settings.image | image_url: width: 400 | image_tag:
+              loading: 'lazy',
+              alt: block.settings.image.alt | escape
+            }}
+          {% endif %}
+          <span>{{ block.settings.title }}</span>
+        </a>
+      {% elsif block.type == 'transformer' and show_transformer %}
+        <a href="{{ block.settings.link }}" class="collection-card collection-card-{{ section.id }}" {{ block.shopify_attributes }}>
+          {% if block.settings.image != blank %}
+            {{ block.settings.image | image_url: width: 400 | image_tag:
+              loading: 'lazy',
+              alt: block.settings.image.alt | escape
+            }}
+          {% endif %}
+          <span>{{ block.settings.title }}</span>
+        </a>
+      {% elsif block.type == 'fixings-accessories' and show_fixings_accessories %}
+        <a href="{{ block.settings.link }}" class="collection-card collection-card-{{ section.id }}" {{ block.shopify_attributes }}>
+          {% if block.settings.image != blank %}
+            {{ block.settings.image | image_url: width: 400 | image_tag:
+              loading: 'lazy',
+              alt: block.settings.image.alt | escape
+            }}
+          {% endif %}
+          <span>{{ block.settings.title }}</span>
+        </a>
+      {% elsif block.type == 'ceiling-rose' and show_ceiling_rose %}
+        <a href="{{ block.settings.link }}" class="collection-card collection-card-{{ section.id }}" {{ block.shopify_attributes }}>
+          {% if block.settings.image != blank %}
+            {{ block.settings.image | image_url: width: 400 | image_tag:
+              loading: 'lazy',
+              alt: block.settings.image.alt | escape
+            }}
+          {% endif %}
+          <span>{{ block.settings.title }}</span>
+        </a>
+      {% elsif block.type == 'lamp-shades' and show_lamp_shades %}
+        <a href="{{ block.settings.link }}" class="collection-card collection-card-{{ section.id }}" {{ block.shopify_attributes }}>
+          {% if block.settings.image != blank %}
+            {{ block.settings.image | image_url: width: 400 | image_tag:
+              loading: 'lazy',
+              alt: block.settings.image.alt | escape
+            }}
+          {% endif %}
+          <span>{{ block.settings.title }}</span>
+        </a>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>

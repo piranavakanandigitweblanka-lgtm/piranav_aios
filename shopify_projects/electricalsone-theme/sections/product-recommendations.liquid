@@ -1,0 +1,433 @@
+{{ 'featured-collection.css' | asset_url | stylesheet_tag }}
+
+{{ 'product-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-rating.css' | asset_url | stylesheet_tag }}
+{{ 'countdown-timer.css' | asset_url | stylesheet_tag }}
+{{ 'stock-countdwon.css' | asset_url | stylesheet_tag }}
+
+<link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}" media="print" onload="this.media='all'">
+
+
+<link rel="stylesheet" href="{{ 'section-product-recommendations.css' | asset_url }}" media="print" onload="this.media='all'">
+<noscript>{{ 'section-product-recommendations.css' | asset_url | stylesheet_tag }}</noscript>
+
+{%- liquid
+
+ 	assign container = ''
+  	if section.settings.container == "container"
+    assign container = 'container'
+    elsif section.settings.container == "container-fluid"
+    assign container = 'container-fluid'
+    else
+    assign container = 'container-fluid px-0'
+    endif
+
+    assign productShowXl = section.settings.products_show_on_xl
+    assign productShowLg = section.settings.products_show_on_lg
+    assign productShowMd = section.settings.products_show_on_md
+    assign productShowSm = section.settings.products_show_on_sm
+    assign sliderRows = section.settings.slider_rows
+    assign slideLoop = section.settings.slider_loop
+
+    assign loadMoreButton = true
+    assign slider_enable = section.settings.slider_enable
+    assign productItem = "col mb-30"
+    
+    if slider_enable
+    assign productItem = "swiper-slide"
+    assign showPagination = section.settings.show_pagination
+    assign showNavigation = section.settings.show_navigation
+    endif
+  
+-%}
+<style>
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.mobile_padding_top }}px;
+    padding-bottom: {{ section.settings.mobile_padding_bottom }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+</style>
+{%- capture productWrapper -%}
+{%- if slider_enable -%}
+productSlider swiper
+{%- else -%}
+row row-cols-xl-{{ productShowXl }} row-cols-lg-{{ productShowLg }} row-cols-md-{{ productShowMd }} row-cols-{{ productShowSm }}
+{%- endif -%}
+{%- endcapture -%}
+
+
+<div 
+class="section-{{ section.id }}-padding"  
+data-section-id="{{ section.id }}"
+data-section-type="product-slider"
+data-slider-enable="{{ slider_enable }}"
+{% if slider_enable %}
+  data-show-mobile="{{ productShowSm }}"
+  data-show-tablet="{{ productShowMd }}"
+  data-show-large="{{ productShowLg }}"
+  data-show-extra-large="{{ productShowXl }}"
+  data-slider-rows="{{sliderRows}}"
+  data-loop="{{slideLoop}}"
+{% endif %}
+>
+<product-recommendations class="product-recommendations section--padding" data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit=8">
+  <div class="{{ container }}">
+    <h2 class="product-recommendations__heading text-center mb-30">{{ section.settings.heading | escape }}</h2>
+    <div class="relative product_slider_wrapper">
+      <div class="{{ productWrapper }}" role="list" {% unless slider_enable %} grid-recommendation {% endunless %}>
+        {%- if slider_enable -%}<div class="swiper-wrapper" grid-recommendation> {%- endif -%}
+        {% for recommendation in recommendations.products %}
+        <div class="{{ productItem }}">
+          {% render 'product-card',
+              product_card_product: recommendation,
+              media_size: section.settings.image_ratio,
+              show_secondary_image: section.settings.show_secondary_image,
+              show_vendor: section.settings.show_vendor,
+              show_badge: section.settings.show_badges,
+              show_cart_button: section.settings.show_cart_button,
+              show_quick_view: section.settings.show_quick_view_button,
+              show_quick_compare: section.settings.show_compare_view_button,
+              show_wishlist: section.settings.show_wishlist_button,
+              show_countdown: section.settings.show_countdown,
+              show_title: section.settings.show_title,
+              show_price: section.settings.show_price,
+              show_product_description: settings.show_product_description,
+              show_rating: section.settings.show_product_rating,
+              inventory_status: section.settings.inventory_status,
+              box_shadow: section.settings.box_shadow
+          %}
+        </div>
+        {% endfor %}
+        {%- if slider_enable -%}</div>{%- endif -%}
+      </div>
+      {%- if slider_enable -%}
+       {%- if showNavigation -%}
+      <div class="swiper-button-next product-slider--nav-button"></div>
+      <div class="swiper-button-prev product-slider--nav-button"></div>
+      {%- endif -%}
+      {%- if showPagination -%}
+      <div class="swiper-pagination product-slider--pagination"></div>
+      {%- endif -%}
+      {%- endif -%}
+    </div>
+  </div>
+</product-recommendations>
+</div>
+{% javascript %}
+  class ProductRecommendations extends HTMLElement {
+    constructor() {
+      super();
+
+      const handleIntersection = (entries, observer) => {
+        if (!entries[0].isIntersecting) return;
+        observer.unobserve(this);
+
+        fetch(this.dataset.url)
+          .then(response => response.text())
+          .then(text => {
+            const html = document.createElement('div');
+            html.innerHTML = text;
+
+            const recommendations = html.querySelector('[grid-recommendation]');
+            if (recommendations && recommendations.innerHTML.trim().length) {
+              this.querySelector('[grid-recommendation]').innerHTML = recommendations.innerHTML;
+            }
+          })
+          .catch(e => {
+            console.error(e);
+          });
+      }
+      new IntersectionObserver(handleIntersection.bind(this), {rootMargin: '0px 0px 200px 0px'}).observe(this);
+    }
+  }
+
+  customElements.define('product-recommendations', ProductRecommendations);
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.product-recommendations.name",
+  "tag": "section",
+  "class": "spaced-section",
+  "settings": [
+	  {
+      "type": "select",
+      "id": "container",
+      "label": "Container type",
+      "default": "container",
+      "options": [
+		    {
+          "value": "container",
+          "label": "Fixed container"
+        },
+        {
+          "value": "container-fluid",
+          "label": "Fluid container"
+        },
+        {
+          "value": "no-offset",
+          "label": "Full width without offset"
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.product-recommendations.settings.paragraph__1.content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "You may also like",
+      "label": "t:sections.product-recommendations.settings.heading.label"
+    },
+    {
+      "type": "header",
+      "content": "Product card"
+    },
+	{
+        "type": "select",
+        "id": "image_ratio",
+        "options": [
+          {
+            "value": "adapt",
+            "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__1.label"
+          },
+          {
+            "value": "portrait",
+            "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__2.label"
+          },
+          {
+            "value": "square",
+            "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__3.label"
+          }
+        ],
+        "default": "adapt",
+        "label": "t:sections.main-collection-product-grid.settings.image_ratio.label"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_secondary_image",
+        "default": false,
+        "label": "t:sections.main-collection-product-grid.settings.show_secondary_image.label"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_badges",
+        "default": true,
+        "label": "Show badges"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_cart_button",
+        "default": true,
+        "label": "Show cart button"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_quick_view_button",
+        "default": true,
+        "label": "Show quick add button"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_compare_view_button",
+        "default": true,
+        "label": "Show compare button"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_wishlist_button",
+        "default": true,
+        "label": "Show wishlist button"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_title",
+        "default": true,
+        "label": "Show title"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_price",
+        "default": true,
+        "label": "Show price"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_vendor",
+        "default": false,
+        "label": "t:sections.main-collection-product-grid.settings.show_vendor.label"
+      },
+	 {
+        "type": "checkbox",
+        "id": "show_countdown",
+        "default": false,
+        "label": "Show countdown"
+    },
+	{
+        "type": "checkbox",
+        "id": "box_shadow",
+        "default": false,
+        "label": "Show box shadow"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_rating",
+      "default": false,
+      "label": "Show product rating"
+    },	
+	{
+        "type": "checkbox",
+        "id": "inventory_status",
+        "label": "Show inventory status",
+        "default": false
+    },
+	  {
+      "type": "header",
+      "content": "Grid settings"
+    },
+    {
+      "type": "range",
+      "id": "products_show_on_xl",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4,
+      "label": "Products per row on the extra-large desktop"
+    },
+    {
+      "type": "range",
+      "id": "products_show_on_lg",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 3,
+      "label": "Products per row on the large desktop"
+    },
+    {
+      "type": "range",
+      "id": "products_show_on_md",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3,
+      "label": "Products per row on the tablet"
+    },
+    {
+      "type": "range",
+      "id": "products_show_on_sm",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 2,
+      "label": "Products per row on the mobile"
+    },
+    {
+      "type": "header",
+      "content": "Slider settings"
+    },
+    {
+        "type": "checkbox",
+        "id": "slider_enable",
+        "label": "Enable slider",
+        "default": true
+    },
+    {
+        "type": "checkbox",
+        "id": "show_pagination",
+        "label": "Show pagination",
+        "default": false
+    },
+    {
+        "type": "checkbox",
+        "id": "show_navigation",
+        "label": "Show navigation",
+        "default": true
+    },
+    {
+        "type": "checkbox",
+        "id": "slider_loop",
+        "label": "Slider loop",
+        "default": false
+    },
+    {
+      "type": "select",
+      "id": "slider_rows",
+      "label": "Slider rows",
+      "default": "1",
+      "info": "rows > 1 is currently not compatible with loop mode (loop: true)",
+      "options": [
+		{
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+          "type": "paragraph",
+          "content": "Desktop"
+        },
+        {
+          "type": "range",
+          "id": "padding_top",
+          "min": 0,
+          "max": 150,
+          "step": 5,
+          "unit": "px",
+          "label": "Padding top",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "padding_bottom",
+          "min": 0,
+          "max": 150,
+          "step": 5,
+          "unit": "px",
+          "label": "Padding bottom",
+          "default": 0
+        },
+		{
+          "type": "paragraph",
+          "content": "Mobile"
+        },
+		{
+          "type": "range",
+          "id": "mobile_padding_top",
+          "min": 0,
+          "max": 150,
+          "step": 5,
+          "unit": "px",
+          "label": "Padding top",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "mobile_padding_bottom",
+          "min": 0,
+          "max": 150,
+          "step": 5,
+          "unit": "px",
+          "label": "Padding bottom",
+          "default": 0
+        }
+  ]
+}
+{% endschema %}

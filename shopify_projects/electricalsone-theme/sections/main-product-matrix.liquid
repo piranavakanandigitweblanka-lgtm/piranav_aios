@@ -1,0 +1,441 @@
+{{ 'product-details.css' | asset_url | stylesheet_tag: preload: true }}
+{{ 'product.css' | asset_url | stylesheet_tag: preload: true }}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+-%}
+
+<style>
+/* ── Product Matrix Layout ──────────────────────────────────── */
+.pmt-section {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  box-sizing: border-box;
+}
+
+/* Top two-column split */
+.pmt-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+  margin-bottom: 48px;
+}
+
+/* ── Left column: Images ── */
+.pmt-images {
+  position: sticky;
+  top: 80px;
+}
+
+.pmt-main-image-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f8f8f8;
+  margin-bottom: 12px;
+  aspect-ratio: 1 / 1;
+}
+
+.pmt-main-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.pmt-main-image-wrap:hover img { transform: scale(1.03); }
+
+.pmt-thumbnails {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pmt-thumb {
+  width: 68px;
+  height: 68px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  background: #f0f0f0;
+  transition: border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.pmt-thumb:hover,
+.pmt-thumb.active {
+  border-color: #111;
+}
+
+.pmt-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Right column: Info ── */
+.pmt-info {}
+
+.pmt-label {
+  display: inline-block;
+  background: #d10028;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.pmt-title {
+  font-size: clamp(18px, 2.2vw, 26px);
+  font-weight: 700;
+  color: #111;
+  line-height: 1.3;
+  margin: 0 0 16px;
+}
+
+.pmt-price-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.pmt-price {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+}
+
+.pmt-compare {
+  font-size: 15px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.pmt-savings {
+  font-size: 13px;
+  color: #d10028;
+  font-weight: 600;
+}
+
+.pmt-divider {
+  height: 1px;
+  background: #e8e8e8;
+  margin: 20px 0;
+}
+
+.pmt-matrix-heading {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+/* ── Bottom: Description ── */
+.pmt-description-section {
+  background: #fff;
+  border-top: 2px solid #f0f0f0;
+  padding-top: 40px;
+}
+
+.pmt-description-heading {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 24px;
+}
+
+.pmt-description-body {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #444;
+  max-width: 100%;
+}
+
+.pmt-description-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.pmt-description-body h2,
+.pmt-description-body h3,
+.pmt-description-body h4 {
+  font-weight: 700;
+  color: #111;
+  margin-top: 28px;
+  margin-bottom: 10px;
+}
+
+.pmt-description-body ul,
+.pmt-description-body ol {
+  padding-left: 20px;
+  margin-bottom: 16px;
+}
+
+.pmt-description-body p { margin-bottom: 14px; }
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .pmt-top {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .pmt-images {
+    position: static;
+  }
+
+  .pmt-main-image-wrap {
+    border-radius: 8px;
+  }
+
+  .pmt-title {
+    font-size: 20px;
+  }
+
+  .pmt-thumb {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pmt-section { padding: 16px 12px; }
+
+  .pmt-thumb {
+    width: 48px;
+    height: 48px;
+  }
+
+  .variant-matrix__atc-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .variant-matrix__atc-btn {
+    width: 100%;
+  }
+}
+</style>
+
+<section class="pmt-section" data-section="{{ section.id }}">
+
+  <!-- ── Top: Image + Info ───────────────────────────────────── -->
+  <div class="pmt-top">
+
+    <!-- Left: Product Images -->
+    <div class="pmt-images">
+      {%- assign featured_media = current_variant.featured_media | default: product.featured_media -%}
+
+      <div class="pmt-main-image-wrap" id="pmt-main-image-wrap-{{ section.id }}">
+        {%- if featured_media -%}
+          <img
+            id="pmt-main-image-{{ section.id }}"
+            src="{{ featured_media | image_url: width: 800 }}"
+            alt="{{ featured_media.alt | escape | default: product.title }}"
+            width="800"
+            height="800"
+            loading="eager"
+            fetchpriority="high">
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+        {%- endif -%}
+      </div>
+
+      <!-- Thumbnails -->
+      {%- if product.media.size > 1 -%}
+        <div class="pmt-thumbnails" id="pmt-thumbnails-{{ section.id }}">
+          {%- for media in product.media -%}
+            <div
+              class="pmt-thumb{% if media.id == featured_media.id %} active{% endif %}"
+              data-media-src="{{ media | image_url: width: 800 }}"
+              data-media-alt="{{ media.alt | escape | default: product.title }}"
+              onclick="pmtSetImage(this, '{{ section.id }}')">
+              <img
+                src="{{ media | image_url: width: 140 }}"
+                alt="{{ media.alt | escape | default: product.title }}"
+                width="140"
+                height="140"
+                loading="lazy">
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <!-- Right: Product Info + Variant Matrix -->
+    <div class="pmt-info">
+
+      <!-- Variant price map for JS -->
+      <script type="application/json" id="pmt-price-map-{{ section.id }}">
+        {
+          {%- for variant in product.variants -%}
+          "{{ variant.id }}": {
+            "price": {{ variant.price }},
+            "compare_at_price": {{ variant.compare_at_price | default: 0 }},
+            "available": {{ variant.available }}
+          }{% unless forloop.last %},{% endunless %}
+          {%- endfor -%}
+        }
+      </script>
+
+      <!-- Sale badge (updated by JS) -->
+      <div class="pmt-label" id="pmt-sale-badge-{{ section.id }}" style="{% unless current_variant.compare_at_price > current_variant.price %}display:none;{% endunless %}">Sale</div>
+
+      <!-- Title -->
+      <h1 class="pmt-title">{{ product.title }}</h1>
+
+      <!-- Price (updated by JS when matrix row is selected) -->
+      <div class="pmt-price-wrap" id="pmt-price-wrap-{{ section.id }}">
+        <span class="pmt-price" id="pmt-price-{{ section.id }}">{{ current_variant.price | money }}</span>
+        <span class="pmt-compare" id="pmt-compare-{{ section.id }}" style="{% unless current_variant.compare_at_price > current_variant.price %}display:none;{% endunless %}">
+          {{ current_variant.compare_at_price | money }}
+        </span>
+        <span class="pmt-savings" id="pmt-savings-{{ section.id }}" style="{% unless current_variant.compare_at_price > current_variant.price %}display:none;{% endunless %}">
+          You save {{ current_variant.compare_at_price | minus: current_variant.price | money }}
+        </span>
+      </div>
+
+      <div class="pmt-divider"></div>
+
+      <!-- Variant Matrix -->
+      {%- if product.options.size >= 2 -%}
+        <p class="pmt-matrix-heading">Select Size &amp; Quantity Pricing</p>
+        {% render 'variant-matrix', product: product, section: section %}
+      {%- else -%}
+        <!-- Single-variant: simple ATC form -->
+        {%- form 'product', product, id: 'product-form-matrix-{{ section.id }}', class: 'product-form' -%}
+          <input type="hidden" name="id" value="{{ current_variant.id }}">
+          <div class="variant-matrix__atc-bar" style="display:block; margin-top:0;">
+            <div class="variant-matrix__atc-controls">
+              <div class="variant-matrix__qty-wrap">
+                <button type="button" class="variant-matrix__qty-btn"
+                  onclick="var i=this.nextElementSibling; if(i.value>1) i.value--;">−</button>
+                <input type="number" name="quantity" class="variant-matrix__qty-input" min="1" value="1">
+                <button type="button" class="variant-matrix__qty-btn"
+                  onclick="var i=this.previousElementSibling; i.value=parseInt(i.value||1)+1;">+</button>
+              </div>
+              <button type="submit" name="add" class="variant-matrix__atc-btn">
+                {%- if current_variant.available -%}Add to Cart{%- else -%}Sold Out{%- endif -%}
+              </button>
+            </div>
+          </div>
+        {%- endform -%}
+      {%- endif -%}
+
+    </div>
+  </div><!-- /.pmt-top -->
+
+  <!-- ── Bottom: Description ───────────────────────────────────── -->
+  <div class="pmt-description-section">
+    <h2 class="pmt-description-heading">Product Description</h2>
+    <div class="pmt-description-body">
+      {{ product.description }}
+    </div>
+  </div>
+
+</section>
+
+<script>
+/* ── Thumbnail switcher ──────────────────────────────────────── */
+function pmtSetImage(thumb, sectionId) {
+  var mainImg = document.getElementById('pmt-main-image-' + sectionId);
+  var thumbs  = document.getElementById('pmt-thumbnails-' + sectionId);
+  if (!mainImg) return;
+  mainImg.src = thumb.getAttribute('data-media-src');
+  mainImg.alt = thumb.getAttribute('data-media-alt');
+  if (thumbs) thumbs.querySelectorAll('.pmt-thumb').forEach(function(t) { t.classList.remove('active'); });
+  thumb.classList.add('active');
+}
+
+/* ── Dynamic price block ─────────────────────────────────────── */
+(function () {
+  var sectionId  = '{{ section.id }}';
+  var mapEl      = document.getElementById('pmt-price-map-' + sectionId);
+  if (!mapEl) return;
+  var priceMap   = JSON.parse(mapEl.textContent);
+
+  var elPrice    = document.getElementById('pmt-price-'   + sectionId);
+  var elCompare  = document.getElementById('pmt-compare-' + sectionId);
+  var elSavings  = document.getElementById('pmt-savings-' + sectionId);
+  var elBadge    = document.getElementById('pmt-sale-badge-' + sectionId);
+
+  function formatMoney(pence) {
+    return '\u00A3' + (pence / 100).toFixed(2);
+  }
+
+  /* Called by the matrix snippet via custom event */
+  document.addEventListener('matrix:priceUpdate', function (e) {
+    if (!e.detail) return;
+    var variantId      = e.detail.variantId;
+    var qty            = e.detail.qty || 1;
+    var data           = priceMap[variantId];
+    if (!data) return;
+
+    var unitPrice      = data.price;
+    var compareUnit    = data.compare_at_price;
+    var totalPrice     = unitPrice * qty;
+    var totalCompare   = compareUnit * qty;
+
+    /* Update main price = total (unit × qty) */
+    if (elPrice)   elPrice.textContent  = formatMoney(totalPrice);
+
+    /* Compare-at and savings */
+    if (compareUnit > unitPrice) {
+      if (elCompare) { elCompare.textContent = formatMoney(totalCompare); elCompare.style.display = ''; }
+      if (elSavings) { elSavings.textContent = 'You save ' + formatMoney(totalCompare - totalPrice); elSavings.style.display = ''; }
+      if (elBadge)   { elBadge.style.display = ''; }
+    } else {
+      if (elCompare) elCompare.style.display = 'none';
+      if (elSavings) elSavings.style.display = 'none';
+      if (elBadge)   elBadge.style.display = 'none';
+    }
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Product Matrix",
+  "tag": "section",
+  "class": "section-main-product-matrix",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "container",
+      "label": "Container width",
+      "options": [
+        { "value": "container", "label": "Default" },
+        { "value": "container-fluid", "label": "Fluid" },
+        { "value": "full-width", "label": "Full width" }
+      ],
+      "default": "container"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Matrix"
+    }
+  ]
+}
+{% endschema %}

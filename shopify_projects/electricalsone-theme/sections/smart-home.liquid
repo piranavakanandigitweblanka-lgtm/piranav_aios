@@ -1,0 +1,445 @@
+{% schema %}
+{
+  "name": "Smart Home Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "banner_title",
+      "label": "Banner Title",
+      "default": "Weekly Offer Sale"
+    },
+    {
+      "type": "textarea",
+      "id": "banner_subtitle",
+      "label": "Banner Subtitle",
+      "default": "Up to 15% Discount"
+    },
+    {
+      "type": "image_picker",
+      "id": "banner_image_1",
+      "label": "Banner Image 1"
+    },
+    {
+      "type": "url",
+      "id": "banner_link_1",
+      "label": "Banner Link 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "banner_image_2",
+      "label": "Banner Image 2"
+    },
+    {
+      "type": "url",
+      "id": "banner_link_2",
+      "label": "Banner Link 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "banner_image_3",
+      "label": "Banner Image 3"
+    },
+    {
+      "type": "url",
+      "id": "banner_link_3",
+      "label": "Banner Link 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_section_desktop",
+      "label": "Show Section on Desktop",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_section_mobile",
+      "label": "Show Section on Mobile",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        {
+          "type": "text",
+          "id": "category_name",
+          "label": "Category Name"
+        },
+        {
+          "type": "url",
+          "id": "category_link",
+          "label": "Category Link"
+        }
+      ]
+    },
+    {
+      "type": "product",
+      "name": "Recommended Product",
+      "settings": [
+        {
+          "type": "text",
+          "id": "product_name",
+          "label": "Product Name"
+        },
+        {
+          "type": "image_picker",
+          "id": "product_image",
+          "label": "Product Image"
+        },
+        {
+          "type": "text",
+          "id": "product_stats",
+          "label": "Product Stats (e.g., 81000+ sold)"
+        },
+        {
+          "type": "url",
+          "id": "product_link",
+          "label": "Product Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Smart Home Section",
+      "blocks": [
+        {
+          "type": "category"
+        },
+        {
+          "type": "product"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .smart-home-section {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1377px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+  }
+
+  /* Desktop Visibility */
+  {% unless section.settings.show_section_desktop %}
+    @media (min-width: 769px) {
+      .smart-home-section {
+        display: none;
+      }
+    }
+  {% endunless %}
+
+  /* Mobile Visibility */
+  {% unless section.settings.show_section_mobile %}
+    @media (max-width: 768px) {
+      .smart-home-section {
+        display: none;
+      }
+    }
+  {% endunless %}
+
+  .category-list {
+    flex: 0 0 200px;
+    background: #f1f1f1;
+    padding: 10px;
+  }
+
+  .category-list h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .category-list ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .category-list li {
+    margin-bottom: 8px;
+  }
+
+  .category-list a {
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+  }
+  .category-list a:hover {
+    color:#E64545;
+  }
+
+  .banner {
+    flex: 1;
+    position: relative;
+    height: 400px;
+    overflow: hidden;
+    background-color: #000;
+  }
+
+  .banner-slider {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .banner-slider a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5; /* Ensure links are above images but below navigation */
+  }
+
+  .banner-slider img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity 0.5s;
+    z-index: 1; /* Images below links */
+  }
+
+  .banner-slider img.active {
+    opacity: 1;
+  }
+
+  .banner-content {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    z-index: 6; /* Above links */
+  }
+
+  .banner-content h2 {
+    font-size: 36px;
+    margin: 0;
+  }
+
+  .banner-content p {
+    font-size: 18px;
+    margin: 10px 0;
+  }
+
+  .banner-nav {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    z-index: 10; /* Highest z-index for navigation */
+  }
+
+  .banner-nav button {
+    display:none;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .banner-nav button:hover {
+    background: rgba(0, 0, 0, 0.8);
+  }
+
+  .right-column {
+    flex: 0 0 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background-color:#f1f1f1;
+  }
+
+  .product-recommendations h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .product-item {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+  }
+
+  .you-may-like .yml-img-wrap {
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    margin-right: 10px;
+    overflow: hidden;
+  }
+
+  .product-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product-item a {
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+  }
+
+  .product-item a:hover {
+    text-decoration: none;
+    color:#E64545;
+  }
+
+  .product-item p {
+    margin: 3px 0 0;
+    font-size: 12px;
+    color: #666;
+  }
+
+  @media (max-width: 768px) {
+    .smart-home-section {
+      flex-direction: column;
+    }
+
+    .category-list,
+    .right-column {
+      flex: 1;
+    }
+
+    .banner {
+      height: 300px;
+    }
+
+    .right-column {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const slides = document.querySelectorAll('.banner-slider img');
+    const slideLinks = document.querySelectorAll('.banner-slider a');
+    let currentSlide = 0;
+
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.classList.remove('active');
+        if (i === index) slide.classList.add('active');
+      });
+      
+      slideLinks.forEach(link => link.style.display = 'none');
+      slideLinks[index].style.display = 'block';
+    }
+
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % slides.length;
+      showSlide(currentSlide);
+    }
+
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+      showSlide(currentSlide);
+    }
+
+    showSlide(currentSlide);
+    const slideInterval = setInterval(nextSlide, 5000);
+
+    const banner = document.querySelector('.banner');
+    const nav = document.createElement('div');
+    nav.className = 'banner-nav';
+    nav.innerHTML = `
+      <button class="prev-slide">❮</button>
+      <button class="next-slide">❯</button>
+    `;
+    banner.appendChild(nav);
+
+    document.querySelector('.prev-slide').addEventListener('click', (e) => {
+      e.stopPropagation();
+      prevSlide();
+      clearInterval(slideInterval);
+    });
+    
+    document.querySelector('.next-slide').addEventListener('click', (e) => {
+      e.stopPropagation();
+      nextSlide();
+      clearInterval(slideInterval);
+    });
+  });
+</script>
+
+<link rel="preload" href="{{ section.settings.banner_image_1 | img_url: '1377x537' }}" as="image" fetchpriority="high">
+
+<div class="smart-home-section">
+  <div class="category-list">
+    <h3> More Categories</h3>
+    <ul>
+      {% for block in section.blocks %}
+        {% if block.type == 'category' %}
+          <li>
+            <a href="{{ block.settings.category_link }}">{{ block.settings.category_name }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+      <!-- <li><a href="#">More Categories</a></li> -->
+    </ul>
+  </div>
+
+  <div class="banner">
+    <div class="banner-slider">
+      {% if section.settings.banner_image_1 %}
+        <a href="{{ section.settings.banner_link_1 }}" aria-label="Banner link 1"></a>
+        <img src="{{ section.settings.banner_image_1 | img_url: '1377x537' }}" alt="Banner 1" width="1377" height="537" loading="eager" fetchpriority="high" class="active">
+      {% endif %}
+      {% if section.settings.banner_image_2 %}
+        <a href="{{ section.settings.banner_link_2 }}" aria-label="Banner link 2"></a>
+        <img src="{{ section.settings.banner_image_2 | img_url: '1377x537' }}" alt="Banner 2" width="1377" height="537" loading="lazy">
+      {% endif %}
+      {% if section.settings.banner_image_3 %}
+        <a href="{{ section.settings.banner_link_3 }}" aria-label="Banner link 3"></a>
+        <img src="{{ section.settings.banner_image_3 | img_url: '1377x537' }}" alt="Banner 3" width="1377" height="537" loading="lazy">
+      {% endif %}
+    </div>
+    <div class="banner-content">
+      <h2>{{ section.settings.banner_title }}</h2>
+      <p>{{ section.settings.banner_subtitle }}</p>
+    </div>
+  </div>
+
+  <div class="right-column">
+    <div class="product-recommendations you-may-like">
+      <h3>You May Like</h3>
+      {% for block in section.blocks %}
+        {% if block.type == 'product' %}
+          <div class="product-item">
+            {% if block.settings.product_image %}
+              <div class="yml-img-wrap">
+                <a href="{{ block.settings.product_link }}">
+                  <img src="{{ block.settings.product_image | img_url: '60x60' }}" alt="{{ block.settings.product_name }}" width="60" height="60" loading="lazy">
+                </a>
+              </div>
+            {% endif %}
+            <div>
+              <p><a href="{{ block.settings.product_link }}">{{ block.settings.product_name }}</a></p>
+              <p>{{ block.settings.product_stats }}</p>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>

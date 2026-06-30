@@ -1,0 +1,89 @@
+@media only screen and (min-width: 768px) and (max-width: 991px),
+  only screen and (max-width: 767px) {
+  .header__logo {
+    width: auto;
+  }
+}
+.header__logo_image {
+  max-width: 100%;
+  transition: var(--transition);
+}
+.header__logo_image--dark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+}
+
+
+
+
+/* Header Main Menu */
+@media only screen and (min-width: 768px) and (max-width: 991px),
+  only screen and (max-width: 767px) {
+  .header__menu {
+    display: none;
+  }
+}
+
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+  .header__menu_li {
+    padding: 0 15px;
+  }
+}
+.header__menu_li:hover .header__mega_menu,
+.header__menu_li:hover .header__sub_menu,
+.header__menu_li:focus-within .header__mega_menu,
+.header__menu_li:focus-within .header__sub_menu {
+  visibility: visible;
+  margin-top: 0;
+  opacity: 1;
+  background:white;
+}
+button.header__menu_item {
+  background: none;
+  border: none;
+}
+@media only screen and (min-width: 768px) and (max-width: 991px),
+  only screen and (max-width: 767px) {
+  .header__actions {
+    width: auto;
+  }
+}
+
+.header__actions_btn:focus {
+  color: rgba(var(--color-base-text-link-hover));
+}
+
+@media only screen and (max-width: 479px) {
+  .header__actions_btn svg {
+    height: 20px;
+  }
+}
+
+.header__actions_btn.active::after {
+  visibility: visible;
+  margin-top: 12px;
+  transition: all 0.3s ease 0.3s;
+  opacity: 1;
+}
+@media only screen and (max-width: 479px) {
+  .header__actions_btn--wishlist {
+    display: none;
+  }
+}
+predictive-search.search-modal__form {
+  width: 100%;
+}
+.header__actions_btn--menu {
+    cursor: pointer;
+    line-height: 1;
+}
+predictive-search.search-modal__form {
+   display: block;
+}
+@media only screen and (max-width: 991px){
+  .header__inner {
+      min-height: 6rem;
+  }
+}  

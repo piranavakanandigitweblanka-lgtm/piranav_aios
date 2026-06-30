@@ -1,0 +1,36 @@
+.announcement-bar__link {
+  display: block;
+  text-decoration: none;
+  width: 100%;
+  padding: 1rem 0;
+}
+.announcement-bar__link:hover {
+    color: rgb(var(--color-foreground)) !important;
+    background-color: rgba(var(--color-card-hover), 0.06);
+    opacity: 0.8;
+}
+.announcement-bar__link .icon-arrow {
+  display: inline-block;
+  pointer-events: none;
+  margin-left: 0.8rem;
+  vertical-align: middle;
+  margin-bottom: 0.2rem;
+}
+.announcement-bar__link .announcement-bar__message {
+  padding: 0;
+}
+button.close__announcement--bar > * {
+  pointer-events: none;
+}
+span.announcement__text_inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: calc(100% - 50px);
+  padding: 0 0 0 2rem;
+}
+@media only screen and (max-width: 600px){
+  button.close__announcement--bar.modal__close-button.link {
+    width: 40px;
+  }
+}
