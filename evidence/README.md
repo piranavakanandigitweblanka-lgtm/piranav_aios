@@ -65,7 +65,7 @@ All evidence must be one of the following:
 | 2026-06-26 | SECTION-DOC-001 — Modern Product Section documentation | Evidence markdown | `docs/shopify-sections/MODERN_PRODUCT_SECTION.md` | PASS — full schema, features, duplicate risk GREEN, queryability complete |
 | 2026-06-26 | SECTION-CREATE-001 — modern-product-showcase.liquid created | Source file + evidence markdown | `shopify_projects/ledsone-uk-theme/sections/modern-product-showcase.liquid` + `evidence/2026-06-26_modern-product-showcase-creation.md` | STRUCTURAL PASS / LIVE UNTESTED — dev theme push required |
 | 2026-06-29 | IMAGE-FIX-001 — Variant image display fix (PDP images not showing) | Evidence markdown | `evidence/shopify_variant_image_display_fix_2026-06-29.md` | PASS — fix documented, product URL + ID + before/after screenshots all recorded |
-| 2026-06-30 | ELEC-PDP-UIUX-001 — Electricalsone PDP UI/UX improvement (description, highlights, accordion, responsive tables) | Evidence markdown + daily log | `evidence/shopify/electricalsone/pdp-uiux/2026-06-30_pdp_uiux_improvement_closure.md` + `Desktop/Website technical - piranav/2026-06-30/2026-06-30.md` | PASS (pre-push) — 4 files modified, 12 issues fixed, duplicate risk GREEN, queryability PASS. Git commit + live screenshot pending push instruction. |
+| 2026-06-30 | ELEC-PDP-UIUX-001 — Electricalsone PDP UI/UX improvement (description, highlights, accordion, responsive tables) | Evidence markdown + git commit | `evidence/shopify/electricalsone/pdp-uiux/2026-06-30_pdp_uiux_improvement_closure.md` · commit `e5754fe` | PASS — 6 files committed and pushed. Live Shopify preview screenshot pending. |
 
 ---
 

@@ -282,10 +282,10 @@ Per `evidence/README.md`:
 |------|--------|
 | At least one accepted evidence type exists | PASS — EV-01 (this file, Type 6) and EV-02 (daily log, Type 4) both present |
 | Index row complete in `evidence/README.md` | PASS — row added in this session |
-| Git commit hash recorded | PENDING (G1 gap) |
+| Git commit hash recorded | PASS — `e5754fe` pushed 2026-06-30 |
 | Live render confirmed | PENDING (G2 gap) |
 
-**Overall: PASS with 2 open gaps (G1, G2) — acceptable for pre-push closure. Full PASS on live confirmation.**
+**Overall: PASS — commit recorded. One remaining gap (G2 live screenshot) requires Shopify dev theme push.**
 
 ---
 
@@ -306,11 +306,11 @@ Per `evidence/README.md`:
 ## Appendix — Commit Hash (to be filled on push)
 
 ```
-Git commit hash: [ PENDING ]
-Push date:       [ PENDING ]
-Branch:          master → main
-Remote:          aios-piranav
-Pushed by:       Piranav (explicit instruction required — Rule 11)
+Git commit hash: e5754fe
+Push date:       2026-06-30
+Branch:          main → origin/main
+Remote:          origin (https://github.com/piranavakanandigitweblanka-lgtm/piranav_aios.git)
+Pushed by:       Piranav (explicit instruction given — Rule 11 satisfied)
 ```
 
 ---
