@@ -43,6 +43,27 @@ This document prevents all of that.
 
 ---
 
+## Standing Rules — Always Active
+
+### GPT Prompt Capture Rule (PERMANENT — effective 2026-07-01)
+
+Every GPT-generated prompt for a reusable task type **must be saved to `prompts/`** before the task is executed.
+
+Full rule: `prompts/GPT_CAPTURE_RULE.md`
+
+Quick checklist:
+1. Receive GPT prompt → search `PROMPT_REGISTER.md` and `prompts/[category]/`
+2. If equivalent exists → update it (do not duplicate)
+3. If no equivalent → create new file in correct category folder
+4. **Save the prompt file BEFORE running the task**
+5. After task: update `PROMPT_REGISTER.md` and include prompt path in closure report
+
+Failure to save before execution = **session FAIL**.
+
+Exempt: greetings, casual Q&A, one-off explanations.
+
+---
+
 ## Session Order — Follow Every Time
 
 ### Step 1 — Search existing assets first
@@ -84,6 +105,7 @@ Required closure fields (see `closure/README.md`):
 - Requirement ID
 - Asset path
 - Evidence path
+- **Prompt file path** (if a GPT prompt was used — see GPT Capture Rule above)
 - GitHub path / commit (if changed)
 - Queryability result YES/NO
 - Blockers
