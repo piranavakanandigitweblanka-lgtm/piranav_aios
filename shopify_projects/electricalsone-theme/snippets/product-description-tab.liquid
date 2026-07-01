@@ -1,229 +1,169 @@
 {%- liquid
-  assign shipping_policy   = product.metafields.metaname.product_shipping_policy.value
-  assign important_notes   = product.metafields.custom.important_notes.value
-  assign specifications    = product.metafields.custom.specifications.value
-  assign desc_panel_id     = 'pdt-desc-'     | append: product.id
-  assign specs_panel_id    = 'pdt-specs-'    | append: product.id
-  assign delivery_panel_id = 'pdt-delivery-' | append: product.id
-  assign notes_panel_id    = 'pdt-notes-'    | append: product.id
+  assign container_class = 'container'
+
+  if section.settings.container == 'container-fluid'
+    assign container_class = 'container-fluid'
+  elsif section.settings.container == 'no-offset'
+    assign container_class = 'container-fluid px-0'
+  endif
 -%}
 
-{%- if product.description != blank or shipping_policy != blank or specifications != blank or important_notes != blank -%}
-<div class="pdt-section">
+{% if product.description != blank %}
+<div class="{{ container_class }}">
+  <div class="product-desc-wrapper">
 
-  {%- if product.description != blank -%}
-  <div class="pdt-accordion">
-    <button
-      class="pdt-accordion__trigger"
-      type="button"
-      aria-expanded="true"
-      aria-controls="{{ desc_panel_id }}"
-      id="{{ desc_panel_id }}-btn"
-    >
-      <span class="pdt-accordion__label">Product Description</span>
-      <svg class="pdt-accordion__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="20" height="20"><polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <div
-      id="{{ desc_panel_id }}"
-      class="pdt-accordion__panel"
-      role="region"
-      aria-labelledby="{{ desc_panel_id }}-btn"
-    >
-      <div class="pdt-accordion__body rte pdt-rte-wrap">
-        {{ product.description }}
+    <div class="pd-accordion">
+
+      <!-- Mobile toggle button -->
+      <button
+        class="pd-accordion-header"
+        type="button"
+        aria-expanded="true"
+      >
+        Product Description
+        <svg class="pd-icon" viewBox="0 0 24 24">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+
+      <!-- Description -->
+      <div class="pd-accordion-body open">
+        <div class="pd-content">
+          {{ product.description }}
+        </div>
       </div>
-    </div>
-  </div>
-  {%- endif -%}
 
-  {%- if specifications != blank -%}
-  <div class="pdt-accordion">
-    <button
-      class="pdt-accordion__trigger"
-      type="button"
-      aria-expanded="false"
-      aria-controls="{{ specs_panel_id }}"
-      id="{{ specs_panel_id }}-btn"
-    >
-      <span class="pdt-accordion__label">Specifications</span>
-      <svg class="pdt-accordion__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="20" height="20"><polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <div
-      id="{{ specs_panel_id }}"
-      class="pdt-accordion__panel pdt-accordion__panel--closed"
-      role="region"
-      aria-labelledby="{{ specs_panel_id }}-btn"
-    >
-      <div class="pdt-accordion__body rte pdt-rte-wrap">
-        {{ specifications }}
-      </div>
     </div>
-  </div>
-  {%- endif -%}
 
-  {%- if shipping_policy != blank -%}
-  <div class="pdt-accordion">
-    <button
-      class="pdt-accordion__trigger"
-      type="button"
-      aria-expanded="false"
-      aria-controls="{{ delivery_panel_id }}"
-      id="{{ delivery_panel_id }}-btn"
-    >
-      <span class="pdt-accordion__label">Delivery &amp; Returns</span>
-      <svg class="pdt-accordion__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="20" height="20"><polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <div
-      id="{{ delivery_panel_id }}"
-      class="pdt-accordion__panel pdt-accordion__panel--closed"
-      role="region"
-      aria-labelledby="{{ delivery_panel_id }}-btn"
-    >
-      <div class="pdt-accordion__body rte">
-        {%- if product.metafields.metaname.product_shipping_policy.type == "file_reference" -%}
-          <img src="{{ shipping_policy | img_url: 'master' }}" alt="Delivery and Returns Policy" loading="lazy" style="max-width:100%;height:auto;">
-        {%- else -%}
-          {{ shipping_policy }}
-        {%- endif -%}
-      </div>
-    </div>
   </div>
-  {%- endif -%}
-
-  {%- if important_notes != blank -%}
-  <div class="pdt-accordion">
-    <button
-      class="pdt-accordion__trigger"
-      type="button"
-      aria-expanded="false"
-      aria-controls="{{ notes_panel_id }}"
-      id="{{ notes_panel_id }}-btn"
-    >
-      <span class="pdt-accordion__label">Important Notes</span>
-      <svg class="pdt-accordion__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="20" height="20"><polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <div
-      id="{{ notes_panel_id }}"
-      class="pdt-accordion__panel pdt-accordion__panel--closed"
-      role="region"
-      aria-labelledby="{{ notes_panel_id }}-btn"
-    >
-      <div class="pdt-accordion__body pdt-accordion__body--notice rte">
-        {{ important_notes }}
-      </div>
-    </div>
-  </div>
-  {%- endif -%}
-
 </div>
-{%- endif -%}
+{% endif %}
 
 <style>
-.pdt-section {
-  margin: 32px 0;
+/* ===== KEEPING EXISTING UI STYLES ===== */
+
+.container {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 0 16px;
 }
 
-.pdt-accordion {
-  border-top: 1px solid rgba(var(--color-foreground, 18, 18, 18), 0.12);
-}
-
-.pdt-accordion:last-child {
-  border-bottom: 1px solid rgba(var(--color-foreground, 18, 18, 18), 0.12);
-}
-
-.pdt-accordion__trigger {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.container-fluid {
   width: 100%;
-  padding: 18px 0;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: inherit;
-  font-weight: 600;
-  color: inherit;
-  text-align: left;
-  gap: 12px;
-  font-family: inherit;
+  padding: 0 20px;
 }
 
-.pdt-accordion__trigger:focus-visible {
-  outline: 2px solid rgb(var(--color-foreground, 18, 18, 18));
-  outline-offset: 3px;
-  border-radius: 2px;
+.container-fluid.px-0 {
+  padding: 0;
 }
 
-.pdt-accordion__chevron {
-  flex-shrink: 0;
-  transition: transform 0.25s ease;
+.product-desc-wrapper {
+  margin: 24px 0;
 }
 
-.pdt-accordion__trigger[aria-expanded="true"] .pdt-accordion__chevron {
-  transform: rotate(180deg);
-}
-
-.pdt-accordion__panel {
+.pd-accordion {
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  background: #fff;
   overflow: hidden;
 }
 
-.pdt-accordion__panel--closed {
-  display: none;
+.pd-accordion-header {
+  width: 100%;
+  background: #f9f9f9;
+  border: none;
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
 }
 
-.pdt-accordion__body {
-  padding-bottom: 24px;
+.pd-accordion-header:hover {
+  background: #f2f2f2;
 }
 
-.pdt-accordion__body--notice {
-  background: #fffbeb;
-  border-left: 4px solid #f59e0b;
-  padding: 16px 20px;
-  margin-bottom: 24px;
-  border-radius: 0 6px 6px 0;
+.pd-icon {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.3s ease;
+  fill: none;
+  stroke: #333;
+  stroke-width: 2;
 }
 
-.pdt-rte-wrap {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+.pd-accordion-header[aria-expanded="false"] .pd-icon {
+  transform: rotate(-90deg);
 }
 
-.pdt-rte-wrap table {
-  min-width: 400px;
+.pd-accordion-body {
+  overflow: hidden;
 }
 
-@media screen and (max-width: 749px) {
-  .pdt-accordion__trigger {
-    padding: 16px 0;
+.pd-content {
+  padding: 18px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #444;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+/* Scrollbar */
+.pd-content::-webkit-scrollbar {
+  width: 6px;
+}
+.pd-content::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+.pd-content::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+/* ===== MOBILE: DROPDOWN ONLY ===== */
+@media (max-width: 768px) {
+  .pd-accordion-body {
+    max-height: 0;
+    transition: max-height 0.35s ease;
+  }
+
+  .pd-accordion-body.open {
+    max-height: 2000px;
+  }
+
+  .pd-content {
+    max-height: 260px;
+    font-size: 14px;
+    padding: 16px;
+  }
+}
+
+/* ===== DESKTOP: ALWAYS OPEN, SAME UI ===== */
+@media (min-width: 769px) {
+  .pd-accordion-header {
+    display: none;
+  }
+
+  .pd-accordion-body {
+    max-height: none !important;
+    overflow: visible;
   }
 }
 </style>
 
 <script>
-(function () {
-  'use strict';
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".pd-accordion-header").forEach(header => {
+    header.addEventListener("click", function () {
+      const body = this.nextElementSibling;
+      const expanded = this.getAttribute("aria-expanded") === "true";
 
-  function pdtInit() {
-    document.querySelectorAll('.pdt-accordion__trigger').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var expanded = this.getAttribute('aria-expanded') === 'true';
-        var panel = document.getElementById(this.getAttribute('aria-controls'));
-        if (!panel) return;
-        if (expanded) {
-          this.setAttribute('aria-expanded', 'false');
-          panel.classList.add('pdt-accordion__panel--closed');
-        } else {
-          this.setAttribute('aria-expanded', 'true');
-          panel.classList.remove('pdt-accordion__panel--closed');
-        }
-      });
+      this.setAttribute("aria-expanded", !expanded);
+      body.classList.toggle("open");
     });
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', pdtInit);
-  } else {
-    pdtInit();
-  }
-})();
+  });
+});
 </script>

@@ -67,6 +67,9 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-07-01 | `daily-session-closure` | closure | `prompts/closure/daily-session-closure.md` | _(formalised from START_HERE.md protocol)_ | ACTIVE |
 | 2026-07-01 | `capability-log-extraction` | closure | `prompts/closure/capability-log-extraction.md` | _(formalised from session CAPABILITY LOG practice)_ | ACTIVE |
 | 2026-07-01 | `gpt-prompt-capture-rule` | closure | `prompts/GPT_CAPTURE_RULE.md` | _(standing rule — Varmen instruction 2026-07-01)_ | PERMANENT RULE |
+| 2026-07-01 | `shopify-pdp-gallery-nav-add` | implementation | `prompts/implementation/shopify-pdp-gallery-nav-add.md` | `evidence/shopify/electricalsone/pdp-gallery-nav/2026-07-01_pdp_gallery_nav_closure.md` | ACTIVE |
+| 2026-07-01 | `shopify-pdp-gallery-nav-fix` | implementation | `prompts/implementation/shopify-pdp-gallery-nav-fix.md` | `evidence/shopify/electricalsone/pdp-gallery-nav/2026-07-01_pdp_gallery_nav_closure.md` | ACTIVE |
+| 2026-07-01 | `aios-closure-evidence-template` | documentation | `prompts/documentation/aios-closure-evidence-template.md` | _(standing template — applies to all future closure tasks)_ | ACTIVE |
 
 ---
 

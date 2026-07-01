@@ -1,0 +1,206 @@
+{% comment %}
+  Modern Product Page Template
+  Drop this into your Shopify theme as templates/product.liquid
+  or create a new template: product.custom.liquid
+{% endcomment %}
+
+{{ 'product-page.css' | asset_url | stylesheet_tag }}
+
+<div class="product-page">
+  <div class="product-container">
+    <!-- Image Gallery -->
+    <div class="product-gallery">
+      <div class="main-image-wrapper">
+        <img
+          id="main-product-image"
+          src="{{ product.featured_image | image_url: width: 800 }}"
+          alt="{{ product.featured_image.alt | escape }}"
+          loading="eager"
+        >
+      </div>
+
+      {% if product.images.size > 1 %}
+        <div class="thumbnail-list">
+          {% for image in product.images limit: 4 %}
+            <button
+              type="button"
+              class="thumbnail-button{% if forloop.first %} active{% endif %}"
+              data-image="{{ image | image_url: width: 800 }}"
+              data-alt="{{ image.alt | escape }}"
+              onclick="updateMainImage(this)"
+            >
+              <img
+                src="{{ image | image_url: width: 200 }}"
+                alt="{{ image.alt | escape }}"
+                loading="lazy"
+              >
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Product Info -->
+    <div class="product-info">
+      <h1 class="product-title">{{ product.title }}</h1>
+
+      <div class="product-rating">
+        <div class="stars" aria-label="{{ product.metafields.reviews.rating | default: 5 }} out of 5 stars">
+          {% assign rating = product.metafields.reviews.rating | default: 5 %}
+          {% for i in (1..5) %}
+            <svg class="star-icon{% if i <= rating %} filled{% endif %}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          {% endfor %}
+          <span class="review-count">({{ product.metafields.reviews.rating_count | default: 124 }} reviews)</span>
+        </div>
+      </div>
+
+      <div class="product-price">
+        {% if product.compare_at_price > product.price %}
+          <span class="sale-price">{{ product.price | money }}</span>
+          <span class="original-price">{{ product.compare_at_price | money }}</span>
+        {% else %}
+          <span class="current-price">{{ product.price | money }}</span>
+        {% endif %}
+      </div>
+
+      {% form 'product', product %}
+        <!-- Variants -->
+        {% unless product.has_only_default_variant %}
+          <div class="variant-selectors">
+            {% for option in product.options_with_values %}
+              <fieldset class="variant-option">
+                <legend>{{ option.name }}</legend>
+                <div class="option-values">
+                  {% for value in option.values %}
+                    <label class="option-label">
+                      <input
+                        type="radio"
+                        name="{{ option.name | handleize }}"
+                        value="{{ value | escape }}"
+                        {% if option.selected_value == value %}checked{% endif %}
+                        data-option-index="{{ forloop.parentloop.index0 }}"
+                      >
+                      <span class="option-value">{{ value }}</span>
+                    </label>
+                  {% endfor %}
+                </div>
+              </fieldset>
+            {% endfor %}
+          </div>
+        {% endunless %}
+
+        <select name="id" class="variant-select" hidden>
+          {% for variant in product.variants %}
+            <option
+              value="{{ variant.id }}"
+              {% if variant == product.selected_or_first_available_variant %}selected{% endif %}
+              {% unless variant.available %}disabled{% endunless %}
+              data-price="{{ variant.price | money }}"
+              data-compare="{{ variant.compare_at_price | money }}"
+            >
+              {{ variant.title }} - {{ variant.price | money }}
+            </option>
+          {% endfor %}
+        </select>
+
+        <!-- Quantity & Add to Cart -->
+        <div class="purchase-row">
+          <div class="quantity-selector">
+            <button type="button" class="qty-btn" onclick="adjustQty(-1)">-</button>
+            <input
+              type="number"
+              name="quantity"
+              value="1"
+              min="1"
+              max="9"
+              class="qty-input"
+              id="quantity-input"
+            >
+            <button type="button" class="qty-btn" onclick="adjustQty(1)">+</button>
+          </div>
+
+          <button
+            type="submit"
+            name="add"
+            class="add-to-cart-btn"
+            {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}
+          >
+            {% if product.selected_or_first_available_variant.available %}
+              Add to Cart
+            {% else %}
+              Sold Out
+            {% endif %}
+          </button>
+        </div>
+      {% endform %}
+
+      <!-- Trust Badges -->
+      <div class="trust-badges">
+        <div class="badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 18 16 18 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          <span>Free Shipping</span>
+        </div>
+        <div class="badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>2-Year Warranty</span>
+        </div>
+        <div class="badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          <span>30-Day Returns</span>
+        </div>
+      </div>
+
+      <!-- Accordion Details -->
+      <div class="product-accordions">
+        <details class="accordion" open>
+          <summary>
+            <span>Product Details</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="accordion-content">
+            {{ product.description }}
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary>
+            <span>Shipping & Returns</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="accordion-content">
+            <p>Free standard shipping on all orders. Express shipping available at checkout. Returns accepted within 30 days of delivery in original condition.</p>
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary>
+            <span>Warranty</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="accordion-content">
+            <p>All products come with a 2-year manufacturer warranty covering defects in materials and workmanship.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function updateMainImage(btn) {
+    const main = document.getElementById('main-product-image');
+    main.src = btn.dataset.image;
+    main.alt = btn.dataset.alt;
+    document.querySelectorAll('.thumbnail-button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function adjustQty(delta) {
+    const input = document.getElementById('quantity-input');
+    const val = parseInt(input.value) || 1;
+    const next = Math.max(1, Math.min(9, val + delta));
+    input.value = next;
+  }
+</script>

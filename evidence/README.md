@@ -66,6 +66,9 @@ All evidence must be one of the following:
 | 2026-06-26 | SECTION-CREATE-001 — modern-product-showcase.liquid created | Source file + evidence markdown | `shopify_projects/ledsone-uk-theme/sections/modern-product-showcase.liquid` + `evidence/2026-06-26_modern-product-showcase-creation.md` | STRUCTURAL PASS / LIVE UNTESTED — dev theme push required |
 | 2026-06-29 | IMAGE-FIX-001 — Variant image display fix (PDP images not showing) | Evidence markdown | `evidence/shopify_variant_image_display_fix_2026-06-29.md` | PASS — fix documented, product URL + ID + before/after screenshots all recorded |
 | 2026-06-30 | ELEC-PDP-UIUX-001 — Electricalsone PDP UI/UX improvement (description, highlights, accordion, responsive tables) | Evidence markdown + git commit | `evidence/shopify/electricalsone/pdp-uiux/2026-06-30_pdp_uiux_improvement_closure.md` · commit `e5754fe` | PASS — 6 files committed and pushed. Live Shopify preview screenshot pending. |
+| 2026-07-01 | ELEC-PDP-GAL-001 — Electricalsone PDP gallery navigation (Previous/Next overlay buttons + click fix) | Evidence markdown | `evidence/shopify/electricalsone/pdp-gallery-nav/2026-07-01_pdp_gallery_nav_closure.md` | STRUCTURAL PASS / LIVE PENDING — 3 files modified in working tree, push + browser validation required |
+| 2026-07-01 | ELEC-PDP-LBX-001 — Electricalsone PDP Amazon-style lightbox upgrade (dark card, thumb strip, swipe, scroll lock) | Evidence markdown | `evidence/shopify/electricalsone/pdp-gallery-nav/2026-07-01_pdp_gallery_nav_closure.md` (section 2) | STRUCTURAL PASS / LIVE PENDING — `media-gallery.js` + `section-main-product.css` changed |
+| 2026-07-01 | PROD-IMG-FIX-4536806506592 — Product image alignment fix (delete + re-upload + variant re-assign) | Evidence markdown | `evidence/shopify/product-image-fixes/product-4536806506592-image-alignment-fix-2026-07-01.md` | AMBER — fix recorded, store name + screenshots + storefront URL still missing |
 
 ---
 

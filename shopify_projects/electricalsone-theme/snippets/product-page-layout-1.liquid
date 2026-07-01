@@ -1,5 +1,6 @@
 <media-gallery id="MediaGallery-{{ section.id }}" role="region" {% if section.settings.enable_sticky_info %}class="product__media-gallery"{% endif %} aria-label="{{ 'products.product.media.gallery_viewer' | t }}" data-desktop-layout="{{ section.settings.gallery_layout }}">
   <div id="GalleryStatus-{{ section.id }}" class="visually-hidden" role="status"></div>
+  <div class="pgn-viewer-wrap">
   <slider-component id="GalleryViewer-{{ section.id }}" class="slider-mobile-gutter">
    <ul id="Slider-Gallery-{{ section.id }}" class="product__media-list contains-media grid grid--peek list-unstyled slider slider--mobile" role="list">
       {%- liquid
@@ -36,7 +37,26 @@
       <button type="button" class="slider-button slider-button--next" name="next" aria-label="{{ 'general.slider.next_slide' | t }}">{% render 'icon-caret' %}</button>
     </div>
 </slider-component>
-  
+  {%- if media_count > 1 -%}
+  <button
+    type="button"
+    class="pgn-arrow pgn-arrow--prev no-js-hidden"
+    aria-label="Previous image"
+    aria-controls="Slider-Gallery-{{ section.id }}"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="15 18 9 12 15 6"></polyline></svg>
+  </button>
+  <button
+    type="button"
+    class="pgn-arrow pgn-arrow--next no-js-hidden"
+    aria-label="Next image"
+    aria-controls="Slider-Gallery-{{ section.id }}"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 18 15 12 9 6"></polyline></svg>
+  </button>
+  {%- endif -%}
+  </div>
+
 {%- if first_3d_model -%}
 <button
         class="button button--full-width product__xr-button"
