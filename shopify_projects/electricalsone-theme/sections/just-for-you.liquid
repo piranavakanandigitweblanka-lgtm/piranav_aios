@@ -4,7 +4,12 @@
   Compatible with Shopify 2.0 Online Store
 {% endcomment %}
 
-<section class="jfy-section" id="just-for-you-{{ section.id }}">
+<section
+  class="jfy-section"
+  id="just-for-you-{{ section.id }}"
+  data-auto-switch="{{ section.settings.enable_auto_switch }}"
+  data-interval="{{ section.settings.switch_interval_seconds | times: 1000 }}"
+  data-visible="{{ section.settings.visible_products_count }}">
   <div class="jfy-container">
     <h2 class="jfy-heading">{{ section.settings.heading }}</h2>
 
@@ -20,7 +25,7 @@
             {% assign discount = compare_price | minus: sale_price | times: 100 | divided_by: compare_price %}
           {% endif %}
 
-          <div class="jfy-card">
+          <div class="jfy-card" data-jfy-card>
             <a href="{{ product.url }}" class="jfy-card__link">
               <div class="jfy-card__image-wrap">
                 {% if product.featured_image %}
@@ -316,6 +321,19 @@
     100% { background-position: -200% 0; }
   }
 
+  /* Auto-switch hidden state — JS adds/removes this class */
+  .jfy-card--hidden {
+    display: none !important;
+  }
+  /* Subtle fade-in when a group becomes visible */
+  .jfy-card--fade-in {
+    animation: jfy-fadein 0.4s ease;
+  }
+  @keyframes jfy-fadein {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   /* View All */
   .jfy-view-all { text-align: center; margin-top: 24px; }
   .jfy-view-all__btn {
@@ -443,6 +461,57 @@
     });
   };
 
+  // ── Auto-switch rotation ──────────────────────────────────────────────────
+  (function jfyAutoSwitch() {
+    var sectionId = 'just-for-you-{{ section.id }}';
+
+    function init() {
+      var section = document.getElementById(sectionId);
+      if (!section) return;
+
+      var enabled  = section.getAttribute('data-auto-switch') === 'true';
+      var interval = parseInt(section.getAttribute('data-interval'), 10) || 60000;
+      var visible  = parseInt(section.getAttribute('data-visible'), 10)  || 6;
+
+      if (!enabled) return;
+
+      var cards = Array.prototype.slice.call(section.querySelectorAll('[data-jfy-card]'));
+      if (cards.length <= visible) return; // nothing to rotate
+
+      var currentGroup = 0;
+      var totalGroups  = Math.ceil(cards.length / visible);
+
+      function showGroup(groupIndex) {
+        cards.forEach(function(card, i) {
+          var inGroup = (i >= groupIndex * visible && i < (groupIndex + 1) * visible);
+          if (inGroup) {
+            card.classList.remove('jfy-card--hidden');
+            card.classList.remove('jfy-card--fade-in');
+            // Force reflow so animation replays
+            void card.offsetWidth;
+            card.classList.add('jfy-card--fade-in');
+          } else {
+            card.classList.add('jfy-card--hidden');
+          }
+        });
+      }
+
+      // Show first group immediately
+      showGroup(0);
+
+      setInterval(function() {
+        currentGroup = (currentGroup + 1) % totalGroups;
+        showGroup(currentGroup);
+      }, interval);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+
 })();
 </script>
 
@@ -483,6 +552,35 @@
       "id": "show_view_all",
       "label": "Show View All Button",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Auto-Switch"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_auto_switch",
+      "label": "Enable Auto-Switch",
+      "info": "Rotates visible products automatically. Falls back to full grid if JavaScript is unavailable.",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "switch_interval_seconds",
+      "label": "Switch Interval (seconds)",
+      "min": 10,
+      "max": 120,
+      "step": 5,
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "visible_products_count",
+      "label": "Visible Products per Group",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 6
     }
   ],
   "presets": [

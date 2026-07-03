@@ -44,6 +44,8 @@ Standard prompts ensure every session produces output in the same format, with t
 | `discovery/shopify-liquid-section-code-review.md` | Full code review of a Liquid section or snippet | ACTIVE |
 | `discovery/shopify-seo-strategy-audit.md` | 13-strategy SEO discovery audit for any Shopify store | ACTIVE |
 | `discovery/shopify-layout-audit-three-page.md` | Layout audit across homepage, collection, product pages with benchmark comparison | ACTIVE |
+| `discovery/shopify-configurator-page-sales-investigation.md` | Investigate whether a specific Shopify page (e.g. configurator) is generating sales | ACTIVE |
+| `discovery/shopify-unlisted-products-sales-report.md` | Check whether any UNLISTED Shopify products have made sales in a date range | ACTIVE |
 
 ### implementation/
 
@@ -53,6 +55,9 @@ Standard prompts ensure every session produces output in the same format, with t
 | `implementation/shopify-lighthouse-accessibility-fix.md` | Resolve a named Lighthouse accessibility failure | ACTIVE |
 | `implementation/shopify-predictive-search-field-fix.md` | Fix predictive search dropdown vs. full results mismatch | ACTIVE |
 | `implementation/shopify-promo-banner-config-add.md` | Add a new collection entry to a promo banner CONFIG object | ACTIVE |
+| `implementation/shopify-pdp-gallery-nav-add.md` | Add previous/next navigation buttons to a PDP image gallery | ACTIVE |
+| `implementation/shopify-pdp-gallery-nav-fix.md` | Fix broken previous/next navigation in a PDP image gallery | ACTIVE |
+| `implementation/shopify-section-auto-product-switch.md` | Add auto-rotating product groups to a static product grid section | ACTIVE |
 
 ### validation/
 
