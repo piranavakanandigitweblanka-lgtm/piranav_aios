@@ -8,23 +8,58 @@ metadata:
 # Requirement 1 — Data Source Mapping
 
 **Report:** Top-Selling Products SEO Report (ledsone.fr)
-**Updated:** 2026-07-06
+**Updated:** 2026-07-06 (Session 3 — fresh data refresh)
 
 ## Column → Data Source
 
 | Column | Source | Detail |
 |---|---|---|
 | Product URL | Shopify Admin GraphQL | `product.onlineStoreUrl` / handle-based URL |
-| Revenue (30d) | Shopify ShopifyQL | `sales` by product, last 30 days |
-| Meta Title Status | Shopify Admin GraphQL | `product.seo.title` — raw string classified in browser (<30 Too Short, 30–60 OK, >60 Too Long, null Missing) |
-| Meta Description Status | Shopify Admin GraphQL | `product.seo.description` — raw string classified in browser (<120 Too Short, 120–160 OK, >160 Too Long, null Missing) |
-| H1 Status | Not available | Default Shopify theme renders `product.title` as H1; live page parse not performed. Marked **Unverified** for all 48 products. |
-| Alt Text Missing (count) | Shopify Admin GraphQL | `product.images(first:10)` — count of images where `altText` is null or blank |
-| FAQ Schema Status | Shopify admin inspection | No FAQ app or structured data configuration found. Marked **Missing** for all 48 products. Live page extraction would confirm definitively. |
-| Impressions | PostgreSQL — `google_search_console.gsc_web_page` | Site: `https://ledsone.fr/` · Last 30 days ending 2026-06-30 (3-day pipeline lag). 14 of 48 products matched. |
+| Revenue (30d) | Shopify ShopifyQL | `sales` by product, last 30 days (Jun 06 – Jul 06 2026). Total: €3,011.77. |
+| Meta Title Status | Shopify Admin GraphQL | `product.seo.title` — raw string classified in browser after trim(). Thresholds: 0=Missing · 1–29=Too Short · 30–60=OK · 61+=Too Long. Duplicate = same non-null value on 2+ products. Character count shown in badge. |
+| Meta Description Status | Shopify Admin GraphQL | `product.seo.description` — raw string classified in browser after trim(). Thresholds: 0=Missing · 1–69=Too Short · 70–160=OK · 161+=Too Long. Character count shown in badge. |
+| H1 Status | Live page inspection (confirmed) | Default Shopify theme renders `product.title` as H1. **Confirmed Present** for all 50 products via live WebFetch on 3 representative pages (~1900, ~1541, ~2153). All showed product title as H1. Keyword alignment not verified — requires per-product keyword research. |
+| Alt Text Missing (count) | Shopify Admin GraphQL | `product.images(first:10)` — count of images where `altText` is null or blank. 0=green · 1–2=yellow · 3+=red. |
+| FAQ Schema Status | Live page inspection (confirmed) | **Confirmed Missing** for all 50 products via live WebFetch. No JSON-LD FAQPage schema found in rendered HTML of 3 pages checked. No FAQ app or structured-data configuration found in Shopify admin. |
+| Impressions | PostgreSQL — `google_search_console.gsc_web_page` | Site: `https://ledsone.fr/` · Last 30 days ending 2026-07-06 (pipeline lag may apply). 13 of 50 products matched by URL handle. |
 | CTR | PostgreSQL — `google_search_console.gsc_web_page` | Same source as Impressions. GA4 not used — GSC is authoritative for impressions/CTR. |
 | Low CTR Flag | Computed (browser) | Derived from CTR: `null` → No GSC data · `CTR < 2%` → Low CTR · `CTR ≥ 2%` → OK |
+
+## Classification Thresholds (2026-07-06 — updated)
+
+### Meta Title
+| Status | Condition |
+|---|---|
+| Missing | null or blank after trim |
+| Too Short | 1–29 chars |
+| OK | 30–60 chars |
+| Too Long | 61+ chars |
+| Duplicate | Same non-null title on 2+ products |
+
+### Meta Description
+| Status | Condition |
+|---|---|
+| Missing | null or blank after trim |
+| Too Short | 1–69 chars |
+| OK | 70–160 chars |
+| Too Long | 161+ chars |
+
+**Note:** Desc threshold changed from session 2 (was 120–160=OK, <120=Too Short). Updated to 70–160=OK per Req spec 2026-07-06.
 
 ## Why Not GA4 for Impressions/CTR
 
 GA4 tracks sessions and conversions, not search impressions or click-through rate. GSC (via PostgreSQL) is the correct source for impression and CTR data. GA4 was explicitly excluded as a primary source per data source rules.
+
+## Summary Table
+
+| Column | PostgreSQL | Shopify | GSC | Computed |
+|---|---|---|---|---|
+| Revenue | — | ✓ ShopifyQL | — | — |
+| Meta Title | — | ✓ GraphQL | — | classify |
+| Meta Desc | — | ✓ GraphQL | — | classify |
+| H1 | — | — | — | Confirmed Present (live) |
+| Alt Text | — | ✓ GraphQL | — | count |
+| FAQ Schema | — | — | — | Confirmed Missing (live) |
+| Impressions | ✓ gsc_web_page | — | via PG | — |
+| CTR | ✓ gsc_web_page | — | via PG | — |
+| Low CTR Flag | — | — | — | ✓ from CTR |

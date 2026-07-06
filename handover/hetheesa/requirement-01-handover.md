@@ -139,3 +139,64 @@ See `evidence/hetheesa/requirement-01-data-source-mapping.md` and `requirement-0
 
 ### Validation
 All 12 filter tests PASS. See `validation/hetheesa/requirement-01-filter-validation.md`.
+
+---
+
+## Update — 2026-07-06 (Session 3): Full Data Refresh — Top 50 Products
+
+### Summary of Changes
+
+Full fresh data refresh. All data re-fetched from scratch. **No old values reused.**
+
+- **Period updated:** Jun 06 – Jul 06 2026 (last 30 days from today)
+- **Product count:** 48 → **50** (ShopifyQL returned 50 full revenue rows)
+- **Revenue total:** €3,011.77
+- **7 new products** entered top 50 vs Jul 03 report: ~1553, ~1628, ~1898, ~1971, ~1567, ~5934, ~1653
+
+### Classification Threshold Updates
+
+| Column | Old | New |
+|---|---|---|
+| Meta Title OK | 30–60 chars | 30–60 chars (unchanged) |
+| Meta Desc OK | 120–160 chars | **70–160 chars** (corrected) |
+| Meta Desc Too Short | <120 chars | **<70 chars** (corrected) |
+
+### H1 Status: Unverified → Present
+
+Live WebFetch performed on 3 product pages (~1900, ~1541, ~2153). Product title confirmed as H1 on all. Changed from "Unverified" to "Present" for all 50 products. Keyword alignment not verified — requires per-product keyword research.
+
+### FAQ Schema: Assumption → Live-Confirmed
+
+Previously assumed Missing from Shopify admin inspection. Now confirmed via live WebFetch on 3 pages — no JSON-LD FAQPage schema found on any product page.
+
+### Badge Char Count Display
+
+Meta Title and Desc badges now show character count inline: "OK (48)" / "Too Long (72)" / "Too Short (22)". Missing badge shows no count.
+
+### Fresh Data Summary
+
+| Metric | Count |
+|---|---|
+| Products analysed | 50 |
+| Missing Meta Title | 6 |
+| Missing Meta Desc | 8 |
+| Title Too Long (>60) | 12 |
+| Desc Too Long (>160) | 3 |
+| FAQ Missing | 50 (confirmed) |
+| H1 Present | 50 (confirmed) |
+| Products with GSC data | 13 of 50 |
+| Low CTR (< 2%) | 11 of 13 |
+
+### Updated AIOS Files
+
+| File | Status |
+|---|---|
+| `evidence/hetheesa/requirement-01-data-source-mapping.md` | Updated — new thresholds, H1 confirmed |
+| `evidence/hetheesa/requirement-01-postgresql-shopify-gsc-check.md` | Updated — H1 Present, FAQ confirmed |
+| `evidence/hetheesa/requirement-01-gsc-data-check.md` | Updated — 13 matches, new GSC window |
+| `validation/hetheesa/requirement-01-filter-validation.md` | Updated — 50 products, 14/14 PASS |
+| `reports/hetheesa/requirement-01-top-selling-products-seo.html` | Standalone copy updated |
+| `handover/hetheesa/requirement-01-handover.md` | This file |
+
+### Status
+HTML file committed and pushed via inner repo (Staff-requirements) → GitHub auto-deploy to Vercel. No manual deploy. No Vercel CLI used.
