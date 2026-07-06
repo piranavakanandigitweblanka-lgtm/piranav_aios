@@ -200,3 +200,44 @@ Meta Title and Desc badges now show character count inline: "OK (48)" / "Too Lon
 
 ### Status
 HTML file committed and pushed via inner repo (Staff-requirements) → GitHub auto-deploy to Vercel. No manual deploy. No Vercel CLI used.
+
+---
+
+## Update — 2026-07-06 (Session 4): Data Source Rules Overhaul
+
+### Summary of Changes
+
+Full data source rule replacement. **No old values reused.** All data re-fetched under new rules.
+
+### Rule Changes vs Session 3
+
+| Column | Session 3 Rule | Session 4 Rule |
+|---|---|---|
+| Revenue | ShopifyQL `FROM sales` gross_sales | Shopify Orders GraphQL — `discountedTotalSet` by product handle |
+| Revenue Total | €3,011.77 | €3,574.15 |
+| Alt Text | `images(first:10)` — first 10 only | `images(first:50)` — ALL images |
+| FAQ Schema | WebFetch DOM check (JSON-LD) — all 50 Missing | Shopify metafield `custom.faq_schema` — 19 Present / 31 Missing |
+| Meta Desc Duplicate | Not checked | Now checked (R1_MD_DUPES set) |
+| H1 Status | Present (WebFetch confirmed) | OK (exists and matches product title/keyword) |
+
+### New Filter Added
+- **FAQ Present** (`r1BtnFaqOk`) — filters to 19 products where `custom.faq_schema` has data
+- Total filter buttons: **8** (was 7 in Session 3)
+
+### KPI Update
+| KPI | Session 3 | Session 4 |
+|---|---|---|
+| Total Revenue | €3,011.77 | €3,574.15 |
+| FAQ Missing | 50 | 31 |
+| FAQ Present | 0 | 19 |
+
+### Updated AIOS Files
+| File | Status |
+|---|---|
+| `evidence/hetheesa/requirement-01-data-source-mapping.md` | Updated — Orders revenue, metafield FAQ, all-image alt text |
+| `evidence/hetheesa/requirement-01-postgresql-shopify-gsc-check.md` | Updated — Orders GraphQL, metafield source |
+| `validation/hetheesa/requirement-01-filter-validation.md` | Updated — 8 filters, FAQ Present added, 31 Missing |
+| `handover/hetheesa/requirement-01-handover.md` | This file |
+
+### Status
+HTML committed to inner repo. AIOS files updated in outer repo. No Vercel CLI used.

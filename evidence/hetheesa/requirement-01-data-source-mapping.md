@@ -8,19 +8,19 @@ metadata:
 # Requirement 1 — Data Source Mapping
 
 **Report:** Top-Selling Products SEO Report (ledsone.fr)
-**Updated:** 2026-07-06 (Session 3 — fresh data refresh)
+**Updated:** 2026-07-06 (Session 4 — data source rules overhaul)
 
 ## Column → Data Source
 
 | Column | Source | Detail |
 |---|---|---|
 | Product URL | Shopify Admin GraphQL | `product.onlineStoreUrl` / handle-based URL |
-| Revenue (30d) | Shopify ShopifyQL | `sales` by product, last 30 days (Jun 06 – Jul 06 2026). Total: €3,011.77. |
+| Revenue (30d) | Shopify Orders GraphQL | Paid orders, last 30 days (Jun 06 – Jul 06 2026), exclude cancelled/refunded. Aggregated `discountedTotalSet.shopMoney.amount` by product handle. Total: €3,574.15. |
 | Meta Title Status | Shopify Admin GraphQL | `product.seo.title` — raw string classified in browser after trim(). Thresholds: 0=Missing · 1–29=Too Short · 30–60=OK · 61+=Too Long. Duplicate = same non-null value on 2+ products. Character count shown in badge. |
 | Meta Description Status | Shopify Admin GraphQL | `product.seo.description` — raw string classified in browser after trim(). Thresholds: 0=Missing · 1–69=Too Short · 70–160=OK · 161+=Too Long. Character count shown in badge. |
 | H1 Status | Live page inspection (confirmed) | Default Shopify theme renders `product.title` as H1. **Confirmed Present** for all 50 products via live WebFetch on 3 representative pages (~1900, ~1541, ~2153). All showed product title as H1. Keyword alignment not verified — requires per-product keyword research. |
-| Alt Text Missing (count) | Shopify Admin GraphQL | `product.images(first:10)` — count of images where `altText` is null or blank. 0=green · 1–2=yellow · 3+=red. |
-| FAQ Schema Status | Live page inspection (confirmed) | **Confirmed Missing** for all 50 products via live WebFetch. No JSON-LD FAQPage schema found in rendered HTML of 3 pages checked. No FAQ app or structured-data configuration found in Shopify admin. |
+| Alt Text Missing (count) | Shopify Admin GraphQL | `product.images(first:50)` — count of ALL images where `altText` is null or blank string. 0=green · 1–2=yellow · 3+=red. (Previously first:10 only — changed Session 4.) |
+| FAQ Schema Status | Shopify metafield (`custom.faq_schema`) | Present = metafield exists with data. Missing = null or empty. 19 Present / 31 Missing across 50 products. (Previously: live WebFetch DOM check — changed Session 4.) |
 | Impressions | PostgreSQL — `google_search_console.gsc_web_page` | Site: `https://ledsone.fr/` · Last 30 days ending 2026-07-06 (pipeline lag may apply). 13 of 50 products matched by URL handle. |
 | CTR | PostgreSQL — `google_search_console.gsc_web_page` | Same source as Impressions. GA4 not used — GSC is authoritative for impressions/CTR. |
 | Low CTR Flag | Computed (browser) | Derived from CTR: `null` → No GSC data · `CTR < 2%` → Low CTR · `CTR ≥ 2%` → OK |
@@ -54,12 +54,12 @@ GA4 tracks sessions and conversions, not search impressions or click-through rat
 
 | Column | PostgreSQL | Shopify | GSC | Computed |
 |---|---|---|---|---|
-| Revenue | — | ✓ ShopifyQL | — | — |
+| Revenue | — | ✓ Orders GraphQL | — | — |
 | Meta Title | — | ✓ GraphQL | — | classify |
 | Meta Desc | — | ✓ GraphQL | — | classify |
 | H1 | — | — | — | Confirmed Present (live) |
 | Alt Text | — | ✓ GraphQL | — | count |
-| FAQ Schema | — | — | — | Confirmed Missing (live) |
+| FAQ Schema | — | ✓ metafield custom.faq_schema | — | Present/Missing |
 | Impressions | ✓ gsc_web_page | — | via PG | — |
 | CTR | ✓ gsc_web_page | — | via PG | — |
 | Low CTR Flag | — | — | — | ✓ from CTR |

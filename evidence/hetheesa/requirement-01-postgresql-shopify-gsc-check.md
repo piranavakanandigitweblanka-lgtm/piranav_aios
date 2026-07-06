@@ -7,16 +7,18 @@ metadata:
 
 # Requirement 1 — PostgreSQL / Shopify / GSC Source Check
 
-**Date:** 2026-07-06 (updated — Session 3 fresh data refresh)
+**Date:** 2026-07-06 (updated — Session 4 data source rules overhaul)
 
 ## Source Decision per Column
 
 ### Revenue (30d)
-- **Source used:** Shopify ShopifyQL analytics query
-- **PostgreSQL SEO fields available?** PostgreSQL `supplier.orders` is a purchase-order management table — not Shopify order revenue. Revenue must come from Shopify.
-- **Confirmed:** ShopifyQL `FROM sales SHOW gross_sales GROUP BY product_id ORDER BY gross_sales DESC LIMIT 50 SINCE -30d`
-- **Period:** Jun 06 – Jul 06 2026
-- **Decision:** Shopify ShopifyQL ✓
+- **Source used:** Shopify Orders GraphQL API (changed from ShopifyQL in Session 4)
+- **Query:** `orders(first:50, query:"financial_status:paid created_at:>2026-06-06 created_at:<2026-07-07 NOT cancelled_at:*")` with pagination
+- **Aggregation:** Sum `lineItems.edges.node.discountedTotalSet.shopMoney.amount` by product handle
+- **Exclude:** Cancelled and refunded orders explicitly excluded
+- **Period:** Jun 06 – Jul 06 2026 · Total: €3,574.15 (56 orders across 2 paginated pages)
+- **Why different from ShopifyQL:** ShopifyQL `gross_sales` = €3,011.77; Orders discountedTotal = €3,574.15. Different definitions — Orders line item totals vs analytics gross_sales aggregation.
+- **Decision:** Shopify Orders GraphQL ✓
 
 ### Meta Title Status
 - **Source used:** Shopify Admin GraphQL (`product.seo.title`)
@@ -39,15 +41,19 @@ metadata:
 - **Note:** Keyword alignment not verified — requires per-product keyword research
 
 ### Alt Text Missing (count)
-- **Source used:** Shopify Admin GraphQL (`product.images(first:10).altText`)
+- **Source used:** Shopify Admin GraphQL (`product.images(first:50).altText`)
+- **Changed in Session 4:** Previously `first:10` — now ALL images up to 50 per product counted
+- **Count:** null or empty string `""` = missing alt text
 - **Decision:** Shopify ✓
 
 ### FAQ Schema Status
-- **Source used:** Live page inspection (WebFetch)
-- **Method:** WebFetch rendered HTML of 3 product pages, searched for `application/ld+json` blocks with `FAQPage` type
-- **Pages checked:** ~1900, ~1541, ~2153
-- **Result:** No JSON-LD FAQPage schema found on any page. No structured-data app found in Shopify admin.
-- **Decision:** **Missing** for all 50 products (confirmed, not assumed) ✓
+- **Source used:** Shopify metafield `custom.faq_schema` (namespace: `custom`, key: `faq_schema`)
+- **Changed in Session 4:** Previously DOM inspection via WebFetch for JSON-LD FAQPage — now metafield query
+- **Query field:** `metafield(namespace:"custom", key:"faq_schema") { value }` on each product
+- **Present:** metafield exists with data (FAQPage JSON-LD string)
+- **Missing:** metafield is null or empty
+- **Result:** 19 Present / 31 Missing across 50 products
+- **Decision:** Shopify metafield ✓
 
 ### Impressions
 - **Source used:** PostgreSQL `google_search_console.gsc_web_page`
@@ -70,12 +76,12 @@ metadata:
 
 | Column | PostgreSQL | Shopify | GSC | Computed |
 |---|---|---|---|---|
-| Revenue | — | ✓ ShopifyQL | — | — |
+| Revenue | — | ✓ Orders GraphQL | — | — |
 | Meta Title | — | ✓ GraphQL | — | classify |
 | Meta Desc | — | ✓ GraphQL | — | classify |
-| H1 | — | — | — | Confirmed Present (live) |
-| Alt Text | — | ✓ GraphQL | — | count |
-| FAQ Schema | — | — | — | Confirmed Missing (live) |
+| H1 | — | ✓ product.title | — | Confirmed Present |
+| Alt Text | — | ✓ GraphQL images(first:50) | — | count |
+| FAQ Schema | — | ✓ metafield custom.faq_schema | — | Present/Missing |
 | Impressions | ✓ gsc_web_page | — | via PG | — |
 | CTR | ✓ gsc_web_page | — | via PG | — |
 | Low CTR Flag | — | — | — | ✓ from CTR |

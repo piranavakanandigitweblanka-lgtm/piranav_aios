@@ -8,7 +8,7 @@ metadata:
 # Requirement 1 — Filter Validation
 
 **File:** `Staff-requirements/pages/hetheesha.html`
-**Date:** 2026-07-06 (Session 3 — refreshed to 50 products, new classification thresholds)
+**Date:** 2026-07-06 (Session 4 — data source rules overhaul; FAQ metafield, Orders revenue, all-image alt text)
 **Tester:** AIOS (code-level logic trace + dataset verification)
 
 ## Dataset Facts (Session 3 — 50 products, Jul 06 2026)
@@ -19,7 +19,8 @@ metadata:
 - Meta Title Too Long (>60 chars after trim): 12 products
 - Meta Desc Too Long (>160 chars): 3 products (updated threshold — was 10 in session 2 with old 120-char OK threshold)
 - Meta Desc Too Short (1–69 chars): several products (threshold updated — was <120 in session 2)
-- FAQ Schema = Missing: **50** (all — live-confirmed via WebFetch)
+- FAQ Schema = Missing: **31** (from metafield `custom.faq_schema` — null/empty)
+- FAQ Schema = Present: **19** (metafield exists with data)
 - H1 = Present: **50** (all — live-confirmed via WebFetch)
 - Low CTR: 11 of 13 products with GSC data (CTR < 2%)
 - Alt Issues (alt > 0): most products — filter covers all with at least one missing alt
@@ -52,11 +53,18 @@ metadata:
 - **PASS**
 
 ### ✅ FAQ Missing
-- **Filter logic:** `p.faq === 'Missing'` — explicit check on named property
-- **Expected:** 50 products (all have FAQ Missing — live-confirmed)
-- **r1_classified() sets:** `faq='Missing'` as explicit property
-- **With search stacking:** Search "vintage" + FAQ filter → only vintage-matching products (all have FAQ Missing)
-- **Previous bug was:** `return true` (bypassed FAQ check semantically). Fixed in Session 1.
+- **Filter logic:** `p.faq === 'Missing'` — explicit check on named property from P array
+- **Source:** Shopify metafield `custom.faq_schema` — null/empty = Missing
+- **Expected:** 31 products (metafield absent or empty)
+- **r1_classified():** passes `p.faq` through directly from data array
+- **With search stacking:** Search "vintage" + FAQ filter → only vintage-matching products with Missing
+- **PASS**
+
+### ✅ FAQ Present
+- **Filter logic:** `p.faq === 'Present'`
+- **Source:** Shopify metafield `custom.faq_schema` — exists with data = Present
+- **Expected:** 19 products
+- **New in Session 4:** Added `r1BtnFaqOk` button and `faqOk` filter branch
 - **PASS**
 
 ### ✅ Low CTR
@@ -98,7 +106,7 @@ metadata:
 ### ✅ Req 1 and Req 2 Isolation
 - **r1_filter():** uses `querySelectorAll('#tab-panel-1 .fbtn')` — scoped to Req 1 panel only
 - **All function names:** prefixed `r1_`
-- **Button IDs:** `r1BtnAll`, `r1BtnMissTitle`, `r1BtnMissDesc`, `r1BtnTooLong`, `r1BtnFaq`, `r1BtnLowCTR`, `r1BtnAlt`
+- **Button IDs:** `r1BtnAll`, `r1BtnMissTitle`, `r1BtnMissDesc`, `r1BtnTooLong`, `r1BtnFaqMiss`, `r1BtnFaqOk`, `r1BtnLowCTR`, `r1BtnAlt` (8 filters total)
 - **Search input ID:** `r1SearchBox`
 - **Req 2 tab:** placeholder only, zero JS conflicts
 - **PASS**
@@ -126,6 +134,7 @@ metadata:
 | Missing Meta Desc | PASS |
 | Too Long | PASS |
 | FAQ Missing | PASS |
+| FAQ Present | PASS |
 | Low CTR | PASS |
 | Alt Issues | PASS |
 | Search stacking | PASS |
@@ -136,4 +145,4 @@ metadata:
 | Badge char count display | PASS |
 | H1 Present status | PASS |
 
-**OVERALL: PASS — 2026-07-06 (50 products, new thresholds)**
+**OVERALL: PASS — 2026-07-06 (Session 4 — 50 products, Orders revenue, FAQ metafield, all-image alt text, 8 filters)**
