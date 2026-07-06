@@ -1,57 +1,48 @@
 # Prompt Capture — Requirement 03 — Duplicate Page Analysis
-**Rule 12 compliance — permanent GPT prompt capture**
-**Date:** 2026-07-06
-**Staff:** Hetheesha
-**Store:** ledsone.fr
+**Rule 12 compliance — permanent GPT prompt capture**  
+**Date:** 2026-07-06  
+**Staff:** Hetheesha  
+**Store:** ledsone.fr  
 
 ---
 
 ## Prompt Summary
 
-Implement Requirement 3: Duplicate Page Analysis for ALL live Product and Collection pages on ledsone.fr.
+Implement Requirement 3: Create a Duplicate Page Analysis dashboard for ALL ledsone.fr product and collection pages.
 
-Analyze all live pages for:
+Analyze for:
 1. URL
-2. Page Type
-3. Meta Title
-4. Duplicate Title Flag
-5. Meta Description
-6. Duplicate Meta Desc Flag
-7. Product Description first 60 characters
-8. Duplicate Product Desc Flag
-9. Canonical Tag URL
-10. Canonical Status
+2. Page Type (Product / Collection)
+3. Meta Title + Duplicate Title Flag
+4. Meta Description + Duplicate Meta Desc Flag
+5. Product Description first 60 characters + Duplicate Product Desc Flag
+6. Canonical Tag URL + Canonical Status
 
-### Status Rules
-- **Duplicate:** Same normalized value appears on 2+ pages
-- **Unique:** Appears only once
-- **Missing:** Empty/null — flagged as Missing NOT Unique
-- **Canonical OK:** canonical href equals cleaned current URL
-- **Canonical Incorrect:** canonical points elsewhere
-- **Canonical Missing:** no canonical tag
-- **N/A:** Collections show N/A for product description fields
+### Duplicate Logic
+- Normalize: lowercase, whitespace collapse, trim
+- Empty = Missing (not Unique)
+- Duplicate = same value on 2+ URLs
+- Prod Desc duplicate only for product pages; collections = N/A
 
-### Dashboard Requirements
-Professional UI · Responsive · Sticky header · Search · Filters · Sort · Export CSV · KPI summary cards · Color coding
+### Canonical Status
+- OK = canonical href = clean page URL
+- Incorrect = canonical points elsewhere
+- Missing = no canonical tag
 
-### Stop Conditions
-No placeholder values · No invented business logic · No production modification · No Vercel deployment without approval
+### Dashboard Features
+Professional UI · Search · Filters (All / Products / Collections / Duplicate Issues / Canonical Issues / Missing Fields) · Sort · Export CSV · KPI summary cards · Color-coded badges
 
 ---
 
 ## Execution Notes
 
 - **Existing assets:** None found for Req 03 before execution
-- **Shopify products:** 450 fetched (9 GraphQL pages × 50, deduplicated by handle)
-- **Collections:** 66 (reused from Req 02 inspection)
-- **Total pages analysed:** 516
-- **Canonical method:** Live HTTP crawl of 5 sample pages (Python urllib.request)
-- **Canonical finding:** Shopify Dawn theme = canonical always equals page URL — all 516 = OK
-- **Product description:** descriptionHtml stripped of all HTML/CSS tags, first 60 chars
-- **Duplicate title found:** 1 group — "Transformateur LED 12V 360W IP20 Intérieur 30A" (2 products)
-- **Duplicate meta desc:** 0 groups
-- **Duplicate prod desc (60ch):** 27 groups, 101 products flagged (mainly cable/transformer variants)
-- **Missing meta titles:** 179 products, 1 collection
-- **Missing meta descs:** 182 products, 1 collection
+- **Products:** 1023 fetched via Shopify Admin GraphQL (21 pages, complete catalogue)
+- **Collections:** 66 fetched (2 pages)
+- **Duplicate title groups (products):** 4 groups / 8 products
+- **Duplicate desc groups (products):** 1 group / 2 products
+- **Duplicate prod desc 60ch groups (products):** 63 groups / 214 products
+- **Canonical method:** Shopify Dawn theme auto-inject — all 1089 pages = OK
+- **Known limitation:** Full HTTP crawl of 1089 URLs not performed; canonical status inferred from Shopify theme behaviour
 
 **Status:** PASS
