@@ -69,11 +69,22 @@ Date: 2026-07-06
 
 | Check | Result |
 |---|---|
-| Table exists | ✅ raw_data.ga4_landing_page_daily |
-| Rows for ledsone.fr | ❌ 0 rows |
-| GA4 available | ❌ NOT AVAILABLE |
+| Table exists | ✅ raw_data.ga4_landing_page_daily (PostgreSQL — still empty) |
+| GA4 MCP Server | ✅ CONNECTED — Property 479617728 via service account ga4-mcp-reader@ledsone-ga4-mcp.iam.gserviceaccount.com |
+| GA4 Data API | ✅ AVAILABLE — queried directly via google-analytics-data Python library |
+| Organic Sessions (30d) | ✅ 126 sessions across 112 product handles |
+| Last complete week | ✅ 2026-06-29 to 2026-07-05 |
 
-**Decision:** Use GSC Clicks fallback. Column label: "GSC Clicks (30d)" — NOT "Sessions".
+**Decision (V3 — 2026-07-07):** GA4 MCP server connected. Use GA4 Organic Sessions as primary traffic source. GSC fallback not needed. Column: "Weekly Organic Sessions".
+
+### V3 GA4 Query Details
+- Property ID: 479617728
+- Dimensions: landingPage, sessionDefaultChannelGroup, date
+- Metrics: sessions, activeUsers, engagedSessions
+- Filter: sessionDefaultChannelGroup = "Organic Search" AND landingPage CONTAINS "/products/"
+- Date range: 30daysAgo → today
+- URL normalisation: strip query params, extract handle from /products/{handle}
+- Weekly method: last complete week sessions if > 0; else round(total_30d / 4)
 
 ---
 

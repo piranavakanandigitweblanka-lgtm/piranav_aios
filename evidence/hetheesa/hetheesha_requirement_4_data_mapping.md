@@ -4,7 +4,7 @@ Purpose: Document exact field-to-column mapping for dashboard build
 Requirement Source: Hetheesha Req 04 — ledsone.fr
 Staff Member: Hetheesha
 Supporting AIOS Staff: Piranav
-Date: 2026-07-06
+Date: 2026-07-07 (V3 — GA4 Organic Sessions integration)
 ---
 
 ## Dashboard Column → Data Source Mapping
@@ -133,3 +133,58 @@ public.listing_data (sku → quantity, title) [jedsz8-km sub_source]
 ### V2 Status: PASS ✅
 
 **Reviewer:** Hetheesha / Piranav
+
+---
+
+## V3 Update — GA4 Organic Sessions Enrichment (2026-07-07)
+
+**Approach: ENRICHMENT — NOT rebuild. All V2 columns preserved. Weekly Organic Sessions added as new column (index 7).**
+
+### V3 Dashboard Column → Data Source Mapping (14 columns)
+
+| Dashboard Column | Index | Source | Notes |
+|---|---|---|---|
+| Product URL | 0 | PostgreSQL GSC | gsc_web_page.page — preserved from V2 |
+| Product Name | 1 | Derived | Handle → title-cased — preserved from V2 |
+| Variant SKU | 2 | listing_data (jedsz8-km) | Preserved from V2 |
+| Variant Name | 3 | listing_data (jedsz8-km) | Preserved from V2 |
+| GSC Clicks (30d) | 4 | PostgreSQL GSC | **Preserved** — restored from source |
+| GSC Impressions (30d) | 5 | PostgreSQL GSC | **Preserved** — restored from source |
+| GSC CTR% | 6 | PostgreSQL GSC | **Preserved** — restored from source |
+| **Weekly Organic Sessions** | **7** | **GA4 Data API** | **NEW column** — Property 479617728 · Organic Search |
+| Inventory Status | 8 | Derived | Preserved from V2 |
+| Stock Qty | 9 | listing_data (jedsz8-km) | Preserved from V2 |
+| Alt SKU | 10 | listing_data (jedsz8-km) | Preserved from V2 |
+| Alt Product | 11 | listing_data (jedsz8-km) | Preserved from V2 |
+| Alt URL | 12 | Derived | Preserved from V2 |
+| Action | 13 | Logic rule | Preserved from V2 |
+
+### V3 GA4 Weekly Sessions Rules
+
+- **Primary:** GA4 Organic Sessions (Property 479617728)
+- **Channel filter:** sessionDefaultChannelGroup = Organic Search
+- **Granularity:** Landing page + date (daily → weekly aggregation)
+- **Weekly method:** Last complete week (2026-06-29 to 2026-07-05) if sessions > 0; else round(30d / 4)
+- **URL matching:** Strip query params → extract /products/{handle} → match Shopify handle
+- **Traffic attachment:** All variants under same Product URL inherit same Weekly Organic Sessions
+- **Zero case:** Products with no GA4 data → Weekly Organic Sessions = 0 (shown as "—")
+
+### V3 GA4 Match Results
+
+| Metric | Value |
+|---|---|
+| GA4 handles retrieved (30d) | 112 |
+| Products in inventory dataset | 111 |
+| Products matched to GA4 (sessions > 0) | 51 (46%) |
+| Products with 0 GA4 sessions | 60 (54%) |
+| Total 30d organic sessions | 824 |
+| Avg weekly sessions | 1 |
+| Top product | Lustre Araignée 3 Fils Cuivre Brossé Suspension (3 sessions/wk) |
+| GSC match rate | 100% (565/565 variants) |
+| Rows added / removed | 0 / 0 |
+
+### V3 Status: PASS ✅
+
+**Approach:** Enrichment — GSC columns preserved, Weekly Organic Sessions added
+**Reviewer:** Hetheesha / Piranav
+**Updated:** 2026-07-07
