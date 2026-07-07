@@ -64,3 +64,36 @@ Build a weekly High-Traffic Product Stock Alert dashboard for ledsone.fr.
 jedsz8-km France listing_data has `shopify_handle = NULL` for all 4,338 rows. Shopify API re-authorization is required to get complete ledsone.fr product-level inventory. Until then, 86/90 products show "Review Required" inventory status.
 
 **Status:** PASS (with documented limitation)
+
+---
+
+## V2 Prompt Capture — 2026-07-07
+
+### V2 Specification (GPT-issued)
+
+**Key V2 Changes:**
+- Inventory must be at **variant level** (not product level)
+- Each variant = one row in the dashboard
+- New columns: **Variant SKU** (index 2), **Variant Name** (index 3), **Alt SKU** (index 8)
+- New stock thresholds: **≥30=In Stock, 1–29=Low Stock, 0=Out of Stock** (V1 was >10/1-10/0)
+- Alternative product logic: **SKU family discovery** (not hardcoded) → same family on different page with qty≥30, else same product_type
+- KPIs count **variant rows**, not product pages
+- Filter search includes **Variant SKU**
+- Return to GPT: 10-point summary
+
+### V2 Execution Summary
+
+| Point | Detail |
+|---|---|
+| 1. Inventory source | PostgreSQL `listing_data` (jedsz8-km) — Priority 2 Shopify sync |
+| 2. Variant implementation | 12-element row schema: [url, productName, sku, variantName, clicks, impressions, invStatus, stockQty, altSku, altProduct, altUrl, action] |
+| 3. SKU grouping | Families: PC16FT (conduit), LHPOE27 (lamp holder), PCBS16T10BM (reducer), PCGZ20NL (nipple) |
+| 4. Alternative logic | SKU family → same product_type with qty≥30 at different URL |
+| 5. Products checked | 109 GSC product pages (2026-06-07 to 2026-07-07) |
+| 6. Variants confirmed | 15 variants across 4 products (296 SKU overlaps bridge) |
+| 7. Alternatives found | 1 (LHPOE27CH/0 → LHTOE27YB/433) |
+| 8. Alternatives missing | 14 confirmed variants (all In Stock or Low Stock — no redirect needed) |
+| 9. Files updated | hetheesha.html (Tab 4), standalone HTML report, discovery_evidence.md, data_mapping.md, validation.md, prompt.md |
+| 10. Status | PASS ✅ — V2 variant-level dashboard deployed with documented RR limitation |
+
+**Status:** PASS ✅ (V2 variant-level implementation complete)

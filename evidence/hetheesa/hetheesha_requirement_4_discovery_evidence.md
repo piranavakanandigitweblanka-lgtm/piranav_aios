@@ -154,3 +154,36 @@ ledsone.fr uses French-language product handles (e.g., `suspension-araignee-8-am
 
 **Reviewer:** Hetheesha / Piranav
 **Next Step:** Re-authorize Shopify jedsz8-km to complete inventory pull and update dashboard
+
+---
+
+## V2 Update — Variant-Level Inventory (2026-07-07)
+
+**Trigger:** GPT-issued V2 specification requiring variant-level inventory, not product-level.
+
+### V2 Discovery Findings
+
+| Finding | Detail |
+|---|---|
+| GSC window shift | Now: 2026-06-07 to 2026-07-07 (109 pages, 163 clicks) vs V1 2026-06-06 to 2026-07-06 (90 pages, 170 clicks) |
+| SKU overlap bridge | 296 SKUs exist in both jedsz8-km listing_data AND UK ledsone listing_data — usable as inventory join key |
+| Shopify token status | Still expired — Priority 2 (PostgreSQL listing_data) used as fallback |
+| listing_data quantity | `public.listing_data` (jedsz8-km sub_source) `quantity` field = Shopify-synced variant inventory (ref_id = Shopify variant ID) |
+| Products with full variant data | 4 products / 15 variants confirmed via SKU overlap bridge |
+| Products without variant data | 105 product pages (108 product-level rows after deduplication) — Review Required |
+| SKU family discovery | PC16FT (conduit pipe sizes), LHPOE27 (lamp holder finishes), PCBS16T10BM (reducer pack sizes), PCGZ20NL (nipple pack sizes) |
+| Alternative product found | LHPOE27CH (0 qty, Chrome) → LHTOE27YB (433 qty) at different product URL |
+| Alternative product basis | Same SKU family unavailable (same page) → queried jedsz8-km for same product_type with qty≥30, different product |
+
+### V2 Inventory Source Confirmation
+
+- **Source:** `public.listing_data` WHERE `sub_source_name = 'jedsz8-km'`
+- **Quantity field:** `quantity` (Shopify variant inventory count, synced via jedsz8-km connector)
+- **Variant ID:** `ref_id` = Shopify variant ID
+- **Join path:** GSC URL → handle → UK `listing_data` (handle+SKU) → jedsz8-km `listing_data` (SKU → qty)
+- **Priority:** 2 (PostgreSQL Shopify Sync — Shopify Admin API unavailable)
+
+### V2 Status: PASS ✅
+
+**Reviewer:** Hetheesha / Piranav
+**Next Step:** Re-authorize Shopify jedsz8-km → expand to all 109 product pages
