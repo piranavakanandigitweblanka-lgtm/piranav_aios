@@ -31,10 +31,10 @@ Live UK stock pulled from the Ledsone PostgreSQL inventory database and written 
 | Metric | Value |
 |---|---|
 | Total rows processed | 1,546 |
-| Matched SKUs (Column C populated) | 1,491 |
-| Unmatched SKUs (Column C blank) | 55 |
-| Zero stock SKUs | 661 |
-| Match rate | 96.4% |
+| Matched SKUs (Column C populated) | 1,528 |
+| Unmatched SKUs (Column C blank) | 18 |
+| Zero stock SKUs (of matched) | ~680 |
+| Match rate | 98.8% |
 
 ---
 
@@ -77,9 +77,10 @@ Components `LSDO210BD`, `LSMS320BD`, `LSOL180SE`, `LSWE315BD`, `LSLT360BL`, `LSD
 - `CRFF500WH+PHCH1PWRSBD3PK+LSDO210BD3PK`
 - `CRSF100WH+LHNSE27WH+LSMS320BD+ICST64E27`
 
-### ENC SKUs with unresolvable sku_original (33)
-These ENC SKUs either don't exist in `inventory.products` or their `sku_original` expands to a bundle containing missing components:
-`ENC3487`, `ENC3548`, `ENC3546`, `ENC3492`, `ENC4135`, `ENC3580`, `ENC4132`, `ENC3516`, `ENC4133`, `ENC4134`, `ENC4156`, `ENC4137`, `ENC1115`, `ENC4136`, `ENC4138`, `ENC4344`, `ENC3550`, `ENC4736`, `ENC4688`, `ENC1836`, `ENC5022`, `ENC4734`, `ENC4737`, `ENC4739`, `ENC3515`, `ENC4646`, `ENC4689`, `ENC4741`, `ENC4157`, `ENC4738`, `ENC4735`, `ENC4740`, `ENC4185`, `ENC3549`, `ENC3488`, `ENC3493`, `ENC3547`, `ENC3581`
+### ENC SKUs resolved in patch run (36 ENCs)
+All remaining ENC SKUs were resolved by querying their `sku_original` from `inventory.products` and calculating bundle stock. Results ranged from 0 (out-of-stock components) to 354. Notable: `ENC4344`=354, `ENC3492`/`ENC3493`=89, `ENC3549`=68, `ENC4734`=152, `ENC4736`=101, `ENC4738`=72, `ENC4741`=60, `ENC4646`=52, `ENC4689`=44, `ENC3580`=17, `ENC5022`=18, `ENC4156`/`ENC4157`=3.
+
+ENC3487 was previously patched to 0 (PCBITC/PCBITB/PCPTPH/PCBIHN all out of stock). ENC3548 does not exist in `inventory.products` and remains blank.
 
 ---
 
