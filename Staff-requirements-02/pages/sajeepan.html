@@ -983,10 +983,10 @@ const PG_SIZE=20;
 let activeFilter='all';
 
 function applyFilters(){
-  const camp=document.getElementById('campFilter').value;
-  const status=document.getElementById('statusFilter').value;
-  const feed=document.getElementById('feedFilter').value;
-  const q=document.getElementById('productSearch').value.trim().toLowerCase();
+  const camp  =(document.getElementById('campFilter')    ||{value:'all'}).value;
+  const status=(document.getElementById('statusFilter')  ||{value:'all'}).value;
+  const feed  =(document.getElementById('feedFilter')    ||{value:'all'}).value;
+  const q     =((document.getElementById('productSearch')||{value:''}).value||'').trim().toLowerCase();
 
   filteredProds=(PRODUCTS||[]).filter(p=>{
     const c=CAMP_MAP[p.cid];
