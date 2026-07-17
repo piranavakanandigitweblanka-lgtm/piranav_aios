@@ -239,6 +239,8 @@ tbody tr:hover{background:var(--accent-soft);}
   .search-wrap{max-width:100%;}
   .top-prod-grid{grid-template-columns:1fr;}
 }
+.fbtn{border:1px solid var(--line);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;cursor:pointer;background:var(--card);color:var(--muted);transition:all .15s;}
+.fbtn.on{background:var(--accent);border-color:var(--accent);color:#fff;}
 footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;padding-bottom:24px;}
 </style>
 </head>
@@ -258,14 +260,31 @@ footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;
     <span class="chip">6 PMax Campaigns</span>
     <span class="chip green">All ENABLED</span>
     <span class="chip grey">Source: google_ads.campaign_performance + product_performance + merchant_products</span>
-    <span class="chip grey">Last 30 Days: 2026-06-14 – 2026-07-13</span>
-    <span class="chip grey">Latest Data: 2026-07-13</span>
+    <span class="chip grey" id="sjDateChip">Live · Last 30 Days</span>
+    <span class="chip grey" id="sjLatestChip">Latest Data: —</span>
     <span class="chip grey">ROAS = Conv Value ÷ Cost × 100 (percentage format throughout)</span>
     <span class="chip grey">Ad Contribution = Conv Value − Ad Cost (profit not shown — COGS unverified)</span>
   </div>
 </div>
 
 <!-- Controls -->
+<!-- Date picker -->
+<div style="background:#fff;border:1px solid #e3e7ee;border-radius:12px;padding:12px 16px;margin-bottom:12px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);">
+  <span style="font-size:12px;font-weight:700;color:#5b6577;text-transform:uppercase;letter-spacing:.5px;">Date Range</span>
+  <button class="fbtn on" id="sj-preset-7"  onclick="sjSetPreset(7)">Last 7d</button>
+  <button class="fbtn"    id="sj-preset-30" onclick="sjSetPreset(30)">Last 30d</button>
+  <button class="fbtn"    id="sj-preset-60" onclick="sjSetPreset(60)">Last 60d</button>
+  <button class="fbtn"    id="sj-preset-90" onclick="sjSetPreset(90)">Last 90d</button>
+  <span style="font-size:12px;color:#5b6577;">or custom:</span>
+  <input type="date" id="sjDateFrom" style="border:1px solid #e3e7ee;border-radius:7px;padding:6px 10px;font-size:12px;">
+  <span style="font-size:12px;color:#5b6577;">→</span>
+  <input type="date" id="sjDateTo"   style="border:1px solid #e3e7ee;border-radius:7px;padding:6px 10px;font-size:12px;">
+  <button onclick="sjApplyCustomDates()" style="border:none;border-radius:7px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;background:#1a73e8;color:#fff;">Apply</button>
+  <button onclick="sjRefresh()" style="border:none;border-radius:7px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;background:#0f172a;color:#fff;display:flex;align-items:center;gap:5px;margin-left:auto;"><span id="sjRefreshIcon" style="font-size:15px;transition:transform .5s;">&#8635;</span> Refresh</button>
+</div>
+<div id="sjLoading" style="text-align:center;padding:40px;color:#5b6577;font-size:14px;display:none;">&#8987; Loading live data…</div>
+<div id="sjError"   style="display:none;background:#fce8e6;border:1px solid #f28b82;border-radius:10px;padding:12px 16px;font-size:13px;color:#b31412;margin-bottom:12px;"></div>
+
 <div class="ctrl-bar" id="ctrlBar">
   <div>
     <label>Campaign</label>
@@ -280,15 +299,7 @@ footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;
     </select>
   </div>
   <div>
-    <label>Status</label>
-    <select class="fsel" id="statusFilter" onchange="applyFilters()">
-      <option value="all">All Status</option>
-      <option value="ELIGIBLE">Eligible</option>
-      <option value="LIMITED">Limited</option>
-    </select>
-  </div>
-  <div>
-    <label>Feed</label>
+    <label>Stock</label>
     <select class="fsel" id="feedFilter" onchange="applyFilters()">
       <option value="all">All Feed</option>
       <option value="in stock">In Stock</option>
@@ -299,54 +310,54 @@ footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;
     <span class="si">🔍</span>
     <input type="text" id="productSearch" placeholder="Search product, SKU, item ID…" oninput="applyFilters()">
   </div>
-  <div class="last-upd">Last updated: <strong>2026-07-13</strong></div>
+  <div class="last-upd" id="sjLastUpd">Last updated: <strong>—</strong></div>
 </div>
 
 <!-- KPI Cards -->
 <div class="kpi-grid" id="kpiGrid">
   <div class="kpi k-green">
-    <div class="lbl">Total Sales (30d)</div>
-    <div class="val">£9,550</div>
-    <div class="trend trend-dn">▼ vs £11,574 prev period</div>
+    <div class="lbl">Total Sales</div>
+    <div class="val" id="kpiSales">—</div>
+    <div class="trend" id="kpiSalesTrend"></div>
     <div class="note">6 campaigns · Conv Value</div>
   </div>
   <div class="kpi k-blue">
     <div class="lbl">ROAS</div>
-    <div class="val">261%</div>
-    <div class="trend trend-dn">▼ vs 318% prev period</div>
+    <div class="val" id="kpiRoas">—</div>
+    <div class="trend" id="kpiRoasTrend"></div>
     <div class="note">Revenue ÷ Cost × 100</div>
   </div>
   <div class="kpi k-red">
-    <div class="lbl">Total Cost (30d)</div>
-    <div class="val">£3,660</div>
-    <div class="trend trend-dn">▲ vs £3,642 prev period</div>
+    <div class="lbl">Total Cost</div>
+    <div class="val" id="kpiCost">—</div>
+    <div class="trend" id="kpiCostTrend"></div>
     <div class="note">Spend across all campaigns</div>
   </div>
   <div class="kpi k-blue">
     <div class="lbl">Conversions</div>
-    <div class="val">271</div>
-    <div class="trend trend-dn">▼ vs 318 prev period</div>
-    <div class="note">30-day total</div>
+    <div class="val" id="kpiConv">—</div>
+    <div class="trend" id="kpiConvTrend"></div>
+    <div class="note">Period total</div>
   </div>
   <div class="kpi k-blue">
     <div class="lbl">Clicks</div>
-    <div class="val">7,139</div>
-    <div class="note">30-day total</div>
+    <div class="val" id="kpiClicks">—</div>
+    <div class="note">Period total</div>
   </div>
   <div class="kpi k-blue">
     <div class="lbl">Impressions</div>
-    <div class="val">441K</div>
-    <div class="note">30-day total</div>
+    <div class="val" id="kpiImps">—</div>
+    <div class="note">Period total</div>
   </div>
   <div class="kpi k-amber">
     <div class="lbl">CTR</div>
-    <div class="val">1.62%</div>
+    <div class="val" id="kpiCtr">—</div>
     <div class="note">Clicks ÷ Impressions</div>
   </div>
   <div class="kpi k-green">
-    <div class="lbl">Distinct Products (30d)</div>
-    <div class="val">1,154</div>
-    <div class="note">Normalized IDs · 284 matched to Merchant</div>
+    <div class="lbl">Products (period)</div>
+    <div class="val" id="kpiProds">—</div>
+    <div class="note">Distinct product_item_ids</div>
   </div>
 </div>
 
@@ -514,41 +525,89 @@ footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;
 
 <script>
 /* ============================================================
-   DATA — Read-only · PostgreSQL: ledsone-db-mcp
-   Sources: google_ads.campaigns, campaign_performance,
-            product_performance, merchant_products
-   Filter: 6 Sajeepan PMax campaigns by campaign_id
-   Period: 2026-06-14 to 2026-07-13 (30 days)
-   Latest DB date: 2026-07-13
-   AIOS: Requirement 1 · Sajeepan · 2026-07-14
+   LIVE DATA — /api/sajeepan/dashboard
+   Sources: google_ads.campaign_performance, product_performance, merchant_products
+   Filter: 6 Sajeepan PMax campaign IDs
    ============================================================ */
 
-/* ============================================================
-   PRODUCT COUNT VERIFICATION (30-day window: 2026-06-14 to 2026-07-13)
-   Source: google_ads.product_performance
+// ── State ─────────────────────────────────────────────────────────────────
+var CAMPAIGNS = [], TREND = [], PRODUCTS = [], sjMeta = {};
 
-   Per campaign (distinct product_item_id / 30d):
-     21069663519  raw rows: 5856  distinct_item_ids: 289
-     21242723265  raw rows: 1982  distinct_item_ids: 223
-     22079334413  raw rows: 4779  distinct_item_ids: 354
-     23110323532  raw rows: 5018  distinct_item_ids: 221
-     23516313256  raw rows: 5093  distinct_item_ids: 311
-     23590572906  raw rows: 1685  distinct_item_ids: 225
+// ── Date helpers ──────────────────────────────────────────────────────────
+function isoDate(d){ return d.toISOString().slice(0,10); }
+function daysAgo(n){ const d=new Date(); d.setDate(d.getDate()-n); return isoDate(d); }
 
-   Combined (all 6 campaigns, UPPER + strip -sh suffix):
-     Total distinct normalized IDs: 1,154
-     Matched to merchant_products:   284  (24.6%)
-     Unmatched:                       870  (75.4%)
-     Duplicate merchant snapshots:  45,647 product_ids with >1 row
+function sjSetPreset(days){
+  ['7','30','60','90'].forEach(d=>{
+    const el=document.getElementById('sj-preset-'+d);
+    if(el) el.classList.toggle('on', Number(d)===days);
+  });
+  const to=isoDate(new Date()), from=daysAgo(days-1);
+  const df=document.getElementById('sjDateFrom'), dt=document.getElementById('sjDateTo');
+  if(df) df.value=from; if(dt) dt.value=to;
+  sjLoadData(from, to);
+}
 
-   Join logic: UPPER(REPLACE(product_item_id,'-sh','')) = merchant_products.product_id
-   Dedup: use DISTINCT ON (product_id) ORDER BY updated_at DESC (latest record)
-   ============================================================ */
+function sjApplyCustomDates(){
+  const from=(document.getElementById('sjDateFrom')||{}).value;
+  const to  =(document.getElementById('sjDateTo')  ||{}).value;
+  if(!from||!to) return alert('Please select both dates.');
+  if(from>to)    return alert('From must be before To.');
+  ['7','30','60','90'].forEach(d=>{ const el=document.getElementById('sj-preset-'+d); if(el) el.classList.remove('on'); });
+  sjLoadData(from, to);
+}
 
-/* AUTO-UPDATED: 2026-07-14 | Data window: 2026-06-14 → 2026-07-13 */
+function sjRefresh(){
+  const icon=document.getElementById('sjRefreshIcon');
+  if(icon){ icon.style.transform='rotate(360deg)'; setTimeout(()=>icon.style.transform='',600); }
+  const from=(document.getElementById('sjDateFrom')||{}).value;
+  const to  =(document.getElementById('sjDateTo')  ||{}).value;
+  if(from && to) sjLoadData(from, to);
+}
 
-/* CAMPAIGNS_START */
-const CAMPAIGNS = [
+async function sjLoadData(from, to){
+  const loading=document.getElementById('sjLoading');
+  const errBox =document.getElementById('sjError');
+  const ctrlBar=document.getElementById('ctrlBar');
+  if(loading) loading.style.display='block';
+  if(errBox)  errBox.style.display='none';
+  if(ctrlBar) ctrlBar.style.opacity='0.4';
+  try {
+    const res  = await fetch(`/api/sajeepan/dashboard?from=${from}&to=${to}`);
+    const json = await res.json();
+    if(!json.ok) throw new Error(json.error||'API error');
+    CAMPAIGNS = json.campaigns;
+    TREND     = json.trend;
+    PRODUCTS  = json.products;
+    sjMeta    = json.meta;
+    // Rebuild CAMP_MAP
+    Object.keys(CAMP_MAP).forEach(k=>delete CAMP_MAP[k]);
+    CAMPAIGNS.forEach(c=>{ CAMP_MAP[c.id]=c; });
+    // Update header chips
+    const chip=document.getElementById('sjDateChip');
+    if(chip) chip.textContent=`Live · ${from} → ${to}`;
+    const latest=document.getElementById('sjLatestChip');
+    if(latest) latest.textContent=`Latest Data: ${to}`;
+    const upd=document.getElementById('sjLastUpd');
+    if(upd) upd.innerHTML=`Last updated: <strong>${to}</strong>`;
+    renderKpis();
+    renderCampaigns();
+    renderActions();
+    buildChart(currentChart);
+    renderTopPanels();
+    renderAttn();
+    filteredProds=[...PRODUCTS]; pgNum=0; sortCol=null; activeFilter='all';
+    applyFilters();
+  } catch(err){
+    if(errBox){ errBox.style.display='block'; errBox.innerHTML=`<strong>Could not load data:</strong> ${err.message}`; }
+  } finally {
+    if(loading) loading.style.display='none';
+    if(ctrlBar) ctrlBar.style.opacity='1';
+  }
+}
+
+/* CAMPAIGNS_START — now loaded from API */
+const _placeholder_campaigns = [
   { id:'21069663519', name:'Pmax | Sajeepan | Klarna CSS | SJ_PENDANT_KLARNA | Zero Conv | MCV | UK',
     short:'SJ_PENDANT_KLARNA', status:'ENABLED', primary:'LIMITED', budget:100, target_roas:3.20,
     l30:{ cost:1609.79, cv:4462.18, conv:138.41, clicks:3518, imps:237288, roas:277.19 },
@@ -581,9 +640,10 @@ const CAMPAIGNS = [
   }
 ];
 /* CAMPAIGNS_END */
+// Live data loaded into CAMPAIGNS via sjLoadData()
 
-/* TREND_START */
-const TREND = [
+/* TREND placeholder */
+const _placeholder_trend = [
   {d:'06/14',cost:66.12,cv:102.29,conv:5.82,roas:154.71},
   {d:'06/15',cost:94.51,cv:390.44,conv:8.02,roas:413.12},
   {d:'06/16',cost:132.23,cv:235.30,conv:9.99,roas:177.95},
@@ -616,9 +676,10 @@ const TREND = [
   {d:'07/13',cost:201.79,cv:349.21,conv:12.05,roas:173.05}
 ];
 /* TREND_END */
+// Live data loaded into TREND via sjLoadData()
 
-/* PRODUCTS_START */
-const PRODUCTS = [
+/* PRODUCTS placeholder */
+const _placeholder_products = [
   {item:'shopify_gb_14877951099266_54868256915842',cid:'21069663519',cost:50.10,cv:483.87,conv:9.97,clicks:134,imps:11800,roas:965.81,title:'Vintage LED Edison Bulb 4W E27 Non Dimmable ~5614',brand:'LEDSone',price:6.45,avail:'in stock',img:'https://cdn.shopify.com/s/files/1/0250/4094/5248/files/Diamond_Bulb.png?v=1776054181',type:'Bulb'},
   {item:'shopify_gb_7855951184122_43721073033466',cid:'21069663519',cost:51.20,cv:316.47,conv:8.81,clicks:73,imps:7415,roas:618.11,title:'LED A60 E27 4W Bulb Filament Dimmable Globe ~4095',brand:'LEDSone',price:15.10,avail:'in stock',img:'https://cdn.shopify.com/s/files/1/0250/4094/5248/products/15898.png?v=1669959090',type:'E27 Base Bulb B'},
   {item:'shopify_gb_7053693649057_41040744087713',cid:'23110323532',cost:59.86,cv:313.57,conv:3.49,clicks:97,imps:4455,roas:523.84,title:'Modern 5-Arm Spider Pendant Light Adjustable Vintage',brand:'LEDSone',price:83.59,avail:'in stock',img:'https://cdn.shopify.com/s/files/1/0250/4094/5248/products/multi_arm_ceiling_light.jpg?v=1738574242',type:'Spider Lights > Pendant Light'},
@@ -676,12 +737,12 @@ const PRODUCTS = [
   {item:'shopify_gb_8649884762362_46784256934138',cid:'21069663519',cost:10.40,cv:0,conv:0,clicks:0,imps:1304,roas:0,title:'Zero Conv Product #8649884762362',brand:'LEDSone',price:null,avail:'in stock',img:'',type:'Lighting'}
 ];
 /* PRODUCTS_END */
+// Live data loaded into PRODUCTS via sjLoadData()
 
 /* ============================================================
    HELPERS
    ============================================================ */
 const CAMP_MAP = {};
-CAMPAIGNS.forEach(c=>{ CAMP_MAP[c.id]=c; });
 
 function fmt(n,dec=2,prefix=''){
   if(n==null||isNaN(n))return '—';
@@ -695,6 +756,38 @@ function campShort(id){ return CAMP_MAP[id]?CAMP_MAP[id].short:id; }
 function roasClass(r){ if(r>=400)return 'roas-great'; if(r>=200)return 'roas-ok'; if(r>=100)return 'roas-warn'; return 'roas-bad'; }
 
 /* ============================================================
+   KPI CARDS
+   ============================================================ */
+function renderKpis(){
+  const totCost=CAMPAIGNS.reduce((s,c)=>s+c.l.cost,0);
+  const totCv  =CAMPAIGNS.reduce((s,c)=>s+c.l.cv,  0);
+  const totConv=CAMPAIGNS.reduce((s,c)=>s+c.l.conv, 0);
+  const totImp =CAMPAIGNS.reduce((s,c)=>s+c.l.imp,  0);
+  const totClk =CAMPAIGNS.reduce((s,c)=>s+c.l.clk,  0);
+  const roas=totCost>0?(totCv/totCost*100):0;
+  const prevCost=CAMPAIGNS.reduce((s,c)=>s+c.prev.cost,0);
+  const prevCv  =CAMPAIGNS.reduce((s,c)=>s+c.prev.cv,  0);
+  const prevConv=CAMPAIGNS.reduce((s,c)=>s+c.prev.conv, 0);
+  const prevRoas=prevCost>0?(prevCv/prevCost*100):0;
+  const ctr=totImp>0?(totClk/totImp*100):0;
+  function trend(cur,prev,prefix='',dec=0){
+    if(!prev) return '';
+    const d=cur-prev, pct=(d/prev*100).toFixed(1);
+    const up=d>=0, icon=up?'▲':'▼', cls=up?'trend-up':'trend-dn';
+    return `<span class="trend ${cls}">${icon} ${prefix}${Math.abs(d).toFixed(dec)} (${Math.abs(pct)}% vs prev)</span>`;
+  }
+  function se(id){ return document.getElementById(id); }
+  if(se('kpiSales'))  { se('kpiSales').textContent='£'+(totCv/1000).toFixed(1)+'K'; se('kpiSalesTrend').innerHTML=trend(totCv,prevCv,'£',0); }
+  if(se('kpiRoas'))   { se('kpiRoas').textContent=roas.toFixed(0)+'%'; se('kpiRoasTrend').innerHTML=trend(roas,prevRoas,'',0); }
+  if(se('kpiCost'))   { se('kpiCost').textContent='£'+totCost.toFixed(0); se('kpiCostTrend').innerHTML=trend(totCost,prevCost,'£',0); }
+  if(se('kpiConv'))   { se('kpiConv').textContent=totConv.toFixed(0); se('kpiConvTrend').innerHTML=trend(totConv,prevConv,'',0); }
+  if(se('kpiClicks')) se('kpiClicks').textContent=totClk>=1000?(totClk/1000).toFixed(1)+'K':totClk.toString();
+  if(se('kpiImps'))   se('kpiImps').textContent=totImp>=1000000?(totImp/1000000).toFixed(1)+'M':totImp>=1000?(totImp/1000).toFixed(0)+'K':totImp.toString();
+  if(se('kpiCtr'))    se('kpiCtr').textContent=ctr.toFixed(2)+'%';
+  if(se('kpiProds'))  se('kpiProds').textContent=PRODUCTS.length.toLocaleString();
+}
+
+/* ============================================================
    CAMPAIGN CARDS
    ============================================================ */
 function renderCampaigns(){
@@ -702,29 +795,32 @@ function renderCampaigns(){
   const grid = document.getElementById('campGrid');
   const camps = filter==='all' ? CAMPAIGNS : CAMPAIGNS.filter(c=>c.id===filter);
   grid.innerHTML = camps.map(c=>{
-    const targetPct = c.target_roas*100;
-    const pct = Math.min(c.l30.roas/targetPct*100,100);
+    const targetPct = c.target_roas;
+    const pct = Math.min(c.l.roas/targetPct*100,100);
     const fillClass = pct>=90?'good':pct>=60?'warn':'bad';
-    const statusBadge = c.primary==='ELIGIBLE'?'sb-eligible sb':c.primary==='LIMITED'?'sb-limited sb':'sb-paused sb';
-    const prevDelta = ((c.l30.roas - c.prev.roas)/c.prev.roas*100).toFixed(1);
+    const isEnabled = c.status==='ENABLED';
+    const statusBadge = isEnabled?'sb-eligible sb':'sb-paused sb';
+    const statusLabel = isEnabled?'ENABLED':'PAUSED';
+    const prevDelta = c.prev.roas>0?((c.l.roas - c.prev.roas)/c.prev.roas*100).toFixed(1):0;
     const deltaIcon = prevDelta>=0?'▲':'▼';
     const deltaClass = prevDelta>=0?'trend-up':'trend-dn';
-    return `<div class="camp-card ${c.primary.toLowerCase()}" onclick="openCampaignFilter('${c.id}')">
-      <div class="camp-name">${c.short}</div>
-      <div class="camp-short">Budget: £${c.budget}/day · Target ROAS: ${(c.target_roas*100).toFixed(0)}%</div>
+    const shortName = c.name.split('|').slice(-3,-1).join('|').trim() || c.name.split('|').pop().trim();
+    return `<div class="camp-card ${isEnabled?'eligible':'paused'}" onclick="openCampaignFilter('${c.id}')">
+      <div class="camp-name">${shortName}</div>
+      <div class="camp-short">Budget: £${c.budget||'?'}/day · Target ROAS: ${c.target_roas}%</div>
       <div class="camp-metrics">
-        <div class="cm"><div class="cv">£${(c.l30.cv/1000).toFixed(1)}K</div><div class="cl">Revenue</div></div>
-        <div class="cm"><div class="cv">${c.l30.roas.toFixed(0)}%</div><div class="cl">ROAS</div></div>
-        <div class="cm"><div class="cv">£${c.l30.cost.toFixed(0)}</div><div class="cl">Cost</div></div>
+        <div class="cm"><div class="cv">£${(c.l.cv/1000).toFixed(1)}K</div><div class="cl">Revenue</div></div>
+        <div class="cm"><div class="cv">${c.l.roas.toFixed(0)}%</div><div class="cl">ROAS</div></div>
+        <div class="cm"><div class="cv">£${c.l.cost.toFixed(0)}</div><div class="cl">Cost</div></div>
       </div>
       <div class="roas-label">
-        <span>ROAS vs Target</span>
+        <span>ROAS vs Target (${c.target_roas}%)</span>
         <span class="${deltaClass}">${deltaIcon} ${Math.abs(prevDelta)}% vs prev</span>
       </div>
       <div class="roas-bar"><div class="roas-fill ${fillClass}" style="width:${pct}%"></div></div>
       <div class="camp-footer">
-        <span class="${statusBadge}">${c.primary}</span>
-        <span style="font-size:11px;color:var(--muted)">${c.l30.conv.toFixed(1)} conv</span>
+        <span class="${statusBadge}">${statusLabel}</span>
+        <span style="font-size:11px;color:var(--muted)">${c.l.conv.toFixed(1)} conv</span>
         <button class="view-btn" onclick="event.stopPropagation();openCampaignFilter('${c.id}')">View Products</button>
       </div>
     </div>`;
@@ -732,43 +828,55 @@ function renderCampaigns(){
 }
 
 /* ============================================================
-   ACTION CENTRE
+   ACTION CENTRE — generated dynamically from live data
    ============================================================ */
-const ACTIONS = [
-  { pri:'red', product:'SJALL HERO Campaign', campaign:'22079334413',
-    reason:'ROAS 135% — far below target 380% (only £1.35 returned per £1 spent)',
-    rec:'Pause / Review products', impact:'high' },
-  { pri:'red', product:'SJ_TOP_20 Campaign — ROAS collapsed',campaign:'23516313256',
-    reason:'ROAS dropped from 372% (prev period) to 268% — 28% decline, below 400% target',
-    rec:'Audit product exclusions', impact:'high' },
-  { pri:'red', product:'Zero Conv: Product #4436070793312', campaign:'21069663519',
-    reason:'£23.82 spent, 0 conversions, 689 impressions (30d)',
-    rec:'Pause / Review feed', impact:'high' },
-  { pri:'red', product:'Zero Conv: Product #15260848095618', campaign:'23590572906',
-    reason:'£14.32 spent, 0 conversions, 508 impressions (30d)',
-    rec:'Pause / Review feed', impact:'high' },
-  { pri:'red', product:'Zero Conv: Product #4417255538784', campaign:'23516313256',
-    reason:'£13.34 spent, 0 conversions, 1,706 impressions (30d)',
-    rec:'Improve title / image', impact:'high' },
-  { pri:'amber', product:'SJ_PENDANT_KLARNA — LIMITED Delivery', campaign:'21069663519',
-    reason:'campaign_primary_status = LIMITED · budget_status = ENABLED · Limiting reason not available in verified source (no limiting_reason field in DB)',
-    rec:'Investigate in Google Ads UI', impact:'med' },
-  { pri:'amber', product:'zero conv2 — LIMITED Delivery', campaign:'23590572906',
-    reason:'campaign_primary_status = LIMITED · budget_status = ENABLED · Limiting reason not available in verified source (no limiting_reason field in DB)',
-    rec:'Investigate in Google Ads UI', impact:'med' },
-  { pri:'amber', product:'ALLACRSJ2 Accessories — ROAS declining', campaign:'21242723265',
-    reason:'ROAS dropped from 380% to 305% — now below 380% target',
-    rec:'Review product mix / bids', impact:'med' },
-  { pri:'green', product:'Product #14877123543426 — Outstanding ROAS', campaign:'21242723265',
-    reason:'ROAS 6,588% — £244 revenue from £3.71 spend (30d)',
-    rec:'Increase budget / scale', impact:'low' },
-  { pri:'green', product:'Retro Swan Neck Wall Sconce — Exceptional ROAS', campaign:'21069663519',
-    reason:'ROAS 19,083% — £125.95 conv value from £0.66 spend (30d) · Note: product is out of stock per Merchant data',
-    rec:'Restock and scale', impact:'low' }
-];
+function buildActions(){
+  const actions=[];
+  // Campaign-level: ROAS below target
+  CAMPAIGNS.forEach(c=>{
+    if(c.l.cost>0 && c.l.roas < c.target_roas*0.7){
+      const prevLabel=c.prev.roas>0?` (was ${c.prev.roas.toFixed(0)}% prev period)`:'';
+      actions.push({pri:'red',product:`${c.name.split('|').pop().trim()} — Low ROAS`,campaign:c.id,
+        reason:`ROAS ${c.l.roas.toFixed(0)}% — below target ${c.target_roas}%${prevLabel}`,
+        rec:'Review products / bids',impact:'high'});
+    }
+  });
+  // Campaigns ROAS declining vs prev
+  CAMPAIGNS.forEach(c=>{
+    if(c.l.cost>0 && c.prev.roas>0){
+      const drop=((c.prev.roas-c.l.roas)/c.prev.roas*100);
+      if(drop>20 && c.l.roas>=c.target_roas*0.7){
+        actions.push({pri:'amber',product:`${c.name.split('|').pop().trim()} — ROAS declining`,campaign:c.id,
+          reason:`ROAS dropped from ${c.prev.roas.toFixed(0)}% to ${c.l.roas.toFixed(0)}% (−${drop.toFixed(0)}%)`,
+          rec:'Audit product exclusions',impact:'med'});
+      }
+    }
+  });
+  // Product-level: zero conv with spend > £10
+  PRODUCTS.filter(p=>p.conv===0&&p.cost>10).slice(0,5).forEach(p=>{
+    actions.push({pri:'red',product:`Zero Conv: ${p.title.substring(0,50)}`,campaign:p.cid,
+      reason:`£${p.cost.toFixed(2)} spent, 0 conversions, ${p.imps.toLocaleString()} impressions`,
+      rec:'Pause / Review feed',impact:'high'});
+  });
+  // High ROAS products: scale opportunities
+  PRODUCTS.filter(p=>p.roas>=500&&p.cost>5).slice(0,3).forEach(p=>{
+    actions.push({pri:'green',product:`Scale: ${p.title.substring(0,50)}`,campaign:p.cid,
+      reason:`ROAS ${p.roas.toFixed(0)}% — £${p.cv.toFixed(0)} revenue from £${p.cost.toFixed(2)} spend`,
+      rec:'Increase budget / scale',impact:'low'});
+  });
+  // Out of stock with conversions
+  PRODUCTS.filter(p=>p.avail==='out of stock'&&p.conv>0).slice(0,2).forEach(p=>{
+    actions.push({pri:'amber',product:`Out of Stock: ${p.title.substring(0,50)}`,campaign:p.cid,
+      reason:`Product is out of stock but had ${p.conv.toFixed(1)} conversions — wasted budget risk`,
+      rec:'Restock and scale',impact:'med'});
+  });
+  return actions;
+}
 
 function renderActions(){
   const el = document.getElementById('actionGrid');
+  const ACTIONS=buildActions();
+  if(!ACTIONS.length){el.innerHTML='<p style="color:var(--muted);padding:12px">No actions generated yet — load data first.</p>';return;}
   const impMap={high:'impact-high',med:'impact-med',low:'impact-low'};
   el.innerHTML = ACTIONS.map((a,i)=>`
     <div class="action-item pri-${a.pri}">
@@ -880,16 +988,16 @@ function applyFilters(){
   const feed=document.getElementById('feedFilter').value;
   const q=document.getElementById('productSearch').value.trim().toLowerCase();
 
-  filteredProds=PRODUCTS.filter(p=>{
+  filteredProds=(PRODUCTS||[]).filter(p=>{
     const c=CAMP_MAP[p.cid];
     if(camp!=='all'&&p.cid!==camp)return false;
-    if(status!=='all'&&c&&c.primary!==status)return false;
+    if(status!=='all'&&c&&c.status!==status)return false;
     if(feed!=='all'&&p.avail!==feed)return false;
     if(q&&!p.title.toLowerCase().includes(q)&&!p.item.toLowerCase().includes(q)&&!campShort(p.cid).toLowerCase().includes(q))return false;
     if(activeFilter==='zero-conv'&&p.conv!==0)return false;
     if(activeFilter==='poor-roas'&&(p.roas===0||p.roas>=150))return false;
     if(activeFilter==='low-ctr'&&!(p.imps>1000&&(p.clicks/p.imps*100)<0.5))return false;
-    if(activeFilter==='limited'){const c2=CAMP_MAP[p.cid];if(!c2||c2.primary!=='LIMITED')return false;}
+    if(activeFilter==='limited'){const c2=CAMP_MAP[p.cid];if(!c2||c2.status!=='LIMITED')return false;}
     return true;
   });
   if(sortCol)sortProducts();
@@ -1060,12 +1168,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
    INIT
    ============================================================ */
 document.addEventListener('DOMContentLoaded',()=>{
-  renderCampaigns();
-  renderActions();
-  buildChart('roas');
-  renderTopPanels();
-  renderAttn();
-  applyFilters();
+  sjSetPreset(30);
 });
 </script>
 </body>
