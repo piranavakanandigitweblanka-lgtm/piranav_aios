@@ -1006,6 +1006,21 @@ var TH_FROM='', TH_TO='';
 var TH_LOADED={r1:false,r2:false,r3:false,r4:false};
 var TH_R2_FROM='', TH_R2_TO='';
 
+// ─── R2 STATE VARIABLES ───────────────────────────────────────
+var R2_RANGES={
+  '7d': {label:'Last 7 days', days:7, data:null},
+  '30d':{label:'Last 30 days',days:30,data:null},
+  '60d':{label:'Last 60 days',days:60,data:null},
+  '90d':{label:'Last 90 days',days:90,data:null}
+};
+var R2_ACTIVE_RANGE='7d';
+var R2_CURRENT_DATA=[];
+var R2_LATEST_DATE='';
+var R2_REVIEW_DATE=new Date().toISOString().slice(0,10);
+var R2_CAMP={'23714290257':'THEE_GEMS','23684837882':'THEE_MYSTERY'};
+var R2_BRAND=['ledsone','ledson','ledone','led stone','ledstone','ledsone ltd','ledsone lighting','ledsone reviews','ledsone uk'];
+var R2_OFF=['scales','weighing scales','bathroom scales','human weighing scales','best scales','tile level','tile leveling','tile leveler','tile levellers','tile leveling system','tile leveling wedges','tile leveling clips','tile levelers','reusable tile leveling system','tile levels','porcelain tile levellers','3mm floor tile spacers'];
+
 // ─── R2 CLASSIFICATION FUNCTIONS ─────────────────────────────
 function r2SafeCtr(clicks,imp){if(!imp||imp===0)return null;return(clicks/imp)*100;}
 function r2IsBrand(term){var t=(term||'').toLowerCase();return R2_BRAND.some(function(b){return t.indexOf(b)>=0;});}
