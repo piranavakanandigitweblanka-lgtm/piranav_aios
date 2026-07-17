@@ -16,7 +16,7 @@ module.exports = async function handler(req, res) {
 
   const client = new Client({
     connectionString: connStr,
-    ssl: { rejectUnauthorized: false },
+    ssl: false,
     connectionTimeoutMillis: 15000,
     statement_timeout: 12000,
   });
