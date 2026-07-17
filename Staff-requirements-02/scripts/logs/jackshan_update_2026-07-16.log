@@ -1,0 +1,66 @@
+2026-07-16 08:22:02,043  INFO  Date range  : 2026-06-16 to 2026-07-15
+2026-07-16 08:22:02,043  INFO  Weekly range: 2026-07-09 to 2026-07-15
+2026-07-16 08:22:02,092  INFO  --- Shopify: fetching sales data ---
+2026-07-16 08:22:09,549  INFO    Orders page 9: 3000 line items across 1030 products
+2026-07-16 08:22:11,093  INFO    Orders page 3: 699 line items across 418 products
+2026-07-16 08:22:11,094  INFO  Monthly sales fetched: 1030 products with orders
+2026-07-16 08:22:11,095  INFO  Weekly sales fetched:  418 products with orders
+2026-07-16 08:22:11,095  INFO  --- GSC: querying all 50 products ---
+2026-07-16 08:22:12,607  INFO    [01] ip68-waterproof-junction-box-outdoor-for-electrica clk=9 imp=1099
+2026-07-16 08:22:13,436  INFO    [02] rose-gold-lamp-shade-cap-for-pendant-light-socket- clk=1 imp=229
+2026-07-16 08:22:14,474  INFO    [03] 40cm-black-metal-dome-pendant-light clk=1 imp=84
+2026-07-16 08:22:15,588  INFO    [04] modern-vintage-pendant-light-fitting-retro-industr clk=1 imp=94
+2026-07-16 08:22:16,593  INFO    [05] pendant-light-fitting-ceiling-rose-e27-suspension- clk=1 imp=240
+2026-07-16 08:22:17,546  INFO    [06] tiffany-style-ceiling-pendant-hanging-mediterranea clk=0 imp=61
+2026-07-16 08:22:18,423  INFO    [07] brushed-silver-metal-industrial-hanging-pendant-li clk=1 imp=130
+2026-07-16 08:22:19,456  INFO    [08] ledsone-industrial-vintage-32cm-orange-pendant-ret clk=0 imp=79
+2026-07-16 08:22:20,410  INFO    [09] lamp-shade-spring-clip-retainer-for-lamp-part-shad clk=2 imp=404
+2026-07-16 08:22:21,488  INFO    [10] french-gold-pendant-lights-gold-ceiling-lights-met clk=0 imp=59
+2026-07-16 08:22:22,313  INFO    [11] e27-g95-40w-dimmable-antique-globe-industrial-retr clk=0 imp=238
+2026-07-16 08:22:23,523  INFO    [12] dc12v-60w-ip20-mini-universal-regulated-switching- clk=0 imp=14
+2026-07-16 08:22:24,468  INFO    [13] industrial-vintage-style-wall-or-ceiling-light-b22 clk=0 imp=78
+2026-07-16 08:22:25,602  INFO    [14] 3-light-bulb-guard-cage-cluster-pendant-lights clk=0 imp=806
+2026-07-16 08:22:26,438  INFO    [15] conduit-pipe-table-lamp-with-dimmer-switch-industr clk=3 imp=629
+2026-07-16 08:22:27,585  INFO    [16] 28w-compact-led-driver-ac-230v-to-dc12v-power-supp clk=2 imp=175
+2026-07-16 08:22:28,470  INFO    [17] 3-light-ceiling-pendant-light-with-pulley-system clk=0 imp=100
+2026-07-16 08:22:29,502  INFO    [18] light-fixing-strap-brace-ceiling-rose-155mm-bracke clk=0 imp=16
+2026-07-16 08:22:30,547  INFO    [19] ceramic-porcelain-type-6-es-e27-edison-screw-heat- clk=0 imp=215
+2026-07-16 08:22:31,442  INFO    [20] 2pcs-bath-pedestal-rug-set-soft-non-slip-water-abs clk=0 imp=5
+2026-07-16 08:22:32,409  INFO    [21] cone-wall-light clk=0 imp=175
+2026-07-16 08:22:33,613  INFO    [22] copper-lamp-shade-cap-for-pendant-light-socket-hol clk=0 imp=36
+2026-07-16 08:22:34,394  INFO    [23] dc12v-15w-led-driver-power-supply-transformer clk=0 imp=19
+2026-07-16 08:22:35,251  INFO    [24] warm-white-12v-led-waterproof-modules-ip67-outdoor clk=1 imp=77
+2026-07-16 08:22:36,208  INFO    [25] 5-x-vintage-pendant-cord-grip-strain-relief-metal- clk=1 imp=387
+2026-07-16 08:22:37,213  INFO    [26] pipe-lighting-accessories-iron-5way-cross clk=2 imp=32
+2026-07-16 08:22:38,244  INFO    [27] industrial-vintage-various-colours-ceiling-light-f clk=0 imp=24
+2026-07-16 08:22:39,316  INFO    [28] 3-core-army-green-round-vintage-italian-braided-fa clk=0 imp=16
+2026-07-16 08:22:40,376  INFO    [29] dc24v-ip67-30w-waterproof-led-driver-power-supply- clk=0 imp=22
+2026-07-16 08:22:41,447  INFO    [30] screw-e27-white-plain-holder-bakelite-lamp-holder clk=0 imp=61
+2026-07-16 08:22:42,237  INFO    [31] vintage-e27-edison-screw-3w-filament-bulb-warm-whi clk=0 imp=52
+2026-07-16 08:22:43,101  INFO    [32] 3-outlet-500mm-black-metal-ceiling-rose-square clk=0 imp=154
+2026-07-16 08:22:44,358  INFO    [33] red-wicker-rattan-lampshade-ceiling-pendant-light clk=0 imp=23
+2026-07-16 08:22:45,402  INFO    [34] black-finished-industrial-adjustable-pendant-light clk=0 imp=21
+2026-07-16 08:22:46,293  INFO    [35] plug-in-wall-light-kit-dimmer-uk-plug-flex-wire clk=3 imp=135
+2026-07-16 08:22:47,458  INFO    [36] orange-painted-metal-shade-lighting-vintage-pendan clk=1 imp=74
+2026-07-16 08:22:48,520  INFO    [37] vintage-edison-led-filament-bulb-g80-b22-4w-dimmab clk=2 imp=1261
+2026-07-16 08:22:49,342  INFO    [38] fabric-hemp-flex-cable-kit-black-plug-in-pendant-l clk=0 imp=10
+2026-07-16 08:22:50,515  INFO    [39] industrial-style-ceiling-light-three-b22-bar-condu clk=0 imp=33
+2026-07-16 08:22:51,413  INFO    [40] black-bakelite-lamp-holder-industrial-socket-light clk=4 imp=367
+2026-07-16 08:22:52,345  INFO    [41] 1m-white-pendant-light-holder clk=1 imp=744
+2026-07-16 08:22:53,384  INFO    [42] hemp-rope-metal-pendant-light-spider-light-hanging clk=0 imp=84
+2026-07-16 08:22:54,424  INFO    [43] fisherman-caged-conduit-pipe-light-shade-3-4-entry clk=2 imp=97
+2026-07-16 08:22:55,360  INFO    [44] retro-vintage-1cm-hole-barrel-cage-design-rattan-s clk=0 imp=27
+2026-07-16 08:22:56,268  INFO    [45] 105mm-bracket-strap-brace-plate-with-accessories-c clk=0 imp=30
+2026-07-16 08:22:57,131  INFO    [46] linear-cage-pendant-light-fixture clk=0 imp=65
+2026-07-16 08:22:57,933  INFO    [47] b22-t185-60w-dimmable-vintage-light-filament-bulb clk=0 imp=7
+2026-07-16 08:22:58,779  INFO    [48] design-women-toe-post-flip-flop-beach-slipper-for- clk=0 imp=1645
+2026-07-16 08:22:59,750  INFO    [49] industrial-ribbed-glass-wall-lights-replacement-la clk=1 imp=759
+2026-07-16 08:23:00,890  INFO    [50] 3-way-modern-black-ceiling-pendant-cluster-light-f clk=1 imp=1333
+2026-07-16 08:23:00,890  INFO  --- Building datasets ---
+2026-07-16 08:23:00,891  INFO  Req1 — Rewrite:20 Intent:7 DNO:23 Val:0
+2026-07-16 08:23:00,891  INFO  Req2 — Optimize:40 DNO:10 Avg CTR:0.32%
+2026-07-16 08:23:00,891  INFO  --- Building HTML ---
+2026-07-16 08:23:00,902  INFO  HTML written: 87,889 bytes -> /home/runner/work/Staff-requirements/Staff-requirements/pages/jakshan.html
+2026-07-16 08:23:00,902  INFO  --- Update complete ---
+2026-07-16 08:23:00,902  INFO  Req1: Rewrite=20 Intent=7 DNO=23 NoGSC=0
+2026-07-16 08:23:00,902  INFO  Req2: Optimize=40 DNO=10 AvgCTR=0.32% Clicks=40 Imp=12,525
