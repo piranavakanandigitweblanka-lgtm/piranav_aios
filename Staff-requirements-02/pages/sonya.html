@@ -161,19 +161,40 @@
       </div>
     </header>
 
-    <div class="info-note">
-      <strong>Data source:</strong> <code>public.ppc_etl_performance_data</code> — daily-grain Google Ads data (source = 3, record_type = campaign). Last 30 Days: 2026-06-08 to 2026-07-07. Before Last: 2026-05-09 to 2026-06-07. Inclusion rule: campaign_name ILIKE '%Sonya%' (7 campaigns) <strong>plus</strong> campaign 20810136438 (<em>Pmax UK | Muguntha | Shoptimised | GB | DM 46 All | MCV | UK</em>) confirmed by Sonya as part of her group. Total: <strong>9 campaigns</strong>.
+    <!-- Date range picker -->
+    <div style="background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:14px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
+      <span style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Date Range</span>
+      <button class="fbtn on" id="preset-7"  onclick="setPreset(7)">Last 7d</button>
+      <button class="fbtn"    id="preset-30" onclick="setPreset(30)">Last 30d</button>
+      <button class="fbtn"    id="preset-60" onclick="setPreset(60)">Last 60d</button>
+      <button class="fbtn"    id="preset-90" onclick="setPreset(90)">Last 90d</button>
+      <span style="font-size:12px;color:var(--muted);">or custom:</span>
+      <input type="date" id="dateFrom" style="border:1px solid var(--line);border-radius:7px;padding:6px 10px;font-size:12px;color:var(--ink);background:var(--card);">
+      <span style="font-size:12px;color:var(--muted);">→</span>
+      <input type="date" id="dateTo"   style="border:1px solid var(--line);border-radius:7px;padding:6px 10px;font-size:12px;color:var(--ink);background:var(--card);">
+      <button onclick="applyCustomDates()" style="border:none;border-radius:7px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff;">Apply</button>
+      <span id="dateRangeLabel" style="margin-left:auto;font-size:12px;color:var(--muted);font-weight:600;"></span>
+    </div>
+
+    <div class="info-note" id="req1InfoNote">
+      <strong>Live data:</strong> <code>google_ads.campaign_performance</code> — daily-grain Google Ads data. Filter: campaign_name ILIKE '%Sonya%' + campaign 20810136438 (<em>Muguntha DM 46 All</em>). Data refreshes on every page load. Date range shown above.
     </div>
 
     <!-- KPI Cards -->
     <div class="kpis">
-      <div class="kpi info"><div class="lbl">Total Cost (30d)</div><div class="val" id="kCost">—</div><div class="note">9 campaigns (Sonya group)</div></div>
-      <div class="kpi ok">  <div class="lbl">Total Conv. Value (30d)</div><div class="val" id="kCV">—</div><div class="note">public.ppc_etl_performance_data</div></div>
-      <div class="kpi info"><div class="lbl">Avg ROAS (30d)</div><div class="val" id="kRoas">—</div><div class="note">Weighted by cost</div></div>
-      <div class="kpi info"><div class="lbl">Total Conversions (30d)</div><div class="val" id="kConv">—</div><div class="note">All 7 campaigns</div></div>
+      <div class="kpi info"><div class="lbl">Total Cost</div><div class="val" id="kCost">—</div><div class="note" id="kCostNote">Selected period</div></div>
+      <div class="kpi ok">  <div class="lbl">Total Conv. Value</div><div class="val" id="kCV">—</div><div class="note">google_ads.campaign_performance</div></div>
+      <div class="kpi info"><div class="lbl">Avg ROAS</div><div class="val" id="kRoas">—</div><div class="note">Weighted by cost</div></div>
+      <div class="kpi info"><div class="lbl">Total Conversions</div><div class="val" id="kConv">—</div><div class="note" id="kConvNote">All campaigns</div></div>
       <div class="kpi ok">  <div class="lbl">Best Campaign</div><div class="val" id="kBest" style="font-size:12px;">—</div><div class="note">Highest ROAS %</div></div>
       <div class="kpi err"> <div class="lbl">Worst Campaign</div><div class="val" id="kWorst" style="font-size:12px;">—</div><div class="note">Lowest ROAS %</div></div>
     </div>
+
+    <!-- Loading / error state -->
+    <div id="req1Loading" style="text-align:center;padding:40px;color:var(--muted);font-size:14px;display:none;">
+      &#8987; Loading live data from database...
+    </div>
+    <div id="req1Error" style="display:none;background:#fff5f5;border:1px solid #fca5a5;border-radius:10px;padding:14px 18px;font-size:13px;color:#9b1c1c;margin-bottom:14px;"></div>
 
     <!-- Filters -->
     <div class="controls">
@@ -595,107 +616,90 @@
 
 <script>
 /* ============================================================
-   DATA — PostgreSQL Read-Only
-   Source:  public.ppc_etl_performance_data
-            record_type = 'campaign', source = 3
-   Names:   staging_ai.cppc_campaign_truth_registry_v1
-            staging_ai.pmax_18m_postmortem_fact_v1 (for English_EU)
-   Filter:  campaign_name ILIKE '%Sonya%'
-            + campaign 20810136438 (Muguntha | Shoptimised | GB | DM 46 All | MCV | UK)
-            Sonya confirmed this Muguntha campaign belongs to her group.
-            Other Muguntha campaigns are NOT included.
-   Total:   9 campaigns
-   L30:     2026-06-08 to 2026-07-07 (Last 30 Days — main table + Stage block 1)
-   BL:      2026-05-09 to 2026-06-07 (Before Last — Stage block 2, derived: d60 − l30)
-   D60:     2026-05-09 to 2026-07-07 (Stage: Last 60 Days block 3)
-   D90:     2026-04-09 to 2026-07-07 (Stage: Last 90 Days block 4)
+   REQ 1 — Live Google Ads Campaign Performance
+   Source:  google_ads.campaign_performance + google_ads.campaigns
+   Filter:  campaign_name ILIKE '%Sonya%' + campaign_id 20810136438
+   API:     /api/sonya/campaign-performance?from=YYYY-MM-DD&to=YYYY-MM-DD
    ============================================================ */
 
-const RAW = [
-  {
-    id: '20810136438',
-    name: 'Pmax  UK | Muguntha | Shoptimised | GB | DM 46 All | MCV | UK',
-    days: 30, budget: null,
-    l30: { cost: 7348.01,  cv: 23814.41,  conv: 765.11,  roas: 324.09 },
-    bl:  { cost: 7580.19,  cv: 27168.08,  conv: 796.68,  roas: 358.41 },
-    d60: { cost: 14928.20, cv: 50982.49,  conv: 1561.79, roas: 341.52 },
-    d90: { cost: 23927.79, cv: 78582.17,  conv: 2396.03, roas: 328.41 }
-  },
-  {
-    id: '21435967873',
-    name: 'Pmax  UK | Sonya | Klarna | PH_ALL | Covertion > 2| MCV | UK',
-    days: 30, budget: null,
-    l30: { cost: 1902.53, cv: 6098.94,  conv: 209.92, roas: 320.57 },
-    bl:  { cost: 2713.00, cv: 10549.56, conv: 281.58,  roas: 388.85 },
-    d60: { cost: 4615.53, cv: 16648.50, conv: 491.50,  roas: 360.71 },
-    d90: { cost: 7285.39, cv: 27034.70, conv: 763.74,  roas: 371.08 }
-  },
-  {
-    id: '22943583032',
-    name: 'Pmax  UK |  Sonya  | Shoptimised |  SUMMER_TRENDS | Zombies | MCV | UK',
-    days: 30, budget: null,
-    l30: { cost: 542.70,  cv: 1190.44, conv: 23.55, roas: 219.36 },
-    bl:  { cost: 355.02,  cv: 1198.25, conv: 28.89,  roas: 337.52 },
-    d60: { cost: 897.72,  cv: 2388.69, conv: 52.44,  roas: 266.08 },
-    d90: { cost: 1380.73, cv: 3840.66, conv: 92.60,  roas: 278.16 }
-  },
-  {
-    id: '23526695953',
-    name: 'Pmax UK | Sonya | Klarna | EUR_76 | All | MCV | Ierland',
-    days: 30, budget: null,
-    l30: { cost: 457.51,  cv: 1834.88, conv: 31.99, roas: 401.06 },
-    bl:  { cost: 326.75,  cv: 1042.30, conv: 27.21,  roas: 318.99 },
-    d60: { cost: 784.26,  cv: 2877.18, conv: 59.20,  roas: 366.87 },
-    d90: { cost: 1045.28, cv: 3886.56, conv: 85.97,  roas: 371.82 }
-  },
-  {
-    id: '23914872425',
-    name: 'Pmax UK | Sonya | Shoptimised | English _EU | Top Selling | MC | Europe English',
-    days: 30, budget: null,
-    l30: { cost: 253.88, cv: 327.41, conv: 9.00,  roas: 128.96 },
-    bl:  { cost: 27.64,  cv: 75.35,  conv: 2.00,   roas: 272.61 },
-    d60: { cost: 281.52, cv: 402.76, conv: 11.00, roas: 143.07 },
-    d90: { cost: 281.52, cv: 402.76, conv: 11.00, roas: 143.07 }
-  },
-  {
-    id: '23515806682',
-    name: 'Pmax UK | Sonya | Shoptimised | SONYA2026 | Zombies > 35| MC | UK',
-    days: 30, budget: null,
-    l30: { cost: 153.29, cv: 99.23,   conv: 2.73,  roas: 64.73  },
-    bl:  { cost: 271.18, cv: 2166.92, conv: 11.25,  roas: 799.07 },
-    d60: { cost: 424.47, cv: 2266.15, conv: 13.98, roas: 533.88 },
-    d90: { cost: 459.99, cv: 2360.91, conv: 16.58, roas: 513.25 }
-  },
-  {
-    id: '23729304135',
-    name: 'Pmax UK | Sonya | Klarna | GB C1 | Zombies Dracarys | MCV | UK',
-    days: 30, budget: null,
-    l30: { cost: 125.94,  cv: 390.00,  conv: 14.11, roas: 309.67 },
-    bl:  { cost: 387.12,  cv: 1552.24, conv: 21.04,  roas: 400.97 },
-    d60: { cost: 513.06,  cv: 1942.24, conv: 35.15, roas: 378.56 },
-    d90: { cost: 1461.58, cv: 3653.38, conv: 73.29, roas: 249.96 }
-  },
-  {
-    id: '22847654610',
-    name: 'Pmax UK | Sonya | GCSS | NICC_07 | Last Year Sold | MCV | UK',
-    days: 17, budget: null,
-    l30: { cost: 2.48,   cv: 0.00,   conv: 0.00,  roas: 0.00   },
-    bl:  { cost: 158.43, cv: 351.28, conv: 14.42,  roas: 221.73 },
-    d60: { cost: 160.91, cv: 351.28, conv: 14.42, roas: 218.31 },
-    d90: { cost: 322.19, cv: 643.36, conv: 24.22, roas: 199.68 }
-  },
-  {
-    id: '23793722836',
-    name: 'D Gen | Sonya | Klarna| PLight | Pendant Light | MCV | UK',
-    days: 0, budget: null,
-    l30: { cost: 0.00,  cv: 0.00, conv: 0.00, roas: 0.00 },
-    bl:  { cost: 19.98, cv: 0.00, conv: 0.00, roas: 0.00 },
-    d60: { cost: 19.98, cv: 0.00, conv: 0.00, roas: 0.00 },
-    d90: { cost: 110.51, cv: 0.00, conv: 0.00, roas: 0.00 }
-  }
-];
+/* ---- Date helpers ---- */
+function isoDate(d) { return d.toISOString().slice(0, 10); }
+function daysAgo(n) { const d = new Date(); d.setDate(d.getDate() - n); return isoDate(d); }
 
-/* ============================================================  DERIVE */
+/* ---- State ---- */
+let RAW = [];
+let activeData = [];
+let sortKey = 'cost';
+let campaignType = 'all';
+let currentMeta = {};
+let activePreset = 7;
+
+/* ---- Date preset ---- */
+function setPreset(days) {
+  activePreset = days;
+  ['7','30','60','90'].forEach(d => {
+    const el = document.getElementById('preset-' + d);
+    if (el) el.classList.toggle('on', Number(d) === days);
+  });
+  const to   = isoDate(new Date());
+  const from = daysAgo(days - 1);
+  document.getElementById('dateFrom').value = from;
+  document.getElementById('dateTo').value   = to;
+  loadData(from, to);
+}
+
+function applyCustomDates() {
+  const from = document.getElementById('dateFrom').value;
+  const to   = document.getElementById('dateTo').value;
+  if (!from || !to) return alert('Please select both From and To dates.');
+  if (from > to)    return alert('From date must be before To date.');
+  ['7','30','60','90'].forEach(d => {
+    const el = document.getElementById('preset-' + d);
+    if (el) el.classList.remove('on');
+  });
+  activePreset = null;
+  loadData(from, to);
+}
+
+/* ---- Fetch live data ---- */
+async function loadData(from, to) {
+  const loading = document.getElementById('req1Loading');
+  const errBox  = document.getElementById('req1Error');
+  const table   = document.getElementById('mainTable');
+
+  loading.style.display = 'block';
+  errBox.style.display  = 'none';
+  table.style.opacity   = '0.3';
+
+  try {
+    const res  = await fetch(`/api/sonya/campaign-performance?from=${from}&to=${to}`);
+    const json = await res.json();
+
+    if (!json.ok) throw new Error(json.error || 'API error');
+
+    currentMeta = json.meta;
+    RAW = json.campaigns.map(c => ({
+      ...c,
+      segment: segFromRoas(c.l.roas),
+    }));
+
+    // Update date label
+    const label = document.getElementById('dateRangeLabel');
+    if (label) label.textContent = `${json.meta.l_from} → ${json.meta.l_to} · ${json.meta.total} campaigns`;
+
+    activeData = [...RAW];
+    applyFilters();
+
+  } catch (err) {
+    errBox.style.display = 'block';
+    errBox.innerHTML = `<strong>Could not load live data:</strong> ${err.message}`;
+  } finally {
+    loading.style.display = 'none';
+    table.style.opacity   = '1';
+  }
+}
+
+/* ---- Segment logic ---- */
 function segFromRoas(pct) {
   if (pct == null || isNaN(pct)) return 'Worst';
   if (pct >= 400) return 'Best';
@@ -707,16 +711,13 @@ function segFromRoas(pct) {
 function segCls(seg) {
   return { Best: 'best', Better: 'better', OK: 'ok', Bad: 'bad', Worst: 'worst' }[seg] || 'worst';
 }
-RAW.forEach(c => {
-  c.segment = segFromRoas(c.l30.roas);
-});
 
-/* ============================================================  FORMAT */
-function fmt(n, d=2)   { if (n == null || isNaN(n)) return '—'; return '£' + Number(n).toLocaleString('en-GB', { minimumFractionDigits: d, maximumFractionDigits: d }); }
+/* ---- Format ---- */
+function fmt(n, d=2)    { if (n == null || isNaN(n)) return '—'; return '£' + Number(n).toLocaleString('en-GB', { minimumFractionDigits: d, maximumFractionDigits: d }); }
 function fmtPct(n, d=0) { if (n == null || isNaN(n)) return '—'; return Number(n).toFixed(d) + '%'; }
 function shortN(name)   { const p = name.split('|').map(s => s.trim()); return p.slice(1, 4).join(' | ') || name; }
 
-/* ============================================================  STAGE HTML */
+/* ---- Stage accordion ---- */
 function toggleStage(uid) {
   const panel = document.getElementById(uid);
   const btn   = panel.previousElementSibling;
@@ -726,6 +727,7 @@ function toggleStage(uid) {
 }
 function stageHTML(c) {
   const uid = 'stg-' + c.id;
+  const m   = currentMeta;
   const blk = (lbl, data) => {
     const sc = segCls(segFromRoas(data.roas));
     return `<div class="sp">
@@ -740,15 +742,14 @@ function stageHTML(c) {
   };
   return `<button class="stg-btn" onclick="toggleStage('${uid}')">View Stage Details &#9660;</button>
     <div class="stg-panel" id="${uid}" style="display:none;">
-      ${blk('1. Last 30 Days (2026-06-08 – 2026-07-07)', c.l30)}
-      ${blk('2. Before Last (2026-05-09 – 2026-06-07)', c.bl)}
-      ${blk('3. Last 60 Days (2026-05-09 – 2026-07-07)', c.d60)}
-      ${blk('4. Last 90 Days (2026-04-09 – 2026-07-07)', c.d90)}
+      ${blk(`1. Selected (${m.l_from||''} – ${m.l_to||''})`, c.l)}
+      ${blk(`2. Before Last (${m.bl_from||''} – ${m.bl_to||''})`, c.bl)}
+      ${blk(`3. Last 60 Days (${m.d60_from||''} – ${m.d60_to||''})`, c.d60)}
+      ${blk(`4. Last 90 Days (${m.d90_from||''} – ${m.d90_to||''})`, c.d90)}
     </div>`;
 }
 
-/* ============================================================  CAMPAIGN TYPE FILTER */
-let campaignType = 'all';
+/* ---- Campaign type filter ---- */
 function setCampaignType(t) {
   campaignType = t;
   ['ctAll','ctActive','ctPush'].forEach(id => document.getElementById(id).classList.remove('on'));
@@ -756,60 +757,62 @@ function setCampaignType(t) {
   applyFilters();
 }
 function matchesCampaignType(c) {
-  if (campaignType === 'active') return c.l30.cost > 0;
+  if (campaignType === 'active') return c.l.cost > 0;
   if (campaignType === 'push')   return c.name.toLowerCase().includes('push');
   return true;
 }
 
-/* ============================================================  SORT */
-let sortKey = 'cost';
+/* ---- Sort ---- */
 function setSort(k) {
   sortKey = k;
-  ['sortCost', 'sortRoas', 'sortCV'].forEach(id => document.getElementById(id).classList.remove('on'));
+  ['sortCost','sortRoas','sortCV'].forEach(id => document.getElementById(id).classList.remove('on'));
   document.getElementById({ cost: 'sortCost', roas: 'sortRoas', cv: 'sortCV' }[k]).classList.add('on');
-  render();
+  renderTable();
 }
 function sortVal(c) {
-  if (sortKey === 'roas') return c.l30.roas || 0;
-  if (sortKey === 'cv')   return c.l30.cv   || 0;
-  return c.l30.cost || 0;
+  if (sortKey === 'roas') return c.l.roas || 0;
+  if (sortKey === 'cv')   return c.l.cv   || 0;
+  return c.l.cost || 0;
 }
 
-/* ============================================================  FILTERS */
-let activeData = [...RAW];
+/* ---- Filters ---- */
 function applyFilters() {
   const q   = document.getElementById('searchBox').value.toLowerCase();
   const seg = document.getElementById('segFilter').value;
   activeData = RAW.filter(c => {
-    if (q   && !c.name.toLowerCase().includes(q)) return false;
-    if (seg !== 'all' && c.segment !== seg)        return false;
-    if (!matchesCampaignType(c))                   return false;
+    if (q && !c.name.toLowerCase().includes(q)) return false;
+    if (seg !== 'all' && c.segment !== seg)     return false;
+    if (!matchesCampaignType(c))                return false;
     return true;
   });
-  render();
+  renderTable();
 }
 document.getElementById('searchBox').addEventListener('input', applyFilters);
 
-/* ============================================================  RENDER */
-function render() {
+/* ---- Render table ---- */
+function renderTable() {
   const data  = [...activeData].sort((a, b) => sortVal(b) - sortVal(a));
   const tbody = document.getElementById('tbody');
   tbody.innerHTML = '';
 
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;color:#888;">No campaigns match the current filter.</td></tr>';
+  }
+
   data.forEach((c, i) => {
-    const sc  = segCls(c.segment);
-    const tr  = document.createElement('tr');
+    const sc = segCls(c.segment);
+    const tr = document.createElement('tr');
     tr.className = `seg-${sc}`;
     tr.innerHTML = `
       <td class="num">${i + 1}</td>
       <td style="max-width:220px;font-size:12px;font-weight:600;line-height:1.4;">${c.name}</td>
       <td style="font-size:11px;color:var(--muted);">${c.id}</td>
       <td class="num">${c.days > 0 ? c.days : '—'}</td>
-      <td class="num" style="color:var(--muted);">N/A</td>
-      <td class="num"><strong>${c.l30.cost > 0 ? fmt(c.l30.cost) : '£0.00'}</strong></td>
-      <td class="num">${c.l30.conv > 0 ? Number(c.l30.conv).toFixed(2) : '—'}</td>
-      <td class="num">${c.l30.cv > 0 ? fmt(c.l30.cv) : '—'}</td>
-      <td class="num"><strong>${c.l30.roas > 0 ? fmtPct(c.l30.roas, 0) : '—'}</strong></td>
+      <td class="num">${c.budget ? fmt(c.budget) : '<span style="color:var(--muted)">N/A</span>'}</td>
+      <td class="num"><strong>${c.l.cost > 0 ? fmt(c.l.cost) : '£0.00'}</strong></td>
+      <td class="num">${c.l.conv > 0 ? Number(c.l.conv).toFixed(2) : '—'}</td>
+      <td class="num">${c.l.cv > 0 ? fmt(c.l.cv) : '—'}</td>
+      <td class="num"><strong>${c.l.roas > 0 ? fmtPct(c.l.roas, 0) : '—'}</strong></td>
       <td><span class="badge badge-${sc}">${c.segment}</span></td>
       <td class="stage-cell">${stageHTML(c)}</td>
     `;
@@ -817,57 +820,59 @@ function render() {
   });
 
   document.getElementById('tbarCount').textContent =
-    `Showing ${data.length} of ${RAW.length} campaigns (Last 30 Days · public.ppc_etl_performance_data)`;
+    `Showing ${data.length} of ${RAW.length} campaigns · google_ads.campaign_performance · ${currentMeta.l_from||'—'} to ${currentMeta.l_to||'—'}`;
 
-  /* KPIs — all campaigns */
-  const tc   = RAW.reduce((s, c) => s + c.l30.cost, 0);
-  const tcv  = RAW.reduce((s, c) => s + c.l30.cv,   0);
-  const tn   = RAW.reduce((s, c) => s + c.l30.conv,  0);
-  const wr   = tc > 0 ? (tcv / tc) * 100 : 0;
-  const withRoas = RAW.filter(c => c.l30.roas > 0);
-  const best   = withRoas.length ? [...withRoas].sort((a, b) => b.l30.roas - a.l30.roas)[0] : RAW[0];
-  const worst  = withRoas.length ? [...withRoas].sort((a, b) => a.l30.roas - b.l30.roas)[0] : RAW[RAW.length - 1];
+  /* KPI cards */
+  const tc  = RAW.reduce((s, c) => s + c.l.cost, 0);
+  const tcv = RAW.reduce((s, c) => s + c.l.cv,   0);
+  const tn  = RAW.reduce((s, c) => s + c.l.conv,  0);
+  const wr  = tc > 0 ? (tcv / tc) * 100 : 0;
+  const withRoas = RAW.filter(c => c.l.roas > 0);
+  const best  = withRoas.length ? [...withRoas].sort((a,b) => b.l.roas - a.l.roas)[0] : RAW[0];
+  const worst = withRoas.length ? [...withRoas].sort((a,b) => a.l.roas - b.l.roas)[0] : RAW[RAW.length-1];
 
   document.getElementById('kCost').textContent  = fmt(tc);
   document.getElementById('kCV').textContent    = fmt(tcv);
   document.getElementById('kRoas').textContent  = fmtPct(wr, 0);
   document.getElementById('kConv').textContent  = tn > 0 ? Number(tn).toFixed(2) : '—';
-  document.getElementById('kBest').textContent  = shortN(best.name);
-  document.getElementById('kWorst').textContent = shortN(worst.name);
+  document.getElementById('kBest').textContent  = best  ? shortN(best.name)  : '—';
+  document.getElementById('kWorst').textContent = worst ? shortN(worst.name) : '—';
+  const note = document.getElementById('kConvNote');
+  if (note) note.textContent = `${currentMeta.active||0} active / ${RAW.length} total`;
 }
 
-/* ============================================================  CSV */
+/* ---- CSV export ---- */
 function exportCSV() {
-  const rows = [['#', 'Campaign Name', 'Campaign ID', 'Days', 'Budget', 'Cost L30', 'Conversions L30', 'Conv Value L30', 'ROAS% L30', 'Segment', 'Cost BL', 'Conv Value BL', 'ROAS% BL']];
-  [...activeData].sort((a, b) => sortVal(b) - sortVal(a)).forEach((c, i) => {
+  const rows = [['#','Campaign Name','Campaign ID','Days','Budget','Cost','Conversions','Conv Value','ROAS%','Segment','Cost BL','Conv Value BL','ROAS% BL']];
+  [...activeData].sort((a,b) => sortVal(b)-sortVal(a)).forEach((c,i) => {
     rows.push([
-      i + 1, `"${c.name}"`, c.id,
+      i+1, `"${c.name}"`, c.id,
       c.days > 0 ? c.days : 0,
-      'N/A',
-      c.l30.cost.toFixed(2), c.l30.conv.toFixed(2), c.l30.cv.toFixed(2), c.l30.roas.toFixed(0) + '%',
+      c.budget || 'N/A',
+      c.l.cost.toFixed(2), c.l.conv.toFixed(2), c.l.cv.toFixed(2), c.l.roas.toFixed(0)+'%',
       c.segment,
-      c.bl.cost.toFixed(2), c.bl.cv.toFixed(2), c.bl.roas.toFixed(0) + '%'
+      c.bl.cost.toFixed(2), c.bl.cv.toFixed(2), c.bl.roas.toFixed(0)+'%'
     ]);
   });
   const blob = new Blob([rows.map(r => r.join(',')).join('\n')], { type: 'text/csv' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'sonya-campaign-last30d-2026-07-08.csv';
+  a.download = `sonya-campaigns-${currentMeta.l_from||'export'}-to-${currentMeta.l_to||'export'}.csv`;
   a.click();
 }
 
-/* ============================================================  TABS */
+/* ---- Tabs ---- */
 function showTab(n) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+  document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
   document.getElementById('panel-' + n).classList.add('active');
   const btn = document.getElementById('nav-' + n);
   btn.classList.add('active');
-  btn.setAttribute('aria-selected', 'true');
+  btn.setAttribute('aria-selected','true');
 }
 
-/* init */
-render();
+/* ---- Init: default to last 7 days ---- */
+setPreset(7);
 
 // === REQ3 TREND DATA (v2 — variant-level, 5778 rows) ===
 const TREND_ROWS=[
