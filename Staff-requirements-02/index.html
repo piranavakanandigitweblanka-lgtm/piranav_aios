@@ -103,35 +103,35 @@
 
   <div class="section-title">Active Dashboards <span class="count">6</span></div>
   <div class="roster" id="roster-active">
-    <a class="row" href="pages/hetheesha.html" data-name="hetheesha">
+    <a class="row" href="pages/hetheesha.html" data-name="hetheesha" data-member="hetheesha">
       <span class="avatar live">H</span>
       <span class="who"><span class="nm">Hetheesha</span><span class="role">SEO &amp; Digital Marketing · ledsone.fr</span></span>
-      <span class="status live">4 Reports Live</span>
+      <span class="status live" id="badge-hetheesha">4 Reports Live</span>
     </a>
-    <a class="row" href="pages/jakshan.html" data-name="jakshan">
+    <a class="row" href="pages/jakshan.html" data-name="jakshan" data-member="jakshan">
       <span class="avatar live">J</span>
       <span class="who"><span class="nm">Jakshan</span><span class="role">SEO &amp; Digital Marketing · ledsone.co.uk</span></span>
-      <span class="status live">2 Reports Live</span>
+      <span class="status live" id="badge-jakshan">2 Reports Live</span>
     </a>
-    <a class="row" href="pages/sajeepan.html" data-name="sajeepan">
+    <a class="row" href="pages/sajeepan.html" data-name="sajeepan" data-member="sajeepan">
       <span class="avatar live">S</span>
       <span class="who"><span class="nm">Sajeepan</span><span class="role">Google Ads · ledsone.de</span></span>
-      <span class="status live">1 Report Live</span>
+      <span class="status live" id="badge-sajeepan">1 Report Live</span>
     </a>
-    <a class="row" href="pages/sonya.html" data-name="sonya">
+    <a class="row" href="pages/sonya.html" data-name="sonya" data-member="sonya">
       <span class="avatar live">S</span>
       <span class="who"><span class="nm">Sonya</span><span class="role">Google Ads · UK</span></span>
-      <span class="status live">5 Reports Live</span>
+      <span class="status live" id="badge-sonya">5 Reports Live</span>
     </a>
-    <a class="row" href="pages/theekshy.html" data-name="theekshy">
+    <a class="row" href="pages/theekshy.html" data-name="theekshy" data-member="theekshy">
       <span class="avatar live">T</span>
       <span class="who"><span class="nm">Theekshy</span><span class="role">Digital Marketing team</span></span>
-      <span class="status live">2 Reports Live</span>
+      <span class="status live" id="badge-theekshy">4 Reports Live</span>
     </a>
-    <a class="row" href="pages/thivajini.html" data-name="thivajini">
+    <a class="row" href="pages/thivajini.html" data-name="thivajini" data-member="thivajini">
       <span class="avatar live">T</span>
       <span class="who"><span class="nm">Thivajini</span><span class="role">Digital Marketing team</span></span>
-      <span class="status live">4 Reports Live</span>
+      <span class="status live" id="badge-thivajini">4 Reports Live</span>
     </a>
   </div>
 
@@ -142,10 +142,30 @@
 <script>
 document.getElementById('member-search').addEventListener('input',function(){
   var q=this.value.trim().toLowerCase();
-  document.querySelectorAll('a.row').forEach(function(r){
-    r.style.display=r.getAttribute('data-name').indexOf(q)>-1?'':'none';
+  document.querySelectorAll('a.row[data-name]').forEach(function(r){
+    r.style.display=(r.getAttribute('data-name')||'').indexOf(q)>-1?'':'none';
   });
 });
+
+// Live req count update from /api/status
+fetch('/api/status')
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(!d.ok)return;
+    d.members.forEach(function(m){
+      var el=document.getElementById('badge-'+m.id);
+      if(el)el.textContent=m.reqs+' Report'+(m.reqs===1?'':'s')+' Live';
+    });
+    // update header "Active Dashboards" count
+    var total=d.members.filter(function(m){return m.reqs>0;}).length;
+    var statEls=document.querySelectorAll('.stat .v');
+    // second stat = Active Dashboards
+    if(statEls[1])statEls[1].textContent=total;
+    // updated date
+    var today=new Date().toISOString().slice(0,10);
+    if(statEls[2])statEls[2].textContent=today;
+  })
+  .catch(function(){});
 </script>
 </body>
 </html>
