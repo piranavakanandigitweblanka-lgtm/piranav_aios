@@ -1560,7 +1560,215 @@ function renderR4Kpis(){
   }).join('');
 }
 
-// ── CSV export ────────────────────────────────────────────
+// ─── R3 FUNCTIONS ──────────────────────────────────────────
+var R3_CMAP={'23714290257':'THEE_GEMS','23684837882':'THEE_MYSTERY'};
+function r3PriceMatch(gmcP,shopP,gmcCur){
+  if(gmcP===null||shopP===null)return'Unable to Verify';
+  if(gmcCur&&gmcCur!=='GBP')return'Currency Mismatch';
+  return Math.round(gmcP*100)===Math.round(shopP*100)?'Yes':'No';
+}
+function r3PriceDiff(gmcP,shopP,gmcCur){
+  if(gmcP===null||shopP===null||!gmcCur||gmcCur!=='GBP')return null;
+  return +(gmcP-shopP).toFixed(2);
+}
+var R3_CONTENT_KEY='theekshy_r3_content_checks';
+var r3ContentStore={};
+function r3ContentLoad(){
+  try{var raw=localStorage.getItem(R3_CONTENT_KEY);r3ContentStore=raw?JSON.parse(raw):{};}
+  catch(e){r3ContentStore={};}
+}
+function r3GetChecks(pid){
+  var d=r3ContentStore[pid];
+  return{tu:(d&&d.tu)||'Not Checked',du:(d&&d.du)||'Not Checked'};
+}
+function r3SaveChecks(pid,tu,du){
+  r3ContentStore[pid]={tu:tu,du:du};
+  try{localStorage.setItem(R3_CONTENT_KEY,JSON.stringify(r3ContentStore));}
+  catch(e){console.error('r3SaveChecks failed',e);}
+}
+var R3_PREC=['Missing Product Mapping','Disapproved Item','Missing GMC Record','Out of Stock','Availability Mismatch','Price Mismatch','Currency Mismatch','Warning Present','Title/Description Needs Update','Incomplete Verification','Feed Healthy','Not Due'];
+function r3GetConditions(r,tu,du){
+  if(tu===undefined)tu='Not Checked';
+  if(du===undefined)du='Not Checked';
+  var c=[];
+  if(!r.gmc_avail&&r.gmc_price===null)c.push('Missing GMC Record');
+  if(r.shop_stock!==null){
+    if(r.shop_stock===0&&r.gmc_avail==='out of stock')c.push('Out of Stock');
+    if(r.shop_stock===0&&r.gmc_avail==='in stock')c.push('Availability Mismatch');
+    if(r.shop_stock>0&&r.gmc_avail==='out of stock')c.push('Availability Mismatch');
+  }
+  var pm=r3PriceMatch(r.gmc_price,r.shop_price,r.gmc_currency);
+  if(pm==='No')c.push('Price Mismatch');
+  if(pm==='Currency Mismatch')c.push('Currency Mismatch');
+  if(tu==='No'||du==='No'){c.push('Title/Description Needs Update');}
+  else if(tu==='Not Checked'||du==='Not Checked'){c.push('Incomplete Verification');}
+  if(c.length===0)c.push('Feed Healthy');
+  return c;
+}
+function r3Primary(conds){
+  for(var i=0;i<R3_PREC.length;i++){if(conds.indexOf(R3_PREC[i])>-1)return R3_PREC[i];}
+  return'Incomplete Verification';
+}
+function r3Status(primary){
+  var map={'Missing Product Mapping':'Critical','Disapproved Item':'Critical','Missing GMC Record':'Monitor','Out of Stock':'Paused','Availability Mismatch':'Critical','Price Mismatch':'Critical','Currency Mismatch':'Monitor','Warning Present':'Monitor','Title/Description Needs Update':'Monitor','Incomplete Verification':'Incomplete Verification','Feed Healthy':'Healthy','Not Due':'Healthy'};
+  return map[primary]||'Monitor';
+}
+function r3Action(primary){
+  var map={
+    'Missing GMC Record':'Submit product to Google Merchant Center; verify feed coverage',
+    'Out of Stock':'Pause ads for this product; monitor stock; re-enable when restocked',
+    'Availability Mismatch':'Sync GMC availability with Shopify stock level immediately',
+    'Price Mismatch':'Align GMC price to Shopify price; resync feed',
+    'Currency Mismatch':'Check feed configuration; ensure UK feed uses GBP only',
+    'Title/Description Needs Update':'Update title/description in Shopify + GMC; resync feed',
+    'Incomplete Verification':'Manually verify whether the optimised title and description are live.',
+    'Feed Healthy':'No action required; next feed review in 30 days'
+  };
+  return map[primary]||'Investigate feed record';
+}
+function r3StatusBadge(st){
+  var cls={'Critical':'badge-critical','Paused':'badge-critical','Monitor':'badge-monitor','Healthy':'badge-healthy','Incomplete Verification':'badge-pending'};
+  var ico={'Critical':'🔴','Paused':'⚫','Monitor':'🟡','Healthy':'🟢','Incomplete Verification':'🔵'};
+  return'<span class="badge '+(cls[st]||'badge-pending')+'">'+(ico[st]||'')+'&nbsp;'+st+'</span>';
+}
+var r3ModalProductId=null;
+function r3OpenContentModal(pid,title){
+  r3ModalProductId=pid;
+  document.getElementById('r3ModalProduct').textContent=pid+' — '+title;
+  var chk=r3GetChecks(pid);
+  document.getElementById('r3TuSelect').value=chk.tu;
+  document.getElementById('r3DuSelect').value=chk.du;
+  document.getElementById('r3ContentModal').style.display='flex';
+  document.getElementById('r3TuSelect').focus();
+}
+function r3CloseContentModal(){
+  document.getElementById('r3ContentModal').style.display='none';
+  r3ModalProductId=null;
+}
+function r3SaveContentModal(){
+  if(!r3ModalProductId)return;
+  r3SaveChecks(r3ModalProductId,document.getElementById('r3TuSelect').value,document.getElementById('r3DuSelect').value);
+  r3CloseContentModal();
+  applyR3Filters();
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')r3CloseContentModal();});
+var r3Filtered=[];
+function applyR3Filters(){
+  var camp=(document.getElementById('r3CampaignFilter')||{value:'all'}).value;
+  var cond=(document.getElementById('r3ConditionFilter')||{value:'all'}).value;
+  var stat=(document.getElementById('r3StatusFilter')||{value:'all'}).value;
+  var avail=(document.getElementById('r3AvailFilter')||{value:'all'}).value;
+  var srch=((document.getElementById('r3Search')||{value:''}).value||'').toLowerCase();
+  r3Filtered=R3_DATA.filter(function(r){
+    if(camp!=='all'&&r.cid!==camp)return false;
+    var chk=r3GetChecks(r.id),conds=r3GetConditions(r,chk.tu,chk.du),prim=r3Primary(conds),sts=r3Status(prim);
+    if(cond!=='all'&&conds.indexOf(cond)===-1)return false;
+    if(stat!=='all'&&sts!==stat)return false;
+    if(avail!=='all'&&(r.gmc_avail||'')!==avail)return false;
+    if(srch&&(r.id+r.title+(r.sku||'')).toLowerCase().indexOf(srch)===-1)return false;
+    return true;
+  });
+  renderR3Table();
+  renderR3Kpis();
+}
+function resetR3Filters(){
+  ['r3CampaignFilter','r3ConditionFilter','r3StatusFilter','r3AvailFilter'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='all';});
+  var sr=document.getElementById('r3Search');if(sr)sr.value='';
+  r3Filtered=R3_DATA.slice();
+  renderR3Table();
+  renderR3Kpis();
+}
+function renderR3Table(){
+  var tbody=document.getElementById('r3Tbody');if(!tbody)return;
+  var rows=r3Filtered;
+  var tc=document.getElementById('r3TbarCount');if(tc)tc.textContent='Feed Health — Top Products by Spend · '+rows.length+' rows shown';
+  var cnt=document.getElementById('r3Count');if(cnt)cnt.textContent=rows.length+' / '+R3_DATA.length+' products';
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="22" style="text-align:center;padding:20px;color:var(--muted);">No products match the current filters.</td></tr>';return;}
+  function r3CheckHtml(v){return v==='Yes'?'<span style="color:var(--healthy-fg)">Yes</span>':v==='No'?'<span style="color:var(--critical-fg)">No</span>':'<span style="color:var(--muted)">Not Checked</span>';}
+  var html='';
+  rows.forEach(function(r,i){
+    var chk=r3GetChecks(r.id),tu=chk.tu,du=chk.du;
+    var conds=r3GetConditions(r,tu,du),prim=r3Primary(conds),sts=r3Status(prim);
+    var pm=r3PriceMatch(r.gmc_price,r.shop_price,r.gmc_currency);
+    var diff=r3PriceDiff(r.gmc_price,r.shop_price,r.gmc_currency);
+    var diffHtml=diff===null?'—':(diff>0?'<span style="color:var(--critical-fg)">+£'+diff.toFixed(2)+'</span>':'<span style="color:var(--healthy-fg)">£'+diff.toFixed(2)+'</span>');
+    var pmHtml=pm==='Yes'?'<span style="color:var(--healthy-fg)">Yes</span>':pm==='No'?'<span style="color:var(--critical-fg)">No</span>':'<span style="color:var(--muted)">'+pm+'</span>';
+    var condBadges=conds.map(function(c){return'<span class="badge badge-monitor" style="font-size:9px;margin:1px;">'+c+'</span>';}).join('');
+    html+='<tr>';
+    html+='<td class="num">'+(i+1)+'</td>';
+    html+='<td><span class="badge badge-pending" style="font-size:9px;">'+(R3_CMAP[r.cid]||r.cid)+'</span></td>';
+    html+='<td style="font-size:11px;font-family:monospace;">'+r.id+'</td>';
+    html+='<td style="font-size:11px;">'+(r.sku||'—')+'</td>';
+    html+='<td style="max-width:220px;word-break:break-word;">'+(r.title||r.id)+'</td>';
+    html+='<td>'+(r.gmc_avail||'—')+'</td>';
+    html+='<td class="num">'+(r.shop_stock!==null?r.shop_stock:'—')+'</td>';
+    html+='<td class="num">'+(r.gmc_price!==null?'£'+r.gmc_price.toFixed(2):'—')+'</td>';
+    html+='<td class="num">'+(r.shop_price!==null?'£'+r.shop_price.toFixed(2):'—')+'</td>';
+    html+='<td class="num">'+diffHtml+'</td>';
+    html+='<td>'+pmHtml+'</td>';
+    html+='<td>'+(r.gmc_currency||'—')+'</td>';
+    html+='<td>'+r3CheckHtml(tu)+'<br><button onclick="r3OpenContentModal(\''+r.id+'\','+JSON.stringify(r.title||r.id)+')" style="font-size:9px;padding:1px 5px;margin-top:2px;cursor:pointer;border:1px solid var(--muted);border-radius:3px;background:none;">Edit</button></td>';
+    html+='<td>'+r3CheckHtml(du)+'</td>';
+    html+='<td><span style="color:var(--muted)">Not Available</span></td>';
+    html+='<td>'+r3StatusBadge(prim)+'</td>';
+    html+='<td>'+condBadges+'</td>';
+    html+='<td>'+r3StatusBadge(sts)+'</td>';
+    html+='<td style="max-width:180px;word-break:break-word;font-size:11px;">'+r3Action(prim)+'</td>';
+    html+='<td class="num">£'+r.cost.toFixed(2)+'</td>';
+    html+='<td class="num">'+r.conv.toFixed(1)+'</td>';
+    html+='<td>—</td>';
+    html+='</tr>';
+  });
+  tbody.innerHTML=html;
+}
+function renderR3Kpis(){
+  var el=document.getElementById('r3KpiCards');if(!el)return;
+  var rows=r3Filtered.length?r3Filtered:R3_DATA;
+  var oos=rows.filter(function(r){return r.shop_stock===0||r.gmc_avail==='out of stock';}).length;
+  var pm=rows.filter(function(r){return r3PriceMatch(r.gmc_price,r.shop_price,r.gmc_currency)==='No';}).length;
+  var avail=rows.filter(function(r){var chk=r3GetChecks(r.id),c=r3GetConditions(r,chk.tu,chk.du);return c.indexOf('Availability Mismatch')>-1;}).length;
+  var noGmc=rows.filter(function(r){return!r.gmc_avail&&r.gmc_price===null;}).length;
+  var cur=rows.filter(function(r){return r.gmc_currency&&r.gmc_currency!=='GBP';}).length;
+  var healthy=rows.filter(function(r){var chk=r3GetChecks(r.id),c=r3GetConditions(r,chk.tu,chk.du),p=r3Primary(c);return p==='Feed Healthy';}).length;
+  el.innerHTML=[
+    {label:'Products Loaded',val:''+R3_DATA.length,note:'Top products by 30d spend · live from DB'},
+    {label:'Out of Stock / OOS GMC',val:''+oos,note:'stock=0 OR gmc_avail=out of stock'},
+    {label:'Price Mismatches (GBP)',val:''+pm,note:'GMC price ≠ Shopify price · GBP records only'},
+    {label:'Availability Mismatches',val:''+avail,note:'Stock vs GMC availability conflict'},
+    {label:'Missing GMC Record',val:''+noGmc,note:'No merchant_products match'},
+    {label:'Currency Mismatches',val:''+cur,note:'Non-GBP records in UK campaign'},
+    {label:'Feed Healthy',val:''+healthy,note:'All checks passed · filtered view'},
+    {label:'Feed Review Window',val:'7 days',note:'Post-optimisation feed review · Req 1 dependency'}
+  ].map(function(k){return'<div class="kpi"><div class="lbl">'+k.label+'</div><div class="val">'+k.val+'</div><div class="note">'+k.note+'</div></div>';}).join('');
+}
+function buildR3Charts(){
+  var ctx1=document.getElementById('r3CondChart');
+  var ctx2=document.getElementById('r3StockChart');
+  if(!ctx1||!ctx2)return;
+  var condCounts={};
+  R3_DATA.forEach(function(r){var chk=r3GetChecks(r.id);r3GetConditions(r,chk.tu,chk.du).forEach(function(c){condCounts[c]=(condCounts[c]||0)+1;});});
+  var condLabels=Object.keys(condCounts),condVals=condLabels.map(function(l){return condCounts[l];});
+  new Chart(ctx1,{type:'doughnut',data:{labels:condLabels,datasets:[{data:condVals,backgroundColor:['#ef4444','#f59e0b','#3b82f6','#10b981','#8b5cf6','#f97316','#6b7280']}]},options:{plugins:{legend:{position:'right'}},responsive:true,maintainAspectRatio:false}});
+  var bandLabels=['0 (OOS)','1–9','10–49','50–99','100+'];
+  var bandCounts=[0,0,0,0,0];
+  R3_DATA.forEach(function(r){var s=r.shop_stock;if(s===0)bandCounts[0]++;else if(s<10)bandCounts[1]++;else if(s<50)bandCounts[2]++;else if(s<100)bandCounts[3]++;else bandCounts[4]++;});
+  new Chart(ctx2,{type:'bar',data:{labels:bandLabels,datasets:[{label:'Products',data:bandCounts,backgroundColor:['#ef4444','#f59e0b','#3b82f6','#10b981','#22c55e']}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}},responsive:true,maintainAspectRatio:false}});
+}
+function buildR3Insights(){
+  var el=document.getElementById('r3InsightList');if(!el)return;
+  var oos=R3_DATA.filter(function(r){return r.shop_stock===0||r.gmc_avail==='out of stock';}).length;
+  var pm=R3_DATA.filter(function(r){return r3PriceMatch(r.gmc_price,r.shop_price,r.gmc_currency)==='No';}).length;
+  var avail=R3_DATA.filter(function(r){var chk=r3GetChecks(r.id),c=r3GetConditions(r,chk.tu,chk.du);return c.indexOf('Availability Mismatch')>-1;}).length;
+  var noGmc=R3_DATA.filter(function(r){return!r.gmc_avail&&r.gmc_price===null;}).length;
+  var insights=[];
+  if(pm>0)insights.push({icon:'🔴',text:'<strong>'+pm+' Price Mismatch(es):</strong> GMC price ≠ Shopify price (GBP). Sync GMC feed after Shopify price updates; re-submit feed.'});
+  if(avail>0)insights.push({icon:'🟡',text:'<strong>'+avail+' Availability Mismatch(es):</strong> Stock vs GMC availability conflict. Trigger GMC feed resync to push correct status.'});
+  if(oos>0)insights.push({icon:'⚫',text:'<strong>'+oos+' Out of Stock product(s):</strong> Stock=0 or GMC=out of stock. Pause ads immediately; update GMC availability; re-enable on restock.'});
+  if(noGmc>0)insights.push({icon:'🔵',text:'<strong>'+noGmc+' Missing GMC Record(s):</strong> No merchant_products match. Verify GMC feed submission — may be excluded from Shopping results.'});
+  insights.push({icon:'🟢',text:'<strong>Feed review window: 7 days</strong> after each Campaign Optimisation action. Check availability, stock, GMC price vs Shopify price, title/description updates.'});
+  el.innerHTML=insights.map(function(ins){return'<div class="vi" style="margin-bottom:10px;align-items:flex-start;"><span style="font-size:18px;flex-shrink:0;margin-top:2px;">'+ins.icon+'</span><div>'+ins.text+'</div></div>';}).join('');
+}
+
 // ── CSV export helper ──────────────────────────────────────
 function r3csvCell(v){v=String(v===null||v===undefined?'':v);return v.indexOf(',')>-1||v.indexOf('"')>-1||v.indexOf('\n')>-1?'"'+v.replace(/"/g,'""')+'"':v;}
 function r3csvDownload(filename,lines){
@@ -1684,7 +1892,7 @@ function r2SetRangeLive(key){
   if(r.data){
     R2_CURRENT_DATA=r.data;
     r2FilteredRows=[];
-    renderR2Table();
+    applyR2Filters();
     renderR2Kpis();
     if(typeof buildR2Charts==='function')buildR2Charts();
     return;
@@ -1706,7 +1914,7 @@ function r2SetRangeLive(key){
       if(d.meta&&d.meta.to){R2_LATEST_DATE=d.meta.to;R2_REVIEW_DATE=new Date().toISOString().slice(0,10);}
       R2_CURRENT_DATA=r.data;
       r2FilteredRows=[];
-      renderR2Table();
+      applyR2Filters();
       renderR2Kpis();
       if(typeof buildR2Charts==='function')buildR2Charts();
     })
@@ -1799,15 +2007,11 @@ function thLoadFeed(reqNum){
         return{pid:p.id,cid:p.cid,camp:p.camp,sku:p.sku,vtitle:p.vtitle||p.title||p.id,
           url:p.url,inv:p.inv,gmc_avail:p.gmc_avail,gmc_p:p.gmc_p,cost:p.cost,upd:p.upd||''};
       });
-      if(reqNum===3){
-        try{r3ContentLoad();r3Filtered=R3_DATA.slice();renderR3Table();renderR3Kpis();buildR3Insights();}
-        catch(e){console.error('[R3 INIT ERROR]',e);}
-        // Also populate R4 for when tab 4 is clicked
-        TH_LOADED.r4=true;
-      }
-      if(reqNum===4){
-        try{initR4();}catch(e){console.error('[R4 INIT ERROR]',e);}
-      }
+      // Always init R3 + R4 from same payload (both tabs share this fetch)
+      try{r3ContentLoad();r3Filtered=R3_DATA.slice();renderR3Table();renderR3Kpis();buildR3Insights();}
+      catch(e){console.error('[R3 INIT ERROR]',e);}
+      try{initR4();}catch(e){console.error('[R4 INIT ERROR]',e);}
+      TH_LOADED.r3=true;TH_LOADED.r4=true;
     })
     .catch(function(e){console.error('feed fetch failed',e);});
 }
