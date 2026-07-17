@@ -134,12 +134,12 @@ async function handleFeed(client, fromDate, toDate) {
 
   try {
     const { rows: shopRows } = await client.query(`
-      SELECT DISTINCT ON (sl.shopify_variant_id::text)
-        sl.shopify_variant_id::text AS variant_id, sl.sku, sl.title AS variant_title,
+      SELECT DISTINCT ON (sl.item_id::text)
+        sl.item_id::text AS variant_id, sl.sku, sl.title AS variant_title,
         sl.price AS shop_price, sl.status AS shop_status, sl.listing_url AS url
       FROM listings.shopify_listings sl
-      WHERE sl.site='UK' AND sl.shopify_variant_id::text = ANY($1::text[])
-      ORDER BY sl.shopify_variant_id::text, (CASE WHEN sl.listing_url ILIKE '%ledsone.co.uk%' THEN 0 ELSE 1 END)
+      WHERE sl.site='UK' AND sl.item_id::text = ANY($1::text[])
+      ORDER BY sl.item_id::text, (CASE WHEN sl.listing_url ILIKE '%ledsone.co.uk%' THEN 0 ELSE 1 END)
     `, [ids]);
     shopRows.forEach(r => { shopMap[r.variant_id] = { sku: r.sku, vtitle: r.variant_title,
       shop_price: r.shop_price ? Number(r.shop_price) : null, shop_status: r.shop_status, url: r.url }; });
