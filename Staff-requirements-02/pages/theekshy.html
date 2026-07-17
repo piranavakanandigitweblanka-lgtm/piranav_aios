@@ -1006,8 +1006,210 @@ var TH_FROM='', TH_TO='';
 var TH_LOADED={r1:false,r2:false,r3:false,r4:false};
 var TH_R2_FROM='', TH_R2_TO='';
 
+// ─── R2 CLASSIFICATION FUNCTIONS ─────────────────────────────
+function r2SafeCtr(clicks,imp){if(!imp||imp===0)return null;return(clicks/imp)*100;}
+function r2IsBrand(term){var t=(term||'').toLowerCase();return R2_BRAND.some(function(b){return t.indexOf(b)>=0;});}
+function r2IsOffCategory(term){var t=(term||'').toLowerCase();return R2_OFF.some(function(o){return t===o||t.indexOf(o)>=0;});}
 
+function r2Classify(term,imp,clicks,conv,cv,cost){
+  var ctr=r2SafeCtr(clicks,imp);
+  var hasCost=cost!==null&&cost!==undefined&&cost>0;
+  if(r2IsOffCategory(term)){
+    return{intent:'Off-Category',wasteTerm:hasCost?'£'+cost.toFixed(2)+' wasted':'No Cost',compTerm:'No',condition:'Off-Category — Irrelevant Term',condTrig:'Off-Category exclusion',decision:'Remove',status:'Critical',reason:'Term irrelevant to lighting/decking product range. Budget wasted on irrelevant searches.',action:'Add as negative keyword immediately. Verify during next weekly review.'};
+  }
+  if(r2IsBrand(term)){
+    var bs=conv>0?'Healthy':'Monitor';
+    var cpaStr=hasCost&&conv>0?'CPA: £'+(cost/conv).toFixed(2):'';
+    return{intent:'Branded',wasteTerm:'No',compTerm:'No',condition:'LEDSone Brand Term',condTrig:conv>0?'Rule 3 — Conv > 0 (branded)':'Brand term — Monitor conv',decision:'Keep',status:bs,reason:'LEDSone own brand term. Protect brand search share. '+cpaStr,action:conv>0?'Keep and monitor CPA during next weekly review. Consider exact match to protect placement.':'Keep and monitor conversion rate on branded traffic during next weekly review.'};
+  }
+  if(conv>0){
+    var cpaStr2=hasCost?'CPA: £'+(cost/conv).toFixed(2)+'.':'CPA: N/A (no cost data).';
+    return{intent:'Commercial',wasteTerm:'No',compTerm:'Competitor List Required',condition:'Rule 3 — Converting Term',condTrig:'Conv > 0',decision:'Keep',status:'Healthy',reason:'Term produced conversions. '+cpaStr2,action:'Keep and monitor CPA during the next weekly review.'};
+  }
+  if(hasCost&&cost>10){
+    return{intent:'Commercial',wasteTerm:'Yes — £'+cost.toFixed(2)+' spent, 0 conv',compTerm:'Competitor List Required',condition:'Rule 1 — Waste Term',condTrig:'Cost > £10 AND Conv = 0',decision:'Remove',status:'Critical',reason:'Spent £'+cost.toFixed(2)+' with zero conversions. Waste threshold exceeded.',action:'Add as negative keyword immediately. Review impression share lost before removing.'};
+  }
+  var wt=hasCost?'£'+cost.toFixed(2)+' (below £10 threshold)':'No cost data';
+  if(ctr!==null&&ctr<1.5){
+    return{intent:'Commercial',wasteTerm:wt,compTerm:'Competitor List Required',condition:'Rule 4 + Low CTR',condTrig:'Conv=0, CTR<1.5%',decision:'Monitor',status:'Critical',reason:'CTR below 1.5%. No conversions.'+(hasCost?' Cost £'+cost.toFixed(2)+' — below £1 waste threshold.':' No cost data.'),action:'Improve headline relevance; refresh GMC title. Review again next week.'};
+  }
+  if(ctr!==null&&ctr<3.0){
+    return{intent:'Commercial',wasteTerm:wt,compTerm:'Competitor List Required',condition:'Rule 4 — Borderline CTR',condTrig:'Conv=0, CTR 1.5–3%',decision:'Monitor',status:'Monitor',reason:'Borderline CTR (1.5–3%). No conversions.'+(hasCost?' Cost £'+cost.toFixed(2)+'.':''),action:'Insufficient spend for removal. A/B test ad copy. Review again next week.'};
+  }
+  return{intent:'Commercial',wasteTerm:wt,compTerm:'Competitor List Required',condition:'Rule 4 — High CTR, 0 Conv',condTrig:'Conv=0, CTR≥3%',decision:'Monitor',status:'Monitor',reason:'High CTR but no conversions.'+(hasCost?' Cost £'+cost.toFixed(2)+'.':' No cost data.')+' Check landing page relevance.',action:'Insufficient spend for removal; review again next week. Check landing page and product-term alignment.'};
+}
 
+function r2SetRange(range){
+  R2_ACTIVE_RANGE=range;
+  R2_CURRENT_DATA=R2_RANGES[range].data||[];
+  ['7d','30d','60d','90d'].forEach(function(r){
+    var btn=document.getElementById('r2Btn_'+r);
+    if(!btn)return;
+    btn.className=btn.className.replace(' r2-active','');
+    if(r===range)btn.className+=' r2-active';
+  });
+  var meta=R2_RANGES[range];
+  var el=document.getElementById('r2DateMeta');
+  if(el&&meta.start)el.innerHTML='Review Date: <strong>'+R2_REVIEW_DATE+'</strong> &nbsp;·&nbsp; Range: <strong>'+meta.label+'</strong> &nbsp;·&nbsp; Start: <strong>'+meta.start+'</strong> &nbsp;·&nbsp; End: <strong>'+meta.end+'</strong> &nbsp;·&nbsp; Latest Data: <strong>'+R2_LATEST_DATE+'</strong>';
+  resetR2Filters();
+  renderR2Kpis();
+}
+
+var r2SortCol='clicks',r2SortDir=-1;
+function sortR2(col){if(r2SortCol===col)r2SortDir*=-1;else{r2SortCol=col;r2SortDir=-1;}applyR2Filters();}
+
+var r2FilteredRows=[];
+function applyR2Filters(){
+  var cf=(document.getElementById('r2CampFilter')||{value:'all'}).value;
+  var df=(document.getElementById('r2DecFilter')||{value:'all'}).value;
+  var sf=(document.getElementById('r2StatusFilter')||{value:'all'}).value;
+  var sv=((document.getElementById('r2Search')||{value:''}).value||'').toLowerCase().trim();
+  var rows=R2_CURRENT_DATA.filter(function(r){
+    if(cf!=='all'&&r[1]!==cf)return false;
+    var c=r2Classify(r[0],r[2],r[3],r[4],r[5],r[6]!==undefined?r[6]:null);
+    if(df!=='all'&&c.decision!==df)return false;
+    if(sf!=='all'&&c.status!==sf)return false;
+    if(sv&&r[0].toLowerCase().indexOf(sv)<0)return false;
+    return true;
+  });
+  rows.sort(function(a,b){
+    if(r2SortCol==='term'){return r2SortDir*(a[0]<b[0]?-1:a[0]>b[0]?1:0);}
+    var cm={imp:2,clicks:3,conv:4,cv:5,cost:6};
+    var av=a[cm[r2SortCol]]||0,bv=b[cm[r2SortCol]]||0;
+    return r2SortDir*(av-bv);
+  });
+  r2FilteredRows=rows;
+  var cnt=document.getElementById('r2Count');if(cnt)cnt.textContent=rows.length+' of '+R2_CURRENT_DATA.length+' terms';
+  var tbar=document.getElementById('r2TbarCount');if(tbar)tbar.textContent='Showing '+rows.length+' of '+R2_CURRENT_DATA.length+' terms · '+R2_RANGES[R2_ACTIVE_RANGE].label+' · Latest: '+R2_LATEST_DATE;
+  var tbody=document.getElementById('r2Tbody');if(!tbody)return;
+  if(!rows.length){
+    tbody.innerHTML='<tr><td colspan="25" style="text-align:center;padding:32px;color:var(--muted);">No search terms match the current filters. <button class="rbtn" onclick="resetR2Filters()" style="margin-left:8px;">↺ Reset</button></td></tr>';
+    return;
+  }
+  var nrd=new Date();nrd.setDate(nrd.getDate()+7);var nrdStr=nrd.toISOString().slice(0,10);
+  tbody.innerHTML=rows.map(function(r,i){
+    var term=r[0],cid=r[1],imp=r[2],clk=r[3],conv=r[4],cv=r[5],cost=r[6]!==undefined?r[6]:null;
+    var c=r2Classify(term,imp,clk,conv,cv,cost);
+    var ctr=r2SafeCtr(clk,imp);
+    var ctrD=ctr===null?'N/A':ctr.toFixed(1)+'%';
+    var costD=cost!==null&&cost>0?'£'+cost.toFixed(2):'—';
+    var cpa=cost!==null&&cost>0&&conv>0?'£'+(cost/conv).toFixed(2):'N/A';
+    var roas=cost!==null&&cost>0&&cv>0?'£'+(cv/cost).toFixed(2)+'x':'N/A';
+    var campCol=cid==='23714290257'?'#1f5eff':'#7c3aed';
+    var rc=c.status==='Critical'?'row-critical':c.status==='Healthy'?'row-healthy':'row-monitor';
+    var bc=c.status==='Critical'?'badge-critical':c.status==='Healthy'?'badge-healthy':'badge-monitor';
+    var dot=c.status==='Critical'?'🔴':c.status==='Healthy'?'🟢':'🟡';
+    var decCls=c.decision==='Remove'?'badge-critical':c.decision==='Keep'?'badge-healthy':'badge-monitor';
+    return '<tr class="'+rc+'">'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;color:var(--muted);">'+(i+1)+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted);">'+R2_REVIEW_DATE+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted);">'+R2_RANGES[R2_ACTIVE_RANGE].label+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);"><span style="background:'+campCol+'18;color:'+campCol+';border-radius:5px;padding:2px 7px;font-size:11px;font-weight:700;">'+(R2_CAMP[cid]||cid)+'</span></td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);font-weight:600;min-width:160px;">'+term+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted);">PMax</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);font-size:11px;">'+c.intent+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;">'+imp.toLocaleString()+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;">'+clk+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;">'+ctrD+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;">'+costD+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;">'+(conv>0?parseFloat(conv).toFixed(2):'—')+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;color:var(--muted);">'+cpa+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;">'+(cv>0?'£'+parseFloat(cv).toFixed(2):'—')+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;color:var(--muted);">'+roas+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted);">'+c.wasteTerm+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted);">'+c.compTerm+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);font-size:11px;"><span class="badge '+bc+'">'+c.condition+'</span></td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted);">'+c.condTrig+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);"><span class="badge '+decCls+'">'+c.decision+'</span></td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);font-size:11.5px;min-width:180px;">'+c.reason+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);font-size:11.5px;min-width:180px;">'+c.action+'</td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);"><span class="badge '+bc+'">'+dot+' '+c.status+'</span></td>'
+      +'<td style="padding:8px 10px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted);">'+R2_LATEST_DATE+'</td>'
+      +'</tr>';
+  }).join('');
+  renderR2Insights(rows);
+}
+
+function resetR2Filters(){
+  var cf=document.getElementById('r2CampFilter');if(cf)cf.value='all';
+  var df=document.getElementById('r2DecFilter');if(df)df.value='all';
+  var sf=document.getElementById('r2StatusFilter');if(sf)sf.value='all';
+  var sr=document.getElementById('r2Search');if(sr)sr.value='';
+  r2SortCol='clicks';r2SortDir=-1;
+  applyR2Filters();
+}
+
+function renderR2Kpis(){
+  var total=R2_CURRENT_DATA.length,removals=0,keeps=0,monitors=0,totalConv=0,totalCv=0,wasteCost=0,totalSpend=0,wasteTermCount=0;
+  R2_CURRENT_DATA.forEach(function(r){
+    var cost=r[6]!==undefined?r[6]:null;
+    var c=r2Classify(r[0],r[2],r[3],r[4],r[5],cost);
+    if(c.decision==='Remove')removals++;
+    else if(c.decision==='Keep')keeps++;
+    else monitors++;
+    totalConv+=parseFloat(r[4]||0);
+    totalCv+=parseFloat(r[5]||0);
+    if(cost&&cost>0)totalSpend+=cost;
+    if(cost&&cost>10&&parseFloat(r[4]||0)===0){wasteCost+=cost;wasteTermCount++;}
+  });
+  var el=document.getElementById('r2Kpis');if(!el)return;
+  el.innerHTML=
+    '<div class="kpi info"><div class="lbl">Terms Reviewed</div><div class="val">'+total+'</div><div class="note">'+R2_RANGES[R2_ACTIVE_RANGE].label+'</div></div>'+
+    '<div class="kpi info"><div class="lbl">Total Spend</div><div class="val">£'+totalSpend.toFixed(2)+'</div><div class="note">pmax_campaign_search_term_data</div></div>'+
+    '<div class="kpi '+(wasteCost>0?'err':'ok')+'"><div class="lbl">Waste Spend</div><div class="val">'+(wasteCost>0?'£'+wasteCost.toFixed(2):'£0.00')+'</div><div class="note">'+(wasteTermCount>0?wasteTermCount+' waste term(s) — Rule 1 active':'No waste above £10')+' </div></div>'+
+    '<div class="kpi err"><div class="lbl">Remove Decisions</div><div class="val">'+removals+'</div><div class="note">Off-category + waste terms</div></div>'+
+    '<div class="kpi ok"><div class="lbl">Keep Decisions</div><div class="val">'+keeps+'</div><div class="note">Conv > 0 or branded</div></div>'+
+    '<div class="kpi"><div class="lbl">Monitor Decisions</div><div class="val">'+monitors+'</div><div class="note">Rule 4 — below waste threshold</div></div>'+
+    '<div class="kpi ok"><div class="lbl">Weekly Review</div><div class="val">Active</div><div class="note">Review: '+R2_REVIEW_DATE+'</div></div>'+
+    '<div class="kpi info"><div class="lbl">Total Conv. Value</div><div class="val">£'+totalCv.toFixed(2)+'</div><div class="note">'+totalConv.toFixed(2)+' conversions</div></div>';
+}
+
+function renderR2Insights(rows){
+  var el=document.getElementById('r2InsightsList');if(!el)return;
+  var r2c=function(r){return r2Classify(r[0],r[2],r[3],r[4],r[5],r[6]!==undefined?r[6]:null);};
+  var removals=rows.filter(function(r){return r2c(r).decision==='Remove';});
+  var keeps=rows.filter(function(r){return r2c(r).decision==='Keep';});
+  var offCat=rows.filter(function(r){return r2c(r).intent==='Off-Category';});
+  var branded=rows.filter(function(r){return r2c(r).intent==='Branded';});
+  var wasteTerms=rows.filter(function(r){var c=r2c(r);return c.condition==='Rule 1 — Waste Term';});
+  var critLowCtr=rows.filter(function(r){var c=r2c(r);return c.status==='Critical'&&c.intent!=='Off-Category'&&c.condition!=='Rule 1 — Waste Term';});
+  var insights=[];
+  if(wasteTerms.length){var wt=wasteTerms.reduce(function(s,r){return s+(r[6]||0);},0);insights.push('🔴 <strong>'+wasteTerms.length+' waste term(s)</strong> (Rule 1: Cost > £1 AND Conv = 0). Total wasted spend: £'+wt.toFixed(2)+'. Add as negative keywords immediately.');}
+  if(offCat.length)insights.push('⚠ <strong>'+offCat.length+' off-category term(s)</strong> flagged for removal. Irrelevant to the lighting product range — add as negative keywords immediately.');
+  if(branded.length)insights.push('🏷 <strong>'+branded.length+' LEDSone brand term(s)</strong> detected. Monitor conversion rate on branded traffic to protect brand search share.');
+  if(keeps.length)insights.push('🟢 <strong>'+keeps.length+' Keep decision(s)</strong> — terms with verified conversions or brand terms. Consider exact match for high performers.');
+  if(critLowCtr.length)insights.push('🔴 <strong>'+critLowCtr.length+' low CTR term(s)</strong> (CTR < 1.5%) with no conversions. Improve headline relevance and GMC title.');
+  insights.push('ℹ <strong>Competitor brand list not found</strong> in AIOS. Rule 2 (Competitor Term) is blocked until an authoritative list is provided.');
+  el.innerHTML=insights.map(function(ins){return'<p style="margin-bottom:8px;">'+ins+'</p>';}).join('');
+}
+
+var r2CondChartInst=null,r2CtrChartInst=null;
+function buildR2Charts(){
+  if(r2CondChartInst){r2CondChartInst.destroy();r2CondChartInst=null;}
+  if(r2CtrChartInst){r2CtrChartInst.destroy();r2CtrChartInst=null;}
+  var condCounts={Critical:0,Monitor:0,Healthy:0};
+  R2_CURRENT_DATA.forEach(function(r){condCounts[r2Classify(r[0],r[2],r[3],r[4],r[5],r[6]!==undefined?r[6]:null).status]++;});
+  var condEl=document.getElementById('r2CondChart');
+  if(condEl){
+    r2CondChartInst=new Chart(condEl,{
+      type:'doughnut',
+      data:{labels:['🔴 Critical','🟡 Monitor','🟢 Healthy'],datasets:[{data:[condCounts.Critical,condCounts.Monitor,condCounts.Healthy],backgroundColor:['#fca5a5','#fcd34d','#6ee7b7'],borderColor:['#b91c1c','#d97706','#059669'],borderWidth:1}]},
+      options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}
+    });
+  }
+  var top15=R2_CURRENT_DATA.slice().sort(function(a,b){return b[3]-a[3];}).slice(0,15);
+  var ctrEl=document.getElementById('r2CtrChart');
+  if(ctrEl){
+    r2CtrChartInst=new Chart(ctrEl,{
+      type:'bar',
+      data:{
+        labels:top15.map(function(r){return r[0].length>22?r[0].slice(0,20)+'…':r[0];}),
+        datasets:[{label:'CTR%',data:top15.map(function(r){var c=r2SafeCtr(r[3],r[2]);return c===null?0:parseFloat(c.toFixed(1));}),backgroundColor:top15.map(function(r){var c=r2SafeCtr(r[3],r[2]);if(c===null)return'#9ca3af';return c<1.5?'rgba(220,38,38,0.7)':c<3?'rgba(217,119,6,0.7)':'rgba(5,150,105,0.7)';}),borderRadius:3}]
+      },
+      options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{title:{display:true,text:'CTR %'},beginAtZero:true},y:{ticks:{font:{size:9}}}}}
+    });
+  }
+}
 
 
 // COMPUTE CAMPAIGN SUMMARY
