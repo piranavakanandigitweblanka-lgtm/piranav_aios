@@ -497,6 +497,18 @@ footer.site{margin-top:22px;color:var(--muted);font-size:12px;text-align:center;
 <!-- PANEL 3 — Requirement 3: Feed Optimisation -->
 <div class="tab-panel" id="panel-3" role="tabpanel" aria-labelledby="nav-3">
 
+  <!-- Date preset + loading (Req 3) -->
+  <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;">
+    <button class="rbtn" onclick="thFeedPreset(7)">7d</button>
+    <button class="rbtn" onclick="thFeedPreset(30)">30d</button>
+    <button class="rbtn" onclick="thFeedPreset(60)">60d</button>
+    <button class="rbtn" onclick="thFeedPreset(90)">90d</button>
+    <button class="rbtn" onclick="thRefreshFeed()">↺ Refresh</button>
+    <span id="th-feed-range" style="font-size:12px;color:var(--muted);margin-left:4px;"></span>
+  </div>
+  <div id="th-loading-r3" style="display:none;padding:12px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;margin-bottom:10px;font-size:13px;">⏳ Loading feed data…</div>
+  <div id="th-error-r3"   style="display:none;padding:12px;background:#fff0f0;border:1px solid #fca5a5;border-radius:10px;margin-bottom:10px;font-size:13px;color:#dc2626;"></div>
+
   <header class="rpt">
     <div class="req-tag">Requirement 3 · Google Ads · Feed Optimisation · LEDSone UK</div>
     <h1>Theekshy — Feed Optimisation Dashboard</h1>
@@ -687,6 +699,18 @@ footer.site{margin-top:22px;color:var(--muted);font-size:12px;text-align:center;
 
 <!-- PANEL 4 — REQUIREMENT 4: STOCK STATUS SNAPSHOT -->
 <div class="tab-panel" id="panel-4" role="tabpanel" aria-labelledby="nav-4">
+
+  <!-- Date preset + loading (Req 4) -->
+  <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;">
+    <button class="rbtn" onclick="thFeedPreset(7)">7d</button>
+    <button class="rbtn" onclick="thFeedPreset(30)">30d</button>
+    <button class="rbtn" onclick="thFeedPreset(60)">60d</button>
+    <button class="rbtn" onclick="thFeedPreset(90)">90d</button>
+    <button class="rbtn" onclick="thRefreshFeed()">↺ Refresh</button>
+    <span id="th-feed-range-4" style="font-size:12px;color:var(--muted);margin-left:4px;"></span>
+  </div>
+  <div id="th-loading-r4" style="display:none;padding:12px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;margin-bottom:10px;font-size:13px;">⏳ Loading stock data…</div>
+  <div id="th-error-r4"   style="display:none;padding:12px;background:#fff0f0;border:1px solid #fca5a5;border-radius:10px;margin-bottom:10px;font-size:13px;color:#dc2626;"></div>
 
   <div class="snapshot-banner" role="alert">
     <span class="sb-icon">📸</span>
@@ -2004,14 +2028,56 @@ function thLoadReq1(from,to){
 }
 
 // ── Feed live fetch (Req 3 + 4) ───────────────────────────────────────────────
+var TH_FEED_FROM='', TH_FEED_TO='';
+
+function thFeedPreset(days){
+  var to=new Date(); to.setDate(to.getDate()-1);
+  var from=new Date(to); from.setDate(from.getDate()-(days-1));
+  var fmt=function(d){return d.toISOString().slice(0,10);};
+  TH_FEED_FROM=fmt(from); TH_FEED_TO=fmt(to);
+  TH_LOADED.r3=false; TH_LOADED.r4=false;
+  thLoadFeed(3);
+}
+
+function thRefreshFeed(){
+  TH_LOADED.r3=false; TH_LOADED.r4=false;
+  thLoadFeed(3);
+}
+
 function thLoadFeed(reqNum){
-  if(reqNum===3)TH_LOADED.r3=true; else TH_LOADED.r4=true;
-  var url='/api/theekshy/dashboard?type=feed'+(TH_FROM&&TH_TO?'&from='+TH_FROM+'&to='+TH_TO:'');
+  TH_LOADED.r3=true; TH_LOADED.r4=true;
+  // Show loading indicators on both tabs
+  var ld3=document.getElementById('th-loading-r3');
+  var ld4=document.getElementById('th-loading-r4');
+  var er3=document.getElementById('th-error-r3');
+  var er4=document.getElementById('th-error-r4');
+  if(ld3)ld3.style.display='block';
+  if(ld4)ld4.style.display='block';
+  if(er3)er3.style.display='none';
+  if(er4)er4.style.display='none';
+
+  // Use feed-specific dates if set, else fall back to Req1 dates
+  var from=TH_FEED_FROM||TH_FROM, to=TH_FEED_TO||TH_TO;
+  var url='/api/theekshy/dashboard?type=feed'+(from&&to?'&from='+from+'&to='+to:'');
+
   fetch(url)
     .then(function(r){return r.json();})
     .then(function(d){
-      if(!d.ok){console.error('feed error',d.error);return;}
-      // Populate R3_DATA and R4_DATA from same API response
+      if(ld3)ld3.style.display='none';
+      if(ld4)ld4.style.display='none';
+      if(!d.ok){
+        var msg='Error loading feed: '+(d.error||'unknown');
+        if(er3){er3.textContent=msg;er3.style.display='block';}
+        if(er4){er4.textContent=msg;er4.style.display='block';}
+        return;
+      }
+      // Update range label on both tabs
+      var rangeLabel=from&&to?' · '+from+' → '+to:'';
+      var rEl3=document.getElementById('th-feed-range');
+      var rEl4=document.getElementById('th-feed-range-4');
+      if(rEl3)rEl3.textContent='Live'+rangeLabel;
+      if(rEl4)rEl4.textContent='Live'+rangeLabel;
+      // Populate R3_DATA and R4_DATA
       R3_DATA=d.products.map(function(p){
         return{id:p.id,cid:p.cid,cost:p.cost,clicks:p.clicks,impr:p.impr,conv:p.conv,
           title:p.title||('Product '+p.id),sku:p.sku,
@@ -2022,13 +2088,17 @@ function thLoadFeed(reqNum){
         return{pid:p.id,cid:p.cid,camp:p.camp,sku:p.sku,vtitle:p.vtitle||p.title||p.id,
           url:p.url,inv:p.inv,gmc_avail:p.gmc_avail,gmc_p:p.gmc_p,cost:p.cost,upd:p.upd||''};
       });
-      // Always init R3 + R4 from same payload (both tabs share this fetch)
       try{r3ContentLoad();r3Filtered=R3_DATA.slice();renderR3Table();renderR3Kpis();buildR3Insights();}
       catch(e){console.error('[R3 INIT ERROR]',e);}
       try{initR4();}catch(e){console.error('[R4 INIT ERROR]',e);}
-      TH_LOADED.r3=true;TH_LOADED.r4=true;
     })
-    .catch(function(e){console.error('feed fetch failed',e);});
+    .catch(function(e){
+      if(ld3)ld3.style.display='none';
+      if(ld4)ld4.style.display='none';
+      var msg='Feed fetch failed: '+e.message;
+      if(er3){er3.textContent=msg;er3.style.display='block';}
+      if(er4){er4.textContent=msg;er4.style.display='block';}
+    });
 }
 
 // INIT — load panel 1 immediately (it's the active tab)
