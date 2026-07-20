@@ -174,7 +174,7 @@ function buildTracker(snapshot, shopifyMap) {
 // ─── MAIN HANDLER ─────────────────────────────────────────────────────────
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600');
+  res.setHeader('Cache-Control', 'no-store');
 
   if (!TOKEN) {
     return res.status(500).json({ ok: false, error: 'SHOPIFY_FR_TOKEN env var not set' });
@@ -234,8 +234,11 @@ module.exports = async function handler(req, res) {
 
     await db.end();
 
-    // 3. Shopify live data
-    const shopifyMap = await fetchAllShopify(handles);
+    // 3. Shopify live data — fetch current top 50 + ALL snapshot handles
+    // so Fix Tracker detects fixes even if a product dropped out of the rolling top 50
+    const snapshotHandles = SNAPSHOT.map(s => s.h);
+    const allHandles = [...new Set([...handles, ...snapshotHandles])];
+    const shopifyMap = await fetchAllShopify(allHandles);
 
     // 4. Merge main rows
     const rows = handles.map(h => {
