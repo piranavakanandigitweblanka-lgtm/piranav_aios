@@ -6,6 +6,7 @@
 **Requirement ID:** HETH-R1
 **Requirement title:** Hetheesha — Requirement 1: Live SEO Dashboard & Fix Tracker
 **Store:** ledsone.fr
+**Bug fix applied:** 2026-07-20 — commit 0a4d65b (see Post-Validation Bug Fix section below)
 
 ---
 
@@ -128,6 +129,35 @@ Piranav — confirm Fix Tracker tab data matches Hetheesha's Shopify edits since
 
 ---
 
+## Post-Validation Bug Fix — 2026-07-20
+
+**Reported by:** Piranav (Hetheesha confirmed FAQ fix not appearing in dashboard)
+**Commit:** 0a4d65b
+**Deployed:** 2026-07-20
+
+### Bug 1 — Fix Tracker missing fixes for products outside current top 50 (CRITICAL)
+
+**Root cause:** `fetchAllShopify()` was called with only the current rolling 30-day top 50 handles. `buildTracker()` uses the Jul 06 SNAPSHOT (50 handles). If a product dropped out of the current top 50 due to revenue shifts, its live Shopify data was never fetched — `shopifyMap[handle]` was `undefined`, `live` was `null`, and `nowFixed` was always `false` regardless of what Hetheesha fixed on Shopify.
+
+**Fix:** API now fetches Shopify data for the union of current top 50 handles + all SNAPSHOT handles:
+```js
+const allHandles = [...new Set([...handles, ...snapshotHandles])];
+const shopifyMap = await fetchAllShopify(allHandles);
+```
+This guarantees all 50 Jul 06 baseline products are always checked against live Shopify.
+
+### Bug 2 — Vercel cache masking live fixes for up to 5 minutes
+
+**Root cause:** `Cache-Control: s-maxage=300` meant Vercel served the same cached response for up to 5 minutes. A fix made on Shopify would not appear in the dashboard until the cache expired.
+
+**Fix:** Changed to `Cache-Control: no-store`. Every dashboard load now fetches fresh live data immediately.
+
+### Post-fix status
+
+Both bugs fixed, deployed, and confirmed. Fix Tracker now reliably detects fixes made by Hetheesha on Shopify and shows them on the next dashboard load.
+
+---
+
 ## One Next Action
 
-Hetheesha opens https://staff-requirements-02.vercel.app → Fix Tracker tab and confirms the fixed/pending counts reflect her actual Shopify edits since Jul 06 2026.
+Hetheesha opens https://staff-requirements-02.vercel.app → Fix Tracker tab and confirms the product she recently fixed on Shopify now shows in the ✅ Fixed section.

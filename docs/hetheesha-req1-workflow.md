@@ -5,7 +5,7 @@
 **Supporting staff:** Piranav
 **Store:** ledsone.fr
 **Dashboard:** https://staff-requirements-02.vercel.app (Fix Tracker tab)
-**Status:** COMPLETED — Validated 2026-07-20
+**Status:** COMPLETED — Validated 2026-07-20 · Bug fix deployed 2026-07-20
 **Last updated:** 2026-07-20
 
 ---
@@ -130,7 +130,7 @@ Revenue query groups by product handle, computes `SUM(CAST(item_price AS NUMERIC
 
 ## Fix Detection Logic
 
-`buildTracker()` in `req1.js` (lines 138–172):
+`buildTracker()` in `req1.js`:
 
 For each of the 50 snapshot products, for each of 4 fields:
 1. Check if snapshot value was missing (null for meta title/desc, >0 for alt, 'Missing' for FAQ)
@@ -139,6 +139,14 @@ For each of the 50 snapshot products, for each of 4 fields:
 4. `now_fixed = true` if live value is now present
 
 Result: `tracker` array with `{ rank, handle, field, field_key, before, after, was_missing, now_fixed, live_value }`
+
+**Important — Shopify fetch scope (bug fix 2026-07-20):**
+The API fetches live Shopify data for the **union** of the current rolling top 50 handles AND all 50 SNAPSHOT handles:
+```js
+const allHandles = [...new Set([...handles, ...snapshotHandles])];
+const shopifyMap = await fetchAllShopify(allHandles);
+```
+This ensures products that dropped out of the current rolling top 50 (due to revenue shifts) are still checked against live Shopify — so `now_fixed` is always accurate regardless of current ranking.
 
 ---
 
@@ -168,11 +176,11 @@ Result: `tracker` array with `{ rank, handle, field, field_key, before, after, w
 
 1. Fix dates are browser-specific (localStorage) — DB is read-only, cannot store fix dates server-side
 2. `shopify_listing_meta` DB table is ~14% populated for ledsone.fr — **not used, not an approved SEO source for this requirement**
-3. Shopify API makes 5 batched calls for 50 products — total load time ~5–10s
+3. Shopify API fetches up to ~100 handles (current top 50 + snapshot 50, deduplicated) in batches of 10 — load time ~5–15s
 4. Vercel function timeout: 60s (configured in `vercel.json`)
 5. `DATABASE_URL` must be explicitly passed to pg Client — `new Client()` with no args causes `ECONNREFUSED 127.0.0.1:5432`
 6. Revenue data limited to `status = 'Completed'` orders only
-7. API response is cached by Vercel for 300s (`s-maxage=300`) with stale-while-revalidate of 600s
+7. API response is **not cached** (`no-store`) — every page load fetches fresh live Shopify data immediately
 
 ---
 
