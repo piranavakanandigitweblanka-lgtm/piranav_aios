@@ -294,6 +294,71 @@
 
     <!-- PRODUCT FIX TRACKER (toggle with button near H1) -->
     <div id="r1TrkWrap" style="display:none;margin-top:18px;">
+      <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 24px;margin-bottom:4px;">
+        <div style="margin-bottom:14px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);margin-bottom:4px;">Product Fix Tracker · Req 1 · ledsone.fr</div>
+          <div style="font-size:13px;font-weight:700;color:var(--ink);">Before &amp; After — SEO Fix Progress</div>
+          <div style="font-size:11.5px;color:var(--muted);margin-top:3px;">Baseline: Jul 06 2026 &nbsp;·&nbsp; Live check: <strong id="trkFetchedAt">loading…</strong> &nbsp;·&nbsp; Fix dates saved in browser</div>
+        </div>
+        <div class="trk-kpis">
+          <div class="trk-kpi neutral" style="cursor:pointer" onclick="trk_filter('all')"><div class="label">Total Fields Tracked</div><div class="value" id="trkTotal">—</div></div>
+          <div class="trk-kpi fixed"   style="cursor:pointer" onclick="trk_filter('fixed')"><div class="label">✅ Fixed</div><div class="value" id="trkFixed">—</div></div>
+          <div class="trk-kpi pending" style="cursor:pointer" onclick="trk_filter('pending')"><div class="label">❌ Still Missing</div><div class="value" id="trkPending">—</div></div>
+          <div class="trk-kpi fixed"   style="cursor:pointer" onclick="trk_filter('pending_meta_title')"><div class="label">Meta Title Pending</div><div class="value" id="trkMetaTitle">—</div></div>
+          <div class="trk-kpi fixed"   style="cursor:pointer" onclick="trk_filter('pending_meta_desc')"><div class="label">Meta Desc Pending</div><div class="value" id="trkMetaDesc">—</div></div>
+          <div class="trk-kpi fixed"   style="cursor:pointer" onclick="trk_filter('pending_faq')"><div class="label">FAQ Pending</div><div class="value" id="trkFaq">—</div></div>
+          <div class="trk-kpi fixed"   style="cursor:pointer" onclick="trk_filter('pending_alt')"><div class="label">Alt Text Pending</div><div class="value" id="trkAlt">—</div></div>
+          <div class="trk-kpi neutral"><div class="label">Overall Progress</div><div class="value" id="trkPct">—</div></div>
+        </div>
+        <div class="trk-progress-wrap">
+          <div class="trk-progress-label"><span>Fix Progress</span><span id="trkProgressText">0 / 0 fields fixed</span></div>
+          <div class="trk-progress-bar"><div class="trk-progress-fill" id="trkProgressFill" style="width:0%"></div></div>
+        </div>
+        <div class="controls" style="margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid var(--line);">
+          <span class="trk-filter-label">Status:</span>
+          <button class="fbtn on" id="trkBtnAll" onclick="trk_filter('all')">All</button>
+          <button class="fbtn" id="trkBtnFixed" onclick="trk_filter('fixed')">✅ Fixed</button>
+          <button class="fbtn" id="trkBtnPending" onclick="trk_filter('pending')">❌ All Pending</button>
+          <input class="search" id="trkSearch" type="text" placeholder="🔍 Search product…" style="margin-left:auto;max-width:220px;">
+          <button class="export" onclick="trk_exportCSV()">↓ CSV</button>
+        </div>
+        <div class="controls" style="margin-bottom:14px;">
+          <span class="trk-filter-label">Pending:</span>
+          <button class="fbtn-pending" id="trkBtnPMT" onclick="trk_filter('pending_meta_title')">⏳ Meta Title</button>
+          <button class="fbtn-pending" id="trkBtnPMD" onclick="trk_filter('pending_meta_desc')">⏳ Meta Desc</button>
+          <button class="fbtn-pending" id="trkBtnPFAQ" onclick="trk_filter('pending_faq')">⏳ FAQ Schema</button>
+          <button class="fbtn-pending" id="trkBtnPAlt" onclick="trk_filter('pending_alt')">⏳ Alt Text</button>
+        </div>
+        <div id="trkLoading" class="placeholder"><div class="ph-icon">⏳</div><h2>Loading live data…</h2><p>Fetching from Shopify API + database. This may take a few seconds.</p></div>
+        <div id="trkSectionFixed" style="display:none;">
+          <div class="trk-section">
+            <div class="trk-section-hdr"><h3>✅ Fixed by Hetheesha</h3><span class="badge badge-fixed" id="trkFixedBadge">0 fixes</span></div>
+            <div class="scroll trk-table"><table><thead><tr>
+              <th class="num">Rev#</th><th>Product</th><th>Field</th><th>Before (Jul 06)</th><th>After (Live Now)</th><th>Fixed On</th>
+            </tr></thead><tbody id="trkFixedBody"></tbody></table></div>
+          </div>
+        </div>
+        <div id="trkSectionPending" style="display:none;">
+          <div class="trk-section">
+            <div class="trk-section-hdr"><h3>❌ Still Missing — Action Required</h3><span class="badge badge-pending" id="trkPendingBadge">0 pending</span></div>
+            <div class="scroll trk-table"><table><thead><tr>
+              <th class="num">Rev#</th><th>Product</th><th>Field Missing</th><th>Missing Since</th><th>Priority</th><th>Fix on Shopify</th>
+            </tr></thead><tbody id="trkPendingBody"></tbody></table></div>
+          </div>
+        </div>
+        <div id="trkEmpty" class="trk-empty" style="display:none;"><div class="ph-icon">🔍</div><p>No items match this filter.</p></div>
+        <div class="footnotes" style="margin-top:8px;">
+          <h3>How this works</h3>
+          <ul>
+            <li><strong>Fix date</strong> = first time this dashboard detected the field was fixed (stored in your browser).</li>
+            <li>Click any <strong>KPI card</strong> to filter the table instantly.</li>
+            <li><strong>Rev#</strong> = revenue rank — lower number = higher priority product to fix.</li>
+            <li>Use <strong>Fix on Shopify →</strong> to jump directly to the product editor.</li>
+          </ul>
+        </div>
+      </div><!-- /tracker inner card -->
+    </div><!-- /r1TrkWrap -->
+  </div><!-- /tab-panel-1 -->
 
   <!-- REQUIREMENT 2 -->
   <div class="tab-panel" id="tab-panel-2" role="tabpanel" aria-labelledby="tab-btn-2">
@@ -788,132 +853,6 @@
 
   </div><!-- /tab-panel-5 -->
 
-    <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 24px;margin-bottom:4px;">
-      <div style="margin-bottom:14px;">
-        <div style="font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);margin-bottom:4px;">Product Fix Tracker · Req 1 · ledsone.fr</div>
-        <div style="font-size:13px;font-weight:700;color:var(--ink);">Before &amp; After — SEO Fix Progress</div>
-        <div style="font-size:11.5px;color:var(--muted);margin-top:3px;">Baseline: Jul 06 2026 &nbsp;·&nbsp; Live check: <strong id="trkFetchedAt">loading…</strong> &nbsp;·&nbsp; Fix dates saved in browser</div>
-      </div>
-
-    <!-- KPI summary -->
-    <div class="trk-kpis">
-      <div class="trk-kpi neutral" style="cursor:pointer" onclick="trk_filter('all')"><div class="label">Total Fields Tracked</div><div class="value" id="trkTotal">—</div></div>
-      <div class="trk-kpi fixed"   style="cursor:pointer" onclick="trk_filter('fixed')"><div class="label">✅ Fixed</div><div class="value" id="trkFixed">—</div></div>
-      <div class="trk-kpi pending" style="cursor:pointer" onclick="trk_filter('pending')"><div class="label">❌ Still Missing</div><div class="value" id="trkPending">—</div></div>
-      <div class="trk-kpi fixed"   style="cursor:pointer" onclick="trk_filter('pending_meta_title')"><div class="label">Meta Title Pending</div><div class="value" id="trkMetaTitle">—</div></div>
-      <div class="trk-kpi fixed"   style="cursor:pointer" onclick="trk_filter('pending_meta_desc')"><div class="label">Meta Desc Pending</div><div class="value" id="trkMetaDesc">—</div></div>
-      <div class="trk-kpi fixed"   style="cursor:pointer" onclick="trk_filter('pending_faq')"><div class="label">FAQ Pending</div><div class="value" id="trkFaq">—</div></div>
-      <div class="trk-kpi fixed"   style="cursor:pointer" onclick="trk_filter('pending_alt')"><div class="label">Alt Text Pending</div><div class="value" id="trkAlt">—</div></div>
-      <div class="trk-kpi neutral"><div class="label">Overall Progress</div><div class="value" id="trkPct">—</div></div>
-    </div>
-
-    <!-- Progress bar -->
-    <div class="trk-progress-wrap">
-      <div class="trk-progress-label">
-        <span>Fix Progress</span>
-        <span id="trkProgressText">0 / 0 fields fixed</span>
-      </div>
-      <div class="trk-progress-bar">
-        <div class="trk-progress-fill" id="trkProgressFill" style="width:0%"></div>
-      </div>
-    </div>
-
-    <!-- Filter row 1: Status -->
-    <div class="controls" style="margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid var(--line);">
-      <span class="trk-filter-label">Status:</span>
-      <button class="fbtn on" id="trkBtnAll"     onclick="trk_filter('all')">All</button>
-      <button class="fbtn"    id="trkBtnFixed"   onclick="trk_filter('fixed')">✅ Fixed</button>
-      <button class="fbtn"    id="trkBtnPending" onclick="trk_filter('pending')">❌ All Pending</button>
-      <input  class="search"  id="trkSearch" type="text" placeholder="🔍 Search product…" style="margin-left:auto;max-width:220px;">
-      <button class="export"  onclick="trk_exportCSV()">↓ CSV</button>
-    </div>
-
-    <!-- Filter row 2: Pending by field -->
-    <div class="controls" style="margin-bottom:14px;">
-      <span class="trk-filter-label">Pending:</span>
-      <button class="fbtn-pending" id="trkBtnPMT"  onclick="trk_filter('pending_meta_title')">⏳ Meta Title</button>
-      <button class="fbtn-pending" id="trkBtnPMD"  onclick="trk_filter('pending_meta_desc')">⏳ Meta Desc</button>
-      <button class="fbtn-pending" id="trkBtnPFAQ" onclick="trk_filter('pending_faq')">⏳ FAQ Schema</button>
-      <button class="fbtn-pending" id="trkBtnPAlt" onclick="trk_filter('pending_alt')">⏳ Alt Text</button>
-    </div>
-
-    <!-- Loading state -->
-    <div id="trkLoading" class="placeholder">
-      <div class="ph-icon">⏳</div>
-      <h2>Loading live data…</h2>
-      <p>Fetching from Shopify API + database. This may take a few seconds.</p>
-    </div>
-
-    <!-- Fixed section -->
-    <div id="trkSectionFixed" style="display:none;">
-      <div class="trk-section">
-        <div class="trk-section-hdr">
-          <h3>✅ Fixed by Hetheesha</h3>
-          <span class="badge badge-fixed" id="trkFixedBadge">0 fixes</span>
-        </div>
-        <div class="scroll trk-table">
-          <table>
-            <thead>
-              <tr>
-                <th class="num">Rev#</th>
-                <th>Product</th>
-                <th>Field</th>
-                <th>Before (Jul 06)</th>
-                <th>After (Live Now)</th>
-                <th>Fixed On</th>
-              </tr>
-            </thead>
-            <tbody id="trkFixedBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Pending section -->
-    <div id="trkSectionPending" style="display:none;">
-      <div class="trk-section">
-        <div class="trk-section-hdr">
-          <h3>❌ Still Missing — Action Required</h3>
-          <span class="badge badge-pending" id="trkPendingBadge">0 pending</span>
-        </div>
-        <div class="scroll trk-table">
-          <table>
-            <thead>
-              <tr>
-                <th class="num">Rev#</th>
-                <th>Product</th>
-                <th>Field Missing</th>
-                <th>Missing Since</th>
-                <th>Priority</th>
-                <th>Fix on Shopify</th>
-              </tr>
-            </thead>
-            <tbody id="trkPendingBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div id="trkEmpty" class="trk-empty" style="display:none;">
-      <div class="ph-icon">🔍</div>
-      <p>No items match this filter.</p>
-    </div>
-
-    <div class="footnotes" style="margin-top:8px;">
-      <h3>How this works</h3>
-      <ul>
-        <li><strong>Fix date</strong> = first time this dashboard detected the field was fixed (stored in your browser).</li>
-        <li>Click any <strong>KPI card</strong> to filter the table instantly.</li>
-        <li><strong>Rev#</strong> = revenue rank — lower number = higher priority product to fix.</li>
-        <li>Use <strong>Fix on Shopify →</strong> to jump directly to the product editor.</li>
-      </ul>
-    </div>
-
-    </div><!-- /tracker inner card -->
-    </div><!-- /r1TrkWrap -->
-
-  </div><!-- /tab-panel-1 -->
-
   <footer class="site">Hetheesha · ledsone.fr · SEO Reports · AIOS · Live via Shopify API</footer>
 
 </div>
@@ -1247,8 +1186,8 @@ function trk_init(tracker,fetched_at){
 
 function trk_filter(f){
   TRK_FILTER=f;
-  document.querySelectorAll('#tab-panel-tracker .fbtn').forEach(b=>b.classList.remove('on'));
-  document.querySelectorAll('#tab-panel-tracker .fbtn-pending').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('#r1TrkWrap .fbtn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('#r1TrkWrap .fbtn-pending').forEach(b=>b.classList.remove('on'));
   const map={
     all:'trkBtnAll',fixed:'trkBtnFixed',pending:'trkBtnPending',
     pending_meta_title:'trkBtnPMT',pending_meta_desc:'trkBtnPMD',
