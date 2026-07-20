@@ -9,12 +9,12 @@ const { Client } = require('pg');
 const TV_CAMPAIGNS = [23103582865, 23533025729, 23405519670];
 const CAMP_LABELS  = {
   '23103582865': 'Topsell',
-  '23533025729': 'All Products',
+  '23533025729': 'Imp_Click',
   '23405519670': 'Best Sellers',
 };
 
 const LOW_STOCK_THRESHOLD = 5;
-const HERO_CLICKS = 15;
+const HERO_CLICKS = 6;
 
 // Segment classification matching HTML legend
 function classify(imp, clicks, conv, cost, cv) {
@@ -145,7 +145,7 @@ async function handleReq3(client, fromDate, toDate) {
     try {
       const { rows: shopRows } = await client.query(`
         SELECT DISTINCT ON (item_id::text)
-          item_id::text AS vid, sku, title, status, listing_url AS url
+          item_id::text AS vid, sku, title, status, listing_url AS url, price::numeric AS shop_price
         FROM listings.shopify_listings
         WHERE site='France' AND item_id::text = ANY($1::text[])
         ORDER BY item_id::text
@@ -200,7 +200,7 @@ async function handleReq3(client, fromDate, toDate) {
       camp: CAMP_LABELS[r.cid] || r.cid,
       av:   gmc.availability || (shop.status === 'active' ? 'in stock' : '') || '',
       url:  shop.url || gmc.url || '',
-      pr:   gmc.pr ? Number(gmc.pr) : 0,
+      pr:   gmc.pr ? Number(gmc.pr) : (shop.shop_price ? Number(shop.shop_price) : 0),
       st:   stock,
       sp:   spend,
       cl:   n(r.clicks),
@@ -212,6 +212,86 @@ async function handleReq3(client, fromDate, toDate) {
     };
   });
   return { products, meta: { from: fromDate, to: toDate } };
+}
+
+async function handleReq4(client, toDate) {
+  const from90 = addDays(toDate, -89);
+  const from60 = addDays(toDate, -59);
+  const from30 = addDays(toDate, -29);
+
+  // Ads conversions by variant for all 3 windows
+  const { rows: adsRows } = await client.query(`
+    SELECT
+      CASE WHEN product_item_id ILIKE 'shopify_%'
+        THEN SPLIT_PART(LOWER(product_item_id), '_', 4)
+        ELSE LOWER(product_item_id)
+      END AS variant_id,
+      ROUND(SUM(CASE WHEN date >= $2 THEN conversions ELSE 0 END)::numeric,2) AS ad90,
+      ROUND(SUM(CASE WHEN date >= $3 THEN conversions ELSE 0 END)::numeric,2) AS ad60,
+      ROUND(SUM(CASE WHEN date >= $4 THEN conversions ELSE 0 END)::numeric,2) AS ad30
+    FROM google_ads.product_performance
+    WHERE campaign_id = ANY($1::bigint[]) AND date >= $2 AND product_item_id != ''
+    GROUP BY variant_id
+    HAVING SUM(conversions) > 0
+    ORDER BY ad90 DESC LIMIT 300
+  `, [TV_CAMPAIGNS, from90, from60, from30]);
+
+  // Map variant_id → SKU + title + price via France Shopify listings
+  const variantIds = adsRows.map(r => r.variant_id);
+  let varToShop = {};
+  if (variantIds.length > 0) {
+    const { rows: shopRows } = await client.query(`
+      SELECT DISTINCT ON (item_id::text)
+        item_id::text AS vid, sku, title, price::numeric AS pr
+      FROM listings.shopify_listings
+      WHERE site='France' AND item_id::text = ANY($1::text[])
+      ORDER BY item_id::text
+    `, [variantIds]);
+    shopRows.forEach(r => { varToShop[r.vid] = r; });
+  }
+
+  // Shopify FR orders by SKU (sub_source 233 = jedsz8-km = ledsone.fr)
+  const skus = [...new Set(Object.values(varToShop).map(r => r.sku).filter(Boolean))];
+  let shopOrdMap = {};
+  if (skus.length > 0) {
+    const { rows: ordRows } = await client.query(`
+      SELECT ii.item_sku AS sku,
+        COUNT(CASE WHEN o.order_date::date >= $2 THEN 1 END)::int AS sh90,
+        COUNT(CASE WHEN o.order_date::date >= $3 THEN 1 END)::int AS sh60,
+        COUNT(CASE WHEN o.order_date::date >= $4 THEN 1 END)::int AS sh30
+      FROM order_management.orders o
+      JOIN order_management.order_item_info ii ON ii.order_id = o.id
+      WHERE o.sub_source_id = 233 AND o.order_date::date >= $1
+        AND ii.item_sku = ANY($5::text[])
+      GROUP BY ii.item_sku
+    `, [from90, from90, from60, from30, skus]);
+    ordRows.forEach(r => { shopOrdMap[r.sku] = r; });
+  }
+
+  const n = v => Number(v) || 0;
+  const products = adsRows.map(r => {
+    const shop  = varToShop[r.variant_id] || {};
+    const sku   = shop.sku || '';
+    const ord   = shopOrdMap[sku] || {};
+    const ad90  = n(r.ad90), ad60 = n(r.ad60), ad30 = n(r.ad30);
+    const sh90  = n(ord.sh90), sh60 = n(ord.sh60), sh30 = n(ord.sh30);
+    const diff  = sh30 - ad30;
+    const pct   = ad30 > 0 ? Math.round(sh30 / ad30 * 100) : 0;
+    let st = 'No Orders';
+    if (sh30 > 0 || ad30 > 0) {
+      if (sh30 > 0 && ad30 === 0) st = 'Organic Only';
+      else if (ad30 > 0 && sh30 === 0) st = 'Ads Driven';
+      else {
+        const ratio = sh30 / ad30;
+        if (ratio >= 0.8 && ratio <= 1.2) st = 'Balanced';
+        else if (sh30 > ad30) st = 'Organic Heavy';
+        else st = 'Ads Driven';
+      }
+    }
+    return { id: r.variant_id, sku, t: shop.title || '', pr: shop.pr ? Number(shop.pr) : 0, sh90, sh60, sh30, ad90, ad60, ad30, diff, pct, st };
+  }).filter(p => p.sh90 > 0 || p.ad90 > 0);
+
+  return { products, meta: { from: from90, to: toDate } };
 }
 
 module.exports = async function handler(req, res) {
@@ -242,7 +322,7 @@ module.exports = async function handler(req, res) {
       const f = new Date(d);
       if (type === 'req1') f.setDate(f.getDate() - 97);       // ~14 weeks
       else if (type === 'req3') f.setDate(f.getDate() - 29);  // 30 days
-      else f.setDate(f.getDate() - 89);                        // 90 days (req2)
+      else f.setDate(f.getDate() - 89);                        // 90 days (req2/req4)
       fromDate = f.toISOString().slice(0, 10);
     }
 
@@ -250,6 +330,7 @@ module.exports = async function handler(req, res) {
     if      (type === 'req1') result = await handleReq1(client, fromDate, toDate);
     else if (type === 'req2') result = await handleReq2(client, fromDate, toDate);
     else if (type === 'req3') result = await handleReq3(client, fromDate, toDate);
+    else if (type === 'req4') result = await handleReq4(client, toDate);
     else return res.status(400).json({ ok: false, error: 'Unknown type: ' + type });
 
     return res.status(200).json({ ok: true, ...result });
