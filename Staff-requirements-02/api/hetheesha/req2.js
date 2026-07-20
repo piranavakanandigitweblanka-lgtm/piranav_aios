@@ -225,8 +225,8 @@ module.exports = async function handler(req, res) {
         SUM(p.impressions)         AS impressions,
         ROUND(AVG(p.ctr) * 100, 2) AS ctr_pct,
         ROUND(AVG(p.position), 1)  AS avg_pos
-      FROM google_search_console.gsc_web_page p
-      WHERE p.site_url    = 'https://ledsone.fr/'
+      FROM google_search_console.page p
+      WHERE p.sub_source  = 233
         AND p.search_type = 'web'
         AND p.page LIKE '%/collections/%'
         AND p.date BETWEEN CURRENT_DATE - INTERVAL '30 days' AND CURRENT_DATE
