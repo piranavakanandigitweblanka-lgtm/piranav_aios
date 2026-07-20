@@ -301,8 +301,8 @@
       <div class="sub">
         Staff: <strong>Hetheesha</strong> &nbsp;·&nbsp;
         Store: <strong>ledsone.fr</strong> &nbsp;·&nbsp;
-        Source: <strong>Shopify + GSC (90d)</strong> &nbsp;·&nbsp;
-        Refreshed: <strong>2026-07-06</strong>
+        Source: <strong>Shopify Live + GSC (rolling 30d)</strong> &nbsp;·&nbsp;
+        Refreshed: <strong id="r2RefreshedAt">Loading…</strong>
       </div>
       <div class="chips">
         <span class="chip">66 Collections</span>
@@ -311,6 +311,11 @@
         <span class="chip">PostgreSQL Read-Only</span>
       </div>
     </header>
+
+    <div class="live-banner loading" id="r2LiveBanner">
+      <div class="dot"></div>
+      <span id="r2LiveMsg">Loading live data from Shopify + PostgreSQL GSC…</span>
+    </div>
 
     <div class="kpis" id="r2kpis">
       <div class="kpi info"><div class="label">Collections</div><div class="value" id="r2kTotal">66</div><div class="note">All Shopify collections</div></div>
@@ -389,6 +394,74 @@
         <li><strong>Organic Sessions, Conv. Rate, Revenue (30d):</strong> — (Not Available) — GA4 table in PostgreSQL contains ledsone.co.uk data only (property_id 408110563). ledsone.fr GA4 data not loaded in connected DB. Shopify Analytics provides store-level total (€3,076.94 / 30d) but not collection-level breakdown.</li>
       </ul>
     </div>
+
+    <!-- COLLECTION FIX TRACKER -->
+    <div id="r2TrkWrap" style="display:none;">
+      <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--ink);">Collection Fix Tracker</div>
+            <div style="font-size:11.5px;color:var(--muted);margin-top:3px;">Tracks missing fields since Jul 06 2026 baseline. Fix date saved locally when Hetheesha updates a collection.</div>
+          </div>
+          <button class="export" onclick="trk2_exportCSV()" style="margin-left:0;">Export CSV</button>
+        </div>
+
+        <div class="trk-progress-wrap" style="margin-bottom:14px;padding:0;">
+          <div class="trk-progress-label">
+            <span id="r2trkProgressLabel">Loading…</span>
+            <span id="r2trkProgressPct" style="color:var(--good);font-weight:700;"></span>
+          </div>
+          <div class="trk-progress-bar"><div class="trk-progress-fill" id="r2trkProgressFill" style="width:0%"></div></div>
+        </div>
+
+        <div class="trk-kpis" style="margin-bottom:14px;">
+          <div class="trk-kpi fixed"><div class="label">Fixed</div><div class="value" id="r2trkFixed">—</div></div>
+          <div class="trk-kpi pending"><div class="label">Pending</div><div class="value" id="r2trkPending">—</div></div>
+          <div class="trk-kpi neutral"><div class="label">Total Issues</div><div class="value" id="r2trkTotal">—</div></div>
+          <div class="trk-kpi neutral"><div class="label">Baseline</div><div class="value" style="font-size:14px;padding-top:5px;">Jul 06 2026</div></div>
+        </div>
+
+        <div class="trk-filter-group" style="margin-bottom:6px;">
+          <span class="trk-filter-label">Status</span>
+          <button class="fbtn on" id="r2trkBtnAll" onclick="trk2_filter('all')">All</button>
+          <button class="fbtn" id="r2trkBtnFixed" onclick="trk2_filter('fixed')">Fixed</button>
+          <button class="fbtn" id="r2trkBtnPending" onclick="trk2_filter('pending')">Pending</button>
+        </div>
+        <div class="trk-filter-group" style="margin-bottom:14px;">
+          <span class="trk-filter-label">Field</span>
+          <button class="fbtn-pending" id="r2trkBtnTitle" onclick="trk2_filter('pending_meta_title')">Pending Meta Title</button>
+          <button class="fbtn-pending" id="r2trkBtnDesc"  onclick="trk2_filter('pending_meta_desc')">Pending Meta Desc</button>
+          <button class="fbtn-pending" id="r2trkBtnFAQ"   onclick="trk2_filter('pending_faq')">Pending FAQ Schema</button>
+        </div>
+
+        <div id="r2TrkFixed" class="trk-section" style="margin-bottom:12px;display:none;">
+          <div class="trk-section-hdr">
+            <h3 style="color:var(--good);">Fixed Collections</h3>
+            <span class="badge badge-fixed" id="r2trkFixedBadge">0</span>
+          </div>
+          <div class="trk-table scroll">
+            <table><thead><tr>
+              <th>#</th><th>Collection</th><th>Field</th><th>Fixed On</th><th>Live Value</th><th>Edit</th>
+            </tr></thead>
+            <tbody id="r2TrkFixedBody"></tbody></table>
+          </div>
+        </div>
+
+        <div id="r2TrkPending" class="trk-section">
+          <div class="trk-section-hdr">
+            <h3 style="color:var(--err);">Pending Fixes</h3>
+            <span class="badge badge-pending" id="r2trkPendingBadge">0</span>
+          </div>
+          <div class="trk-table scroll">
+            <table><thead><tr>
+              <th>#</th><th>Collection</th><th>Field</th><th>Status</th><th>Live Value</th><th>Edit</th>
+            </tr></thead>
+            <tbody id="r2TrkPendingBody"></tbody></table>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /r2TrkWrap -->
 
   </div><!-- /tab-panel-2 -->
 
@@ -1261,7 +1334,7 @@ r1_loadLive();
 // Data: [handle, title, wordCount, seoTitleLen, seoDescLen, hasFAQ, internalLinks, gscClicks, gscImp, gscCTR_pct, gscPos, h1ok]
 // h1ok: 1=Green(matches keyword), 0=Yellow(mismatch/issue)
 // Source: Shopify Admin GraphQL + google_search_console.gsc_web_page (90d) + PostgreSQL inspection 2026-07-06
-const R2 = [
+let R2 = [
  ['frontpage','Home page',0,0,0,0,0,0,12,0,3.5,0],
  ['lumiere-daraignee','Lumière d\'araignée',2214,63,157,1,1,206,11118,1.81,5.42,1],
  ['lampes-suspendues','Lampes suspendues',3817,67,153,0,1,25,5776,0.48,12.66,1],
@@ -1494,7 +1567,155 @@ function r2_exportCSV(){
 }
 
 document.getElementById('r2SearchBox').addEventListener('input',function(){r2_sq2=this.value.trim();r2_render();});
-r2_render();
+
+/* ── Req 2 Live Load ───────────────────────────────── */
+const TRK2_STORE_KEY = 'heth_fix_dates_r2_v1';
+let TRK2_DATA = [];
+
+async function r2_loadLive() {
+  const banner = document.getElementById('r2LiveBanner');
+  const msg    = document.getElementById('r2LiveMsg');
+  banner.className = 'live-banner loading';
+  msg.textContent  = 'Loading live data from Shopify + PostgreSQL GSC…';
+  try {
+    const resp = await fetch('/api/hetheesha/req2');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    if (!data.ok) throw new Error(data.error || 'API error');
+
+    // Replace R2 with live rows
+    R2 = data.rows;
+    r2_render();
+
+    // Update live banner
+    const ts = new Date(data.fetched_at).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    banner.className = 'live-banner';
+    msg.innerHTML = `<strong>Live data</strong> &nbsp;·&nbsp; ${data.collection_count} collections &nbsp;·&nbsp; GSC ${data.period_gsc} &nbsp;·&nbsp; Fetched ${ts}`;
+    const ref = document.getElementById('r2RefreshedAt');
+    if (ref) ref.textContent = ts;
+
+    // Tracker
+    if (data.tracker && data.tracker.length > 0) {
+      trk2_init(data.tracker, data.fetched_at);
+      document.getElementById('r2TrkWrap').style.display = '';
+    }
+  } catch (err) {
+    console.error('[r2_loadLive]', err);
+    banner.className = 'live-banner error';
+    msg.textContent = 'Live load failed — showing Jul 06 2026 snapshot. (' + err.message + ')';
+    r2_render();
+  }
+}
+
+function trk2_init(tracker, fetched_at) {
+  const stored = JSON.parse(localStorage.getItem(TRK2_STORE_KEY) || '{}');
+  tracker.forEach(item => {
+    const k = item.handle + '::' + item.field_key;
+    if (item.now_fixed && !stored[k]) {
+      stored[k] = new Date(fetched_at).toISOString().slice(0, 10);
+    }
+  });
+  localStorage.setItem(TRK2_STORE_KEY, JSON.stringify(stored));
+
+  TRK2_DATA = tracker.map(item => {
+    const k = item.handle + '::' + item.field_key;
+    return { ...item, fix_date: stored[k] || null };
+  });
+
+  trk2_render('all');
+}
+
+function trk2_filter(f) {
+  ['r2trkBtnAll','r2trkBtnFixed','r2trkBtnPending','r2trkBtnTitle','r2trkBtnDesc','r2trkBtnFAQ']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.className = el.className.includes('fbtn-pending') ? 'fbtn-pending' : 'fbtn';
+    });
+  const map = {
+    'all':'r2trkBtnAll', 'fixed':'r2trkBtnFixed', 'pending':'r2trkBtnPending',
+    'pending_meta_title':'r2trkBtnTitle', 'pending_meta_desc':'r2trkBtnDesc', 'pending_faq':'r2trkBtnFAQ'
+  };
+  const btn = document.getElementById(map[f]);
+  if (btn) btn.className += ' on';
+  trk2_render(f);
+}
+
+function trk2_render(filter) {
+  const all     = TRK2_DATA;
+  const fixedAll  = all.filter(i => i.now_fixed);
+  const pendingAll = all.filter(i => !i.now_fixed);
+  const total   = all.length;
+  const fixedCt = fixedAll.length;
+  const pendCt  = pendingAll.length;
+  const pct     = total > 0 ? Math.round(fixedCt / total * 100) : 0;
+
+  document.getElementById('r2trkFixed').textContent   = fixedCt;
+  document.getElementById('r2trkPending').textContent = pendCt;
+  document.getElementById('r2trkTotal').textContent   = total;
+  document.getElementById('r2trkProgressLabel').textContent = `${fixedCt} of ${total} issues resolved`;
+  document.getElementById('r2trkProgressPct').textContent   = pct + '%';
+  document.getElementById('r2trkProgressFill').style.width  = pct + '%';
+
+  let showFixed   = true;
+  let showPending = true;
+  let filtFixed   = fixedAll;
+  let filtPending = pendingAll;
+
+  if (filter === 'fixed')               { showPending = false; }
+  else if (filter === 'pending')        { showFixed = false; }
+  else if (filter === 'pending_meta_title') { showFixed = false; filtPending = pendingAll.filter(i => i.field_key === 'seo_title'); }
+  else if (filter === 'pending_meta_desc')  { showFixed = false; filtPending = pendingAll.filter(i => i.field_key === 'seo_desc'); }
+  else if (filter === 'pending_faq')        { showFixed = false; filtPending = pendingAll.filter(i => i.field_key === 'has_faq'); }
+
+  document.getElementById('r2TrkFixed').style.display   = showFixed   ? '' : 'none';
+  document.getElementById('r2TrkPending').style.display = showPending ? '' : 'none';
+  document.getElementById('r2trkFixedBadge').textContent   = filtFixed.length;
+  document.getElementById('r2trkPendingBadge').textContent = filtPending.length;
+
+  const SHOP_BASE = 'https://jedsz8-km.myshopify.com/admin/collections/';
+
+  function rowHtml(item, idx) {
+    const rankCls  = item.rank <= 10 ? 'rank-badge top10' : 'rank-badge';
+    const rankHtml = `<span class="${rankCls}">#${item.rank}</span>`;
+    const shopUrl  = `${SHOP_BASE}?handle=${item.handle}`;
+    const editBtn  = `<a class="shopify-fix-btn" href="${shopUrl}" target="_blank" rel="noopener">Fix on Shopify →</a>`;
+    const lv = item.live_value ? `<span class="after-val">${String(item.live_value).slice(0,60)}</span>` : `<span class="trk-null">—</span>`;
+    return `<tr>
+      <td class="rank">${idx+1} ${rankHtml}</td>
+      <td><a href="https://ledsone.fr/collections/${item.handle}" target="_blank" rel="noopener" style="font-size:12px;color:var(--accent);">${item.handle}</a></td>
+      <td>${item.field}</td>
+      <td>${item.fix_date ? `<span class="fix-date">${item.fix_date}</span>` : `<span class="trk-pending">Pending</span>`}</td>
+      <td>${lv}</td>
+      <td>${editBtn}</td>
+    </tr>`;
+  }
+
+  document.getElementById('r2TrkFixedBody').innerHTML = filtFixed.length
+    ? filtFixed.map((item, i) => rowHtml(item, i)).join('')
+    : `<tr><td colspan="6" class="trk-empty"><div class="ph-icon">✅</div>No fixed items yet</td></tr>`;
+
+  document.getElementById('r2TrkPendingBody').innerHTML = filtPending.length
+    ? filtPending.map((item, i) => rowHtml(item, i)).join('')
+    : `<tr><td colspan="6" class="trk-empty"><div class="ph-icon">🎉</div>All issues resolved!</td></tr>`;
+}
+
+function trk2_exportCSV() {
+  if (!TRK2_DATA.length) { alert('No tracker data loaded yet.'); return; }
+  const hdr = ['Rank','Handle','Field','Status','Fix Date','Live Value'];
+  const rows = TRK2_DATA.map(i => [
+    i.rank, i.handle, i.field,
+    i.now_fixed ? 'Fixed' : 'Pending',
+    i.fix_date || '',
+    i.live_value || '',
+  ]);
+  const csv = [hdr,...rows].map(r => r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,﻿' + encodeURIComponent(csv);
+  a.download = 'hetheesha-req02-collection-fix-tracker.csv';
+  a.click();
+}
+
+r2_loadLive();
 
 /* ══════════════════════════════════════════════════
    REQUIREMENT 3 — Duplicate Page Analysis
