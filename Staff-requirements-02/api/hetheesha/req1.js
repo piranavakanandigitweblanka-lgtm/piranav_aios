@@ -193,7 +193,7 @@ module.exports = async function handler(req, res) {
       JOIN order_management.order_item_info oii ON oii.order_id = o.id
       WHERE o.sub_source_id = 233
         AND o.status = 'Completed'
-        AND o.order_date BETWEEN '2026-06-06' AND '2026-07-06'
+        AND o.order_date BETWEEN CURRENT_DATE - INTERVAL '30 days' AND CURRENT_DATE
         AND oii.handle IS NOT NULL AND oii.handle != ''
       GROUP BY oii.handle
       ORDER BY revenue DESC
@@ -219,7 +219,7 @@ module.exports = async function handler(req, res) {
       WHERE p.sub_source  = 233
         AND p.search_type = 'web'
         AND p.page LIKE '%/products/%'
-        AND p.date BETWEEN '2026-06-06' AND '2026-07-06'
+        AND p.date BETWEEN CURRENT_DATE - INTERVAL '30 days' AND CURRENT_DATE
         AND regexp_replace(
               split_part(regexp_replace(p.page, '^https?://[^/]+', ''), '?', 1),
               '^/products/', ''
@@ -261,7 +261,7 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({
       ok         : true,
       fetched_at : new Date().toISOString(),
-      period     : '2026-06-06 to 2026-07-06',
+      period     : `${new Date(Date.now()-30*864e5).toISOString().slice(0,10)} to ${new Date().toISOString().slice(0,10)} (rolling 30d)`,
       rows,
       snapshot   : SNAPSHOT,
       tracker,   // missing fields: was_missing=true, now_fixed=true/false
