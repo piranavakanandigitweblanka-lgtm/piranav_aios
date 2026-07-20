@@ -93,6 +93,42 @@
   .footnotes li{margin-top:4px;}
   footer.site{margin-top:22px;color:var(--muted);font-size:12px;text-align:center;}
   @media(max-width:700px){h1{font-size:17px;}.kpi .value{font-size:20px;}.tab-btn{padding:7px 12px;font-size:12px;}}
+  /* Live banner */
+  .live-banner{display:flex;align-items:center;gap:10px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:10px;padding:10px 16px;margin-bottom:14px;font-size:12.5px;color:#2e7d32;}
+  .live-banner .dot{width:8px;height:8px;border-radius:50%;background:#43a047;flex-shrink:0;animation:pulse 1.8s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+  .live-banner.loading{background:#fff8e1;border-color:#ffe082;color:#f57f17;}
+  .live-banner.loading .dot{background:#ffa726;animation:pulse 1s infinite;}
+  .live-banner.error{background:#fef2f2;border-color:#fca5a5;color:#b91c1c;}
+  .live-banner.error .dot{background:#ef4444;animation:none;}
+  /* Fix Tracker tab */
+  .trk-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;margin-bottom:16px;}
+  .trk-kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;}
+  .trk-kpi .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:600;}
+  .trk-kpi .value{font-size:26px;font-weight:700;margin-top:4px;}
+  .trk-kpi.fixed .value{color:var(--good);}
+  .trk-kpi.pending .value{color:var(--err);}
+  .trk-kpi.neutral .value{color:var(--accent);}
+  .trk-section{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden;}
+  .trk-section-hdr{padding:12px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+  .trk-section-hdr h3{font-size:13px;font-weight:700;}
+  .trk-section-hdr .badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;}
+  .badge-fixed{background:#dcfce7;color:#166534;}
+  .badge-pending{background:#fef2f2;color:#b91c1c;}
+  .trk-table table{min-width:860px;width:100%;}
+  .trk-date{font-size:11.5px;font-weight:700;color:var(--good);white-space:nowrap;}
+  .trk-pending{font-size:11.5px;color:var(--muted);font-style:italic;}
+  .trk-val{font-size:11px;max-width:220px;word-break:break-word;line-height:1.4;}
+  .trk-val.before{color:var(--err);}
+  .trk-val.after{color:var(--good);}
+  .trk-null{color:var(--muted);font-style:italic;font-size:11px;}
+  .trk-row-fixed{background:#f0fdf4;}
+  .trk-row-pending{background:#fff;}
+  .tag-fixed{background:#dcfce7;color:#166534;border:1px solid #bbf7d0;border-radius:6px;padding:2px 9px;font-size:11px;font-weight:700;}
+  .tag-pending{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;border-radius:6px;padding:2px 9px;font-size:11px;font-weight:700;}
+  .before-val{color:var(--err);font-size:11px;font-style:italic;}
+  .after-val{color:var(--good);font-size:11px;max-width:200px;word-break:break-word;}
+  .fix-date{font-weight:700;color:var(--good);font-size:11.5px;white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -124,10 +160,19 @@
       Requirement 5
       <span class="tab-label">Internal Link Audit</span>
     </button>
+    <button class="tab-btn" id="tab-btn-tracker" role="tab" aria-selected="false" aria-controls="tab-panel-tracker" onclick="showTab('tracker')" style="border:1px solid #bbf7d0;background:#f0fdf4;color:#166534;">
+      📋 Fix Tracker
+      <span class="tab-label">Before &amp; After</span>
+    </button>
   </nav>
 
   <!-- REQUIREMENT 1 -->
   <div class="tab-panel active" id="tab-panel-1" role="tabpanel" aria-labelledby="tab-btn-1">
+
+    <div class="live-banner loading" id="r1LiveBanner">
+      <span class="dot"></span>
+      <span id="r1LiveMsg">Loading live data from Shopify + database…</span>
+    </div>
 
     <header class="rpt">
       <div class="req-tag">Requirement 1 · ledsone.fr · SEO &amp; Digital Marketing</div>
@@ -650,7 +695,119 @@
 
   </div><!-- /tab-panel-5 -->
 
-  <footer class="site">Hetheesha · ledsone.fr · SEO Reports · AIOS · Refreshed 2026-07-07</footer>
+  <!-- FIX TRACKER TAB -->
+  <div class="tab-panel" id="tab-panel-tracker" role="tabpanel" aria-labelledby="tab-btn-tracker">
+
+    <header class="rpt">
+      <div class="req-tag">SEO Fix Tracker · ledsone.fr · Hetheesha</div>
+      <h1>Before &amp; After — SEO Fix Progress</h1>
+      <div class="sub">
+        Baseline: <strong>Jul 06 2026</strong> &nbsp;·&nbsp;
+        Live check: <strong id="trkFetchedAt">loading…</strong> &nbsp;·&nbsp;
+        Fix dates stored in your browser
+      </div>
+      <div class="chips">
+        <span class="chip">Tracks: Meta Title · Meta Desc · FAQ Schema · Alt Text</span>
+        <span class="chip">Fix date = first time dashboard detected the fix</span>
+        <span class="chip">Live Shopify GraphQL</span>
+      </div>
+    </header>
+
+    <!-- KPI summary -->
+    <div class="trk-kpis">
+      <div class="trk-kpi neutral"><div class="label">Total Missing (Jul 06)</div><div class="value" id="trkTotal">—</div></div>
+      <div class="trk-kpi fixed"><div class="label">Fixed ✅</div><div class="value" id="trkFixed">—</div></div>
+      <div class="trk-kpi pending"><div class="label">Still Missing ❌</div><div class="value" id="trkPending">—</div></div>
+      <div class="trk-kpi fixed"><div class="label">Meta Titles Fixed</div><div class="value" id="trkMetaTitle">—</div></div>
+      <div class="trk-kpi fixed"><div class="label">Meta Desc Fixed</div><div class="value" id="trkMetaDesc">—</div></div>
+      <div class="trk-kpi fixed"><div class="label">FAQ Fixed</div><div class="value" id="trkFaq">—</div></div>
+      <div class="trk-kpi fixed"><div class="label">Alt Text Fixed</div><div class="value" id="trkAlt">—</div></div>
+      <div class="trk-kpi neutral"><div class="label">Progress</div><div class="value" id="trkPct">—</div></div>
+    </div>
+
+    <!-- Filter controls -->
+    <div class="controls" style="margin-bottom:12px;">
+      <button class="fbtn on" id="trkBtnAll"     onclick="trk_filter('all')">All</button>
+      <button class="fbtn"    id="trkBtnFixed"   onclick="trk_filter('fixed')">✅ Fixed Only</button>
+      <button class="fbtn"    id="trkBtnPending" onclick="trk_filter('pending')">❌ Still Missing</button>
+      <button class="fbtn"    id="trkBtnMT"      onclick="trk_filter('meta_title')">Meta Title</button>
+      <button class="fbtn"    id="trkBtnMD"      onclick="trk_filter('meta_desc')">Meta Desc</button>
+      <button class="fbtn"    id="trkBtnFAQ"     onclick="trk_filter('faq')">FAQ</button>
+      <button class="fbtn"    id="trkBtnAlt"     onclick="trk_filter('alt_missing')">Alt Text</button>
+      <input  class="search"  id="trkSearch" type="text" placeholder="🔍 Search product…" style="margin-left:auto;">
+      <button class="export"  onclick="trk_exportCSV()">↓ Export CSV</button>
+    </div>
+
+    <!-- Loading state -->
+    <div id="trkLoading" class="placeholder">
+      <div class="ph-icon">⏳</div>
+      <h2>Loading live data…</h2>
+      <p>Fetching from Shopify API + database. This may take a few seconds.</p>
+    </div>
+
+    <!-- Fixed section -->
+    <div id="trkSectionFixed" style="display:none;">
+      <div class="trk-section">
+        <div class="trk-section-hdr">
+          <h3>✅ Fixed by Hetheesha</h3>
+          <span class="badge badge-fixed" id="trkFixedBadge">0 fixes</span>
+        </div>
+        <div class="scroll trk-table">
+          <table>
+            <thead>
+              <tr>
+                <th class="num">#</th>
+                <th>Product</th>
+                <th>Field</th>
+                <th>Before (Jul 06)</th>
+                <th>After (Live)</th>
+                <th>Fixed On</th>
+              </tr>
+            </thead>
+            <tbody id="trkFixedBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pending section -->
+    <div id="trkSectionPending" style="display:none;">
+      <div class="trk-section">
+        <div class="trk-section-hdr">
+          <h3>❌ Still Missing — Action Required</h3>
+          <span class="badge badge-pending" id="trkPendingBadge">0 pending</span>
+        </div>
+        <div class="scroll trk-table">
+          <table>
+            <thead>
+              <tr>
+                <th class="num">#</th>
+                <th>Product</th>
+                <th>Field</th>
+                <th>Missing Since</th>
+                <th>Current Value</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="trkPendingBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="footnotes" style="margin-top:4px;">
+      <h3>How fix dates work</h3>
+      <ul>
+        <li><strong>Fix date</strong> = the first time this dashboard detected the field was fixed, stored in your browser (localStorage).</li>
+        <li>If you open the dashboard on a different browser/device, fix dates won't carry over — but fixed/pending status is always accurate (live from Shopify).</li>
+        <li><strong>Baseline</strong>: Jul 06 2026 — all fields that were missing or incomplete on that date are tracked here.</li>
+        <li>Only fields that were <em>missing</em> in the baseline appear here. Fields that were already OK on Jul 06 are not tracked.</li>
+      </ul>
+    </div>
+
+  </div><!-- /tab-panel-tracker -->
+
+  <footer class="site">Hetheesha · ledsone.fr · SEO Reports · AIOS · Live via Shopify API</footer>
 
 </div>
 
@@ -665,7 +822,10 @@ function showTab(n){
 }
 
 /* ══════════════════════════════════════════════════
-   REQUIREMENT 1 — Top-Selling Products SEO Report
+   REQUIREMENT 1 — Live via /api/hetheesha/req1
+   Revenue + GSC: PostgreSQL DB
+   Meta/Alt/FAQ: Shopify Admin GraphQL (live)
+   Fix Tracker: localStorage (per-browser fix dates)
    Data refresh: 2026-07-06
    Revenue: Shopify Orders (paid, non-cancelled) · Jun 06 – Jul 06 2026
    SEO: Shopify Admin GraphQL seo.title / seo.description
@@ -678,7 +838,7 @@ function showTab(n){
 /* k=rank, h=handle, rev=revenue, mtr=seo.title raw, mdr=seo.description raw,
    alt=missing alt count (ALL images), imp=GSC impressions, ctr=GSC CTR%,
    faq='Present'|'Missing' */
-const P=[
+let P=[
  {k:1,h:"ledsone-industrial-vintage-32cm-green-pendant-retro-metal-lamp-shade-e27-uk-holder",rev:369.20,mtr:"Suspension Vintage Verte 32cm E27 – Abat-jour M\xe9tal Cuisine",mdr:"Suspension abat-jour en m\xe9tal vert 32 cm, style industriel vintage. Douille E27. Parfaite au-dessus d'une table de cuisine ou d'un \xeelot. -10% actuellement.",alt:0,imp:null,ctr:null,faq:"Present"},
  {k:2,h:"5-way-spider-light-fixture-3399",rev:248.70,mtr:"Lustre Araign\xe9e 5 Ampoules R\xe9glable E27 | LEDsone",mdr:"Suspension araign\xe9e 5 ampoules E27, hauteur r\xe9glable, finition m\xe9tal noir. Design industriel pour salle \xe0 manger. Livraison France rapide.",alt:3,imp:404,ctr:0.50,faq:"Missing"},
  {k:3,h:"ledsone-luminaire-suspendu-vintage-trois-bras-avec-abat-jour-conique-plat",rev:198.00,mtr:null,mdr:null,alt:13,imp:null,ctr:null,faq:"Missing"},
@@ -757,8 +917,8 @@ function r1_buildDupes(key){
   P.forEach(p=>{const s=p[key]&&p[key].trim();if(s){if(seen[s])out.add(s);else seen[s]=true;}});
   return out;
 }
-const R1_MT_DUPES=r1_buildDupes('mtr');
-const R1_MD_DUPES=r1_buildDupes('mdr');
+let R1_MT_DUPES=new Set();
+let R1_MD_DUPES=new Set();
 
 function r1_classified(p){
   const mtO=r1_cMT(p.mtr,R1_MT_DUPES);
@@ -782,7 +942,6 @@ function r1_computeKPIs(){
   document.getElementById('kFaqMiss').textContent=rows.filter(r=>r.faq==='Missing').length;
   document.getElementById('kLowCtr').textContent=rows.filter(r=>r.lc==='Low CTR').length;
 }
-r1_computeKPIs();
 
 const r1_esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
@@ -890,7 +1049,151 @@ function r1_exportCSV(){
 }
 
 document.getElementById('r1SearchBox').addEventListener('input',function(){r1_sq=this.value.trim();r1_render();});
-r1_render();
+
+/* ─── Live API loader ─────────────────────────────────── */
+async function r1_loadLive(){
+  const banner=document.getElementById('r1LiveBanner');
+  if(banner){banner.className='live-banner loading';banner.textContent='⏳ Loading live data from Shopify + DB…';}
+  try{
+    const res=await fetch('/api/hetheesha/req1');
+    const data=await res.json();
+    if(!data.ok) throw new Error(data.error||'API error');
+    P=data.rows.map(r=>({k:r.rank,h:r.handle,rev:r.revenue,mtr:r.meta_title,mdr:r.meta_desc,alt:r.alt_missing,imp:r.impressions,ctr:r.ctr,faq:r.faq}));
+    R1_MT_DUPES=r1_buildDupes('mtr');
+    R1_MD_DUPES=r1_buildDupes('mdr');
+    if(banner){
+      const at=new Date(data.fetched_at).toLocaleString('fr-FR');
+      banner.className='live-banner live';
+      banner.innerHTML='🟢 Live · '+at;
+    }
+    r1_computeKPIs();
+    r1_render();
+    if(data.tracker) trk_init(data.tracker, data.fetched_at);
+  }catch(err){
+    console.error('[r1_loadLive]',err);
+    if(banner){banner.className='live-banner error';banner.textContent='Failed to load live data: '+err.message+' — showing last snapshot';}
+    R1_MT_DUPES=r1_buildDupes('mtr');
+    R1_MD_DUPES=r1_buildDupes('mdr');
+    r1_computeKPIs();
+    r1_render();
+  }
+}
+
+/* ─── Fix Tracker ────────────────────────────────────── */
+let TRK_DATA=[];
+let TRK_FILTER='all';
+const TRK_STORE_KEY='heth_fix_dates_v1';
+
+function trk_getFixDates(){try{return JSON.parse(localStorage.getItem(TRK_STORE_KEY)||'{}');}catch(e){return{};}}
+function trk_saveFixDate(handle,field_key,date){
+  const fd=trk_getFixDates();
+  const k=handle+'|'+field_key;
+  if(!fd[k]){fd[k]=date;localStorage.setItem(TRK_STORE_KEY,JSON.stringify(fd));}
+}
+
+function trk_init(tracker,fetched_at){
+  const today=fetched_at||new Date().toISOString();
+  tracker.forEach(item=>{if(item.now_fixed) trk_saveFixDate(item.handle,item.field_key,today);});
+  const fd=trk_getFixDates();
+  TRK_DATA=tracker.map(item=>({...item,fix_date:fd[item.handle+'|'+item.field_key]||null}));
+  const el=document.getElementById('trkFetchedAt');
+  if(el) el.textContent=new Date(fetched_at).toLocaleString('fr-FR');
+  trk_render();
+}
+
+function trk_filter(f){
+  TRK_FILTER=f;
+  document.querySelectorAll('#tab-panel-tracker .fbtn').forEach(b=>b.classList.remove('on'));
+  const map={all:'trkBtnAll',fixed:'trkBtnFixed',pending:'trkBtnPending',meta_title:'trkBtnMT',meta_desc:'trkBtnMD',faq:'trkBtnFAQ',alt_missing:'trkBtnAlt'};
+  const el=document.getElementById(map[f]);if(el)el.classList.add('on');
+  trk_render();
+}
+
+function trk_render(){
+  const sq=((document.getElementById('trkSearch')||{}).value||'').toLowerCase();
+  let items=TRK_DATA.filter(i=>{
+    if(sq&&!i.handle.toLowerCase().includes(sq)&&!i.field.toLowerCase().includes(sq)) return false;
+    if(TRK_FILTER==='fixed')       return i.now_fixed;
+    if(TRK_FILTER==='pending')     return !i.now_fixed;
+    if(TRK_FILTER==='meta_title')  return i.field_key==='meta_title';
+    if(TRK_FILTER==='meta_desc')   return i.field_key==='meta_desc';
+    if(TRK_FILTER==='faq')         return i.field_key==='faq';
+    if(TRK_FILTER==='alt_missing') return i.field_key==='alt_missing';
+    return true;
+  });
+  const all=TRK_DATA;
+  const allFixed=all.filter(i=>i.now_fixed);
+  const allPending=all.filter(i=>!i.now_fixed);
+  document.getElementById('trkTotal').textContent=all.length;
+  document.getElementById('trkFixed').textContent=allFixed.length;
+  document.getElementById('trkPending').textContent=allPending.length;
+  document.getElementById('trkMetaTitle').textContent=all.filter(i=>i.field_key==='meta_title'&&i.now_fixed).length+'/'+all.filter(i=>i.field_key==='meta_title').length;
+  document.getElementById('trkMetaDesc').textContent=all.filter(i=>i.field_key==='meta_desc'&&i.now_fixed).length+'/'+all.filter(i=>i.field_key==='meta_desc').length;
+  document.getElementById('trkFaq').textContent=all.filter(i=>i.field_key==='faq'&&i.now_fixed).length+'/'+all.filter(i=>i.field_key==='faq').length;
+  document.getElementById('trkAlt').textContent=all.filter(i=>i.field_key==='alt_missing'&&i.now_fixed).length+'/'+all.filter(i=>i.field_key==='alt_missing').length;
+  const pct=all.length?Math.round(allFixed.length/all.length*100):0;
+  document.getElementById('trkPct').textContent=pct+'%';
+  document.getElementById('trkLoading').style.display='none';
+  const fixed=items.filter(i=>i.now_fixed);
+  const pending=items.filter(i=>!i.now_fixed);
+  const fixedSec=document.getElementById('trkSectionFixed');
+  const pendingSec=document.getElementById('trkSectionPending');
+  if(fixed.length){
+    fixedSec.style.display='';
+    document.getElementById('trkFixedBadge').textContent=fixed.length+' fix'+(fixed.length!==1?'es':'');
+    document.getElementById('trkFixedBody').innerHTML=fixed.map((i,idx)=>{
+      const shortH=i.handle.length>38?i.handle.slice(0,36)+'…':i.handle;
+      const url='https://ledsone.fr/products/'+i.handle;
+      const fixDate=i.fix_date?new Date(i.fix_date).toLocaleDateString('fr-FR'):'This session';
+      const after=i.live_value!=null?(typeof i.live_value==='string'?i.live_value.slice(0,80):i.live_value):'—';
+      return`<tr>
+        <td class="num">${idx+1}</td>
+        <td><a href="${r1_esc(url)}" target="_blank" rel="noopener" title="${r1_esc(i.handle)}">${r1_esc(shortH)}</a></td>
+        <td><span class="tag-fixed">${r1_esc(i.field)}</span></td>
+        <td class="before-val">Missing</td>
+        <td class="after-val">${r1_esc(String(after))}</td>
+        <td><span class="fix-date">${r1_esc(fixDate)}</span></td>
+      </tr>`;
+    }).join('');
+  }else{fixedSec.style.display='none';}
+  if(pending.length){
+    pendingSec.style.display='';
+    document.getElementById('trkPendingBadge').textContent=pending.length+' pending';
+    document.getElementById('trkPendingBody').innerHTML=pending.map((i,idx)=>{
+      const shortH=i.handle.length>38?i.handle.slice(0,36)+'…':i.handle;
+      const url='https://ledsone.fr/products/'+i.handle;
+      return`<tr>
+        <td class="num">${idx+1}</td>
+        <td><a href="${r1_esc(url)}" target="_blank" rel="noopener" title="${r1_esc(i.handle)}">${r1_esc(shortH)}</a></td>
+        <td><span class="tag-pending">${r1_esc(i.field)}</span></td>
+        <td>Jul 06 2026</td>
+        <td>—</td>
+        <td><span class="b b-err">Missing</span></td>
+      </tr>`;
+    }).join('');
+  }else{pendingSec.style.display='none';}
+  if(!fixed.length&&!pending.length&&TRK_DATA.length>0){
+    const lEl=document.getElementById('trkLoading');
+    lEl.style.display='';
+    lEl.innerHTML='<div class="ph-icon">🔍</div><h2>No items match this filter</h2>';
+  }
+}
+
+function trk_exportCSV(){
+  if(!TRK_DATA.length)return;
+  const hdr=['Rank','Handle','Field','Was Missing (Jul 06)','Now Fixed','Live Value','Fix Date'];
+  const lines=TRK_DATA.map(i=>[i.rank,i.handle,i.field,'Yes',i.now_fixed?'Yes':'No',i.live_value??'',i.fix_date?new Date(i.fix_date).toLocaleDateString('fr-FR'):'']);
+  const csv=[hdr,...lines].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='hetheesha-fix-tracker-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+const trkSrch=document.getElementById('trkSearch');
+if(trkSrch) trkSrch.addEventListener('input',trk_render);
+
+r1_loadLive();
 </script>
 <script>
 /* ===== REQUIREMENT 2 — COLLECTION SEO DASHBOARD ===== */
