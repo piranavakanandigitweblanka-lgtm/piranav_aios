@@ -147,24 +147,41 @@ function buildTracker(snapshot, shopifyMap) {
   snapshot.forEach(s => {
     const live = shopifyMap[s.h];
     FIELDS.forEach(f => {
-      const snapVal   = s[f.snapKey];
+      const snapVal    = s[f.snapKey];
       const wasMissing = f.isMissing(snapVal);
-      if (!wasMissing) return; // was OK in baseline — skip
+      const liveVal    = live ? live[f.key] : null;
+      const nowMissing = live && f.isMissing(liveVal);
+      const nowFixed   = live && !f.isMissing(liveVal);
 
-      const liveVal   = live ? live[f.key] : null;
-      const nowFixed  = live && !f.isMissing(liveVal);
-
-      items.push({
-        rank        : s.k,
-        handle      : s.h,
-        field       : f.label,
-        field_key   : f.key,
-        before      : snapVal,
-        after       : liveVal,
-        was_missing : true,
-        now_fixed   : nowFixed,
-        live_value  : liveVal,
-      });
+      if (wasMissing) {
+        // Was missing at baseline — track as original issue
+        items.push({
+          rank        : s.k,
+          handle      : s.h,
+          field       : f.label,
+          field_key   : f.key,
+          before      : snapVal,
+          after       : liveVal,
+          was_missing : true,
+          now_fixed   : nowFixed,
+          new_issue   : false,
+          live_value  : liveVal,
+        });
+      } else if (nowMissing) {
+        // Was OK at baseline but now missing — new issue since Jul 06
+        items.push({
+          rank        : s.k,
+          handle      : s.h,
+          field       : f.label,
+          field_key   : f.key,
+          before      : snapVal,
+          after       : liveVal,
+          was_missing : false,
+          now_fixed   : false,
+          new_issue   : true,
+          live_value  : liveVal,
+        });
+      }
     });
   });
 
