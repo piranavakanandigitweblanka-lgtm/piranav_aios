@@ -1,10 +1,11 @@
 // Thivajini Dashboard — LEDSone FR · Google Ads
-// ?type=req1  → weekly campaign vs Shopify UTM cross-check (Ads side live; Shopify UTM not in DB)
+// ?type=req1  → weekly campaign vs Shopify UTM cross-check (Ads + Shopify live)
 // ?type=req2  → product-level performance + segment classification (last 90d default)
 // ?type=req3  → stock-spend tracker (last 30d default)
 // All accept ?from=YYYY-MM-DD&to=YYYY-MM-DD
 
 const { Client } = require('pg');
+const https = require('https');
 
 const TV_CAMPAIGNS = [23103582865, 23533025729, 23405519670];
 const CAMP_LABELS  = {
@@ -32,35 +33,178 @@ function classify(imp, clicks, conv, cost, cv) {
   return 'Monitor Cut';
 }
 
+// UTM campaign name → campaign label mapping
+const UTM_TO_LABEL = {
+  'tr-pmax-topsell':       'Topsell',
+  'pmax_allproduct':       'Imp_Click',
+  'pmax_bestselling_tr':   'Best Sellers',
+};
+
+// ISO week Monday (matches DATE_TRUNC('week', date))
+function isoWeekStart(dateStr) {
+  const d = new Date(dateStr);
+  const day = d.getUTCDay(); // 0=Sun
+  const diff = (day === 0 ? -6 : 1 - day);
+  d.setUTCDate(d.getUTCDate() + diff);
+  return d.toISOString().slice(0, 10);
+}
+
+// Fetch all Shopify orders with google_ads UTM in date range via cursor pagination
+async function fetchShopifyUTMOrders(fromDate, toDate) {
+  const token = process.env.SHOPIFY_FR_TOKEN;
+  if (!token) return {};
+
+  const QUERY = `
+    query($cursor: String, $query: String!) {
+      orders(first: 50, after: $cursor, query: $query) {
+        pageInfo { hasNextPage endCursor }
+        nodes {
+          name
+          createdAt
+          currentTotalPriceSet { shopMoney { amount currencyCode } }
+          customerJourneySummary {
+            firstVisit { utmParameters { source medium campaign } }
+            lastVisit  { utmParameters { source medium campaign } }
+            moments(first: 20) {
+              nodes { ... on CustomerVisit { utmParameters { source medium campaign } } }
+            }
+          }
+        }
+      }
+    }`;
+
+  const shopifyRequest = (variables) => new Promise((resolve, reject) => {
+    const body = JSON.stringify({ query: QUERY, variables });
+    const options = {
+      hostname: 'ledsone-fra.myshopify.com',
+      path: '/admin/api/2024-10/graphql.json',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Access-Token': token,
+        'Content-Length': Buffer.byteLength(body),
+      },
+    };
+    const req = https.request(options, res => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => {
+        try { resolve(JSON.parse(data)); }
+        catch(e) { reject(e); }
+      });
+    });
+    req.on('error', reject);
+    req.write(body);
+    req.end();
+  });
+
+  // Map: "weekStart|campaignLabel" → { orders, revenue }
+  const byWeekCamp = {};
+
+  let cursor = null;
+  let pages = 0;
+  const queryStr = `created_at:>=${fromDate} created_at:<=${toDate} financial_status:paid`;
+
+  do {
+    const result = await shopifyRequest({ cursor, query: queryStr });
+    const ordersPage = result?.data?.orders;
+    if (!ordersPage) break;
+
+    for (const order of ordersPage.nodes) {
+      const journey = order.customerJourneySummary;
+      if (!journey) continue;
+
+      // Collect all UTM touchpoints
+      const touchpoints = [];
+      if (journey.firstVisit?.utmParameters) touchpoints.push(journey.firstVisit.utmParameters);
+      if (journey.moments?.nodes) {
+        for (const m of journey.moments.nodes) {
+          if (m?.utmParameters) touchpoints.push(m.utmParameters);
+        }
+      }
+      if (journey.lastVisit?.utmParameters) touchpoints.push(journey.lastVisit.utmParameters);
+
+      // Find last google_ads/cpc touchpoint
+      let lastGoogleCampaign = null;
+      for (const tp of touchpoints) {
+        if (tp.source === 'google_ads' && tp.medium === 'cpc') {
+          lastGoogleCampaign = tp.campaign || null;
+        }
+      }
+      if (!lastGoogleCampaign) continue;
+
+      const campLabel = UTM_TO_LABEL[lastGoogleCampaign] || lastGoogleCampaign;
+      const weekStart = isoWeekStart(order.createdAt);
+      const rev = parseFloat(order.currentTotalPriceSet?.shopMoney?.amount || 0);
+      const key = `${weekStart}|${campLabel}`;
+      if (!byWeekCamp[key]) byWeekCamp[key] = { orders: 0, revenue: 0 };
+      byWeekCamp[key].orders += 1;
+      byWeekCamp[key].revenue = Math.round((byWeekCamp[key].revenue + rev) * 100) / 100;
+    }
+
+    cursor = ordersPage.pageInfo.hasNextPage ? ordersPage.pageInfo.endCursor : null;
+    pages++;
+  } while (cursor && pages < 40);
+
+  return byWeekCamp;
+}
+
 async function handleReq1(client, fromDate, toDate) {
-  const { rows } = await client.query(`
-    SELECT DATE_TRUNC('week', date)::date AS week_start,
-      campaign_id::text AS cid,
-      ROUND(SUM(cost)::numeric,2) AS cost,
-      ROUND(SUM(conversions)::numeric,2) AS conv,
-      ROUND(SUM(conversion_value)::numeric,2) AS cv,
-      SUM(impressions) AS imp,
-      SUM(clicks) AS clicks
-    FROM google_ads.campaign_performance
-    WHERE campaign_id = ANY($1::bigint[]) AND date BETWEEN $2 AND $3
-    GROUP BY week_start, campaign_id
-    ORDER BY week_start DESC, campaign_id
-  `, [TV_CAMPAIGNS, fromDate, toDate]);
+  // Fetch both sides in parallel
+  const [adsResult, shopUtm] = await Promise.all([
+    client.query(`
+      SELECT DATE_TRUNC('week', date)::date AS week_start,
+        campaign_id::text AS cid,
+        ROUND(SUM(cost)::numeric,2) AS cost,
+        ROUND(SUM(conversions)::numeric,2) AS conv,
+        ROUND(SUM(conversion_value)::numeric,2) AS cv,
+        SUM(impressions) AS imp,
+        SUM(clicks) AS clicks
+      FROM google_ads.campaign_performance
+      WHERE campaign_id = ANY($1::bigint[]) AND date BETWEEN $2 AND $3
+      GROUP BY week_start, campaign_id
+      ORDER BY week_start DESC, campaign_id
+    `, [TV_CAMPAIGNS, fromDate, toDate]),
+    fetchShopifyUTMOrders(fromDate, toDate),
+  ]);
 
   const n = v => Number(v) || 0;
-  const weeks = rows.map(r => ({
-    week:     r.week_start.toISOString().slice(0, 10),
-    camp:     CAMP_LABELS[r.cid] || r.cid,
-    cid:      r.cid,
-    ads_conv: n(r.conv),
-    ads_val:  n(r.cv),
-    cost:     n(r.cost),
-    imp:      n(r.imp),
-    clicks:   n(r.clicks),
-    shop_ord: 0,  // Shopify UTM not in DB — attribution cross-check unavailable
-    shop_rev: 0,
-  }));
-  return { weeks, meta: { from: fromDate, to: toDate } };
+  const weeks = adsResult.rows.map(r => {
+    const campLabel = CAMP_LABELS[r.cid] || r.cid;
+    const week = r.week_start.toISOString().slice(0, 10);
+    const key = `${week}|${campLabel}`;
+    const shopData = shopUtm[key] || { orders: 0, revenue: 0 };
+    return {
+      week,
+      camp:     campLabel,
+      cid:      r.cid,
+      ads_conv: n(r.conv),
+      ads_val:  n(r.cv),
+      cost:     n(r.cost),
+      imp:      n(r.imp),
+      clicks:   n(r.clicks),
+      shop_ord: shopData.orders,
+      shop_rev: shopData.revenue,
+    };
+  });
+
+  // Aggregate KPI totals
+  const totShopOrd = Object.values(shopUtm).reduce((s, v) => s + v.orders, 0);
+  const totShopRev = Math.round(Object.values(shopUtm).reduce((s, v) => s + v.revenue, 0) * 100) / 100;
+  let pass = 0, review = 0, fail = 0, incomplete = 0;
+  for (const w of weeks) {
+    if (w.ads_val === 0 || w.shop_rev === 0) { incomplete++; continue; }
+    const ratio = w.ads_val / w.shop_rev;
+    if (ratio >= 0.95 && ratio <= 1.05) pass++;
+    else if (ratio >= 0.80 && ratio <= 1.20) review++;
+    else fail++;
+  }
+
+  return {
+    weeks,
+    kpi: { shop_ord: totShopOrd, shop_rev: totShopRev, pass, review, fail, incomplete },
+    meta: { from: fromDate, to: toDate },
+  };
 }
 
 async function handleReq2(client, fromDate, toDate) {

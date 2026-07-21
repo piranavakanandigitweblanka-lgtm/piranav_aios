@@ -236,7 +236,7 @@
         Staff: <strong>Thivajini</strong> &nbsp;·&nbsp;
         Store: <strong>ledsone.fr (EUR)</strong> &nbsp;·&nbsp;
         Period: <strong>2026-04-06 → 2026-07-08 (14 weeks)</strong> &nbsp;·&nbsp;
-        Sources: <strong>PostgreSQL + Shopify Admin API</strong>
+        Sources: <strong>PostgreSQL (Google Ads) + Shopify Admin GraphQL API (UTM)</strong>
       </div>
       <div class="chips">
         <span class="chip">3 Campaigns</span>
@@ -257,14 +257,14 @@
 
     <!-- KPI Summary cards -->
     <div class="kpis">
-      <div class="kpi info"><div class="lbl">Weeks Analysed</div><div class="val">14</div><div class="note">2026-04-06 → 2026-07-08</div></div>
+      <div class="kpi info"><div class="lbl">Weeks Analysed</div><div class="val" id="r1-kpi-weeks">—</div><div class="note" id="r1-kpi-period">loading…</div></div>
       <div class="kpi info"><div class="lbl">Campaigns Tracked</div><div class="val">3</div><div class="note">Topsell · All Products · Best Sellers</div></div>
-      <div class="kpi info"><div class="lbl">Shopify UTM Orders</div><div class="val">66</div><div class="note">google_ads attributed</div></div>
-      <div class="kpi info"><div class="lbl">Shopify UTM Revenue</div><div class="val">€5,059</div><div class="note">EUR · any-touchpoint</div></div>
-      <div class="kpi ok">  <div class="lbl">PASS Rows</div><div class="val">4</div><div class="note">Ratio 0.95x – 1.05x</div></div>
-      <div class="kpi warn"><div class="lbl">REVIEW Rows</div><div class="val">7</div><div class="note">Ratio 0.80x – 1.20x</div></div>
-      <div class="kpi err"> <div class="lbl">FAIL Rows</div><div class="val">12</div><div class="note">&lt;0.80x or &gt;1.20x</div></div>
-      <div class="kpi">    <div class="lbl">Incomplete Data</div><div class="val">5</div><div class="note">One side missing</div></div>
+      <div class="kpi info"><div class="lbl">Shopify UTM Orders</div><div class="val" id="r1-kpi-shop-ord">—</div><div class="note">google_ads attributed</div></div>
+      <div class="kpi info"><div class="lbl">Shopify UTM Revenue</div><div class="val" id="r1-kpi-shop-rev">—</div><div class="note">EUR · any-touchpoint</div></div>
+      <div class="kpi ok">  <div class="lbl">PASS Rows</div><div class="val" id="r1-kpi-pass">—</div><div class="note">Ratio 0.95x – 1.05x</div></div>
+      <div class="kpi warn"><div class="lbl">REVIEW Rows</div><div class="val" id="r1-kpi-review">—</div><div class="note">Ratio 0.80x – 1.20x</div></div>
+      <div class="kpi err"> <div class="lbl">FAIL Rows</div><div class="val" id="r1-kpi-fail">—</div><div class="note">&lt;0.80x or &gt;1.20x</div></div>
+      <div class="kpi">    <div class="lbl">Incomplete Data</div><div class="val" id="r1-kpi-incomplete">—</div><div class="note">One side missing</div></div>
     </div>
 
     <!-- Thresholds -->
@@ -1205,7 +1205,7 @@ var TV_LOADED={r1:false,r2:false,r3:false,r4:false};
 
 function tvLoadReq1(){
   if(TV_LOADED.r1)return;TV_LOADED.r1=true;
-  tvState('panel-1','load','⏳ Loading weekly campaign data…');
+  tvState('panel-1','load','⏳ Loading weekly campaign data + Shopify UTM orders…');
   fetch('/api/thivajini/dashboard?type=req1')
     .then(function(r){return r.json();})
     .then(function(d){
@@ -1213,12 +1213,25 @@ function tvLoadReq1(){
       if(!d.ok){tvState('panel-1','error','Error loading data: '+(d.error||'unknown'));return;}
       ROWS=d.weeks;
       renderTable(activeFilter==='all'?null:activeFilter);
-      // Update meta info
+      // Update meta period
       var subEl=document.querySelector('#panel-1 .sub');
       if(subEl&&d.meta){
-        var p=subEl;
-        var strongs=p.querySelectorAll('strong');
+        var strongs=subEl.querySelectorAll('strong');
         if(strongs[2])strongs[2].textContent=d.meta.from+' → '+d.meta.to+' (live)';
+      }
+      // Update KPI cards from live data
+      if(d.kpi){
+        var k=d.kpi;
+        var weekSet=new Set((d.weeks||[]).map(function(w){return w.week;}));
+        var el=function(id){return document.getElementById(id);};
+        if(el('r1-kpi-weeks'))el('r1-kpi-weeks').textContent=weekSet.size;
+        if(el('r1-kpi-period')&&d.meta)el('r1-kpi-period').textContent=d.meta.from+' → '+d.meta.to;
+        if(el('r1-kpi-shop-ord'))el('r1-kpi-shop-ord').textContent=k.shop_ord;
+        if(el('r1-kpi-shop-rev'))el('r1-kpi-shop-rev').textContent='€'+Number(k.shop_rev).toLocaleString('en-GB',{minimumFractionDigits:0,maximumFractionDigits:0});
+        if(el('r1-kpi-pass'))el('r1-kpi-pass').textContent=k.pass;
+        if(el('r1-kpi-review'))el('r1-kpi-review').textContent=k.review;
+        if(el('r1-kpi-fail'))el('r1-kpi-fail').textContent=k.fail;
+        if(el('r1-kpi-incomplete'))el('r1-kpi-incomplete').textContent=k.incomplete;
       }
     })
     .catch(function(e){tvState('panel-1','error','Fetch failed: '+e.message);});
