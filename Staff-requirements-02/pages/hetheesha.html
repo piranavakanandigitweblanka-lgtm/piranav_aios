@@ -306,6 +306,7 @@
           <div class="trk-kpi neutral" style="cursor:pointer" onclick="trk_filter('all')"><div class="label">Total Fields Tracked</div><div class="value" id="trkTotal">—</div></div>
           <div class="trk-kpi fixed"   style="cursor:pointer" onclick="trk_filter('fixed')"><div class="label">✅ Fixed</div><div class="value" id="trkFixed">—</div></div>
           <div class="trk-kpi pending" style="cursor:pointer" onclick="trk_filter('pending')"><div class="label">❌ Still Missing</div><div class="value" id="trkPending">—</div></div>
+          <div class="trk-kpi pending" style="cursor:pointer" onclick="trk_filter('new_issue')"><div class="label">🆕 New Issues</div><div class="value" id="trkNewIssue">—</div><div style="font-size:10px;color:var(--muted);margin-top:2px;">OK at Jul 06, broken now</div></div>
           <div class="trk-kpi fixed"   style="cursor:pointer" onclick="trk_filter('pending_meta_title')"><div class="label">Meta Title Pending</div><div class="value" id="trkMetaTitle">—</div></div>
           <div class="trk-kpi fixed"   style="cursor:pointer" onclick="trk_filter('pending_meta_desc')"><div class="label">Meta Desc Pending</div><div class="value" id="trkMetaDesc">—</div></div>
           <div class="trk-kpi fixed"   style="cursor:pointer" onclick="trk_filter('pending_faq')"><div class="label">FAQ Pending</div><div class="value" id="trkFaq">—</div></div>
@@ -321,6 +322,7 @@
           <button class="fbtn on" id="trkBtnAll" onclick="trk_filter('all')">All</button>
           <button class="fbtn" id="trkBtnFixed" onclick="trk_filter('fixed')">✅ Fixed</button>
           <button class="fbtn" id="trkBtnPending" onclick="trk_filter('pending')">❌ All Pending</button>
+          <button class="fbtn" id="trkBtnNewIssue" onclick="trk_filter('new_issue')" style="border-color:#f97316;color:#ea580c;">🆕 New Issues</button>
           <input class="search" id="trkSearch" type="text" placeholder="🔍 Search product…" style="margin-left:auto;max-width:220px;">
           <button class="export" onclick="trk_exportCSV()">↓ CSV</button>
         </div>
@@ -345,6 +347,14 @@
             <div class="scroll trk-table"><table><thead><tr>
               <th class="num">Rev#</th><th>Product</th><th>Field</th><th>Before (Jul 06)</th><th>After (Live Now)</th><th>Fixed On</th><th>Performance</th>
             </tr></thead><tbody id="trkFixedBody"></tbody></table></div>
+          </div>
+        </div>
+        <div id="trkSectionNewIssue" style="display:none;">
+          <div class="trk-section" style="border-left:3px solid #f97316;">
+            <div class="trk-section-hdr"><h3>🆕 New Issues — OK at Jul 06, Broken Now</h3><span class="badge" style="background:#fff7ed;color:#ea580c;border:1px solid #fed7aa;" id="trkNewIssueBadge">0 issues</span></div>
+            <div class="scroll trk-table"><table><thead><tr>
+              <th class="num">Rev#</th><th>Product</th><th>Field</th><th>Was OK (Jul 06)</th><th>Now (Live)</th><th>Priority</th><th>Fix on Shopify</th>
+            </tr></thead><tbody id="trkNewIssueBody"></tbody></table></div>
           </div>
         </div>
         <div id="trkSectionPending" style="display:none;">
@@ -1204,7 +1214,7 @@ function trk_filter(f){
   document.querySelectorAll('#r1TrkWrap .fbtn-pending').forEach(b=>b.classList.remove('on'));
   document.querySelectorAll('#r1TrkWrap .fbtn-fixed').forEach(b=>b.classList.remove('on'));
   const map={
-    all:'trkBtnAll',fixed:'trkBtnFixed',pending:'trkBtnPending',
+    all:'trkBtnAll',fixed:'trkBtnFixed',pending:'trkBtnPending',new_issue:'trkBtnNewIssue',
     pending_meta_title:'trkBtnPMT',pending_meta_desc:'trkBtnPMD',
     pending_faq:'trkBtnPFAQ',pending_alt:'trkBtnPAlt',
     fixed_meta_title:'trkBtnFMT',fixed_meta_desc:'trkBtnFMD',
@@ -1225,9 +1235,11 @@ function trk_render(){
   const pendMD =all.filter(i=>i.field_key==='meta_desc'  &&!i.now_fixed).length;
   const pendFAQ=all.filter(i=>i.field_key==='faq'        &&!i.now_fixed).length;
   const pendAlt=all.filter(i=>i.field_key==='alt_missing'&&!i.now_fixed).length;
+  const newIssueCount=all.filter(i=>i.new_issue).length;
   document.getElementById('trkTotal').textContent   = all.length;
   document.getElementById('trkFixed').textContent   = allFixed.length;
   document.getElementById('trkPending').textContent = allPending.length;
+  document.getElementById('trkNewIssue').textContent= newIssueCount;
   document.getElementById('trkMetaTitle').textContent = pendMT;
   document.getElementById('trkMetaDesc').textContent  = pendMD;
   document.getElementById('trkFaq').textContent       = pendFAQ;
@@ -1250,15 +1262,18 @@ function trk_render(){
     if(TRK_FILTER==='fixed_meta_desc')    return i.field_key==='meta_desc'   && i.now_fixed;
     if(TRK_FILTER==='fixed_faq')          return i.field_key==='faq'         && i.now_fixed;
     if(TRK_FILTER==='fixed_alt')          return i.field_key==='alt_missing' && i.now_fixed;
+    if(TRK_FILTER==='new_issue')          return i.new_issue===true;
     return true;
   });
 
   document.getElementById('trkLoading').style.display='none';
-  const fixed  =items.filter(i=>i.now_fixed);
-  const pending=items.filter(i=>!i.now_fixed);
-  const fixedSec  =document.getElementById('trkSectionFixed');
-  const pendingSec=document.getElementById('trkSectionPending');
-  const emptyEl   =document.getElementById('trkEmpty');
+  const fixed     =items.filter(i=>i.now_fixed);
+  const newIssues =items.filter(i=>i.new_issue);
+  const pending   =items.filter(i=>!i.now_fixed && !i.new_issue);
+  const fixedSec    =document.getElementById('trkSectionFixed');
+  const newIssueSec =document.getElementById('trkSectionNewIssue');
+  const pendingSec  =document.getElementById('trkSectionPending');
+  const emptyEl     =document.getElementById('trkEmpty');
 
   /* ── Fixed table ── */
   if(fixed.length){
@@ -1287,6 +1302,30 @@ function trk_render(){
     }).join('');
   }else{fixedSec.style.display='none';}
 
+  /* ── New Issues table ── */
+  if(newIssues.length){
+    newIssueSec.style.display='';
+    document.getElementById('trkNewIssueBadge').textContent=newIssues.length+' issue'+(newIssues.length!==1?'s':'');
+    document.getElementById('trkNewIssueBody').innerHTML=newIssues.map(i=>{
+      const shortH=i.handle.length>40?i.handle.slice(0,38)+'…':i.handle;
+      const url='https://ledsone.fr/products/'+i.handle;
+      const adminUrl='https://admin.shopify.com/store/jedsz8-km/products?query='+encodeURIComponent(i.handle);
+      const rank=i.rank;
+      const rankCls=rank<=10?'rank-badge top10':'rank-badge';
+      const pri=rank<=10?'<span class="b b-err">🔥 High</span>':rank<=25?'<span class="b b-warn">Medium</span>':'<span class="b b-na">Low</span>';
+      const before=i.before!=null?(typeof i.before==='string'?i.before.slice(0,60):i.before):'—';
+      return`<tr>
+        <td class="num"><span class="${rankCls}">#${rank}</span></td>
+        <td><a href="${r1_esc(url)}" target="_blank" rel="noopener" title="${r1_esc(i.handle)}">${r1_esc(shortH)}</a></td>
+        <td><span class="tag-pending" style="background:#fff7ed;color:#ea580c;border-color:#fed7aa;">${r1_esc(i.field)}</span></td>
+        <td class="after-val" title="${r1_esc(String(before))}">${r1_esc(String(before))}</td>
+        <td style="color:#dc2626;font-size:11px;">Missing now</td>
+        <td>${pri}</td>
+        <td><a class="shopify-fix-btn" href="${r1_esc(adminUrl)}" target="_blank" rel="noopener">Fix on Shopify →</a></td>
+      </tr>`;
+    }).join('');
+  }else{newIssueSec.style.display='none';}
+
   /* ── Pending table ── */
   if(pending.length){
     pendingSec.style.display='';
@@ -1310,17 +1349,18 @@ function trk_render(){
   }else{pendingSec.style.display='none';}
 
   /* ── Empty state ── */
-  emptyEl.style.display=(!fixed.length&&!pending.length&&TRK_DATA.length>0)?'':'none';
+  emptyEl.style.display=(!fixed.length&&!newIssues.length&&!pending.length&&TRK_DATA.length>0)?'':'none';
 }
 
 function trk_exportCSV(){
   if(!TRK_DATA.length)return;
-  const hdr=['Rev Rank','Handle','Field','Status','Fix Date','Live Value'];
+  const hdr=['Rev Rank','Handle','Field','Status','Fix Date','Live Value','New Issue'];
   const lines=TRK_DATA.map(i=>[
     i.rank,i.handle,i.field,
-    i.now_fixed?'Fixed':'Pending',
+    i.now_fixed?'Fixed':i.new_issue?'New Issue':'Pending',
     i.fix_date?new Date(i.fix_date).toLocaleDateString('fr-FR'):'',
-    i.live_value??''
+    i.live_value??'',
+    i.new_issue?'Yes':''
   ]);
   const csv=[hdr,...lines].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
   const a=document.createElement('a');
