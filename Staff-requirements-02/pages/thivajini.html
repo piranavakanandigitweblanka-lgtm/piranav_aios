@@ -382,27 +382,44 @@
       <div class="sub">
         Staff: <strong>Thivajini</strong> &nbsp;&middot;&nbsp;
         Store: <strong>ledsone.fr (EUR)</strong> &nbsp;&middot;&nbsp;
-        Period: <strong>2026-04-10 to 2026-07-07 (89 days)</strong> &nbsp;&middot;&nbsp;
-        Sources: <strong>ppc_etl_performance_data &middot; google_merchant_products</strong>
+        Period: <strong id="r2-period">Loading…</strong> &nbsp;&middot;&nbsp;
+        Sources: <strong>google_ads.product_performance &middot; google_ads.merchant_products</strong>
       </div>
       <div class="chips">
-        <span class="chip">728 Products</span>
-        <span class="chip">sub_source_id=233 &middot; merchant_id=5551466539</span>
-        <span class="chip">record_type=product &middot; sku!=0</span>
-        <span class="chip">Join: ppc_etl.sku = gmp.product_id (DISTINCT ON)</span>
+        <span class="chip" id="r2-chip-count">— Products</span>
+        <span class="chip">merchant_id=5551466539 &middot; LEDSone FR</span>
+        <span class="chip">Campaigns: Topsell · Imp_Click · Best Sellers</span>
+        <span class="chip" id="r2-chip-refresh">Last updated: loading…</span>
       </div>
     </header>
 
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+      <label style="font-size:13px;font-weight:600;color:var(--muted);">Date range:</label>
+      <select id="r2-days-filter" onchange="onR2RangeChange()" style="font-size:13px;padding:5px 10px;border:1px solid #d1d5db;border-radius:6px;background:#fff;">
+        <option value="90">Last 90 days</option>
+        <option value="60">Last 60 days</option>
+        <option value="30">Last 30 days</option>
+        <option value="14">Last 14 days</option>
+        <option value="7">Last 7 days</option>
+        <option value="custom">Custom range…</option>
+      </select>
+      <span id="r2-custom-wrap" style="display:none;gap:6px;align-items:center;display:none;">
+        <input type="date" id="r2-from" onchange="onR2RangeChange()" style="font-size:13px;padding:4px 8px;border:1px solid #d1d5db;border-radius:6px;">
+        <span style="font-size:13px;color:var(--muted);">to</span>
+        <input type="date" id="r2-to" onchange="onR2RangeChange()" style="font-size:13px;padding:4px 8px;border:1px solid #d1d5db;border-radius:6px;">
+      </span>
+    </div>
+
     <div class="kpis">
-      <div class="kpi info"><div class="lbl">Total Products</div><div class="val">728</div><div class="note">90-day active SKUs</div></div>
-      <div class="kpi info"><div class="lbl">Total Spend</div><div class="val">&euro;809</div><div class="note">EUR &middot; 89 days</div></div>
-      <div class="kpi info"><div class="lbl">Total Sales</div><div class="val">&euro;1,642</div><div class="note">Google Ads attributed</div></div>
-      <div class="kpi warn"><div class="lbl">Avg ROAS</div><div class="val">203%</div><div class="note">Sales / Spend &times; 100</div></div>
-      <div class="kpi info"><div class="lbl">Avg CTR</div><div class="val">1.55%</div><div class="note">Clicks / Impressions</div></div>
-      <div class="kpi info"><div class="lbl">Avg CVR</div><div class="val">1.14%</div><div class="note">Orders / Clicks</div></div>
-      <div class="kpi" style="background:#f5f3ff"><div class="lbl">Hero</div><div class="val" style="color:#5b21b6">13</div><div class="note">ROAS&ge;400% &amp; &ge;6 clicks</div></div>
-      <div class="kpi" style="background:#fff1f2"><div class="lbl">Bleeding</div><div class="val" style="color:#9f1239">124</div><div class="note">&ge;5 clicks, CVR&lt;1%, 0 orders</div></div>
-      <div class="kpi" style="background:#eff6ff"><div class="lbl">Low Engagement</div><div class="val" style="color:#1e3a8a">314</div><div class="note">Impressions&gt;0, Clicks=0</div></div>
+      <div class="kpi info"><div class="lbl">Total Products</div><div class="val" id="r2-kpi-products">—</div><div class="note">active in period</div></div>
+      <div class="kpi info"><div class="lbl">Total Spend</div><div class="val" id="r2-kpi-spend">—</div><div class="note">EUR &middot; ad spend</div></div>
+      <div class="kpi info"><div class="lbl">Total Sales</div><div class="val" id="r2-kpi-sales">—</div><div class="note">Google Ads attributed</div></div>
+      <div class="kpi warn"><div class="lbl">Avg ROAS</div><div class="val" id="r2-kpi-roas">—</div><div class="note">Sales / Spend &times; 100</div></div>
+      <div class="kpi info"><div class="lbl">Avg CTR</div><div class="val" id="r2-kpi-ctr">—</div><div class="note">Clicks / Impressions</div></div>
+      <div class="kpi info"><div class="lbl">Avg CVR</div><div class="val" id="r2-kpi-cvr">—</div><div class="note">Orders / Clicks</div></div>
+      <div class="kpi" style="background:#f5f3ff"><div class="lbl">Hero</div><div class="val" id="r2-kpi-hero" style="color:#5b21b6">—</div><div class="note">ROAS&ge;400% &amp; &ge;6 clicks</div></div>
+      <div class="kpi" style="background:#fff1f2"><div class="lbl">Bleeding</div><div class="val" id="r2-kpi-bleeding" style="color:#9f1239">—</div><div class="note">&ge;5 clicks, CVR&lt;1%, 0 orders</div></div>
+      <div class="kpi" style="background:#eff6ff"><div class="lbl">Low Engagement</div><div class="val" id="r2-kpi-loweng" style="color:#1e3a8a">—</div><div class="note">Impressions&gt;0, Clicks=0</div></div>
     </div>
 
     <div class="legend" style="margin-bottom:14px;">
@@ -456,7 +473,7 @@
 
     <div class="tbox">
       <div class="tbar">
-        <span>Product KPI Dashboard &middot; LEDSone FR &middot; 89 days</span>
+        <span>Product KPI Dashboard &middot; LEDSone FR &middot; <span id="r2-tbar-period">loading…</span></span>
         <span id="r2-count"></span>
       </div>
       <div class="scroll">
@@ -488,11 +505,10 @@
       <div class="fn">
         <h3>Data Sources</h3>
         <ul>
-          <li><strong>Ads:</strong> public.ppc_etl_performance_data (source=3, sub_source_id=233, record_type='product', sku!='0')</li>
-          <li><strong>Products:</strong> public.google_merchant_products (merchant_id=5551466539, EUR, FR)</li>
-          <li><strong>Join:</strong> ppc_etl.sku = gmp.product_id &middot; DISTINCT ON product_id ORDER BY price DESC</li>
-          <li><strong>Coverage:</strong> 2026-04-10 to 2026-07-07 (89 days)</li>
-          <li><strong>Refresh:</strong> 2026-07-09 &middot; LOCAL ONLY</li>
+          <li><strong>Ads:</strong> google_ads.product_performance (merchant_id=5551466539, campaigns: Topsell · Imp_Click · Best Sellers)</li>
+          <li><strong>Products:</strong> google_ads.merchant_products + listings.shopify_listings (FR) — 5-strategy title resolution</li>
+          <li><strong>Coverage:</strong> <span id="r2-footnote-period">loading…</span></li>
+          <li><strong>Refresh:</strong> <span id="r2-footnote-refresh">loading…</span> &middot; LIVE (syncs hourly)</li>
         </ul>
       </div>
       <div class="fn">
@@ -1208,19 +1224,68 @@ function tvLoadReq1(){
     .catch(function(e){tvState('panel-1','error','Fetch failed: '+e.message);});
 }
 
+function buildR2Url(){
+  var days=document.getElementById('r2-days-filter')?document.getElementById('r2-days-filter').value:'90';
+  if(days==='custom'){
+    var f=document.getElementById('r2-from')?document.getElementById('r2-from').value:'';
+    var t=document.getElementById('r2-to')?document.getElementById('r2-to').value:'';
+    if(f&&t) return '/api/thivajini/dashboard?type=req2&from='+f+'&to='+t;
+    return null;
+  }
+  return '/api/thivajini/dashboard?type=req2&days='+days;
+}
+function onR2RangeChange(){
+  var days=document.getElementById('r2-days-filter').value;
+  var wrap=document.getElementById('r2-custom-wrap');
+  if(wrap) wrap.style.display=days==='custom'?'flex':'none';
+  TV_LOADED.r2=false;
+  tvLoadReq2();
+}
 function tvLoadReq2(){
   if(TV_LOADED.r2)return;TV_LOADED.r2=true;
+  var url=buildR2Url();
+  if(!url)return;
   tvState('panel-2','load','⏳ Loading product performance data…');
-  fetch('/api/thivajini/dashboard?type=req2')
+  fetch(url)
     .then(function(r){return r.json();})
     .then(function(d){
       tvHide('panel-2');
       if(!d.ok){tvState('panel-2','error','Error loading data: '+(d.error||'unknown'));return;}
       PRODUCTS=d.products;
       r2Render();
-      // Update KPI total count
-      var kpis=document.querySelectorAll('#panel-2 .kpi');
-      if(kpis[0]){var vEl=kpis[0].querySelector('.val');if(vEl)vEl.textContent=d.products.length;}
+      // KPI cards
+      var ps=d.products;
+      var totSp=ps.reduce(function(s,p){return s+p.sp;},0);
+      var totSa=ps.reduce(function(s,p){return s+p.sa;},0);
+      var totIm=ps.reduce(function(s,p){return s+p.im;},0);
+      var totCl=ps.reduce(function(s,p){return s+p.cl;},0);
+      var totOr=ps.reduce(function(s,p){return s+(p.or||0);},0);
+      var avgROAS=totSp>0?Math.round(totSa/totSp*100):0;
+      var avgCTR=totIm>0?Math.round(totCl/totIm*10000)/100:0;
+      var avgCVR=totCl>0?Math.round(totOr/totCl*10000)/100:0;
+      var heroCount=ps.filter(function(p){return p.seg==='Hero';}).length;
+      var bleedCount=ps.filter(function(p){return p.seg==='Bleeding';}).length;
+      var lowCount=ps.filter(function(p){return p.seg==='Low Engagement';}).length;
+      function setText(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
+      setText('r2-kpi-products', ps.length);
+      setText('r2-kpi-spend',   '€'+totSp.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,','));
+      setText('r2-kpi-sales',   '€'+totSa.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,','));
+      setText('r2-kpi-roas',    avgROAS+'%');
+      setText('r2-kpi-ctr',     avgCTR+'%');
+      setText('r2-kpi-cvr',     avgCVR+'%');
+      setText('r2-kpi-hero',    heroCount);
+      setText('r2-kpi-bleeding',bleedCount);
+      setText('r2-kpi-loweng',  lowCount);
+      // Period labels
+      var from=d.meta&&d.meta.from||'';
+      var to=d.meta&&d.meta.to||'';
+      var periodStr=from+' → '+to+' (live)';
+      setText('r2-period',          periodStr);
+      setText('r2-tbar-period',     from+' → '+to);
+      setText('r2-footnote-period', from+' → '+to);
+      setText('r2-footnote-refresh',to+' (live)');
+      setText('r2-chip-count',      ps.length+' Products');
+      setText('r2-chip-refresh',    'Last updated: '+to+' (live)');
     })
     .catch(function(e){tvState('panel-2','error','Fetch failed: '+e.message);});
 }
