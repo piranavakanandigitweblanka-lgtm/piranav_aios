@@ -171,6 +171,13 @@ function buildTracker(snapshot, shopifyMap) {
   return items;
 }
 
+// Snapshot baseline date — before/after split point
+const SNAPSHOT_DATE = '2026-07-06';
+const BEFORE_FROM   = '2026-06-22'; // 14 days before snapshot
+const BEFORE_TO     = '2026-07-06';
+const AFTER_FROM    = '2026-07-07';
+const AFTER_TO      = '2026-07-18'; // latest GSC data available
+
 // ─── MAIN HANDLER ─────────────────────────────────────────────────────────
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -183,6 +190,8 @@ module.exports = async function handler(req, res) {
   const db = new Client({ connectionString: process.env.DATABASE_URL });
   try {
     await db.connect();
+
+    const snapshotHandles = SNAPSHOT.map(s => s.h);
 
     // 1. Revenue — top 50 ledsone.fr products
     const revRes = await db.query(`
@@ -232,11 +241,78 @@ module.exports = async function handler(req, res) {
       gscMap[r.handle] = { imp: parseInt(r.impressions), ctr: parseFloat(r.ctr_pct) };
     });
 
+    // 3a. Before/After GSC — impressions, clicks, CTR per handle for the 50 snapshot URLs
+    const gscBeforeAfterRes = await db.query(`
+      SELECT
+        period,
+        regexp_replace(
+          split_part(regexp_replace(p.page, '^https?://[^/]+', ''), '?', 1),
+          '^/products/', ''
+        ) AS handle,
+        SUM(p.impressions) AS imp,
+        SUM(p.clicks)      AS clicks,
+        ROUND(AVG(p.ctr) * 100, 2) AS ctr_pct
+      FROM (
+        SELECT 'before' AS period, impressions, clicks, ctr, page
+        FROM google_search_console.page
+        WHERE sub_source=233 AND search_type='web' AND page LIKE '%/products/%'
+          AND date BETWEEN $2 AND $3
+        UNION ALL
+        SELECT 'after' AS period, impressions, clicks, ctr, page
+        FROM google_search_console.page
+        WHERE sub_source=233 AND search_type='web' AND page LIKE '%/products/%'
+          AND date BETWEEN $4 AND $5
+      ) p
+      WHERE regexp_replace(
+          split_part(regexp_replace(p.page, '^https?://[^/]+', ''), '?', 1),
+          '^/products/', ''
+        ) = ANY($1)
+      GROUP BY period, handle
+    `, [snapshotHandles, BEFORE_FROM, BEFORE_TO, AFTER_FROM, AFTER_TO]);
+
+    // 3b. Before/After sales for snapshot handles
+    const salesBeforeAfterRes = await db.query(`
+      SELECT
+        period,
+        oii.handle,
+        ROUND(SUM(CAST(oii.item_price AS NUMERIC) * CAST(oii.item_quantity AS INTEGER))::numeric, 2) AS sales
+      FROM (
+        SELECT 'before' AS period, id AS oid FROM order_management.orders
+        WHERE sub_source_id=233 AND status='Completed'
+          AND order_date BETWEEN $2 AND $3
+        UNION ALL
+        SELECT 'after' AS period, id AS oid FROM order_management.orders
+        WHERE sub_source_id=233 AND status='Completed'
+          AND order_date BETWEEN $4 AND $5
+      ) o
+      JOIN order_management.order_item_info oii ON oii.order_id = o.oid
+      WHERE oii.handle = ANY($1)
+        AND oii.handle IS NOT NULL AND oii.handle != ''
+      GROUP BY period, oii.handle
+    `, [snapshotHandles, BEFORE_FROM, BEFORE_TO, AFTER_FROM, '2026-07-21']);
+
+    // Build before_after map: handle → { before: {...}, after: {...} }
+    const baMap = {};
+    snapshotHandles.forEach(h => { baMap[h] = { before: null, after: null }; });
+    gscBeforeAfterRes.rows.forEach(r => {
+      if (!baMap[r.handle]) return;
+      baMap[r.handle][r.period] = {
+        imp: parseInt(r.imp) || 0,
+        clicks: parseInt(r.clicks) || 0,
+        ctr: parseFloat(r.ctr_pct) || 0,
+        sales: 0,
+      };
+    });
+    salesBeforeAfterRes.rows.forEach(r => {
+      if (!baMap[r.handle]) return;
+      if (!baMap[r.handle][r.period]) baMap[r.handle][r.period] = { imp: 0, clicks: 0, ctr: 0, sales: 0 };
+      baMap[r.handle][r.period].sales = parseFloat(r.sales) || 0;
+    });
+
     await db.end();
 
     // 3. Shopify live data — fetch current top 50 + ALL snapshot handles
     // so Fix Tracker detects fixes even if a product dropped out of the rolling top 50
-    const snapshotHandles = SNAPSHOT.map(s => s.h);
     const allHandles = [...new Set([...handles, ...snapshotHandles])];
     const shopifyMap = await fetchAllShopify(allHandles);
 
@@ -262,12 +338,20 @@ module.exports = async function handler(req, res) {
     const tracker = buildTracker(SNAPSHOT, shopifyMap);
 
     return res.status(200).json({
-      ok         : true,
-      fetched_at : new Date().toISOString(),
-      period     : `${new Date(Date.now()-30*864e5).toISOString().slice(0,10)} to ${new Date().toISOString().slice(0,10)} (rolling 30d)`,
+      ok           : true,
+      fetched_at   : new Date().toISOString(),
+      period       : `${new Date(Date.now()-30*864e5).toISOString().slice(0,10)} to ${new Date().toISOString().slice(0,10)} (rolling 30d)`,
       rows,
-      snapshot   : SNAPSHOT,
-      tracker,   // missing fields: was_missing=true, now_fixed=true/false
+      snapshot     : SNAPSHOT,
+      tracker,
+      before_after : baMap,
+      ba_meta      : {
+        before_from : BEFORE_FROM,
+        before_to   : BEFORE_TO,
+        after_from  : AFTER_FROM,
+        after_to    : AFTER_TO,
+        snapshot_date: SNAPSHOT_DATE,
+      },
     });
 
   } catch (err) {
