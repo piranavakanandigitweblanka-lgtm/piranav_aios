@@ -145,14 +145,43 @@ async function handleReq2(client, fromDate, toDate) {
     parentRows.forEach(m => { if (!parentMap[m.parent_key]) parentMap[m.parent_key] = m; });
   }
 
+  // Strategy 5: Shopify FR listings fallback — bare numeric variant IDs not in merchant_products
+  // Join variant → parent listing to get the proper product title
+  const unresolvedIds = perfRows
+    .filter(r => {
+      const k = r.product_item_id.toLowerCase().startsWith('shopify_')
+        ? SPLIT_PART(r.product_item_id.toLowerCase(), '_', 4)
+        : r.product_item_id.toLowerCase();
+      const pk = SPLIT_PART(r.product_item_id.toLowerCase(), '_', 3);
+      return !metaMap[k] && !metaMap[r.product_item_id.toLowerCase()] && !parentMap[pk];
+    })
+    .map(r => r.product_item_id);
+
+  let shopifyMap = {}; // keyed by variant item_id (string)
+  if (unresolvedIds.length > 0) {
+    try {
+      const { rows: shopRows } = await client.query(`
+        SELECT v.item_id::text AS vid, p.title, v.listing_url AS url,
+               v.price::numeric AS pr, v.status AS availability
+        FROM listings.shopify_listings v
+        JOIN listings.shopify_listings p
+          ON SPLIT_PART(v.listing_url,'?',1) = SPLIT_PART(p.listing_url,'/',1)||'//'||SPLIT_PART(p.listing_url,'/',3)||'/products/'||SPLIT_PART(p.listing_url,'/',5)
+          AND p.site = 'France' AND p.is_parent = 1
+        WHERE v.site = 'France'
+          AND v.item_id::text = ANY($1::text[])
+      `, [unresolvedIds]);
+      shopRows.forEach(r => { shopifyMap[r.vid] = r; });
+    } catch(e) {}
+  }
+
   const n = v => Number(v) || 0;
   const products = perfRows.map(r => {
     const lookupKey = r.product_item_id.toLowerCase().startsWith('shopify_')
       ? SPLIT_PART(r.product_item_id.toLowerCase(), '_', 4)
       : r.product_item_id.toLowerCase();
     const parentKey = SPLIT_PART(r.product_item_id.toLowerCase(), '_', 3);
-    // Resolve: exact lookup_key → full pid → parent sibling fallback
-    const m = metaMap[lookupKey] || metaMap[r.product_item_id.toLowerCase()] || parentMap[parentKey] || {};
+    // Resolve: exact → sibling variant → shopify FR listings parent title
+    const m = metaMap[lookupKey] || metaMap[r.product_item_id.toLowerCase()] || parentMap[parentKey] || shopifyMap[r.product_item_id] || {};
     const imp = n(r.imp), clicks = n(r.clicks);
     const cost = n(r.cost), conv = n(r.conv), cv = n(r.cv);
     const price = m.pr ? Number(m.pr) : 0;
