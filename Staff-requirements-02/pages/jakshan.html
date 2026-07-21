@@ -185,6 +185,13 @@
         <option>GSC data available</option>
         <option>Product resolved — no matched GSC data</option>
       </select>
+      <select class="fsel" id="r1-days-filter" onchange="loadLive()">
+        <option value="90" selected>Last 90 days</option>
+        <option value="60">Last 60 days</option>
+        <option value="30">Last 30 days</option>
+        <option value="14">Last 14 days</option>
+        <option value="7">Last 7 days</option>
+      </select>
       <button onclick="exportCSV()" class="export">&#8595; Export CSV</button>
       <span id="rowCount" style="font-size:13px;color:var(--muted);"></span>
     </div>
@@ -409,12 +416,14 @@ function showBanner(id, msg, type){
 }
 
 async function loadLive(){
-  showBanner('live-banner-r1','⏳ Loading live data from database...','warn');
-  showBanner('live-banner-r2','⏳ Loading live data from database...','warn');
+  const d1=document.getElementById('r1-days-filter')?.value||'90';
+  const d2=document.getElementById('r2-days-filter')?.value||'30';
+  showBanner('live-banner-r1','⏳ Loading live data (last '+d1+' days)...','warn');
+  showBanner('live-banner-r2','⏳ Loading live data (last '+d2+' days)...','warn');
   try{
     const [res1,res2]=await Promise.all([
-      fetch('../api/jackshan/dashboard?type=req1').then(r=>r.json()),
-      fetch('../api/jackshan/dashboard?type=req2').then(r=>r.json()),
+      fetch('../api/jackshan/dashboard?type=req1&days='+d1).then(r=>r.json()),
+      fetch('../api/jackshan/dashboard?type=req2&days='+d2).then(r=>r.json()),
     ]);
 
     if(res1.ok&&res1.products){
@@ -698,6 +707,11 @@ function r2ExportCSV(){
         <option value="0">0 Monthly Sales</option>
         <option value="1">&le; 1 Monthly Sales</option>
         <option value="2">&ge; 2 Monthly Sales</option>
+      </select>
+      <select class="fsel" id="r2-days-filter" onchange="loadLive()">
+        <option value="30" selected>Last 30 days</option>
+        <option value="14">Last 14 days</option>
+        <option value="7">Last 7 days</option>
       </select>
       <button onclick="r2ExportCSV()" class="export">&#8595; Export CSV</button>
       <span id="r2-row-count" style="font-size:13px;color:var(--muted);"></span>
