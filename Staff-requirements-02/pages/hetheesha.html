@@ -1343,53 +1343,115 @@ function r1_ba_populateDropdown(rows, ba){ /* no-op — now inline in tracker */
 function trkBaHTML(handle){
   const ba   = (window.R1_BA||{})[handle];
   const meta = window.R1_BA_META||{};
-  const bFrom = meta.before_from||''; const bTo = meta.before_to||'';
-  const aFrom = meta.after_from||'';  const aTo = meta.after_to||'';
+  const bFrom = meta.before_from||BEFORE_FROM_DEFAULT;
+  const bTo   = meta.before_to  ||BEFORE_TO_DEFAULT;
+  const aFrom = meta.after_from ||AFTER_FROM_DEFAULT;
+  const aTo   = meta.after_to   ||AFTER_TO_DEFAULT;
   const before = ba ? ba.before : null;
   const after  = ba ? ba.after  : null;
+  const safeH  = handle.replace(/[^a-z0-9-]/g,'_');
 
   function fmt(v, suffix){
     if(v===null||v===undefined) return '<span style="color:var(--muted)">—</span>';
     return (suffix==='€'?'€':'')+(typeof v==='number'?v.toLocaleString('fr-FR'):v)+(suffix&&suffix!=='€'?suffix:'');
   }
-  function chg(b,a){
+  function chg(b,a,lowerIsBetter){
     if(b===null||a===null||b===undefined||a===undefined) return '<span style="color:var(--muted)">—</span>';
-    const diff=a-b, sign=diff>=0?'+':'', col=diff>=0?'var(--good)':'var(--err)';
-    const pct=b!==0?` (${sign}${Math.round(diff/Math.abs(b)*100)}%)`:'';
-    return`<span style="color:${col};font-weight:700;">${sign}${typeof diff==='number'?diff.toLocaleString('fr-FR'):diff}${pct}</span>`;
+    const diff=a-b, sign=diff>=0?'+':'';
+    const good = lowerIsBetter ? diff<0 : diff>=0;
+    const col  = good?'var(--good)':'var(--err)';
+    const pct  = b!==0?` (${sign}${Math.round(diff/Math.abs(b)*100)}%)`:'';
+    return`<span style="color:${col};font-weight:700;">${sign}${typeof diff==='number'?parseFloat(diff.toFixed(2)).toLocaleString('fr-FR'):diff}${pct}</span>`;
   }
 
-  if(!before&&!after){
-    return`<div style="padding:12px 20px;color:var(--muted);font-size:12px;">No GSC or sales data found for this URL in either period.</div>`;
-  }
-
+  const noData = !before && !after;
   const metrics=[
-    {label:'Impressions', bv:before?.imp,    av:after?.imp,    suffix:''},
-    {label:'Clicks',      bv:before?.clicks, av:after?.clicks, suffix:''},
-    {label:'CTR',         bv:before?.ctr,    av:after?.ctr,    suffix:'%'},
-    {label:'Sales',       bv:before?.sales,  av:after?.sales,  suffix:'€'},
+    {label:'Impressions',    bv:before?.imp,     av:after?.imp,     suffix:'',  lower:false},
+    {label:'Clicks',         bv:before?.clicks,  av:after?.clicks,  suffix:'',  lower:false},
+    {label:'CTR (%)',        bv:before?.ctr,     av:after?.ctr,     suffix:'%', lower:false},
+    {label:'Avg. Position',  bv:before?.avg_pos, av:after?.avg_pos, suffix:'',  lower:true},
+    {label:'Sales (€)',      bv:before?.sales,   av:after?.sales,   suffix:'€', lower:false},
   ];
 
-  return`<div style="padding:14px 20px;">
-    <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Before vs After Fix — URL Performance</div>
-    <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:360px;">
+  return`<div style="padding:14px 20px 18px;">
+    <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;">Before vs After Fix — URL Performance</div>
+
+    <!-- Custom date range pickers -->
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:14px;background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:10px 14px;">
+      <div>
+        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">Before — From</div>
+        <input type="date" id="ba-bf-${safeH}" value="${bFrom}" style="font-size:12px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;">
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">Before — To</div>
+        <input type="date" id="ba-bt-${safeH}" value="${bTo}" style="font-size:12px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;">
+      </div>
+      <div style="width:1px;background:var(--line);height:36px;margin:0 4px;align-self:center;"></div>
+      <div>
+        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">After — From</div>
+        <input type="date" id="ba-af-${safeH}" value="${aFrom}" style="font-size:12px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;">
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">After — To</div>
+        <input type="date" id="ba-at-${safeH}" value="${aTo}" style="font-size:12px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;">
+      </div>
+      <button onclick="trkBaRefresh('${handle}','${safeH}')" style="padding:6px 16px;font-size:12px;font-weight:700;background:var(--accent);color:#fff;border:none;border-radius:7px;cursor:pointer;margin-bottom:1px;">↻ Refresh</button>
+    </div>
+
+    ${noData
+      ? `<div style="color:var(--muted);font-size:12px;padding:8px 0;">No GSC or sales data found for this URL in either period.</div>`
+      : `<table style="width:100%;border-collapse:collapse;font-size:12px;min-width:360px;">
       <thead><tr>
         <th style="text-align:left;padding:6px 10px;background:#f0f3f8;border-bottom:2px solid var(--line);font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;">Metric</th>
-        <th style="text-align:right;padding:6px 10px;background:#fff0f0;border-bottom:2px solid var(--line);font-size:11px;color:#b91c1c;">Before Fix<br><span style="font-weight:400;">${bFrom} → ${bTo}</span></th>
-        <th style="text-align:right;padding:6px 10px;background:#f0fff4;border-bottom:2px solid var(--line);font-size:11px;color:#0a7d4f;">After Fix<br><span style="font-weight:400;">${aFrom} → ${aTo}</span></th>
+        <th style="text-align:right;padding:6px 10px;background:#fff0f0;border-bottom:2px solid var(--line);font-size:11px;color:#b91c1c;">Before Fix<br><span style="font-weight:400;font-size:10px;">${bFrom} → ${bTo}</span></th>
+        <th style="text-align:right;padding:6px 10px;background:#f0fff4;border-bottom:2px solid var(--line);font-size:11px;color:#0a7d4f;">After Fix<br><span style="font-weight:400;font-size:10px;">${aFrom} → ${aTo}</span></th>
         <th style="text-align:right;padding:6px 10px;background:#f0f3f8;border-bottom:2px solid var(--line);font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;">Change</th>
       </tr></thead>
-      <tbody>
+      <tbody id="ba-tbody-${safeH}">
         ${metrics.map(m=>`<tr>
           <td style="padding:6px 10px;font-weight:600;border-bottom:1px solid var(--line);">${m.label}</td>
           <td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--line);color:#b91c1c;">${fmt(m.bv,m.suffix)}</td>
           <td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--line);color:#0a7d4f;">${fmt(m.av,m.suffix)}</td>
-          <td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--line);">${chg(m.bv,m.av)}</td>
+          <td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--line);">${chg(m.bv,m.av,m.lower)}</td>
         </tr>`).join('')}
       </tbody>
-    </table>
+    </table>`}
   </div>`;
 }
+
+async function trkBaRefresh(handle, safeH){
+  const bf = document.getElementById('ba-bf-'+safeH)?.value;
+  const bt = document.getElementById('ba-bt-'+safeH)?.value;
+  const af = document.getElementById('ba-af-'+safeH)?.value;
+  const at = document.getElementById('ba-at-'+safeH)?.value;
+  if(!bf||!bt||!af||!at) return;
+
+  const tbody = document.getElementById('ba-tbody-'+safeH);
+  if(tbody) tbody.innerHTML = `<tr><td colspan="4" style="padding:12px;color:var(--muted);text-align:center;">⏳ Loading…</td></tr>`;
+
+  try {
+    const url = `/api/hetheesha/req1?type=ba&handle=${encodeURIComponent(handle)}&before_from=${bf}&before_to=${bt}&after_from=${af}&after_to=${at}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if(!data.ok) throw new Error(data.error||'API error');
+    window.R1_BA[handle] = { before: data.before, after: data.after };
+    window.R1_BA_META = data.ba_meta;
+    // Re-render all open expand rows for this handle
+    document.querySelectorAll('[id^="trk-ba-"]').forEach(row => {
+      if(row.style.display !== 'none' && row.id.includes(handle.replace(/[^a-z0-9]/g,'-'))) {
+        const td = row.querySelector('td');
+        if(td) td.innerHTML = trkBaHTML(handle);
+      }
+    });
+  } catch(err) {
+    if(tbody) tbody.innerHTML = `<tr><td colspan="4" style="padding:12px;color:var(--err);text-align:center;">Failed: ${err.message}</td></tr>`;
+  }
+}
+
+const BEFORE_FROM_DEFAULT = '2026-06-22';
+const BEFORE_TO_DEFAULT   = '2026-07-06';
+const AFTER_FROM_DEFAULT  = '2026-07-07';
+const AFTER_TO_DEFAULT    = '2026-07-18';
 
 function trkToggleBa(rowId, handle){
   const row = document.getElementById(rowId);

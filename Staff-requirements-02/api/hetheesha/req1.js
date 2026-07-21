@@ -178,6 +178,54 @@ const BEFORE_TO     = '2026-07-06';
 const AFTER_FROM    = '2026-07-07';
 const AFTER_TO      = '2026-07-18'; // latest GSC data available
 
+// ─── ?type=ba — single handle, custom date range ──────────────────────────
+async function handleBA(db, handle, beforeFrom, beforeTo, afterFrom, afterTo) {
+  const pat = '%/products/' + handle + '%';
+  const gsc = await db.query(`
+    SELECT period,
+      SUM(impressions) AS imp,
+      SUM(clicks)      AS clicks,
+      ROUND(SUM(clicks)::numeric / NULLIF(SUM(impressions),0) * 100, 2) AS ctr_pct,
+      ROUND(AVG(position)::numeric, 1) AS avg_pos
+    FROM (
+      SELECT 'before' AS period, impressions, clicks, position
+      FROM google_search_console.page
+      WHERE sub_source=233 AND search_type='web' AND page ILIKE $5
+        AND date BETWEEN $1 AND $2
+      UNION ALL
+      SELECT 'after' AS period, impressions, clicks, position
+      FROM google_search_console.page
+      WHERE sub_source=233 AND search_type='web' AND page ILIKE $5
+        AND date BETWEEN $3 AND $4
+    ) p GROUP BY period
+  `, [beforeFrom, beforeTo, afterFrom, afterTo, pat]);
+
+  const sales = await db.query(`
+    SELECT period,
+      ROUND(SUM(CAST(oii.item_price AS NUMERIC)*CAST(oii.item_quantity AS INTEGER))::numeric,2) AS sales
+    FROM (
+      SELECT 'before' AS period, id AS oid FROM order_management.orders
+      WHERE sub_source_id=233 AND status='Completed' AND order_date BETWEEN $2 AND $3
+      UNION ALL
+      SELECT 'after' AS period, id AS oid FROM order_management.orders
+      WHERE sub_source_id=233 AND status='Completed' AND order_date BETWEEN $4 AND $5
+    ) o
+    JOIN order_management.order_item_info oii ON oii.order_id=o.oid
+    WHERE oii.handle=$1 GROUP BY period
+  `, [handle, beforeFrom, beforeTo, afterFrom, afterTo]);
+
+  const result = { before: null, after: null };
+  gsc.rows.forEach(r => {
+    result[r.period] = { imp: parseInt(r.imp)||0, clicks: parseInt(r.clicks)||0, ctr: parseFloat(r.ctr_pct)||0, avg_pos: r.avg_pos!==null?parseFloat(r.avg_pos):null, sales: 0 };
+  });
+  sales.rows.forEach(r => {
+    if (!result[r.period]) result[r.period] = { imp:0, clicks:0, ctr:0, avg_pos:null, sales:0 };
+    result[r.period].sales = parseFloat(r.sales)||0;
+  });
+  return { ok:true, handle, before:result.before, after:result.after,
+    ba_meta:{ before_from:beforeFrom, before_to:beforeTo, after_from:afterFrom, after_to:afterTo } };
+}
+
 // ─── MAIN HANDLER ─────────────────────────────────────────────────────────
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -185,6 +233,23 @@ module.exports = async function handler(req, res) {
 
   if (!TOKEN) {
     return res.status(500).json({ ok: false, error: 'SHOPIFY_FR_TOKEN env var not set' });
+  }
+
+  // ?type=ba — custom date range per handle
+  const { type, handle, before_from, before_to, after_from, after_to } = req.query || {};
+  if (type === 'ba') {
+    if (!handle || !before_from || !before_to || !after_from || !after_to)
+      return res.status(400).json({ ok:false, error:'handle, before_from, before_to, after_from, after_to required' });
+    const db2 = new Client({ connectionString: process.env.DATABASE_URL });
+    try {
+      await db2.connect();
+      const data = await handleBA(db2, handle, before_from, before_to, after_from, after_to);
+      await db2.end();
+      return res.status(200).json(data);
+    } catch(err) {
+      await db2.end().catch(()=>{});
+      return res.status(500).json({ ok:false, error:err.message });
+    }
   }
 
   const db = new Client({ connectionString: process.env.DATABASE_URL });
@@ -241,7 +306,7 @@ module.exports = async function handler(req, res) {
       gscMap[r.handle] = { imp: parseInt(r.impressions), ctr: parseFloat(r.ctr_pct) };
     });
 
-    // 3a. Before/After GSC — impressions, clicks, CTR per handle for the 50 snapshot URLs
+    // 3a. Before/After GSC — impressions, clicks, CTR, avg position per handle for the 50 snapshot URLs
     const gscBeforeAfterRes = await db.query(`
       SELECT
         period,
@@ -251,14 +316,15 @@ module.exports = async function handler(req, res) {
         ) AS handle,
         SUM(p.impressions) AS imp,
         SUM(p.clicks)      AS clicks,
-        ROUND(AVG(p.ctr) * 100, 2) AS ctr_pct
+        ROUND(SUM(p.clicks)::numeric / NULLIF(SUM(p.impressions),0) * 100, 2) AS ctr_pct,
+        ROUND(AVG(p.position)::numeric, 1) AS avg_pos
       FROM (
-        SELECT 'before' AS period, impressions, clicks, ctr, page
+        SELECT 'before' AS period, impressions, clicks, position, page
         FROM google_search_console.page
         WHERE sub_source=233 AND search_type='web' AND page LIKE '%/products/%'
           AND date BETWEEN $2 AND $3
         UNION ALL
-        SELECT 'after' AS period, impressions, clicks, ctr, page
+        SELECT 'after' AS period, impressions, clicks, position, page
         FROM google_search_console.page
         WHERE sub_source=233 AND search_type='web' AND page LIKE '%/products/%'
           AND date BETWEEN $4 AND $5
@@ -297,10 +363,11 @@ module.exports = async function handler(req, res) {
     gscBeforeAfterRes.rows.forEach(r => {
       if (!baMap[r.handle]) return;
       baMap[r.handle][r.period] = {
-        imp: parseInt(r.imp) || 0,
-        clicks: parseInt(r.clicks) || 0,
-        ctr: parseFloat(r.ctr_pct) || 0,
-        sales: 0,
+        imp:     parseInt(r.imp)        || 0,
+        clicks:  parseInt(r.clicks)     || 0,
+        ctr:     parseFloat(r.ctr_pct)  || 0,
+        avg_pos: r.avg_pos !== null ? parseFloat(r.avg_pos) : null,
+        sales:   0,
       };
     });
     salesBeforeAfterRes.rows.forEach(r => {
