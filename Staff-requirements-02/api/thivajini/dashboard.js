@@ -81,27 +81,41 @@ async function handleReq2(client, fromDate, toDate) {
     ORDER BY cost DESC LIMIT 800
   `, [TV_CAMPAIGNS, fromDate, toDate]);
 
-  // Build two lookup keys per row: full product_item_id (for shopify_ZZ_ format in merchant_products)
-  // and the extracted numeric variant_id (for bare-numeric product_ids)
+  // Three lookup strategies for merchant_products:
+  // 1. Full product_item_id string match (e.g. shopify_zz_PARENT_VARIANT stored as-is)
+  // 2. Extracted numeric variant_id match (e.g. bare numeric IDs stored directly)
+  // 3. Suffix match: bare numeric performance IDs stored as shopify_XX_PARENT_NUMERIC in merchant_products
   const fullIds    = perfRows.map(r => r.product_item_id.toLowerCase());
   const variantIds = perfRows.map(r => r.variant_id);
   const allLookups = [...new Set([...fullIds, ...variantIds])];
 
-  let metaMap = {}; // keyed by product_item_id (lowercase)
+  let metaMap = {}; // keyed by variant_id (numeric suffix)
   if (allLookups.length > 0) {
+    // Strategy 1 & 2: exact match on full string or numeric id
     const { rows: metaRows } = await client.query(`
-      SELECT DISTINCT ON (LOWER(product_id))
-        LOWER(product_id) AS pid, title, availability, price::numeric AS pr, link AS url
+      SELECT DISTINCT ON (SPLIT_PART(LOWER(product_id),'_',4))
+        SPLIT_PART(LOWER(product_id),'_',4) AS variant_key,
+        LOWER(product_id) AS pid,
+        title, availability, price::numeric AS pr, link AS url
       FROM google_ads.merchant_products
-      WHERE currency='EUR' AND LOWER(product_id) = ANY($1::text[])
-      ORDER BY LOWER(product_id)
-    `, [allLookups]);
-    metaRows.forEach(m => { metaMap[m.pid] = m; });
+      WHERE merchant_id='5551466539' AND currency='EUR'
+        AND (LOWER(product_id) = ANY($1::text[])
+          OR SPLIT_PART(LOWER(product_id),'_',4) = ANY($2::text[]))
+      ORDER BY SPLIT_PART(LOWER(product_id),'_',4),
+        CASE feed_label WHEN 'FR' THEN 0 WHEN 'EUR_16475062347' THEN 1 ELSE 2 END
+    `, [allLookups, variantIds]);
+    // Key by variant_id (numeric) so all three formats resolve via variant_id lookup
+    metaRows.forEach(m => {
+      const key = m.variant_key || m.pid;
+      if (!metaMap[key]) metaMap[key] = m;
+    });
+    // Also key by full product_item_id for direct match
+    metaRows.forEach(m => { if (!metaMap[m.pid]) metaMap[m.pid] = m; });
   }
 
   const n = v => Number(v) || 0;
   const products = perfRows.map(r => {
-    // Prefer full-string match (shopify_ZZ_...) then fall back to extracted numeric id
+    // Resolve: full string → variant_id numeric → extracted split
     const m = metaMap[r.product_item_id.toLowerCase()] || metaMap[r.variant_id] || {};
     const imp = n(r.imp), clicks = n(r.clicks);
     const cost = n(r.cost), conv = n(r.conv), cv = n(r.cv);
