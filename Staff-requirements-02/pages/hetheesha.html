@@ -137,6 +137,8 @@
   .trk-filter-label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;min-width:52px;}
   .fbtn-pending{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;border-radius:8px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;transition:.15s;}
   .fbtn-pending.on,.fbtn-pending:hover{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+  .fbtn-fixed{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;border-radius:8px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;transition:.15s;}
+  .fbtn-fixed.on,.fbtn-fixed:hover{background:#166534;color:#fff;border-color:#166534;}
   .rank-badge{display:inline-block;background:#f3f4f6;color:#374151;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:700;}
   .rank-badge.top10{background:#fef3c7;color:#92400e;}
   .shopify-fix-btn{font-size:11px;font-weight:700;color:#5c6ac4;text-decoration:none;border:1px solid #c4caf8;border-radius:6px;padding:2px 8px;white-space:nowrap;}
@@ -321,6 +323,13 @@
           <button class="fbtn" id="trkBtnPending" onclick="trk_filter('pending')">❌ All Pending</button>
           <input class="search" id="trkSearch" type="text" placeholder="🔍 Search product…" style="margin-left:auto;max-width:220px;">
           <button class="export" onclick="trk_exportCSV()">↓ CSV</button>
+        </div>
+        <div class="controls" style="margin-bottom:6px;">
+          <span class="trk-filter-label">Fixed:</span>
+          <button class="fbtn-fixed" id="trkBtnFMT" onclick="trk_filter('fixed_meta_title')">✅ Meta Title</button>
+          <button class="fbtn-fixed" id="trkBtnFMD" onclick="trk_filter('fixed_meta_desc')">✅ Meta Desc</button>
+          <button class="fbtn-fixed" id="trkBtnFFAQ" onclick="trk_filter('fixed_faq')">✅ FAQ Schema</button>
+          <button class="fbtn-fixed" id="trkBtnFAlt" onclick="trk_filter('fixed_alt')">✅ Alt Text</button>
         </div>
         <div class="controls" style="margin-bottom:14px;">
           <span class="trk-filter-label">Pending:</span>
@@ -1193,10 +1202,13 @@ function trk_filter(f){
   TRK_FILTER=f;
   document.querySelectorAll('#r1TrkWrap .fbtn').forEach(b=>b.classList.remove('on'));
   document.querySelectorAll('#r1TrkWrap .fbtn-pending').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('#r1TrkWrap .fbtn-fixed').forEach(b=>b.classList.remove('on'));
   const map={
     all:'trkBtnAll',fixed:'trkBtnFixed',pending:'trkBtnPending',
     pending_meta_title:'trkBtnPMT',pending_meta_desc:'trkBtnPMD',
-    pending_faq:'trkBtnPFAQ',pending_alt:'trkBtnPAlt'
+    pending_faq:'trkBtnPFAQ',pending_alt:'trkBtnPAlt',
+    fixed_meta_title:'trkBtnFMT',fixed_meta_desc:'trkBtnFMD',
+    fixed_faq:'trkBtnFFAQ',fixed_alt:'trkBtnFAlt'
   };
   const el=document.getElementById(map[f]);if(el)el.classList.add('on');
   trk_render();
@@ -1234,6 +1246,10 @@ function trk_render(){
     if(TRK_FILTER==='pending_meta_desc')  return i.field_key==='meta_desc'   &&!i.now_fixed;
     if(TRK_FILTER==='pending_faq')        return i.field_key==='faq'         &&!i.now_fixed;
     if(TRK_FILTER==='pending_alt')        return i.field_key==='alt_missing' &&!i.now_fixed;
+    if(TRK_FILTER==='fixed_meta_title')   return i.field_key==='meta_title'  && i.now_fixed;
+    if(TRK_FILTER==='fixed_meta_desc')    return i.field_key==='meta_desc'   && i.now_fixed;
+    if(TRK_FILTER==='fixed_faq')          return i.field_key==='faq'         && i.now_fixed;
+    if(TRK_FILTER==='fixed_alt')          return i.field_key==='alt_missing' && i.now_fixed;
     return true;
   });
 
