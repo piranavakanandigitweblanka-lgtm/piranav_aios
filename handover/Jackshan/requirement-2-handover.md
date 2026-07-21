@@ -1,8 +1,10 @@
 # Jackshan — Requirement 2 — Handover
 
-**Date:** 2026-07-13
-**Status:** PASS
+**Date:** 2026-07-13  
+**Status:** PASS — superseded by live API build 2026-07-21  
 **Completed by:** AIOS
+
+> **2026-07-21 UPDATE:** The hardcoded dataset in this handover has been replaced by a live PostgreSQL API. The dashboard now fetches fresh data on every load with a selectable date range. See `evidence/Jackshan/requirement-1/live-api-closure-2026-07-21.md` for the current canonical record. JACK-R2 status remains **PASS**.
 
 ## What Was Built
 

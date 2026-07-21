@@ -26,8 +26,10 @@ metadata:
 **Duplicate Risk:** None  
 **Known Limitations:** 13 products have no GSC data in the 30-day window; IP68 product data ends 2026-05-15  
 **Next Steps:** Re-run when additional GSC data imports extend coverage past 2026-07-10  
-**Status:** COMPLETE — FAIL (DATA COVERAGE)  
+**Status:** COMPLETE — FAIL (DATA COVERAGE) — superseded by live API build 2026-07-21  
 **PASS / FAIL:** FAIL — DATA COVERAGE (13 of 50 products have no GSC data in the 30-day window)
+
+> **2026-07-21 UPDATE:** The hardcoded dataset in this handover has been replaced by a live PostgreSQL API. The dashboard now fetches fresh data on every load with a selectable date range. See `evidence/Jackshan/requirement-1/live-api-closure-2026-07-21.md` for the current canonical record. JACK-R1 status is now **PASS**.
 
 ---
 
