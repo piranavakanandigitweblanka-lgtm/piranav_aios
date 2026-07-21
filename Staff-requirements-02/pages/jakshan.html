@@ -154,6 +154,8 @@
       <div class="info-item"><label>Coverage</label><span>50 / 50 with data</span></div>
     </div>
 
+    <div id="live-banner-r1" style="display:none;border-radius:14px;padding:14px 20px;margin-bottom:16px;font-size:13px;font-weight:600;"></div>
+
     <div class="coverage-banner coverage-ok">
       <strong>FULL COVERAGE — All 50 Products Have Live GSC Data</strong><br>
       Data sourced directly from the Google Search Console API. All product URLs verified against live Shopify handles. 3 previously missing products fixed after URL mismatch investigation.
@@ -249,7 +251,8 @@
 
   </div><!-- /tab-panel-1 -->
 <script>
-const RAW_DATA = [
+let RAW_DATA = [];
+const _RAW_DATA_SNAPSHOT = [
 {productUrl:"https://ledsone.co.uk/products/ip68-waterproof-junction-box-outdoor-for-electrical-cable-wire-connector-5599",priorityKeyword:"satellite cable junction box",pageImpressions:1099,pageClicks:9,pageCtr:0.82,pageAvgPosition:8.6,kwImpressions:10,kwClicks:1,kwAvgPosition:7.4,metaTitle:"Multi way IP68 Waterproof Coax junction box | LEDSone UK",metaDescription:"Shop heavy-duty, IP68 waterproof satellite cable junction boxes at LEDSone. Ideal for outdoor, TV, coax, & satellite wire connections. Fast UK shipping!",h1:"IP68  external coaxial junction box For Electrical Cable Wire Connector~5599",recommendedAction:"Rewrite meta tags + re-optimize keywords",dataStatus:"GSC data available"},
 {productUrl:"https://ledsone.co.uk/products/rose-gold-lamp-shade-cap-for-pendant-light-socket-holder-fitting",priorityKeyword:"rose gold lamp shade",pageImpressions:229,pageClicks:1,pageCtr:0.44,pageAvgPosition:10.0,kwImpressions:67,kwClicks:0,kwAvgPosition:13.9,metaTitle:"Rose Gold Pendant Cap | Ceiling Light Shade Fitter Ring - LEDSone",metaDescription:"Premium rose gold light ceiling cap designed to secure shades or cover bare threads on E27 pendant fittings. Perfect for sleek minimalist DIY lighting- UK stock",h1:"Rose Gold Lamp Shade Cap for Pendant Light Socket Holder Fitting~1030",recommendedAction:"Rewrite meta tags + re-optimize keywords",dataStatus:"GSC data available"},
 {productUrl:"https://ledsone.co.uk/products/40cm-black-metal-dome-pendant-light",priorityKeyword:"dome lighting",pageImpressions:84,pageClicks:1,pageCtr:1.19,pageAvgPosition:13.5,kwImpressions:7,kwClicks:0,kwAvgPosition:76.9,metaTitle:"Modern Large Black Metal Dome Pendant Light",metaDescription:"Raise the Dimensions in the area! with use this Modern Black Metal Dome Pendant. Ideal for living spaces and bedrooms.",h1:"Modern Large Ceiling Black Metal Dome Pendant Light ~1845",recommendedAction:"Rewrite meta tags + re-optimize keywords",dataStatus:"GSC data available"},
@@ -395,6 +398,99 @@ function exportCSV(){
 
 renderTable();
 
+function showBanner(id, msg, type){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.style.display='block';
+  if(type==='ok'){el.style.cssText='display:block;border-radius:14px;padding:14px 20px;margin-bottom:16px;font-size:13px;font-weight:600;background:#e5f5ee;border:1px solid #86efac;color:#0a7d4f;';}
+  else if(type==='err'){el.style.cssText='display:block;border-radius:14px;padding:14px 20px;margin-bottom:16px;font-size:13px;font-weight:600;background:#fef2f2;border:1px solid #fca5a5;color:#b91c1c;';}
+  else{el.style.cssText='display:block;border-radius:14px;padding:14px 20px;margin-bottom:16px;font-size:13px;font-weight:600;background:#fffbeb;border:1px solid #f59e0b;color:#92400e;';}
+  el.textContent=msg;
+}
+
+async function loadLive(){
+  showBanner('live-banner-r1','⏳ Loading live data from database...','warn');
+  showBanner('live-banner-r2','⏳ Loading live data from database...','warn');
+  try{
+    const [res1,res2]=await Promise.all([
+      fetch('../api/jackshan/dashboard?type=req1').then(r=>r.json()),
+      fetch('../api/jackshan/dashboard?type=req2').then(r=>r.json()),
+    ]);
+
+    if(res1.ok&&res1.products){
+      RAW_DATA=res1.products.map(r=>({
+        productUrl:r.url,
+        priorityKeyword:r.keyword||'No keyword data',
+        pageImpressions:r.pageImp||0,
+        pageClicks:r.pageClicks||0,
+        pageCtr:r.pageCtr||0,
+        pageAvgPosition:r.pagePos||null,
+        kwImpressions:r.kwImp||0,
+        kwClicks:r.kwClicks||0,
+        kwAvgPosition:r.kwPos||null,
+        metaTitle:r.metaTitle||'',
+        metaDescription:r.metaDesc||'',
+        h1:r.h1||'',
+        recommendedAction:r.action,
+        dataStatus:r.hasGsc?'GSC data available':'Product resolved — no matched GSC data',
+      }));
+      const rewrite=RAW_DATA.filter(r=>r.recommendedAction==='Rewrite meta tags + re-optimize keywords').length;
+      const intent=RAW_DATA.filter(r=>r.recommendedAction==='Check intent mismatch before optimizing').length;
+      const dno=RAW_DATA.filter(r=>r.recommendedAction==='Do not optimize').length;
+      const noGsc=RAW_DATA.filter(r=>r.dataStatus!=='GSC data available').length;
+      document.getElementById('kpi-allocated').textContent=RAW_DATA.length;
+      document.getElementById('kpi-with-gsc').textContent=RAW_DATA.length-noGsc;
+      document.getElementById('kpi-no-gsc').textContent=noGsc;
+      document.getElementById('kpi-rewrite').textContent=rewrite;
+      document.getElementById('kpi-intent').textContent=intent;
+      document.getElementById('kpi-dno').textContent=dno;
+      document.getElementById('kpi-validation').textContent=noGsc;
+      showBanner('live-banner-r1','✓ Live data loaded — '+RAW_DATA.length+' products · Period: '+(res1.meta?.from||'')+' to '+(res1.meta?.to||''),'ok');
+      renderTable();
+    }else{
+      showBanner('live-banner-r1','⚠ API error: '+(res1.error||'Unknown error'),'err');
+    }
+
+    if(res2.ok&&res2.products){
+      REQ2_DATA=res2.products.map(r=>{
+        const action=r.status==='Do Not Optimize'
+          ?'Continue monitoring'
+          :'Review title | Improve meta description | Improve H1 | Add internal links | Improve product content';
+        return{
+          handle:r.handle,
+          productUrl:r.url,
+          productTitle:r.title,
+          weeklySales:r.weeklySales||0,
+          monthlySales:r.monthlySales||0,
+          monthlyClicks:r.clicks||0,
+          monthlyImpressions:r.imp||0,
+          monthlyCtr:r.ctr||0,
+          avgPosition:r.pos||null,
+          status:r.status,
+          action,
+        };
+      });
+      const opt=REQ2_DATA.filter(r=>r.status==='Optimize').length;
+      const dno=REQ2_DATA.filter(r=>r.status==='Do Not Optimize').length;
+      document.getElementById('r2-kpi-opt').textContent=opt;
+      document.getElementById('r2-kpi-dno').textContent=dno;
+      if(res2.meta){
+        document.getElementById('r2-period-start').textContent=res2.meta.from;
+        document.getElementById('r2-period-end').textContent=res2.meta.to;
+      }
+      showBanner('live-banner-r2','✓ Live data loaded — '+REQ2_DATA.length+' products · Period: '+(res2.meta?.from||'')+' to '+(res2.meta?.to||''),'ok');
+      r2Render();
+    }else{
+      showBanner('live-banner-r2','⚠ API error: '+(res2.error||'Unknown error'),'err');
+    }
+  }catch(e){
+    showBanner('live-banner-r1','⚠ Failed to load live data: '+e.message,'err');
+    showBanner('live-banner-r2','⚠ Failed to load live data: '+e.message,'err');
+  }
+}
+
+loadLive();
+
 function showTab(n){
   [1,2].forEach(i=>{
     document.getElementById('tab-panel-'+i).classList.toggle('active',i===n);
@@ -407,7 +503,8 @@ function switchTab(n){showTab(n);}
 
 
 // ── Requirement 2 ───────────────────────────────────────────────────────────
-const REQ2_DATA = [
+let REQ2_DATA = [];
+const _REQ2_DATA_SNAPSHOT = [
 {handle:"ip68-waterproof-junction-box-outdoor-for-electrical-cable-wire-connector-5599",productUrl:"https://ledsone.co.uk/products/ip68-waterproof-junction-box-outdoor-for-electrical-cable-wire-connector-5599",productTitle:"IP68 External Coaxial Junction Box For Electrical Cable Wire Connector",weeklySales:3,monthlySales:8,monthlyClicks:9,monthlyImpressions:1099,monthlyCtr:0.82,avgPosition:8.6,status:"Do Not Optimize",action:"Continue monitoring"},
 {handle:"rose-gold-lamp-shade-cap-for-pendant-light-socket-holder-fitting",productUrl:"https://ledsone.co.uk/products/rose-gold-lamp-shade-cap-for-pendant-light-socket-holder-fitting",productTitle:"Rose Gold Lamp Shade Cap For Pendant Light Socket Holder Fitting",weeklySales:0,monthlySales:0,monthlyClicks:1,monthlyImpressions:229,monthlyCtr:0.44,avgPosition:10.0,status:"Optimize",action:"Review title | Improve meta description | Improve H1 | Add internal links | Improve product content"},
 {handle:"40cm-black-metal-dome-pendant-light",productUrl:"https://ledsone.co.uk/products/40cm-black-metal-dome-pendant-light",productTitle:"40cm Black Metal Dome Pendant Light",weeklySales:0,monthlySales:1,monthlyClicks:1,monthlyImpressions:84,monthlyCtr:1.19,avgPosition:13.5,status:"Optimize",action:"Review title | Improve meta description | Improve H1 | Add internal links | Improve product content"},
@@ -567,10 +664,12 @@ function r2ExportCSV(){
       </div>
     </header>
 
+    <div id="live-banner-r2" style="display:none;border-radius:14px;padding:14px 20px;margin-bottom:16px;font-size:13px;font-weight:600;"></div>
+
     <div class="info-bar">
       <div class="info-item"><label>Reporting Period</label><span>Latest 30 Days</span></div>
-      <div class="info-item"><label>Start Date</label><span>2026-06-13</span></div>
-      <div class="info-item"><label>End Date</label><span>2026-07-12</span></div>
+      <div class="info-item"><label>Start Date</label><span id="r2-period-start">—</span></div>
+      <div class="info-item"><label>End Date</label><span id="r2-period-end">—</span></div>
       <div class="info-item"><label>Sales Data</label><span>Shopify Analytics<br><span class="source-badge">LIVE SHOPIFY</span></span></div>
       <div class="info-item"><label>GSC Data</label><span>Search Console API<br><span class="source-badge">LIVE GSC API</span></span></div>
       <div class="info-item"><label>Optimize Rule</label><span>Sales &le; 1 AND CTR &lt; 5%</span></div>
