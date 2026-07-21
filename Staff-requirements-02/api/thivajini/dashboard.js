@@ -81,22 +81,28 @@ async function handleReq2(client, fromDate, toDate) {
     ORDER BY cost DESC LIMIT 800
   `, [TV_CAMPAIGNS, fromDate, toDate]);
 
+  // Build two lookup keys per row: full product_item_id (for shopify_ZZ_ format in merchant_products)
+  // and the extracted numeric variant_id (for bare-numeric product_ids)
+  const fullIds    = perfRows.map(r => r.product_item_id.toLowerCase());
   const variantIds = perfRows.map(r => r.variant_id);
-  let metaMap = {};
-  if (variantIds.length > 0) {
+  const allLookups = [...new Set([...fullIds, ...variantIds])];
+
+  let metaMap = {}; // keyed by product_item_id (lowercase)
+  if (allLookups.length > 0) {
     const { rows: metaRows } = await client.query(`
       SELECT DISTINCT ON (LOWER(product_id))
         LOWER(product_id) AS pid, title, availability, price::numeric AS pr, link AS url
       FROM google_ads.merchant_products
       WHERE currency='EUR' AND LOWER(product_id) = ANY($1::text[])
       ORDER BY LOWER(product_id)
-    `, [variantIds]);
+    `, [allLookups]);
     metaRows.forEach(m => { metaMap[m.pid] = m; });
   }
 
   const n = v => Number(v) || 0;
   const products = perfRows.map(r => {
-    const m   = metaMap[r.variant_id] || {};
+    // Prefer full-string match (shopify_ZZ_...) then fall back to extracted numeric id
+    const m = metaMap[r.product_item_id.toLowerCase()] || metaMap[r.variant_id] || {};
     const imp = n(r.imp), clicks = n(r.clicks);
     const cost = n(r.cost), conv = n(r.conv), cv = n(r.cv);
     const price = m.pr ? Number(m.pr) : 0;
@@ -137,11 +143,13 @@ async function handleReq3(client, fromDate, toDate) {
     ORDER BY cost DESC LIMIT 400
   `, [TV_CAMPAIGNS, fromDate, toDate]);
 
-  const variantIds = perfRows.map(r => r.variant_id);
+  const fullIds3    = perfRows.map(r => r.product_item_id.toLowerCase());
+  const variantIds  = perfRows.map(r => r.variant_id);
+  const allLookups3 = [...new Set([...fullIds3, ...variantIds])];
   let shopMap = {}, invMap = {}, gmcMap = {};
 
-  if (variantIds.length > 0) {
-    // FR Shopify listings → SKU
+  if (allLookups3.length > 0) {
+    // FR Shopify listings → SKU (keyed by variant numeric id)
     try {
       const { rows: shopRows } = await client.query(`
         SELECT DISTINCT ON (item_id::text)
@@ -167,7 +175,7 @@ async function handleReq3(client, fromDate, toDate) {
       }
     } catch(e) {}
 
-    // GMC availability
+    // GMC availability — try full product_item_id first, then numeric variant_id
     try {
       const { rows: gmcRows } = await client.query(`
         SELECT DISTINCT ON (LOWER(product_id))
@@ -175,7 +183,7 @@ async function handleReq3(client, fromDate, toDate) {
         FROM google_ads.merchant_products
         WHERE currency='EUR' AND LOWER(product_id) = ANY($1::text[])
         ORDER BY LOWER(product_id)
-      `, [variantIds]);
+      `, [allLookups3]);
       gmcRows.forEach(m => { gmcMap[m.pid] = m; });
     } catch(e) {}
   }
@@ -183,7 +191,7 @@ async function handleReq3(client, fromDate, toDate) {
   const n = v => Number(v) || 0;
   const products = perfRows.map(r => {
     const shop  = shopMap[r.variant_id] || {};
-    const gmc   = gmcMap[r.variant_id]  || {};
+    const gmc   = gmcMap[r.product_item_id.toLowerCase()] || gmcMap[r.variant_id] || {};
     const sku   = shop.sku || null;
     const stock = (sku && invMap[sku] !== undefined) ? invMap[sku] : null;
     const spend = n(r.cost);
