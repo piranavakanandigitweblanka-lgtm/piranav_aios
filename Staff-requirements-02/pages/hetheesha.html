@@ -1156,8 +1156,6 @@ async function r1_loadLive(){
     if(data.before_after){
       window.R1_BA = data.before_after;
       window.R1_BA_META = data.ba_meta;
-      r1_ba_populateDropdown(data.rows, data.before_after);
-      document.getElementById('r1BaLoading').style.display='none';
     }
   }catch(err){
     console.error('[r1_loadLive]',err);
