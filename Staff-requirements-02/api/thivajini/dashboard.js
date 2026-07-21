@@ -81,17 +81,29 @@ async function handleReq2(client, fromDate, toDate) {
     ORDER BY cost DESC LIMIT 800
   `, [TV_CAMPAIGNS, fromDate, toDate]);
 
-  // Three lookup strategies for merchant_products:
-  // 1. Full product_item_id string match (e.g. shopify_zz_PARENT_VARIANT stored as-is)
-  // 2. Extracted numeric variant_id match (e.g. bare numeric IDs stored directly)
-  // 3. Suffix match: bare numeric performance IDs stored as shopify_XX_PARENT_NUMERIC in merchant_products
+  // Four lookup strategies for merchant_products:
+  // 1. Exact full product_item_id string match
+  // 2. Exact variant suffix match (SPLIT_PART position 4)
+  // 3. Suffix match: bare numeric IDs stored as shopify_XX_PARENT_NUMERIC
+  // 4. Parent ID fallback: same parent product, different variant (sibling colour/size)
   const fullIds    = perfRows.map(r => r.product_item_id.toLowerCase());
   const variantIds = perfRows.map(r => r.variant_id);
+  // Extract parent IDs from shopify_XX_PARENT_VARIANT format (position 3)
   const allLookups = [...new Set([...fullIds, ...variantIds])];
 
-  let metaMap = {}; // keyed by variant_id (numeric suffix)
+  // JS helper (mirrors SQL SPLIT_PART, 1-based)
+  function SPLIT_PART(str, sep, n) { return str.split(sep)[n - 1] || ''; }
+
+  const parentIdsJs = [...new Set(perfRows
+    .filter(r => r.product_item_id.toLowerCase().startsWith('shopify_'))
+    .map(r => SPLIT_PART(r.product_item_id.toLowerCase(), '_', 3))
+  )];
+
+  let metaMap = {};    // keyed by variant suffix (numeric)
+  let parentMap = {};  // keyed by parent ID — fallback for sibling variants
+
   if (allLookups.length > 0) {
-    // Strategy 1 & 2: exact match on full string or numeric id
+    // Strategy 1, 2, 3: exact variant match
     const { rows: metaRows } = await client.query(`
       SELECT DISTINCT ON (SPLIT_PART(LOWER(product_id),'_',4))
         SPLIT_PART(LOWER(product_id),'_',4) AS variant_key,
@@ -104,19 +116,33 @@ async function handleReq2(client, fromDate, toDate) {
       ORDER BY SPLIT_PART(LOWER(product_id),'_',4),
         CASE feed_label WHEN 'FR' THEN 0 WHEN 'EUR_16475062347' THEN 1 ELSE 2 END
     `, [allLookups, variantIds]);
-    // Key by variant_id (numeric) so all three formats resolve via variant_id lookup
     metaRows.forEach(m => {
-      const key = m.variant_key || m.pid;
-      if (!metaMap[key]) metaMap[key] = m;
+      if (!metaMap[m.variant_key]) metaMap[m.variant_key] = m;
+      if (!metaMap[m.pid]) metaMap[m.pid] = m;
     });
-    // Also key by full product_item_id for direct match
-    metaRows.forEach(m => { if (!metaMap[m.pid]) metaMap[m.pid] = m; });
+  }
+
+  // Strategy 4: parent ID fallback — pick any sibling variant title for unresolved products
+  if (parentIdsJs.length > 0) {
+    const { rows: parentRows } = await client.query(`
+      SELECT DISTINCT ON (SPLIT_PART(LOWER(product_id),'_',3))
+        SPLIT_PART(LOWER(product_id),'_',3) AS parent_key,
+        title, availability, price::numeric AS pr, link AS url
+      FROM google_ads.merchant_products
+      WHERE merchant_id='5551466539' AND currency='EUR'
+        AND SPLIT_PART(LOWER(product_id),'_',3) = ANY($1::text[])
+      ORDER BY SPLIT_PART(LOWER(product_id),'_',3),
+        CASE feed_label WHEN 'FR' THEN 0 WHEN 'EUR_16475062347' THEN 1 ELSE 2 END
+    `, [parentIdsJs]);
+    parentRows.forEach(m => { if (!parentMap[m.parent_key]) parentMap[m.parent_key] = m; });
   }
 
   const n = v => Number(v) || 0;
   const products = perfRows.map(r => {
-    // Resolve: full string → variant_id numeric → extracted split
-    const m = metaMap[r.product_item_id.toLowerCase()] || metaMap[r.variant_id] || {};
+    const variantKey = SPLIT_PART(r.product_item_id.toLowerCase(), '_', 4) || r.variant_id;
+    const parentKey  = SPLIT_PART(r.product_item_id.toLowerCase(), '_', 3);
+    // Resolve: exact variant → parent sibling fallback
+    const m = metaMap[r.product_item_id.toLowerCase()] || metaMap[variantKey] || parentMap[parentKey] || {};
     const imp = n(r.imp), clicks = n(r.clicks);
     const cost = n(r.cost), conv = n(r.conv), cv = n(r.cv);
     const price = m.pr ? Number(m.pr) : 0;
