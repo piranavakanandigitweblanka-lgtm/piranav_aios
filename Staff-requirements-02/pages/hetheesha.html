@@ -334,7 +334,7 @@
           <div class="trk-section">
             <div class="trk-section-hdr"><h3>✅ Fixed by Hetheesha</h3><span class="badge badge-fixed" id="trkFixedBadge">0 fixes</span></div>
             <div class="scroll trk-table"><table><thead><tr>
-              <th class="num">Rev#</th><th>Product</th><th>Field</th><th>Before (Jul 06)</th><th>After (Live Now)</th><th>Fixed On</th>
+              <th class="num">Rev#</th><th>Product</th><th>Field</th><th>Before (Jul 06)</th><th>After (Live Now)</th><th>Fixed On</th><th>Performance</th>
             </tr></thead><tbody id="trkFixedBody"></tbody></table></div>
           </div>
         </div>
@@ -358,43 +358,6 @@
         </div>
       </div><!-- /tracker inner card -->
     </div><!-- /r1TrkWrap -->
-
-    <!-- ── Before vs After Fix Comparison ── -->
-    <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 24px;margin-top:16px;" id="r1BaPanel">
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
-        <div>
-          <div style="font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);margin-bottom:4px;">Before vs After Fix — URL Performance</div>
-          <div style="font-size:12px;color:var(--muted);">Select a URL to compare GSC + sales for 14 days before and after the fix baseline (Jul 06 2026)</div>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
-        <label style="font-size:13px;font-weight:600;color:var(--muted);">Select URL:</label>
-        <select id="r1BaSelect" onchange="renderBaComparison()" style="font-size:13px;padding:7px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);min-width:320px;max-width:100%;">
-          <option value="">— Choose a product URL —</option>
-        </select>
-      </div>
-      <div id="r1BaResult" style="display:none;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;" id="r1BaCards"></div>
-        <div class="tablebox">
-          <div class="tbar">
-            <span id="r1BaTableTitle">Before vs After Comparison</span>
-          </div>
-          <div class="scroll">
-            <table style="min-width:500px;">
-              <thead><tr>
-                <th>Metric</th>
-                <th class="num" style="color:#b91c1c;">Before Fix<br><span style="font-weight:400;font-size:10px;" id="r1BaBeforePeriod"></span></th>
-                <th class="num" style="color:#0a7d4f;">After Fix<br><span style="font-weight:400;font-size:10px;" id="r1BaAfterPeriod"></span></th>
-                <th class="num">Change</th>
-              </tr></thead>
-              <tbody id="r1BaTableBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <div id="r1BaEmpty" style="text-align:center;padding:30px;color:var(--muted);font-size:13px;display:none;">No GSC or sales data found for this URL in either period.</div>
-      <div id="r1BaLoading" style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">⏳ Loading data…</div>
-    </div>
 
   </div><!-- /tab-panel-1 -->
 
@@ -1294,13 +1257,18 @@ function trk_render(){
       const after=i.live_value!=null?(typeof i.live_value==='string'?i.live_value.slice(0,90):i.live_value):'—';
       const rank=i.rank;
       const rankCls=rank<=10?'rank-badge top10':'rank-badge';
-      return`<tr>
+      const rowId='trk-ba-'+i.handle.replace(/[^a-z0-9]/g,'-')+'-'+i.field_key;
+      return`<tr style="cursor:pointer;" onclick="trkToggleBa('${r1_esc(rowId)}','${r1_esc(i.handle)}')">
         <td class="num"><span class="${rankCls}">#${rank}</span></td>
-        <td><a href="${r1_esc(url)}" target="_blank" rel="noopener" title="${r1_esc(i.handle)}">${r1_esc(shortH)}</a></td>
+        <td><a href="${r1_esc(url)}" target="_blank" rel="noopener" title="${r1_esc(i.handle)}" onclick="event.stopPropagation()">${r1_esc(shortH)}</a></td>
         <td><span class="tag-fixed">${r1_esc(i.field)}</span></td>
         <td class="before-val">Missing</td>
         <td class="after-val" title="${r1_esc(String(after))}">${r1_esc(String(after))}</td>
         <td><span class="fix-date">📅 ${r1_esc(fixDate)}</span></td>
+        <td><button id="btn-${r1_esc(rowId)}" style="border:1px solid var(--accent);border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);cursor:pointer;" onclick="event.stopPropagation();trkToggleBa('${r1_esc(rowId)}','${r1_esc(i.handle)}')">▶ View</button></td>
+      </tr>
+      <tr id="${r1_esc(rowId)}" style="display:none;background:#f0f8ff;">
+        <td colspan="7" style="padding:0;">${trkBaHTML(i.handle)}</td>
       </tr>`;
     }).join('');
   }else{fixedSec.style.display='none';}
@@ -1352,114 +1320,76 @@ if(trkSrch) trkSrch.addEventListener('input',trk_render);
 
 r1_loadLive();
 
-/* ─── Before vs After Fix Comparison ────────────────── */
+/* ─── Before vs After Fix — inline tracker expand ────── */
 window.R1_BA = {};
 window.R1_BA_META = {};
 
-function r1_ba_populateDropdown(rows, ba){
-  const sel = document.getElementById('r1BaSelect');
-  if(!sel) return;
-  // Remove all options except the placeholder
-  while(sel.options.length > 1) sel.remove(1);
-  // Use snapshot order (rank 1-50)
-  const snapshotOrder = Object.keys(ba).map((h,i) => h);
-  // Build from live rows (ranked) then add any snapshot handles not in live rows
-  const liveHandles = rows.map(r => r.handle);
-  const allHandles = [...liveHandles, ...snapshotOrder.filter(h => !liveHandles.includes(h))];
-  allHandles.forEach(h => {
-    const row = rows.find(r => r.handle === h);
-    const rank = row ? '#'+row.rank+' ' : '';
-    const label = rank + h;
-    const opt = document.createElement('option');
-    opt.value = h;
-    opt.textContent = label.length > 72 ? label.slice(0,70)+'…' : label;
-    sel.appendChild(opt);
-  });
-}
+function r1_ba_populateDropdown(rows, ba){ /* no-op — now inline in tracker */ }
 
-function renderBaComparison(){
-  const sel = document.getElementById('r1BaSelect');
-  const handle = sel ? sel.value : '';
-  const result = document.getElementById('r1BaResult');
-  const empty = document.getElementById('r1BaEmpty');
-  if(!handle){ if(result) result.style.display='none'; if(empty) empty.style.display='none'; return; }
-
-  const ba = (window.R1_BA || {})[handle];
-  const meta = window.R1_BA_META || {};
+function trkBaHTML(handle){
+  const ba   = (window.R1_BA||{})[handle];
+  const meta = window.R1_BA_META||{};
+  const bFrom = meta.before_from||''; const bTo = meta.before_to||'';
+  const aFrom = meta.after_from||'';  const aTo = meta.after_to||'';
   const before = ba ? ba.before : null;
   const after  = ba ? ba.after  : null;
 
-  if(!before && !after){
-    if(result) result.style.display='none';
-    if(empty)  empty.style.display='block';
-    return;
-  }
-  if(empty) empty.style.display='none';
-  if(result) result.style.display='block';
-
-  // Period labels
-  const bPeriod = (meta.before_from||'') + ' → ' + (meta.before_to||'');
-  const aPeriod = (meta.after_from||'') + ' → ' + (meta.after_to||'');
-  const bEl = document.getElementById('r1BaBeforePeriod');
-  const aEl = document.getElementById('r1BaAfterPeriod');
-  if(bEl) bEl.textContent = bPeriod;
-  if(aEl) aEl.textContent = aPeriod;
-
-  const titleEl = document.getElementById('r1BaTableTitle');
-  if(titleEl) titleEl.textContent = handle + ' — Before vs After';
-
-  // Summary cards
-  const cards = document.getElementById('r1BaCards');
-  function cardHTML(label, val, color){
-    return `<div style="background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:14px 18px;">
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:${color};margin-bottom:6px;">${label}</div>
-      <div style="font-size:22px;font-weight:700;">${val}</div>
-    </div>`;
-  }
-  if(cards){
-    const bClicks = before ? before.clicks : 0;
-    const aClicks = after  ? after.clicks  : 0;
-    const bSales  = before ? before.sales  : 0;
-    const aSales  = after  ? after.sales   : 0;
-    const clickChange = bClicks > 0 ? Math.round((aClicks-bClicks)/bClicks*100) : null;
-    const salesChange = bSales  > 0 ? Math.round((aSales -bSales )/bSales *100) : null;
-    const fmtChange = v => v === null ? '—' : (v >= 0 ? '+'+v+'%' : v+'%');
-    const colChg = v => v === null ? 'var(--muted)' : (v >= 0 ? 'var(--good)' : 'var(--err)');
-    cards.innerHTML =
-      cardHTML('Clicks change', fmtChange(clickChange), colChg(clickChange)) +
-      cardHTML('Sales change', fmtChange(salesChange), colChg(salesChange));
-  }
-
-  // Table rows
   function fmt(v, suffix){
-    if(v === null || v === undefined) return '<span style="color:var(--muted)">—</span>';
-    return (suffix === '€' ? '€' : '') + (typeof v === 'number' ? v.toLocaleString('fr-FR') : v) + (suffix && suffix !== '€' ? suffix : '');
+    if(v===null||v===undefined) return '<span style="color:var(--muted)">—</span>';
+    return (suffix==='€'?'€':'')+(typeof v==='number'?v.toLocaleString('fr-FR'):v)+(suffix&&suffix!=='€'?suffix:'');
   }
-  function changeCell(b, a){
-    if(b === null || a === null || b === undefined || a === undefined) return '<span style="color:var(--muted)">—</span>';
-    const diff = a - b;
-    const pct  = b !== 0 ? Math.round(diff/Math.abs(b)*100) : null;
-    const sign = diff >= 0 ? '+' : '';
-    const col  = diff >= 0 ? 'var(--good)' : 'var(--err)';
-    const pctStr = pct !== null ? ` (${sign}${pct}%)` : '';
-    return `<span style="color:${col};font-weight:700;">${sign}${typeof diff==='number'?diff.toLocaleString('fr-FR'):diff}${pctStr}</span>`;
+  function chg(b,a){
+    if(b===null||a===null||b===undefined||a===undefined) return '<span style="color:var(--muted)">—</span>';
+    const diff=a-b, sign=diff>=0?'+':'', col=diff>=0?'var(--good)':'var(--err)';
+    const pct=b!==0?` (${sign}${Math.round(diff/Math.abs(b)*100)}%)`:'';
+    return`<span style="color:${col};font-weight:700;">${sign}${typeof diff==='number'?diff.toLocaleString('fr-FR'):diff}${pct}</span>`;
   }
 
-  const metrics = [
-    { label: 'Impressions',    bv: before?.imp,    av: after?.imp,    suffix: '' },
-    { label: 'Clicks',         bv: before?.clicks, av: after?.clicks, suffix: '' },
-    { label: 'CTR (%)',        bv: before?.ctr,    av: after?.ctr,    suffix: '%' },
-    { label: 'Sales (€)',      bv: before?.sales,  av: after?.sales,  suffix: '€' },
+  if(!before&&!after){
+    return`<div style="padding:12px 20px;color:var(--muted);font-size:12px;">No GSC or sales data found for this URL in either period.</div>`;
+  }
+
+  const metrics=[
+    {label:'Impressions', bv:before?.imp,    av:after?.imp,    suffix:''},
+    {label:'Clicks',      bv:before?.clicks, av:after?.clicks, suffix:''},
+    {label:'CTR',         bv:before?.ctr,    av:after?.ctr,    suffix:'%'},
+    {label:'Sales',       bv:before?.sales,  av:after?.sales,  suffix:'€'},
   ];
 
-  const tbody = document.getElementById('r1BaTableBody');
-  if(tbody){
-    tbody.innerHTML = metrics.map(m => `<tr>
-      <td style="font-weight:600;">${m.label}</td>
-      <td class="num" style="color:#b91c1c;">${fmt(m.bv, m.suffix)}</td>
-      <td class="num" style="color:#0a7d4f;">${fmt(m.av, m.suffix)}</td>
-      <td class="num">${changeCell(m.bv, m.av)}</td>
-    </tr>`).join('');
+  return`<div style="padding:14px 20px;">
+    <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Before vs After Fix — URL Performance</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:360px;">
+      <thead><tr>
+        <th style="text-align:left;padding:6px 10px;background:#f0f3f8;border-bottom:2px solid var(--line);font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;">Metric</th>
+        <th style="text-align:right;padding:6px 10px;background:#fff0f0;border-bottom:2px solid var(--line);font-size:11px;color:#b91c1c;">Before Fix<br><span style="font-weight:400;">${bFrom} → ${bTo}</span></th>
+        <th style="text-align:right;padding:6px 10px;background:#f0fff4;border-bottom:2px solid var(--line);font-size:11px;color:#0a7d4f;">After Fix<br><span style="font-weight:400;">${aFrom} → ${aTo}</span></th>
+        <th style="text-align:right;padding:6px 10px;background:#f0f3f8;border-bottom:2px solid var(--line);font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;">Change</th>
+      </tr></thead>
+      <tbody>
+        ${metrics.map(m=>`<tr>
+          <td style="padding:6px 10px;font-weight:600;border-bottom:1px solid var(--line);">${m.label}</td>
+          <td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--line);color:#b91c1c;">${fmt(m.bv,m.suffix)}</td>
+          <td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--line);color:#0a7d4f;">${fmt(m.av,m.suffix)}</td>
+          <td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--line);">${chg(m.bv,m.av)}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function trkToggleBa(rowId, handle){
+  const row = document.getElementById(rowId);
+  const btn = document.getElementById('btn-'+rowId);
+  if(!row) return;
+  const open = row.style.display !== 'none';
+  if(open){
+    row.style.display='none';
+    if(btn){ btn.textContent='▶ View'; }
+  } else {
+    // Populate with latest data if R1_BA is loaded
+    row.querySelector('td').innerHTML = trkBaHTML(handle);
+    row.style.display='';
+    if(btn){ btn.textContent='▼ Hide'; }
   }
 }
 </script>
