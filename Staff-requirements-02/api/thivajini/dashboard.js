@@ -104,20 +104,28 @@ async function handleReq2(client, fromDate, toDate) {
 
   if (allLookups.length > 0) {
     // Strategy 1, 2, 3: exact variant match
+    // Use CASE for DISTINCT ON key: shopify_ products → variant suffix; bare numeric → full id
     const { rows: metaRows } = await client.query(`
-      SELECT DISTINCT ON (SPLIT_PART(LOWER(product_id),'_',4))
-        SPLIT_PART(LOWER(product_id),'_',4) AS variant_key,
+      SELECT DISTINCT ON (lookup_key)
+        lookup_key,
         LOWER(product_id) AS pid,
         title, availability, price::numeric AS pr, link AS url
-      FROM google_ads.merchant_products
-      WHERE merchant_id='5551466539' AND currency='EUR'
-        AND (LOWER(product_id) = ANY($1::text[])
-          OR SPLIT_PART(LOWER(product_id),'_',4) = ANY($2::text[]))
-      ORDER BY SPLIT_PART(LOWER(product_id),'_',4),
+      FROM (
+        SELECT product_id, feed_label, title, availability, price, link,
+          CASE WHEN product_id ILIKE 'shopify_%'
+            THEN SPLIT_PART(LOWER(product_id),'_',4)
+            ELSE LOWER(product_id)
+          END AS lookup_key
+        FROM google_ads.merchant_products
+        WHERE merchant_id='5551466539' AND currency='EUR'
+          AND (LOWER(product_id) = ANY($1::text[])
+            OR SPLIT_PART(LOWER(product_id),'_',4) = ANY($2::text[]))
+      ) sub
+      ORDER BY lookup_key,
         CASE feed_label WHEN 'FR' THEN 0 WHEN 'EUR_16475062347' THEN 1 ELSE 2 END
     `, [allLookups, variantIds]);
     metaRows.forEach(m => {
-      if (!metaMap[m.variant_key]) metaMap[m.variant_key] = m;
+      if (!metaMap[m.lookup_key]) metaMap[m.lookup_key] = m;
       if (!metaMap[m.pid]) metaMap[m.pid] = m;
     });
   }
@@ -139,10 +147,12 @@ async function handleReq2(client, fromDate, toDate) {
 
   const n = v => Number(v) || 0;
   const products = perfRows.map(r => {
-    const variantKey = SPLIT_PART(r.product_item_id.toLowerCase(), '_', 4) || r.variant_id;
-    const parentKey  = SPLIT_PART(r.product_item_id.toLowerCase(), '_', 3);
-    // Resolve: exact variant → parent sibling fallback
-    const m = metaMap[r.product_item_id.toLowerCase()] || metaMap[variantKey] || parentMap[parentKey] || {};
+    const lookupKey = r.product_item_id.toLowerCase().startsWith('shopify_')
+      ? SPLIT_PART(r.product_item_id.toLowerCase(), '_', 4)
+      : r.product_item_id.toLowerCase();
+    const parentKey = SPLIT_PART(r.product_item_id.toLowerCase(), '_', 3);
+    // Resolve: exact lookup_key → full pid → parent sibling fallback
+    const m = metaMap[lookupKey] || metaMap[r.product_item_id.toLowerCase()] || parentMap[parentKey] || {};
     const imp = n(r.imp), clicks = n(r.clicks);
     const cost = n(r.cost), conv = n(r.conv), cv = n(r.cv);
     const price = m.pr ? Number(m.pr) : 0;
