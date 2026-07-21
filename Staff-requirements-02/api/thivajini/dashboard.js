@@ -161,14 +161,22 @@ async function handleReq2(client, fromDate, toDate) {
   if (unresolvedIds.length > 0) {
     try {
       const { rows: shopRows } = await client.query(`
+        -- Variant → parent join for normal variant IDs
         SELECT v.item_id::text AS vid, p.title, v.listing_url AS url,
                v.price::numeric AS pr, v.status AS availability
         FROM listings.shopify_listings v
         JOIN listings.shopify_listings p
           ON SPLIT_PART(v.listing_url,'?',1) = SPLIT_PART(p.listing_url,'/',1)||'//'||SPLIT_PART(p.listing_url,'/',3)||'/products/'||SPLIT_PART(p.listing_url,'/',5)
           AND p.site = 'France' AND p.is_parent = 1
-        WHERE v.site = 'France'
+        WHERE v.site = 'France' AND v.is_parent = 0
           AND v.item_id::text = ANY($1::text[])
+        UNION ALL
+        -- Direct parent match — product_item_id IS the parent product ID
+        SELECT p.item_id::text AS vid, p.title, p.listing_url AS url,
+               p.price::numeric AS pr, p.status AS availability
+        FROM listings.shopify_listings p
+        WHERE p.site = 'France' AND p.is_parent = 1
+          AND p.item_id::text = ANY($1::text[])
       `, [unresolvedIds]);
       shopRows.forEach(r => { shopifyMap[r.vid] = r; });
     } catch(e) {}
