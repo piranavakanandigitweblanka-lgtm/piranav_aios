@@ -144,14 +144,14 @@
     </header>
 
     <div class="info-bar">
-      <div class="info-item"><label>Reporting Period</label><span>Latest 30 Days</span></div>
-      <div class="info-item"><label>Start Date</label><span>2026-06-13</span></div>
-      <div class="info-item"><label>End Date</label><span>2026-07-12</span></div>
+      <div class="info-item"><label>Reporting Period</label><span id="r1-period-label">—</span></div>
+      <div class="info-item"><label>Start Date</label><span id="r1-period-start">—</span></div>
+      <div class="info-item"><label>End Date</label><span id="r1-period-end">—</span></div>
       <div class="info-item"><label>GSC Property</label><span>sc-domain:ledsone.co.uk</span></div>
       <div class="info-item"><label>Data Source</label><span>Google Search Console API<br><span class="source-badge">LIVE GSC API</span></span></div>
       <div class="info-item"><label>Search Type</label><span>Web</span></div>
       <div class="info-item"><label>Products Scope</label><span>50 Allocated</span></div>
-      <div class="info-item"><label>Coverage</label><span>50 / 50 with data</span></div>
+      <div class="info-item"><label>Coverage</label><span id="r1-coverage">—</span></div>
     </div>
 
     <div id="live-banner-r1" style="display:none;border-radius:14px;padding:14px 20px;margin-bottom:16px;font-size:13px;font-weight:600;"></div>
@@ -185,13 +185,19 @@
         <option>GSC data available</option>
         <option>Product resolved — no matched GSC data</option>
       </select>
-      <select class="fsel" id="r1-days-filter" onchange="loadLive()">
+      <select class="fsel" id="r1-days-filter" onchange="onR1RangeChange()">
         <option value="90" selected>Last 90 days</option>
         <option value="60">Last 60 days</option>
         <option value="30">Last 30 days</option>
         <option value="14">Last 14 days</option>
         <option value="7">Last 7 days</option>
+        <option value="custom">Custom range…</option>
       </select>
+      <span id="r1-custom-wrap" style="display:none;display:none;align-items:center;gap:6px;">
+        <input type="date" id="r1-from" class="fsel" style="width:140px;" onchange="loadLive()">
+        <span style="font-size:12px;color:var(--muted);">to</span>
+        <input type="date" id="r1-to" class="fsel" style="width:140px;" onchange="loadLive()">
+      </span>
       <button onclick="exportCSV()" class="export">&#8595; Export CSV</button>
       <span id="rowCount" style="font-size:13px;color:var(--muted);"></span>
     </div>
@@ -415,15 +421,41 @@ function showBanner(id, msg, type){
   el.textContent=msg;
 }
 
+function buildApiUrl(type, daysEl, fromEl, toEl){
+  const days=document.getElementById(daysEl)?.value||'';
+  if(days==='custom'){
+    const f=document.getElementById(fromEl)?.value;
+    const t=document.getElementById(toEl)?.value;
+    if(f&&t) return '../api/jackshan/dashboard?type='+type+'&from='+f+'&to='+t;
+    return null;
+  }
+  return '../api/jackshan/dashboard?type='+type+'&days='+days;
+}
+
+function onR1RangeChange(){
+  const v=document.getElementById('r1-days-filter').value;
+  const wrap=document.getElementById('r1-custom-wrap');
+  wrap.style.display=v==='custom'?'inline-flex':'none';
+  if(v!=='custom') loadLive();
+}
+
+function onR2RangeChange(){
+  const v=document.getElementById('r2-days-filter').value;
+  const wrap=document.getElementById('r2-custom-wrap');
+  wrap.style.display=v==='custom'?'inline-flex':'none';
+  if(v!=='custom') loadLive();
+}
+
 async function loadLive(){
-  const d1=document.getElementById('r1-days-filter')?.value||'90';
-  const d2=document.getElementById('r2-days-filter')?.value||'30';
-  showBanner('live-banner-r1','⏳ Loading live data (last '+d1+' days)...','warn');
-  showBanner('live-banner-r2','⏳ Loading live data (last '+d2+' days)...','warn');
+  const url1=buildApiUrl('req1','r1-days-filter','r1-from','r1-to');
+  const url2=buildApiUrl('req2','r2-days-filter','r2-from','r2-to');
+  if(!url1||!url2) return; // custom selected but dates not filled yet
+  showBanner('live-banner-r1','⏳ Loading live data...','warn');
+  showBanner('live-banner-r2','⏳ Loading live data...','warn');
   try{
     const [res1,res2]=await Promise.all([
-      fetch('../api/jackshan/dashboard?type=req1&days='+d1).then(r=>r.json()),
-      fetch('../api/jackshan/dashboard?type=req2&days='+d2).then(r=>r.json()),
+      fetch(url1).then(r=>r.json()),
+      fetch(url2).then(r=>r.json()),
     ]);
 
     if(res1.ok&&res1.products){
@@ -454,6 +486,12 @@ async function loadLive(){
       document.getElementById('kpi-intent').textContent=intent;
       document.getElementById('kpi-dno').textContent=dno;
       document.getElementById('kpi-validation').textContent=noGsc;
+      document.getElementById('r1-coverage').textContent=(RAW_DATA.length-noGsc)+' / '+RAW_DATA.length+' with data';
+      if(res1.meta){
+        document.getElementById('r1-period-start').textContent=res1.meta.from||'—';
+        document.getElementById('r1-period-end').textContent=res1.meta.to||'—';
+        document.getElementById('r1-period-label').textContent=res1.meta.from+' → '+res1.meta.to;
+      }
       showBanner('live-banner-r1','✓ Live data loaded — '+RAW_DATA.length+' products · Period: '+(res1.meta?.from||'')+' to '+(res1.meta?.to||''),'ok');
       renderTable();
     }else{
@@ -484,8 +522,9 @@ async function loadLive(){
       document.getElementById('r2-kpi-opt').textContent=opt;
       document.getElementById('r2-kpi-dno').textContent=dno;
       if(res2.meta){
-        document.getElementById('r2-period-start').textContent=res2.meta.from;
-        document.getElementById('r2-period-end').textContent=res2.meta.to;
+        document.getElementById('r2-period-start').textContent=res2.meta.from||'—';
+        document.getElementById('r2-period-end').textContent=res2.meta.to||'—';
+        document.getElementById('r2-period-label').textContent=res2.meta.from+' → '+res2.meta.to;
       }
       showBanner('live-banner-r2','✓ Live data loaded — '+REQ2_DATA.length+' products · Period: '+(res2.meta?.from||'')+' to '+(res2.meta?.to||''),'ok');
       r2Render();
@@ -676,7 +715,7 @@ function r2ExportCSV(){
     <div id="live-banner-r2" style="display:none;border-radius:14px;padding:14px 20px;margin-bottom:16px;font-size:13px;font-weight:600;"></div>
 
     <div class="info-bar">
-      <div class="info-item"><label>Reporting Period</label><span>Latest 30 Days</span></div>
+      <div class="info-item"><label>Reporting Period</label><span id="r2-period-label">—</span></div>
       <div class="info-item"><label>Start Date</label><span id="r2-period-start">—</span></div>
       <div class="info-item"><label>End Date</label><span id="r2-period-end">—</span></div>
       <div class="info-item"><label>Sales Data</label><span>Shopify Analytics<br><span class="source-badge">LIVE SHOPIFY</span></span></div>
@@ -708,11 +747,17 @@ function r2ExportCSV(){
         <option value="1">&le; 1 Monthly Sales</option>
         <option value="2">&ge; 2 Monthly Sales</option>
       </select>
-      <select class="fsel" id="r2-days-filter" onchange="loadLive()">
+      <select class="fsel" id="r2-days-filter" onchange="onR2RangeChange()">
         <option value="30" selected>Last 30 days</option>
         <option value="14">Last 14 days</option>
         <option value="7">Last 7 days</option>
+        <option value="custom">Custom range…</option>
       </select>
+      <span id="r2-custom-wrap" style="display:none;align-items:center;gap:6px;">
+        <input type="date" id="r2-from" class="fsel" style="width:140px;" onchange="loadLive()">
+        <span style="font-size:12px;color:var(--muted);">to</span>
+        <input type="date" id="r2-to" class="fsel" style="width:140px;" onchange="loadLive()">
+      </span>
       <button onclick="r2ExportCSV()" class="export">&#8595; Export CSV</button>
       <span id="r2-row-count" style="font-size:13px;color:var(--muted);"></span>
     </div>
