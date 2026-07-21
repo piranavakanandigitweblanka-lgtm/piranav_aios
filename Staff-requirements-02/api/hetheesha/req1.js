@@ -420,6 +420,8 @@ module.exports = async function handler(req, res) {
 
     // 5. Tracker — all originally missing fields with live status
     const tracker = buildTracker(SNAPSHOT, shopifyMap);
+    // mark snapshot-sourced items so frontend can show correct "Missing Since"
+    tracker.forEach(i => { i.in_snapshot = true; });
 
     // 5b. Also include live top-50 handles NOT in the Jul 06 snapshot
     //     so products that entered the top-50 after the baseline still show as Pending
@@ -441,10 +443,14 @@ module.exports = async function handler(req, res) {
             rank, handle: h, field: f.label, field_key: f.key,
             before: null, after: sh[f.key],
             was_missing: true, now_fixed: false, new_issue: false, live_value: sh[f.key],
+            in_snapshot: false,  // not in Jul 06 baseline
           });
         }
       });
     });
+
+    // Sort tracker by revenue rank so highest-priority products appear first
+    tracker.sort((a, b) => a.rank - b.rank);
 
     return res.status(200).json({
       ok           : true,

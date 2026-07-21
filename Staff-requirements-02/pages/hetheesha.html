@@ -1166,15 +1166,17 @@ async function r1_loadLive(){
     }
     r1_computeKPIs();
     r1_render();
-    if(data.tracker){
-      trk_init(data.tracker, data.fetched_at);
-      const pending1 = data.tracker.filter(i => !i.now_fixed).length;
-      const btn1 = document.getElementById('r1TrkToggleBtn');
-      if(btn1 && pending1 > 0) btn1.textContent = `📋 Fix Tracker (${pending1} pending)`;
-    }
     if(data.before_after){
       window.R1_BA = data.before_after;
       window.R1_BA_META = data.ba_meta;
+    }
+    if(data.tracker){
+      trk_init(data.tracker, data.fetched_at);
+      const pending1 = data.tracker.filter(i => !i.now_fixed && !i.new_issue).length;
+      const newIss1  = data.tracker.filter(i => i.new_issue).length;
+      const btn1 = document.getElementById('r1TrkToggleBtn');
+      const label = pending1>0||newIss1>0 ? `📋 Fix Tracker (${pending1} pending${newIss1>0?' · '+newIss1+' new':''})`:'📋 Fix Tracker';
+      if(btn1) btn1.textContent = label;
     }
   }catch(err){
     console.error('[r1_loadLive]',err);
@@ -1228,7 +1230,7 @@ function trk_render(){
   const sq=((document.getElementById('trkSearch')||{}).value||'').toLowerCase();
   const all=TRK_DATA;
   const allFixed=all.filter(i=>i.now_fixed);
-  const allPending=all.filter(i=>!i.now_fixed);
+  const allPending=all.filter(i=>!i.now_fixed && !i.new_issue);
 
   /* ── KPI counts (always full dataset) ── */
   const pendMT =all.filter(i=>i.field_key==='meta_title' &&!i.now_fixed).length;
@@ -1297,7 +1299,7 @@ function trk_render(){
         <td><button id="btn-${r1_esc(rowId)}" style="border:1px solid var(--accent);border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);cursor:pointer;" onclick="event.stopPropagation();trkToggleBa('${r1_esc(rowId)}','${r1_esc(i.handle)}')">▶ View</button></td>
       </tr>
       <tr id="${r1_esc(rowId)}" style="display:none;background:#f0f8ff;">
-        <td colspan="7" style="padding:0;">${trkBaHTML(i.handle)}</td>
+        <td colspan="7" style="padding:0;"></td>
       </tr>`;
     }).join('');
   }else{fixedSec.style.display='none';}
@@ -1341,7 +1343,7 @@ function trk_render(){
         <td class="num"><span class="${rankCls}">#${rank}</span></td>
         <td><a href="${r1_esc(url)}" target="_blank" rel="noopener" title="${r1_esc(i.handle)}">${r1_esc(shortH)}</a></td>
         <td><span class="tag-pending">${r1_esc(i.field)}</span></td>
-        <td style="color:var(--muted);font-size:11px">Jul 06 2026</td>
+        <td style="color:var(--muted);font-size:11px">${i.in_snapshot===false?'Not in Jul 06 snapshot':'Jul 06 2026'}</td>
         <td>${pri}</td>
         <td><a class="shopify-fix-btn" href="${r1_esc(adminUrl)}" target="_blank" rel="noopener">Fix on Shopify →</a></td>
       </tr>`;
