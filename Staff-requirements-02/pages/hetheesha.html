@@ -1375,21 +1375,54 @@ function trkBaHTML(handle){
   </div>`;
 }
 
-function trkToggleBa(rowId, handle){
+function trkFixDateForHandle(handle){
+  // Get earliest fix_date for this handle across all fields
+  const fixes = TRK_DATA.filter(i => i.handle === handle && i.now_fixed && i.fix_date);
+  if (!fixes.length) return null;
+  return fixes.map(i => i.fix_date).sort()[0]; // earliest fix date
+}
+
+function addDays(dateStr, n){
+  const d = new Date(dateStr);
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0,10);
+}
+
+async function trkToggleBa(rowId, handle){
   const row = document.getElementById(rowId);
   const btn = document.getElementById('btn-'+rowId);
   if(!row) return;
   const open = row.style.display !== 'none';
   if(open){
     row.style.display='none';
-    if(btn){ btn.textContent='▶ View'; }
-  } else {
-    // Populate with latest data if R1_BA is loaded
-    row.querySelector('td').innerHTML = trkBaHTML(handle);
-    row.style.display='';
-    if(btn){ btn.textContent='▼ Hide'; }
+    if(btn){ btn.textContent='▶ View'; btn.style.background='var(--accent-soft)'; btn.style.color='var(--accent)'; }
+    return;
   }
+  // Show loading
+  if(btn){ btn.textContent='⏳'; }
+  row.querySelector('td').innerHTML = '<div style="padding:14px 20px;color:var(--muted);font-size:12px;">⏳ Loading performance data…</div>';
+  row.style.display='';
+
+  // Compute after range from fix date
+  const fixDateRaw = trkFixDateForHandle(handle);
+  const afterFrom  = fixDateRaw ? fixDateRaw.slice(0,10) : AFTER_FROM_DEFAULT;
+  const afterTo    = addDays(afterFrom, 14);
+
+  try {
+    const resp = await fetch(`/api/hetheesha/req1?type=ba&handle=${encodeURIComponent(handle)}&after_from=${afterFrom}&after_to=${afterTo}`);
+    const data = await resp.json();
+    if(!data.ok) throw new Error(data.error||'API error');
+    // Merge dynamic ba_meta into result for rendering
+    window.R1_BA[handle] = { before: data.before, after: data.after };
+    window.R1_BA_META = data.ba_meta;
+    row.querySelector('td').innerHTML = trkBaHTML(handle);
+  } catch(err) {
+    row.querySelector('td').innerHTML = `<div style="padding:14px 20px;color:var(--err);font-size:12px;">Failed to load: ${err.message}</div>`;
+  }
+  if(btn){ btn.textContent='▼ Hide'; btn.style.background='#dcfce7'; btn.style.color='#166534'; }
 }
+
+const AFTER_FROM_DEFAULT = '2026-07-07';
 </script>
 <script>
 /* ===== REQUIREMENT 2 — COLLECTION SEO DASHBOARD ===== */
