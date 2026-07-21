@@ -421,6 +421,31 @@ module.exports = async function handler(req, res) {
     // 5. Tracker — all originally missing fields with live status
     const tracker = buildTracker(SNAPSHOT, shopifyMap);
 
+    // 5b. Also include live top-50 handles NOT in the Jul 06 snapshot
+    //     so products that entered the top-50 after the baseline still show as Pending
+    const snapshotHandleSet = new Set(snapshotHandles);
+    const FIELDS_DEF = [
+      { key: 'meta_title',  label: 'Meta Title',  isMissing: v => !v },
+      { key: 'meta_desc',   label: 'Meta Desc',   isMissing: v => !v },
+      { key: 'faq',         label: 'FAQ Schema',  isMissing: v => v === 'Missing' || !v },
+      { key: 'alt_missing', label: 'Alt Text',    isMissing: v => v > 0 },
+    ];
+    handles.forEach(h => {
+      if (snapshotHandleSet.has(h)) return; // already covered by snapshot
+      const sh   = shopifyMap[h];
+      if (!sh) return;
+      const rank = revenueMap[h]?.rank ?? 99;
+      FIELDS_DEF.forEach(f => {
+        if (f.isMissing(sh[f.key])) {
+          tracker.push({
+            rank, handle: h, field: f.label, field_key: f.key,
+            before: null, after: sh[f.key],
+            was_missing: true, now_fixed: false, new_issue: false, live_value: sh[f.key],
+          });
+        }
+      });
+    });
+
     return res.status(200).json({
       ok           : true,
       fetched_at   : new Date().toISOString(),
