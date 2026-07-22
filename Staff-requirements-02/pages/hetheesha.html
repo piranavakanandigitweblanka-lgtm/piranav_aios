@@ -508,15 +508,16 @@
 
         <div class="trk-filter-group" style="margin-bottom:6px;">
           <span class="trk-filter-label">Status</span>
-          <button class="fbtn on" id="r2trkBtnAll" onclick="trk2_filter('all')">All</button>
-          <button class="fbtn" id="r2trkBtnFixed" onclick="trk2_filter('fixed')">Fixed</button>
-          <button class="fbtn" id="r2trkBtnPending" onclick="trk2_filter('pending')">Pending</button>
+          <button class="fbtn on" id="r2trkBtnAll"     onclick="trk2_status('all')">All</button>
+          <button class="fbtn"    id="r2trkBtnFixed"   onclick="trk2_status('fixed')">✅ Fixed</button>
+          <button class="fbtn"    id="r2trkBtnPending" onclick="trk2_status('pending')">❌ Pending</button>
         </div>
         <div class="trk-filter-group" style="margin-bottom:14px;">
           <span class="trk-filter-label">Field</span>
-          <button class="fbtn-pending" id="r2trkBtnTitle" onclick="trk2_filter('pending_meta_title')">Pending Meta Title</button>
-          <button class="fbtn-pending" id="r2trkBtnDesc"  onclick="trk2_filter('pending_meta_desc')">Pending Meta Desc</button>
-          <button class="fbtn-pending" id="r2trkBtnFAQ"   onclick="trk2_filter('pending_faq')">Pending FAQ Schema</button>
+          <button class="fbtn on" id="r2trkBtnFieldAll"   onclick="trk2_field('all')">All Fields</button>
+          <button class="fbtn"    id="r2trkBtnFieldTitle" onclick="trk2_field('seo_title')">Meta Title</button>
+          <button class="fbtn"    id="r2trkBtnFieldDesc"  onclick="trk2_field('seo_desc')">Meta Desc</button>
+          <button class="fbtn"    id="r2trkBtnFieldFAQ"   onclick="trk2_field('has_faq')">FAQ Schema</button>
         </div>
 
         <div id="r2TrkFixed" class="trk-section" style="margin-bottom:12px;display:none;">
@@ -1762,6 +1763,8 @@ document.getElementById('r2SearchBox').addEventListener('input',function(){r2_sq
 /* ── Req 2 Live Load ───────────────────────────────── */
 const TRK2_STORE_KEY = 'heth_fix_dates_r2_v1';
 let TRK2_DATA = [];
+let TRK2_STATUS = 'all';
+let TRK2_FIELD  = 'all';
 
 async function r2_loadLive() {
   const banner = document.getElementById('r2LiveBanner');
@@ -1816,32 +1819,44 @@ function trk2_init(tracker, fetched_at) {
     return { ...item, fix_date: stored[k] || null };
   });
 
-  trk2_render('all');
+  trk2_render();
 }
 
+function trk2_status(s) {
+  TRK2_STATUS = s;
+  ['r2trkBtnAll','r2trkBtnFixed','r2trkBtnPending'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.classList.remove('on');
+  });
+  const map = { all:'r2trkBtnAll', fixed:'r2trkBtnFixed', pending:'r2trkBtnPending' };
+  const el = document.getElementById(map[s]); if (el) el.classList.add('on');
+  trk2_render();
+}
+function trk2_field(f) {
+  TRK2_FIELD = f;
+  ['r2trkBtnFieldAll','r2trkBtnFieldTitle','r2trkBtnFieldDesc','r2trkBtnFieldFAQ'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.classList.remove('on');
+  });
+  const map = { all:'r2trkBtnFieldAll', seo_title:'r2trkBtnFieldTitle', seo_desc:'r2trkBtnFieldDesc', has_faq:'r2trkBtnFieldFAQ' };
+  const el = document.getElementById(map[f]); if (el) el.classList.add('on');
+  trk2_render();
+}
+/* backward compat */
 function trk2_filter(f) {
-  ['r2trkBtnAll','r2trkBtnFixed','r2trkBtnPending','r2trkBtnTitle','r2trkBtnDesc','r2trkBtnFAQ']
-    .forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.className = el.className.includes('fbtn-pending') ? 'fbtn-pending' : 'fbtn';
-    });
-  const map = {
-    'all':'r2trkBtnAll', 'fixed':'r2trkBtnFixed', 'pending':'r2trkBtnPending',
-    'pending_meta_title':'r2trkBtnTitle', 'pending_meta_desc':'r2trkBtnDesc', 'pending_faq':'r2trkBtnFAQ'
+  const compound = {
+    pending_meta_title:['pending','seo_title'], pending_meta_desc:['pending','seo_desc'], pending_faq:['pending','has_faq']
   };
-  const btn = document.getElementById(map[f]);
-  if (btn) btn.className += ' on';
-  trk2_render(f);
+  if (compound[f]) { TRK2_FIELD=compound[f][1]; trk2_field(compound[f][1]); trk2_status(compound[f][0]); }
+  else { TRK2_FIELD='all'; trk2_field('all'); trk2_status(f); }
 }
 
-function trk2_render(filter) {
-  const all     = TRK2_DATA;
-  const fixedAll  = all.filter(i => i.now_fixed);
+function trk2_render() {
+  const all      = TRK2_DATA;
+  const fixedAll   = all.filter(i => i.now_fixed);
   const pendingAll = all.filter(i => !i.now_fixed);
-  const total   = all.length;
-  const fixedCt = fixedAll.length;
-  const pendCt  = pendingAll.length;
-  const pct     = total > 0 ? Math.round(fixedCt / total * 100) : 0;
+  const total    = all.length;
+  const fixedCt  = fixedAll.length;
+  const pendCt   = pendingAll.length;
+  const pct      = total > 0 ? Math.round(fixedCt / total * 100) : 0;
 
   document.getElementById('r2trkFixed').textContent   = fixedCt;
   document.getElementById('r2trkPending').textContent = pendCt;
@@ -1850,16 +1865,14 @@ function trk2_render(filter) {
   document.getElementById('r2trkProgressPct').textContent   = pct + '%';
   document.getElementById('r2trkProgressFill').style.width  = pct + '%';
 
-  let showFixed   = true;
-  let showPending = true;
-  let filtFixed   = fixedAll;
-  let filtPending = pendingAll;
-
-  if (filter === 'fixed')               { showPending = false; }
-  else if (filter === 'pending')        { showFixed = false; }
-  else if (filter === 'pending_meta_title') { showFixed = false; filtPending = pendingAll.filter(i => i.field_key === 'seo_title'); }
-  else if (filter === 'pending_meta_desc')  { showFixed = false; filtPending = pendingAll.filter(i => i.field_key === 'seo_desc'); }
-  else if (filter === 'pending_faq')        { showFixed = false; filtPending = pendingAll.filter(i => i.field_key === 'has_faq'); }
+  let filtFixed   = TRK2_STATUS === 'pending' ? [] : fixedAll;
+  let filtPending = TRK2_STATUS === 'fixed'   ? [] : pendingAll;
+  if (TRK2_FIELD !== 'all') {
+    filtFixed   = filtFixed.filter(i => i.field_key === TRK2_FIELD);
+    filtPending = filtPending.filter(i => i.field_key === TRK2_FIELD);
+  }
+  const showFixed   = filtFixed.length > 0;
+  const showPending = filtPending.length > 0;
 
   document.getElementById('r2TrkFixed').style.display   = showFixed   ? '' : 'none';
   document.getElementById('r2TrkPending').style.display = showPending ? '' : 'none';
