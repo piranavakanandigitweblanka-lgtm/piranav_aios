@@ -319,26 +319,20 @@
         </div>
         <div class="controls" style="margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid var(--line);">
           <span class="trk-filter-label">Status:</span>
-          <button class="fbtn on" id="trkBtnAll" onclick="trk_filter('all')">All</button>
-          <button class="fbtn" id="trkBtnFixed" onclick="trk_filter('fixed')">✅ Fixed</button>
-          <button class="fbtn" id="trkBtnPending" onclick="trk_filter('pending')">❌ All Pending</button>
-          <button class="fbtn" id="trkBtnNewIssue" onclick="trk_filter('new_issue')" style="border-color:#f97316;color:#ea580c;">🆕 New Issues</button>
+          <button class="fbtn on" id="trkBtnAll"      onclick="trk_status('all')">All</button>
+          <button class="fbtn"    id="trkBtnFixed"    onclick="trk_status('fixed')">✅ Fixed</button>
+          <button class="fbtn"    id="trkBtnPending"  onclick="trk_status('pending')">❌ Pending</button>
+          <button class="fbtn"    id="trkBtnNewIssue" onclick="trk_status('new_issue')" style="border-color:#f97316;color:#ea580c;">🆕 New Issues</button>
           <input class="search" id="trkSearch" type="text" placeholder="🔍 Search product…" style="margin-left:auto;max-width:220px;">
           <button class="export" onclick="trk_exportCSV()">↓ CSV</button>
         </div>
-        <div class="controls" style="margin-bottom:6px;">
-          <span class="trk-filter-label">Fixed:</span>
-          <button class="fbtn-fixed" id="trkBtnFMT" onclick="trk_filter('fixed_meta_title')">✅ Meta Title</button>
-          <button class="fbtn-fixed" id="trkBtnFMD" onclick="trk_filter('fixed_meta_desc')">✅ Meta Desc</button>
-          <button class="fbtn-fixed" id="trkBtnFFAQ" onclick="trk_filter('fixed_faq')">✅ FAQ Schema</button>
-          <button class="fbtn-fixed" id="trkBtnFAlt" onclick="trk_filter('fixed_alt')">✅ Alt Text</button>
-        </div>
         <div class="controls" style="margin-bottom:14px;">
-          <span class="trk-filter-label">Pending:</span>
-          <button class="fbtn-pending" id="trkBtnPMT" onclick="trk_filter('pending_meta_title')">⏳ Meta Title</button>
-          <button class="fbtn-pending" id="trkBtnPMD" onclick="trk_filter('pending_meta_desc')">⏳ Meta Desc</button>
-          <button class="fbtn-pending" id="trkBtnPFAQ" onclick="trk_filter('pending_faq')">⏳ FAQ Schema</button>
-          <button class="fbtn-pending" id="trkBtnPAlt" onclick="trk_filter('pending_alt')">⏳ Alt Text</button>
+          <span class="trk-filter-label">Field:</span>
+          <button class="fbtn on" id="trkBtnFieldAll" onclick="trk_field('all')">All Fields</button>
+          <button class="fbtn"    id="trkBtnFieldMT"  onclick="trk_field('meta_title')">Meta Title</button>
+          <button class="fbtn"    id="trkBtnFieldMD"  onclick="trk_field('meta_desc')">Meta Desc</button>
+          <button class="fbtn"    id="trkBtnFieldFAQ" onclick="trk_field('faq')">FAQ Schema</button>
+          <button class="fbtn"    id="trkBtnFieldAlt" onclick="trk_field('alt_missing')">Alt Text</button>
         </div>
         <div id="trkLoading" class="placeholder"><div class="ph-icon">⏳</div><h2>Loading live data…</h2><p>Fetching from Shopify API + database. This may take a few seconds.</p></div>
         <div id="trkSectionFixed" style="display:none;">
@@ -1191,6 +1185,7 @@ async function r1_loadLive(){
 /* ─── Fix Tracker ────────────────────────────────────── */
 let TRK_DATA=[];
 let TRK_FILTER='all';
+let TRK_FIELD_FILTER='all';
 const TRK_STORE_KEY='heth_fix_dates_v1';
 
 function trk_getFixDates(){try{return JSON.parse(localStorage.getItem(TRK_STORE_KEY)||'{}');}catch(e){return{};}}
@@ -1210,20 +1205,41 @@ function trk_init(tracker,fetched_at){
   trk_render();
 }
 
-function trk_filter(f){
-  TRK_FILTER=f;
-  document.querySelectorAll('#r1TrkWrap .fbtn').forEach(b=>b.classList.remove('on'));
-  document.querySelectorAll('#r1TrkWrap .fbtn-pending').forEach(b=>b.classList.remove('on'));
-  document.querySelectorAll('#r1TrkWrap .fbtn-fixed').forEach(b=>b.classList.remove('on'));
-  const map={
-    all:'trkBtnAll',fixed:'trkBtnFixed',pending:'trkBtnPending',new_issue:'trkBtnNewIssue',
-    pending_meta_title:'trkBtnPMT',pending_meta_desc:'trkBtnPMD',
-    pending_faq:'trkBtnPFAQ',pending_alt:'trkBtnPAlt',
-    fixed_meta_title:'trkBtnFMT',fixed_meta_desc:'trkBtnFMD',
-    fixed_faq:'trkBtnFFAQ',fixed_alt:'trkBtnFAlt'
-  };
+function trk_status(s){
+  TRK_FILTER=s;
+  ['trkBtnAll','trkBtnFixed','trkBtnPending','trkBtnNewIssue'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.classList.remove('on');
+  });
+  const map={all:'trkBtnAll',fixed:'trkBtnFixed',pending:'trkBtnPending',new_issue:'trkBtnNewIssue'};
+  const el=document.getElementById(map[s]);if(el)el.classList.add('on');
+  trk_render();
+}
+function trk_field(f){
+  TRK_FIELD_FILTER=f;
+  ['trkBtnFieldAll','trkBtnFieldMT','trkBtnFieldMD','trkBtnFieldFAQ','trkBtnFieldAlt'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.classList.remove('on');
+  });
+  const map={all:'trkBtnFieldAll',meta_title:'trkBtnFieldMT',meta_desc:'trkBtnFieldMD',faq:'trkBtnFieldFAQ',alt_missing:'trkBtnFieldAlt'};
   const el=document.getElementById(map[f]);if(el)el.classList.add('on');
   trk_render();
+}
+/* backward compat for KPI card onclick calls */
+function trk_filter(f){
+  const compound={
+    pending_meta_title:['pending','meta_title'],pending_meta_desc:['pending','meta_desc'],
+    pending_faq:['pending','faq'],pending_alt:['pending','alt_missing'],
+    fixed_meta_title:['fixed','meta_title'],fixed_meta_desc:['fixed','meta_desc'],
+    fixed_faq:['fixed','faq'],fixed_alt:['fixed','alt_missing']
+  };
+  if(compound[f]){
+    TRK_FIELD_FILTER=compound[f][1];
+    trk_field(compound[f][1]);
+    trk_status(compound[f][0]);
+  } else {
+    TRK_FIELD_FILTER='all';
+    trk_field('all');
+    trk_status(f);
+  }
 }
 
 function trk_render(){
@@ -1254,17 +1270,10 @@ function trk_render(){
   /* ── Filter items ── */
   let items=all.filter(i=>{
     if(sq&&!i.handle.toLowerCase().includes(sq)&&!i.field.toLowerCase().includes(sq)) return false;
-    if(TRK_FILTER==='fixed')              return i.now_fixed;
-    if(TRK_FILTER==='pending')            return !i.now_fixed;
-    if(TRK_FILTER==='pending_meta_title') return i.field_key==='meta_title'  &&!i.now_fixed;
-    if(TRK_FILTER==='pending_meta_desc')  return i.field_key==='meta_desc'   &&!i.now_fixed;
-    if(TRK_FILTER==='pending_faq')        return i.field_key==='faq'         &&!i.now_fixed;
-    if(TRK_FILTER==='pending_alt')        return i.field_key==='alt_missing' &&!i.now_fixed;
-    if(TRK_FILTER==='fixed_meta_title')   return i.field_key==='meta_title'  && i.now_fixed;
-    if(TRK_FILTER==='fixed_meta_desc')    return i.field_key==='meta_desc'   && i.now_fixed;
-    if(TRK_FILTER==='fixed_faq')          return i.field_key==='faq'         && i.now_fixed;
-    if(TRK_FILTER==='fixed_alt')          return i.field_key==='alt_missing' && i.now_fixed;
-    if(TRK_FILTER==='new_issue')          return i.new_issue===true;
+    if(TRK_FILTER==='fixed')     { if(!i.now_fixed) return false; }
+    else if(TRK_FILTER==='pending')   { if(i.now_fixed||i.new_issue) return false; }
+    else if(TRK_FILTER==='new_issue') { if(!i.new_issue) return false; }
+    if(TRK_FIELD_FILTER!=='all') { if(i.field_key!==TRK_FIELD_FILTER) return false; }
     return true;
   });
 
