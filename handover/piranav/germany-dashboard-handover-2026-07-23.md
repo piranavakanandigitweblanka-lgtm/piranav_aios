@@ -23,21 +23,25 @@ Dashboard is live at: https://staff-requirements-02.vercel.app/germany-sales-dec
 | ID | What Remains | Next Step |
 |---|---|---|
 | PIRANAV-DE-2026-07-23-X1 | Google Ads DE report — deferred, SKU match 0.3% | Awaiting mpn data population or alternative join route approval |
-| GIT-COMMIT | Dashboard folder untracked in git | Commit `Staff-requirements-02/germany-sales-decline-dashboard/` |
-| EVIDENCE-UPDATE | Discovery evidence status stale | Update `evidence/germany-marketplace-stock-sales-decline-discovery-2026-07-23.md` |
 | FORMULA-APPROVAL | OOS proxy and lost sales formulas approved verbally only | Write approval note to `evidence/piranav/` |
+
+## Completed Since Initial Handover (2026-07-23 continuation)
+
+| ID | Task | Commit | Result |
+|---|---|---|---|
+| PIRANAV-DE-DATA-FIX | Corrected OOS data — added market_place=10 filter, Completed orders only, strict DE stock (INNER JOIN + stock=0) | Prior session | PASS |
+| PIRANAV-DE-PPC-FIX | Rebuilt all 3 PPC tabs — spend filtered to AFTER OOS date per SKU (not full year 2025) | `d4a7404` | PASS |
 
 ## Blocking Issues
 
-- None blocking the live dashboard — it is fully deployed and functional
-- Git commit unblocked — can be done by next session
-- Formula approval documentation requires warehouse owner to confirm in writing
+- None — dashboard fully deployed, committed, and pushed
 
 ## State at Handover
 
-- Git status: `germany-sales-decline-dashboard/` folder is **untracked** (`??`) — no commit exists
-- Committed: NO
-- Pushed: NO (Vercel was deployed directly via CLI, not via git push)
+- Git status: committed and pushed on branch `main`
+- Commit: `d4a7404`
+- Pushed: YES
+- Vercel: live at https://staff-requirements-02.vercel.app/germany-sales-decline-dashboard/
 
 ## Key Facts for Next Session
 
