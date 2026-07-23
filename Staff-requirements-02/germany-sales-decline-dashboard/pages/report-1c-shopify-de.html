@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report 1C — Shopify DE Best Sellers Now Out of Stock</title>
+<style>
+:root{
+  --navy:#0c1a30;--navy-2:#13284a;--ink:#1a2233;--muted:#5b6577;
+  --line:#e3e7ee;--bg:#f4f6f9;--card:#ffffff;
+  --gold:#b98b1e;--gold-soft:#faf3e0;
+  --accent:#1f5eff;--accent-soft:#eaf0ff;
+  --red:#b91c1c;--red-soft:#fff5f5;
+  --warn:#d97706;--warn-soft:#fffbeb;
+  --good:#0a7d4f;--good-soft:#e5f5ee;
+  --shopify:#96bf48;--shopify-soft:#f2f8e8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;}
+.topbar{height:5px;background:linear-gradient(90deg,var(--navy) 0%,var(--navy-2) 40%,var(--shopify) 100%);}
+.masthead{background:var(--card);padding:20px 32px;border-bottom:1px solid var(--line);box-shadow:0 1px 4px rgba(12,26,48,.05);}
+.masthead .inner{max-width:1440px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:20px;}
+.mark{width:40px;height:40px;background:var(--navy);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#e8d59a;flex:none;border:1.5px solid var(--gold);}
+.headtxt{flex:1;min-width:220px;}
+.kicker{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+.masthead h1{font-size:18px;font-weight:700;color:var(--navy);}
+.masthead .lede{font-size:12px;color:var(--muted);margin-top:2px;}
+.statrow{display:flex;flex-wrap:wrap;gap:0;border-left:1px solid var(--line);padding-left:24px;}
+.stat{padding:0 20px;border-right:1px solid var(--line);}
+.stat:last-child{border-right:none;padding-right:0;}
+.stat .v{font-size:19px;font-weight:700;color:var(--navy);}
+.stat .l{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:2px;}
+.page{max-width:1440px;margin:0 auto;padding:24px 32px 48px;}
+.back{display:inline-flex;align-items:center;gap:6px;margin-bottom:18px;padding:7px 14px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;transition:all .15s;}
+.back:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent);}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;}
+.kpi .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:600;}
+.kpi .val{font-size:22px;font-weight:700;margin-top:5px;line-height:1;}
+.kpi .note{font-size:11px;color:var(--muted);margin-top:4px;}
+.kpi.red .val{color:var(--red);}
+.kpi.warn .val{color:var(--warn);}
+.kpi.info .val{color:var(--accent);}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
+.search{height:38px;padding:0 14px;border:1px solid var(--line);border-radius:8px;font-size:13px;width:260px;max-width:100%;outline:none;transition:border-color .15s,box-shadow .15s;}
+.search:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft);}
+.sort-lbl{font-size:12px;color:var(--muted);font-weight:600;}
+.sortbtn{border:1px solid var(--line);border-radius:999px;padding:6px 13px;font-size:12px;font-weight:600;cursor:pointer;background:var(--card);color:var(--muted);transition:all .15s;}
+.sortbtn:hover,.sortbtn.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+.expbtn{border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;background:var(--good);color:#fff;margin-left:auto;transition:opacity .15s;}
+.expbtn:hover{opacity:.85;}
+.row-count{font-size:12px;color:var(--muted);}
+.tbox{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+.tbar{padding:11px 18px;border-bottom:1px solid var(--line);font-size:11.5px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;}
+.scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+thead th{position:sticky;top:0;background:#f0f3f8;text-align:left;padding:10px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#42506a;border-bottom:2px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none;}
+thead th:hover{background:#e6eaf2;}
+thead th.num,td.num{text-align:right;}
+tbody td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:#f8f9fc;}
+.prod{display:flex;align-items:center;gap:10px;}
+.thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;border:1px solid var(--line);flex:none;background:#f0f3f8;}
+.thumb-fallback{width:44px;height:44px;border-radius:8px;background:var(--shopify-soft);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--shopify);font-weight:700;flex:none;}
+.sku{font-size:12px;font-weight:700;color:var(--ink);max-width:260px;word-break:break-all;line-height:1.3;}
+.sev{display:inline-block;border-radius:6px;padding:3px 9px;font-size:11px;font-weight:700;white-space:nowrap;}
+.sev.critical{background:var(--red-soft);color:var(--red);border:1px solid #fca5a5;}
+.sev.high{background:var(--warn-soft);color:var(--warn);border:1px solid #fde68a;}
+.sev.medium{background:var(--gold-soft);color:var(--gold);border:1px solid #e8d59a;}
+.dbar{display:flex;align-items:center;gap:8px;}
+.dbar-track{width:70px;height:6px;background:#e3e7ee;border-radius:3px;overflow:hidden;flex:none;}
+.dbar-fill{height:100%;border-radius:3px;}
+.dbar-fill.critical{background:var(--red);}
+.dbar-fill.high{background:var(--warn);}
+.dbar-fill.medium{background:var(--gold);}
+.empty{padding:48px;text-align:center;color:var(--muted);font-size:14px;}
+footer.site{text-align:center;padding:24px 32px 40px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);margin-top:24px;}
+@media(max-width:640px){.masthead{padding:16px;}.page{padding:16px 12px 40px;}.statrow{border-left:none;padding-left:0;width:100%;}}
+
+.tab-bar{display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid var(--line);}
+.tab-btn{padding:10px 22px;font-size:13px;font-weight:700;border:none;background:none;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;}
+.tab-btn.active{color:var(--navy);border-bottom-color:var(--gold);}
+.tab-btn:hover:not(.active){color:var(--ink);background:var(--bg);}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+.ppc-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;}
+.ppc-note{background:var(--warn-soft);border:1px solid #fde68a;border-radius:10px;padding:11px 16px;font-size:12px;color:var(--warn);margin-bottom:16px;}
+.ppc-note strong{font-weight:700;}
+.ppc-search{height:38px;padding:0 14px;border:1px solid var(--line);border-radius:8px;font-size:13px;width:260px;max-width:100%;outline:none;margin-bottom:14px;transition:border-color .15s,box-shadow .15s;}
+.ppc-search:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft);}
+.ppc-row-count{font-size:12px;color:var(--muted);margin-bottom:14px;}
+
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<header class="masthead">
+  <div class="inner">
+    <div class="mark">DE</div>
+    <div class="headtxt">
+      <p class="kicker">Germany Sales Decline &middot; Report 1C</p>
+      <h1>Shopify DE &mdash; Best Sellers Now Out of Stock</h1>
+      <p class="lede">Products sold on ledsone.de (Shopify) in 2025 that currently have zero centralized warehouse stock &middot; Data: 2025-01-01 to 2025-12-31</p>
+    </div>
+    <div class="statrow">
+      <div class="stat"><div class="v">52</div><div class="l">Products OOS</div></div>
+      <div class="stat"><div class="v">&euro;3,074</div><div class="l">Est. Lost Sales</div></div>
+      <div class="stat"><div class="v">269d</div><div class="l">Avg Days OOS</div></div>
+    </div>
+  </div>
+</header>
+<main class="page">
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="oos">OOS Products</button>
+  <button class="tab-btn" data-tab="ppc">Google Ads Spend</button>
+</div>
+<div id="tab-oos" class="tab-pane active">
+
+  <a class="back" href="../index.html">&#8592; Back to Dashboard</a>
+  <div class="kpis">
+    <div class="kpi red"><div class="lbl">Products Out of Stock</div><div class="val">52</div><div class="note">Shopify DE &middot; ledsone-de (sub 108)</div></div>
+    <div class="kpi warn"><div class="lbl">2025 Revenue (These SKUs)</div><div class="val">&euro;4,410</div><div class="note">ledsone.de store</div></div>
+    <div class="kpi red"><div class="lbl">Est. Total Lost Sales</div><div class="val">&euro;3,074</div><div class="note">Daily rate &times; days OOS</div></div>
+    <div class="kpi warn"><div class="lbl">Units Sold in 2025</div><div class="val">222</div><div class="note">Before going out of stock</div></div>
+    <div class="kpi info"><div class="lbl">Avg Days Out of Stock</div><div class="val">269 days</div><div class="note">Across all 52 products</div></div>
+  </div>
+  <div class="controls">
+    <input class="search" id="search" type="text" placeholder="Search SKU&hellip;" aria-label="Search SKU">
+    <span class="sort-lbl">Sort by:</span>
+    <button class="sortbtn on" data-col="lost_sales_estimate_eur">Lost Sales</button>
+    <button class="sortbtn" data-col="last_year_sales_eur">2025 Sales</button>
+    <button class="sortbtn" data-col="days_out_of_stock">Days OOS</button>
+    <button class="sortbtn" data-col="last_year_qty_sold">Qty Sold</button>
+    <span class="row-count" id="row-count">Showing 52 of 52</span>
+    <button class="expbtn" id="exportBtn">&#11015; Export CSV</button>
+  </div>
+  <div class="tbox">
+    <div class="tbar">
+      <span>Shopify DE &middot; ledsone-de (sub_source 108) &middot; market_place = Germany (id 10) &middot; source_id = 3 (SHOPIFY)</span>
+      <span>Est. Lost Sales = (2025 annual sales &divide; 365) &times; days OOS &middot; OOS date proxy = last German order date</span>
+    </div>
+    <div class="scroll">
+      <table id="mainTable">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th class="num">2025 Sales (&euro;)</th>
+            <th class="num">2025 Qty</th>
+            <th class="num">Current Stock</th>
+            <th>Last Order Date</th>
+            <th class="num">Days OOS</th>
+            <th>Severity</th>
+            <th class="num">Est. Lost Sales (&euro;)</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="empty" id="empty" style="display:none">No products match your search.</div>
+    </div>
+  </div>
+
+</div>
+<div id="tab-ppc" class="tab-pane" style="display:none">
+
+<div class="ppc-note"><strong>&#9888; Wasted Spend Alert:</strong> Products below received Google Shopping ad spend on ledsone.de in 2025 but currently have zero centralized DE stock. Google Ads ledsone.de &middot; merchant 5351990695.</div>
+<div class="ppc-kpis">
+  <div class="kpi red"><div class="lbl">Google Ads Spend (OOS SKUs)</div><div class="val">&euro;92.53</div><div class="note">ledsone.de Shopping &middot; 2025</div></div>
+  <div class="kpi warn"><div class="lbl">Total Clicks</div><div class="val">350</div><div class="note">On OOS products</div></div>
+  <div class="kpi info"><div class="lbl">Conversions</div><div class="val">470</div><div class="note">Attributed to these SKUs</div></div>
+  <div class="kpi warn"><div class="lbl">Conversion Value</div><div class="val">&euro;266.58</div><div class="note">Revenue from ad conversions</div></div>
+</div>
+<input class="ppc-search" id="ppc-search-gads" type="text" placeholder="Filter by SKU&hellip;" aria-label="Filter PPC by SKU">
+<div class="ppc-row-count" id="ppc-count-gads">Showing 231 of 231 rows</div>
+<div class="tbox">
+  <div class="tbar"><span>Google Ads ledsone.de &middot; merchant 5351990695 &middot; 2025-01-01 to 2025-12-31 &middot; OOS products only</span></div>
+  <div class="scroll">
+    <table id="ppc-table-gads">
+      <thead><tr>
+        <th>SKU</th><th class="num">2025 Spend (&euro;)</th><th class="num">Clicks</th><th class="num">Impressions</th><th class="num">Conversions</th><th class="num">Conv. Value (&euro;)</th><th class="num">Avg CPC (&euro;)</th>
+      </tr></thead>
+      <tbody id="ppc-tbody-gads"><tr data-sku="pcbs16t10bm">
+<td><span class="sku" style="font-size:11.5px">PCBS16T10BM</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;17.22</td>
+<td class="num">89</td>
+<td class="num">3,050</td>
+<td class="num">118.49</td>
+<td class="num">&euro;61.06</td>
+<td class="num">&euro;0.08</td>
+</tr><tr data-sku="pcft200ba">
+<td><span class="sku" style="font-size:11.5px">PCFT200BA</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;12.77</td>
+<td class="num">45</td>
+<td class="num">1,669</td>
+<td class="num">50.48</td>
+<td class="num">&euro;15.49</td>
+<td class="num">-</td>
+</tr><tr data-sku="cot9abm5pk">
+<td><span class="sku" style="font-size:11.5px">COT9ABM5PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;9.26</td>
+<td class="num">19</td>
+<td class="num">795</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcbs16t10bm3pk">
+<td><span class="sku" style="font-size:11.5px">PCBS16T10BM3PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;8.97</td>
+<td class="num">42</td>
+<td class="num">1,467</td>
+<td class="num">38.67</td>
+<td class="num">&euro;34.16</td>
+<td class="num">&euro;0.12</td>
+</tr><tr data-sku="ldsg1001e276pk">
+<td><span class="sku" style="font-size:11.5px">LDSG1001E276PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;4.89</td>
+<td class="num">4</td>
+<td class="num">76</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="cot9abm2pk">
+<td><span class="sku" style="font-size:11.5px">COT9ABM2PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;4.27</td>
+<td class="num">13</td>
+<td class="num">942</td>
+<td class="num">63.32</td>
+<td class="num">&euro;4.20</td>
+<td class="num">-</td>
+</tr><tr data-sku="cot9abm6pk">
+<td><span class="sku" style="font-size:11.5px">COT9ABM6PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;3.29</td>
+<td class="num">15</td>
+<td class="num">1,177</td>
+<td class="num">33.00</td>
+<td class="num">&euro;60.90</td>
+<td class="num">-</td>
+</tr><tr data-sku="wsiwbc">
+<td><span class="sku" style="font-size:11.5px">WSIWBC</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;2.99</td>
+<td class="num">3</td>
+<td class="num">236</td>
+<td class="num">6.00</td>
+<td class="num">&euro;0.50</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcmt20bm">
+<td><span class="sku" style="font-size:11.5px">PCMT20BM</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;2.99</td>
+<td class="num">11</td>
+<td class="num">496</td>
+<td class="num">42.00</td>
+<td class="num">&euro;14.50</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100re+wsch135re+lsdo210re">
+<td><span class="sku" style="font-size:11.5px">CRSF100RE+WSCH135RE+LSDO210RE</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;1.54</td>
+<td class="num">4</td>
+<td class="num">106</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">&euro;0.54</td>
+</tr><tr data-sku="lsdo400cb+rpr44wh">
+<td><span class="sku" style="font-size:11.5px">LSDO400CB+RPR44WH</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;1.49</td>
+<td class="num">5</td>
+<td class="num">331</td>
+<td class="num">17.14</td>
+<td class="num">&euro;4.33</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcmt20yb">
+<td><span class="sku" style="font-size:11.5px">PCMT20YB</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;1.39</td>
+<td class="num">6</td>
+<td class="num">197</td>
+<td class="num">8.50</td>
+<td class="num">&euro;2.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100re+wsch135re+lshq150re">
+<td><span class="sku" style="font-size:11.5px">CRSF100RE+WSCH135RE+LSHQ150RE</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;1.35</td>
+<td class="num">8</td>
+<td class="num">181</td>
+<td class="num">10.79</td>
+<td class="num">&euro;2.15</td>
+<td class="num">-</td>
+</tr><tr data-sku="ldsg1001e27">
+<td><span class="sku" style="font-size:11.5px">LDSG1001E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;1.30</td>
+<td class="num">3</td>
+<td class="num">226</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">&euro;0.28</td>
+</tr><tr data-sku="pcft800ba">
+<td><span class="sku" style="font-size:11.5px">PCFT800BA</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;1.27</td>
+<td class="num">6</td>
+<td class="num">545</td>
+<td class="num">8.50</td>
+<td class="num">&euro;4.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="cot9abm4pk">
+<td><span class="sku" style="font-size:11.5px">COT9ABM4PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;1.19</td>
+<td class="num">3</td>
+<td class="num">366</td>
+<td class="num">2.50</td>
+<td class="num">&euro;15.93</td>
+<td class="num">-</td>
+</tr><tr data-sku="lhcce27wh+cgmlwh">
+<td><span class="sku" style="font-size:11.5px">LHCCE27WH+CGMLWH</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;1.03</td>
+<td class="num">4</td>
+<td class="num">100</td>
+<td class="num">2.00</td>
+<td class="num">&euro;1.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100sn+lhnse27sn+scrn70ba+lstf40sn">
+<td><span class="sku" style="font-size:11.5px">CRSF100SN+LHNSE27SN+SCRN70BA+LSTF40SN</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.93</td>
+<td class="num">4</td>
+<td class="num">226</td>
+<td class="num">3.00</td>
+<td class="num">&euro;1.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcbsm2fsn">
+<td><span class="sku" style="font-size:11.5px">PCBSM2FSN</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.91</td>
+<td class="num">5</td>
+<td class="num">211</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">&euro;0.12</td>
+</tr><tr data-sku="crsf100gb+wsls155gb+scrn70gb+lstf40gb">
+<td><span class="sku" style="font-size:11.5px">CRSF100GB+WSLS155GB+SCRN70GB+LSTF40GB</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.85</td>
+<td class="num">2</td>
+<td class="num">54</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">&euro;0.39</td>
+</tr><tr data-sku="crsf100gr+wsch135gr+lshq150gr">
+<td><span class="sku" style="font-size:11.5px">CRSF100GR+WSCH135GR+LSHQ150GR</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.84</td>
+<td class="num">3</td>
+<td class="num">152</td>
+<td class="num">4.00</td>
+<td class="num">&euro;1.50</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcmt20co">
+<td><span class="sku" style="font-size:11.5px">PCMT20CO</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.81</td>
+<td class="num">3</td>
+<td class="num">101</td>
+<td class="num">6.50</td>
+<td class="num">&euro;4.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="cot9abm">
+<td><span class="sku" style="font-size:11.5px">COT9ABM</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.75</td>
+<td class="num">4</td>
+<td class="num">473</td>
+<td class="num">2.50</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wsiwbs+ict45e2760">
+<td><span class="sku" style="font-size:11.5px">WSIWBS+ICT45E2760</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.74</td>
+<td class="num">1</td>
+<td class="num">150</td>
+<td class="num">1.00</td>
+<td class="num">&euro;0.50</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcmt20sn">
+<td><span class="sku" style="font-size:11.5px">PCMT20SN</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.61</td>
+<td class="num">3</td>
+<td class="num">72</td>
+<td class="num">5.00</td>
+<td class="num">&euro;1.50</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc8172">
+<td><span class="sku" style="font-size:11.5px">ENC8172</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.48</td>
+<td class="num">2</td>
+<td class="num">67</td>
+<td class="num">18.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100co+wsls155co+scrn70co+lstf40co">
+<td><span class="sku" style="font-size:11.5px">CRSF100CO+WSLS155CO+SCRN70CO+LSTF40CO</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.48</td>
+<td class="num">1</td>
+<td class="num">178</td>
+<td class="num">1.00</td>
+<td class="num">&euro;32.66</td>
+<td class="num">&euro;0.48</td>
+</tr><tr data-sku="ldsg1001e273pk">
+<td><span class="sku" style="font-size:11.5px">LDSG1001E273PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.46</td>
+<td class="num">1</td>
+<td class="num">71</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcdo20co">
+<td><span class="sku" style="font-size:11.5px">PCDO20CO</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.46</td>
+<td class="num">2</td>
+<td class="num">30</td>
+<td class="num">2.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="lswe315dg">
+<td><span class="sku" style="font-size:11.5px">LSWE315DG</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.43</td>
+<td class="num">2</td>
+<td class="num">163</td>
+<td class="num">1.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcmt20ch">
+<td><span class="sku" style="font-size:11.5px">PCMT20CH</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.41</td>
+<td class="num">2</td>
+<td class="num">136</td>
+<td class="num">3.00</td>
+<td class="num">&euro;1.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+phcn1pbrbm">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+PHCN1PBRBM</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.40</td>
+<td class="num">2</td>
+<td class="num">24</td>
+<td class="num">2.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcft90lbm+pcbsm2fyb+lhnse27yb">
+<td><span class="sku" style="font-size:11.5px">PCFT90LBM+PCBSM2FYB+LHNSE27YB</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.38</td>
+<td class="num">3</td>
+<td class="num">24</td>
+<td class="num">3.00</td>
+<td class="num">&euro;0.50</td>
+<td class="num">-</td>
+</tr><tr data-sku="lspg250ar">
+<td><span class="sku" style="font-size:11.5px">LSPG250AR</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.36</td>
+<td class="num">1</td>
+<td class="num">37</td>
+<td class="num">2.00</td>
+<td class="num">&euro;0.50</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcbsm2fwh">
+<td><span class="sku" style="font-size:11.5px">PCBSM2FWH</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.35</td>
+<td class="num">2</td>
+<td class="num">97</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">&euro;0.26</td>
+</tr><tr data-sku="crsf100gr+wsch135gr+lshq150gr+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100GR+WSCH135GR+LSHQ150GR+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.32</td>
+<td class="num">1</td>
+<td class="num">13</td>
+<td class="num">1.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcbsm2fch">
+<td><span class="sku" style="font-size:11.5px">PCBSM2FCH</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.31</td>
+<td class="num">4</td>
+<td class="num">115</td>
+<td class="num">1.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+phht1pbrbm+lscp150re">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+PHHT1PBRBM+LSCP150RE</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.29</td>
+<td class="num">1</td>
+<td class="num">23</td>
+<td class="num">1.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc134">
+<td><span class="sku" style="font-size:11.5px">ENC134</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.29</td>
+<td class="num">1</td>
+<td class="num">43</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100wh+wsch135wh+lsdo210wh">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+WSCH135WH+LSDO210WH</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.29</td>
+<td class="num">1</td>
+<td class="num">64</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">&euro;0.29</td>
+</tr><tr data-sku="crff500rr+phsh1pbryb3pk+lscy210rr3pk">
+<td><span class="sku" style="font-size:11.5px">CRFF500RR+PHSH1PBRYB3PK+LSCY210RR3PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.27</td>
+<td class="num">1</td>
+<td class="num">89</td>
+<td class="num">1.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+wsss70bm+lshh240bm+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+WSSS70BM+LSHH240BM+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.26</td>
+<td class="num">1</td>
+<td class="num">1</td>
+<td class="num">1.50</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+wsss70bm+lsol180bm+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+WSSS70BM+LSOL180BM+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.26</td>
+<td class="num">1</td>
+<td class="num">3</td>
+<td class="num">0.50</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcbsm2fbm">
+<td><span class="sku" style="font-size:11.5px">PCBSM2FBM</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.24</td>
+<td class="num">2</td>
+<td class="num">100</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">&euro;0.15</td>
+</tr><tr data-sku="pcbi200tp">
+<td><span class="sku" style="font-size:11.5px">PCBI200TP</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.23</td>
+<td class="num">1</td>
+<td class="num">29</td>
+<td class="num">1.00</td>
+<td class="num">&euro;1.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100wh+lhnse27wh+scrn70wh+lsft220re+icst64e2740">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+LHNSE27WH+SCRN70WH+LSFT220RE+ICST64E2740</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.23</td>
+<td class="num">1</td>
+<td class="num">61</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="cenu25200wh">
+<td><span class="sku" style="font-size:11.5px">CENU25200WH</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.23</td>
+<td class="num">1</td>
+<td class="num">9</td>
+<td class="num">1.00</td>
+<td class="num">&euro;0.10</td>
+<td class="num">-</td>
+</tr><tr data-sku="12ip67350ol3">
+<td><span class="sku" style="font-size:11.5px">12IP67350OL3</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.22</td>
+<td class="num">1</td>
+<td class="num">44</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="tstlrulrb">
+<td><span class="sku" style="font-size:11.5px">TSTLRULRB</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.20</td>
+<td class="num">2</td>
+<td class="num">117</td>
+<td class="num">2.00</td>
+<td class="num">&euro;0.50</td>
+<td class="num">-</td>
+</tr><tr data-sku="tstlrusrb">
+<td><span class="sku" style="font-size:11.5px">TSTLRUSRB</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.18</td>
+<td class="num">1</td>
+<td class="num">10</td>
+<td class="num">2.00</td>
+<td class="num">&euro;0.10</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bs+phch1pbrbs+lsul220bs+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BS+PHCH1PBRBS+LSUL220BS+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.17</td>
+<td class="num">1</td>
+<td class="num">32</td>
+<td class="num">1.00</td>
+<td class="num">&euro;0.50</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcdo20ro">
+<td><span class="sku" style="font-size:11.5px">PCDO20RO</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.13</td>
+<td class="num">1</td>
+<td class="num">1</td>
+<td class="num">1.00</td>
+<td class="num">&euro;1.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcsn220fg">
+<td><span class="sku" style="font-size:11.5px">PCSN220FG</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.12</td>
+<td class="num">1</td>
+<td class="num">71</td>
+<td class="num">1.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wcfrbm">
+<td><span class="sku" style="font-size:11.5px">WCFRBM</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.12</td>
+<td class="num">1</td>
+<td class="num">69</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100wh+phch1pwrswh+lsms320wh">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+PHCH1PWRSWH+LSMS320WH</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.09</td>
+<td class="num">1</td>
+<td class="num">40</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100or+wsch135or+lsdo210or">
+<td><span class="sku" style="font-size:11.5px">CRSF100OR+WSCH135OR+LSDO210OR</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.09</td>
+<td class="num">1</td>
+<td class="num">41</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">&euro;0.09</td>
+</tr><tr data-sku="crsf100wh+lhnse27wh+scrn70wh+lsft220bl">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+LHNSE27WH+SCRN70WH+LSFT220BL</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.09</td>
+<td class="num">1</td>
+<td class="num">18</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">&euro;0.09</td>
+</tr><tr data-sku="enc9364">
+<td><span class="sku" style="font-size:11.5px">ENC9364</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.02</td>
+<td class="num">0</td>
+<td class="num">4</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc8813">
+<td><span class="sku" style="font-size:11.5px">ENC8813</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.02</td>
+<td class="num">0</td>
+<td class="num">12</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100ye+wsch135ye+lsdo210ye">
+<td><span class="sku" style="font-size:11.5px">CRSF100YE+WSCH135YE+LSDO210YE</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">43</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100ye+wsch135ye+lsdo210ye+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100YE+WSCH135YE+LSDO210YE+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">26</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf120osbm+wsls155yb+lsglbp120bm">
+<td><span class="sku" style="font-size:11.5px">CRSF120OSBM+WSLS155YB+LSGLBP120BM</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf120osbm+wsls155yb+lsglbp120co">
+<td><span class="sku" style="font-size:11.5px">CRSF120OSBM+WSLS155YB+LSGLBP120CO</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">7</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf120osbm+wsls155yb+lsglbp150co">
+<td><span class="sku" style="font-size:11.5px">CRSF120OSBM+WSLS155YB+LSGLBP150CO</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf120osbm+wsls155yb+lsglcy100bm">
+<td><span class="sku" style="font-size:11.5px">CRSF120OSBM+WSLS155YB+LSGLCY100BM</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">16</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf120osbm+wsls155yb+lsglsc150bm">
+<td><span class="sku" style="font-size:11.5px">CRSF120OSBM+WSLS155YB+LSGLSC150BM</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf120rr+phch1pbrrr+scrn70rr+lswd360rr">
+<td><span class="sku" style="font-size:11.5px">CRSF120RR+PHCH1PBRRR+SCRN70RR+LSWD360RR</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">10</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf2003bm+phrb1pbr40bm3pk+lsbs160gr3pk">
+<td><span class="sku" style="font-size:11.5px">CRSF2003BM+PHRB1PBR40BM3PK+LSBS160GR3PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">3</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf2003fg+wccy1rogd3pk+lddtce27123pk">
+<td><span class="sku" style="font-size:11.5px">CRSF2003FG+WCCY1ROGD3PK+LDDTCE27123PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">5</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc122">
+<td><span class="sku" style="font-size:11.5px">ENC122</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">112</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc124">
+<td><span class="sku" style="font-size:11.5px">ENC124</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">33</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc126">
+<td><span class="sku" style="font-size:11.5px">ENC126</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">112</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc1571">
+<td><span class="sku" style="font-size:11.5px">ENC1571</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">7</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc1882">
+<td><span class="sku" style="font-size:11.5px">ENC1882</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">8</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc1883">
+<td><span class="sku" style="font-size:11.5px">ENC1883</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">21</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc1992">
+<td><span class="sku" style="font-size:11.5px">ENC1992</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc2229">
+<td><span class="sku" style="font-size:11.5px">ENC2229</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">10</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc2241">
+<td><span class="sku" style="font-size:11.5px">ENC2241</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">23</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc2242">
+<td><span class="sku" style="font-size:11.5px">ENC2242</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc2243">
+<td><span class="sku" style="font-size:11.5px">ENC2243</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc3371">
+<td><span class="sku" style="font-size:11.5px">ENC3371</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">22</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc3404">
+<td><span class="sku" style="font-size:11.5px">ENC3404</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">4</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc4146">
+<td><span class="sku" style="font-size:11.5px">ENC4146</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">25</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc4148">
+<td><span class="sku" style="font-size:11.5px">ENC4148</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">3</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc4152">
+<td><span class="sku" style="font-size:11.5px">ENC4152</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc4320">
+<td><span class="sku" style="font-size:11.5px">ENC4320</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc4584">
+<td><span class="sku" style="font-size:11.5px">ENC4584</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">14</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc4587">
+<td><span class="sku" style="font-size:11.5px">ENC4587</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">12</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc4588">
+<td><span class="sku" style="font-size:11.5px">ENC4588</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">10</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc566">
+<td><span class="sku" style="font-size:11.5px">ENC566</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc570">
+<td><span class="sku" style="font-size:11.5px">ENC570</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc594">
+<td><span class="sku" style="font-size:11.5px">ENC594</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">5</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc6464">
+<td><span class="sku" style="font-size:11.5px">ENC6464</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc6492">
+<td><span class="sku" style="font-size:11.5px">ENC6492</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc7669">
+<td><span class="sku" style="font-size:11.5px">ENC7669</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">5</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc7882">
+<td><span class="sku" style="font-size:11.5px">ENC7882</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">21</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc7994">
+<td><span class="sku" style="font-size:11.5px">ENC7994</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc7995">
+<td><span class="sku" style="font-size:11.5px">ENC7995</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc8049">
+<td><span class="sku" style="font-size:11.5px">ENC8049</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc8401">
+<td><span class="sku" style="font-size:11.5px">ENC8401</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">14</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc844">
+<td><span class="sku" style="font-size:11.5px">ENC844</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">4</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc8457">
+<td><span class="sku" style="font-size:11.5px">ENC8457</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">41</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc850">
+<td><span class="sku" style="font-size:11.5px">ENC850</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc8670">
+<td><span class="sku" style="font-size:11.5px">ENC8670</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc871">
+<td><span class="sku" style="font-size:11.5px">ENC871</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc8746">
+<td><span class="sku" style="font-size:11.5px">ENC8746</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">5</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc8747">
+<td><span class="sku" style="font-size:11.5px">ENC8747</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">3</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc8847">
+<td><span class="sku" style="font-size:11.5px">ENC8847</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">4</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="enc90">
+<td><span class="sku" style="font-size:11.5px">ENC90</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="ldmg95b2285pk">
+<td><span class="sku" style="font-size:11.5px">LDMG95B2285PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="ldsg1001e272pk">
+<td><span class="sku" style="font-size:11.5px">LDSG1001E272PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">44</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="ldsg1007e27">
+<td><span class="sku" style="font-size:11.5px">LDSG1007E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">66</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="ldsg1007e272pk">
+<td><span class="sku" style="font-size:11.5px">LDSG1007E272PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">73</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="ldsg1007e273pk">
+<td><span class="sku" style="font-size:11.5px">LDSG1007E273PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">25</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="ldsg1007e276pk">
+<td><span class="sku" style="font-size:11.5px">LDSG1007E276PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">16</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="lhcce27bm+cgmlbm">
+<td><span class="sku" style="font-size:11.5px">LHCCE27BM+CGMLBM</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">28</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="lscg185ar+scrn70fg">
+<td><span class="sku" style="font-size:11.5px">LSCG185AR+SCRN70FG</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">5</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="lsfg210ar+scrn70fg">
+<td><span class="sku" style="font-size:11.5px">LSFG210AR+SCRN70FG</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="lsft220ch+rpr44wh">
+<td><span class="sku" style="font-size:11.5px">LSFT220CH+RPR44WH</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="lsft220co+rpr44wh">
+<td><span class="sku" style="font-size:11.5px">LSFT220CO+RPR44WH</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="lsft220gb+rpr44wh">
+<td><span class="sku" style="font-size:11.5px">LSFT220GB+RPR44WH</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">74</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="lsgg200ar+scrn70fg">
+<td><span class="sku" style="font-size:11.5px">LSGG200AR+SCRN70FG</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">7</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcbi300tp">
+<td><span class="sku" style="font-size:11.5px">PCBI300TP</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">32</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcbi500tp">
+<td><span class="sku" style="font-size:11.5px">PCBI500TP</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcbsm2ffg">
+<td><span class="sku" style="font-size:11.5px">PCBSM2FFG</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">49</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcbsm2fyb">
+<td><span class="sku" style="font-size:11.5px">PCBSM2FYB</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">50</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcdo20co+rw1ro2pk+pcbsm2fco+lhnse27co">
+<td><span class="sku" style="font-size:11.5px">PCDO20CO+RW1RO2PK+PCBSM2FCO+LHNSE27CO</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">4</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcdo20fg">
+<td><span class="sku" style="font-size:11.5px">PCDO20FG</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">5</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcft300ba">
+<td><span class="sku" style="font-size:11.5px">PCFT300BA</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">13</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcft500ba">
+<td><span class="sku" style="font-size:11.5px">PCFT500BA</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">25</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcft90tbm+pcbsm2fyb+wsss70yb">
+<td><span class="sku" style="font-size:11.5px">PCFT90TBM+PCBSM2FYB+WSSS70YB</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcgz20nl3pk">
+<td><span class="sku" style="font-size:11.5px">PCGZ20NL3PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcgz20nlapk">
+<td><span class="sku" style="font-size:11.5px">PCGZ20NLAPK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcmt20ro">
+<td><span class="sku" style="font-size:11.5px">PCMT20RO</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">13</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcmt20wh">
+<td><span class="sku" style="font-size:11.5px">PCMT20WH</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">13</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pcsn220bm">
+<td><span class="sku" style="font-size:11.5px">PCSN220BM</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">13</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="phct1bmrbm+phba1bmrbm+lsdo300co">
+<td><span class="sku" style="font-size:11.5px">PHCT1BMRBM+PHBA1BMRBM+LSDO300CO</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">5</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="phct1bmrbm+phdo1pbrbm+lscy290ch+ldwwe2718">
+<td><span class="sku" style="font-size:11.5px">PHCT1BMRBM+PHDO1PBRBM+LSCY290CH+LDWWE2718</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">3</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="phct1bmrbm+phdo1pbrbm+lscy290sn+ldwwe2718">
+<td><span class="sku" style="font-size:11.5px">PHCT1BMRBM+PHDO1PBRBM+LSCY290SN+LDWWE2718</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">12</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="phct1bmrbm+phdo1pbrbm+lsms320re">
+<td><span class="sku" style="font-size:11.5px">PHCT1BMRBM+PHDO1PBRBM+LSMS320RE</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">9</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="phct1bmrbm+phdo1pbrbm+lsms320re+ldwwe279">
+<td><span class="sku" style="font-size:11.5px">PHCT1BMRBM+PHDO1PBRBM+LSMS320RE+LDWWE279</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="phsf1pbryb+lscy290bc">
+<td><span class="sku" style="font-size:11.5px">PHSF1PBRYB+LSCY290BC</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">4</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="phsf1pbryb+lscy290cb">
+<td><span class="sku" style="font-size:11.5px">PHSF1PBRYB+LSCY290CB</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="phsf1pbryb+lscy290gr">
+<td><span class="sku" style="font-size:11.5px">PHSF1PBRYB+LSCY290GR</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">20</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="phsf1pbryb+lscy290gr+icst64e27">
+<td><span class="sku" style="font-size:11.5px">PHSF1PBRYB+LSCY290GR+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">36</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="phuh1hetbm+lshm300he+icst64e27">
+<td><span class="sku" style="font-size:11.5px">PHUH1HETBM+LSHM300HE+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">7</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="phuh1hetbm+lshm400he">
+<td><span class="sku" style="font-size:11.5px">PHUH1HETBM+LSHM400HE</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">11</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="phuh1hetbm+lshm400he+icst64e27">
+<td><span class="sku" style="font-size:11.5px">PHUH1HETBM+LSHM400HE+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pladbs+lsdo210bs3pk">
+<td><span class="sku" style="font-size:11.5px">PLADBS+LSDO210BS3PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="pladbs+lsdo210bs3pk+icst64e273pk">
+<td><span class="sku" style="font-size:11.5px">PLADBS+LSDO210BS3PK+ICST64E273PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">3</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="plhabm+icst64e2740">
+<td><span class="sku" style="font-size:11.5px">PLHABM+ICST64E2740</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">38</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="tstlrumrb">
+<td><span class="sku" style="font-size:11.5px">TSTLRUMRB</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">84</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wccy1rogd">
+<td><span class="sku" style="font-size:11.5px">WCCY1ROGD</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">101</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wccy1rogd+ldmt45e274">
+<td><span class="sku" style="font-size:11.5px">WCCY1ROGD+LDMT45E274</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">27</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wccyrogd">
+<td><span class="sku" style="font-size:11.5px">WCCYROGD</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">8</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wcfrbm+ldmst64e274">
+<td><span class="sku" style="font-size:11.5px">WCFRBM+LDMST64E274</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">14</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wcfs1sebm">
+<td><span class="sku" style="font-size:11.5px">WCFS1SEBM</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wclbhe">
+<td><span class="sku" style="font-size:11.5px">WCLBHE</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">4</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wclbhe2pk">
+<td><span class="sku" style="font-size:11.5px">WCLBHE2PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">18</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wcpc170gy">
+<td><span class="sku" style="font-size:11.5px">WCPC170GY</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">4</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wcpc210ye">
+<td><span class="sku" style="font-size:11.5px">WCPC210YE</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wlhsbmsw10">
+<td><span class="sku" style="font-size:11.5px">WLHSBMSW10</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">5</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wsiwbc+ict45e2760">
+<td><span class="sku" style="font-size:11.5px">WSIWBC+ICT45E2760</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">25</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wsiwbm">
+<td><span class="sku" style="font-size:11.5px">WSIWBM</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">89</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wsiwbm+ict45e2760">
+<td><span class="sku" style="font-size:11.5px">WSIWBM+ICT45E2760</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">15</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wsiwbs">
+<td><span class="sku" style="font-size:11.5px">WSIWBS</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">120</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wsiwcrbc">
+<td><span class="sku" style="font-size:11.5px">WSIWCRBC</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">79</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wsiwcrbc+ict45e2760">
+<td><span class="sku" style="font-size:11.5px">WSIWCRBC+ICT45E2760</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wsiwcrbm">
+<td><span class="sku" style="font-size:11.5px">WSIWCRBM</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">19</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wsiwcrbs">
+<td><span class="sku" style="font-size:11.5px">WSIWCRBS</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">45</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wsiwcrbs+ict45e2760">
+<td><span class="sku" style="font-size:11.5px">WSIWCRBS+ICT45E2760</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wsosbdbm">
+<td><span class="sku" style="font-size:11.5px">WSOSBDBM</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="wswtbm+ict45e2760">
+<td><span class="sku" style="font-size:11.5px">WSWTBM+ICT45E2760</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crff140gl+wswh135bm+lsdo210bs">
+<td><span class="sku" style="font-size:11.5px">CRFF140GL+WSWH135BM+LSDO210BS</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">4</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crff4002bm+phht1pbrbm2pk+lsft220bm2pk">
+<td><span class="sku" style="font-size:11.5px">CRFF4002BM+PHHT1PBRBM2PK+LSFT220BM2PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bc+phch1pbrbc+lsft220bc+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BC+PHCH1PBRBC+LSFT220BC+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">16</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bc+phch1pbrbc+lsul220bc+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BC+PHCH1PBRBC+LSUL220BC+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">21</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bl+phch1pwrsbl+lscy290bl">
+<td><span class="sku" style="font-size:11.5px">CRSF100BL+PHCH1PWRSBL+LSCY290BL</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">14</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bl+wsch135bt+lsdo210bl">
+<td><span class="sku" style="font-size:11.5px">CRSF100BL+WSCH135BT+LSDO210BL</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">17</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bl+wsch135bt+lsdo210bl+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BL+WSCH135BT+LSDO210BL+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+phcn1pbrbm+wcbnbm+ldmt130e274">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+PHCN1PBRBM+WCBNBM+LDMT130E274</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+phht1pbrbm+lscp150wh">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+PHHT1PBRBM+LSCP150WH</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+phrb1pbrpb+wcscbm+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+PHRB1PBRPB+WCSCBM+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+phsw1pbrbm+lsss300bb">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+PHSW1PBRBM+LSSS300BB</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">9</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+phsw1pbrbm+lsss300bb+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+PHSW1PBRBM+LSSS300BB+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">3</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+wsch135bm+lshq150bm">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+WSCH135BM+LSHQ150BM</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">35</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+wsch135bm+scrn70bm+lstf40yb">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+WSCH135BM+SCRN70BM+LSTF40YB</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">18</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+wsss70bm+lsdo210bm+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+WSSS70BM+LSDO210BM+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+wsss70bm+lsft220bg+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+WSSS70BM+LSFT220BG+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+wsss70bm+lsft220gs+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+WSSS70BM+LSFT220GS+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+wsss70bm+lslc180bm+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+WSSS70BM+LSLC180BM+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+wsss70bm+lsol180bg+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+WSSS70BM+LSOL180BG+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+wsss70bm+lsss300bm+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+WSSS70BM+LSSS300BM+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">4</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+wsss70bm+lstf40bg+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+WSSS70BM+LSTF40BG+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+wsss70bm+lstf40bm+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+WSSS70BM+LSTF40BM+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+wsss70bm+lstl260bm+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+WSSS70BM+LSTL260BM+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+wsss70bm+lsul220bm+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+WSSS70BM+LSUL220BM+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm+wsss70bm+lswd360bm+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM+WSSS70BM+LSWD360BM+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">3</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100bm3pk+phsq1pbryb3pk+lsss300bb3pk">
+<td><span class="sku" style="font-size:11.5px">CRSF100BM3PK+PHSQ1PBRYB3PK+LSSS300BB3PK</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100ch+lhnse27ch+scrn70ch+lsft220ch">
+<td><span class="sku" style="font-size:11.5px">CRSF100CH+LHNSE27CH+SCRN70CH+LSFT220CH</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100ch+wsnw170ch+scrn70ch+lsft220ch">
+<td><span class="sku" style="font-size:11.5px">CRSF100CH+WSNW170CH+SCRN70CH+LSFT220CH</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100co+lhnse27co+scrn70co+lsft220co">
+<td><span class="sku" style="font-size:11.5px">CRSF100CO+LHNSE27CO+SCRN70CO+LSFT220CO</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">58</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100co+lhnse27co+scrn70co+lsft220co+icst64e2740">
+<td><span class="sku" style="font-size:11.5px">CRSF100CO+LHNSE27CO+SCRN70CO+LSFT220CO+ICST64E2740</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">36</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100co+phsh1pbrco+lsdo300co">
+<td><span class="sku" style="font-size:11.5px">CRSF100CO+PHSH1PBRCO+LSDO300CO</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">4</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100gy+wsch135gy+lsdo210gy">
+<td><span class="sku" style="font-size:11.5px">CRSF100GY+WSCH135GY+LSDO210GY</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">18</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100gy+wsch135gy+lsdo210gy+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100GY+WSCH135GY+LSDO210GY+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">6</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100nb+wsch135nb+lsdo210nb">
+<td><span class="sku" style="font-size:11.5px">CRSF100NB+WSCH135NB+LSDO210NB</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">33</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100or+wsch135or+lsdo210or+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100OR+WSCH135OR+LSDO210OR+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">21</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100re+phch1pwrsre+lsms320re">
+<td><span class="sku" style="font-size:11.5px">CRSF100RE+PHCH1PWRSRE+LSMS320RE</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">9</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100re+wsch135re+lsdo210re+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100RE+WSCH135RE+LSDO210RE+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">20</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100re+wsch135re+lshq150re+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100RE+WSCH135RE+LSHQ150RE+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100sn+phchpcrsn">
+<td><span class="sku" style="font-size:11.5px">CRSF100SN+PHCHPCRSN</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100sn+wsss70sn+lscy290sn+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100SN+WSSS70SN+LSCY290SN+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">15</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100sn+wsss70sn+lsdo300sn+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100SN+WSSS70SN+LSDO300SN+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">9</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100sn+wsss70sn+lsol220sn+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100SN+WSSS70SN+LSOL220SN+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">4</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100wh+lhnse27wh+lsms320bt">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+LHNSE27WH+LSMS320BT</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">5</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100wh+lhnse27wh+lsms320cb">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+LHNSE27WH+LSMS320CB</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">15</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100wh+lhnse27wh+lsms320gr">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+LHNSE27WH+LSMS320GR</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">19</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100wh+lhnse27wh+lsms320or">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+LHNSE27WH+LSMS320OR</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">2</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100wh+lhnse27wh+scrn70wh+lsft220gr">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+LHNSE27WH+SCRN70WH+LSFT220GR</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">20</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100wh+lhnse27wh+scrn70wh+lsft220gr+icst64e2740">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+LHNSE27WH+SCRN70WH+LSFT220GR+ICST64E2740</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">41</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100wh+lhnse27wh+scrn70wh+lsft220re">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+LHNSE27WH+SCRN70WH+LSFT220RE</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">13</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100wh+lhnse27wh+scrn70wh+lsft220ye">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+LHNSE27WH+SCRN70WH+LSFT220YE</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">6</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100wh+lhnse27wh+scrn70wh+lsft220ye+icst64e2740">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+LHNSE27WH+SCRN70WH+LSFT220YE+ICST64E2740</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">9</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100wh+phch1pwrsre+lsms320re">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+PHCH1PWRSRE+LSMS320RE</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">20</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100wh+phch1pwrsye+lsms320ye">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+PHCH1PWRSYE+LSMS320YE</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">5</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100wh+phht1pwrwh+lscp150wh">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+PHHT1PWRWH+LSCP150WH</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">3</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100wh+phht1pwrwh+lscp150wh+ldcwe273">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+PHHT1PWRWH+LSCP150WH+LDCWE273</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">1</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100wh+wsch135wh+lsdo210wh+icst64e27">
+<td><span class="sku" style="font-size:11.5px">CRSF100WH+WSCH135WH+LSDO210WH+ICST64E27</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">7</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100yb+wsls155yb+scrn70yb+lstf40yb">
+<td><span class="sku" style="font-size:11.5px">CRSF100YB+WSLS155YB+SCRN70YB+LSTF40YB</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">249</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr><tr data-sku="crsf100ye+phch1pwrsye+lscy290ye">
+<td><span class="sku" style="font-size:11.5px">CRSF100YE+PHCH1PWRSYE+LSCY290YE</span></td>
+<td class="num" style="font-weight:700;color:var(--red);">&euro;0.00</td>
+<td class="num">0</td>
+<td class="num">4</td>
+<td class="num">0.00</td>
+<td class="num">&euro;0.00</td>
+<td class="num">-</td>
+</tr></tbody>
+    </table>
+  </div>
+</div>
+<script>
+(function(){
+  var rows=document.querySelectorAll('#ppc-tbody-gads tr');
+  document.getElementById('ppc-search-gads').addEventListener('input',function(){
+    var q=this.value.trim().toLowerCase(),shown=0;
+    rows.forEach(function(r){var m=!q||(r.dataset.sku||'').includes(q);r.style.display=m?'':'none';if(m)shown++;;});
+    document.getElementById('ppc-count-gads').textContent='Showing '+shown+' of '+rows.length+' rows';
+  });
+})();
+</script>
+</div>
+</main>
+<footer class="site">Germany Sales Decline Dashboard &middot; AIOS &middot; Report 1C Shopify DE &middot; 2025-01-01 to 2025-12-31 &middot; Generated 2026-07-23</footer>
+<script>
+const DATA=[{"sku":"COT9ABM6PK","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/t-kabelverbinder-ip68-6er-schwarz.webp?v=1772680808","last_year_qty_sold":"37","last_year_sales_eur":"407.83","current_de_stock":0,"last_order_date":"2025-12-21","days_out_of_stock":214,"lost_sales_estimate_eur":"239.11"},{"sku":"LHCCE27WH+CGMLWH","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/white.jpg?v=1706073571","last_year_qty_sold":"30","last_year_sales_eur":"342.96","current_de_stock":0,"last_order_date":"2025-12-30","days_out_of_stock":205,"lost_sales_estimate_eur":"192.62"},{"sku":"WLHSBMSW10","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/1752742536_6878ba88a3327.webp?v=1752742552","last_year_qty_sold":"15","last_year_sales_eur":"338.31","current_de_stock":0,"last_order_date":"2025-12-06","days_out_of_stock":229,"lost_sales_estimate_eur":"212.25"},{"sku":"ENC1571","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/products/Rot_Deckenleucte.jpg?v=1751602171","last_year_qty_sold":"8","last_year_sales_eur":"225.52","current_de_stock":0,"last_order_date":"2025-09-29","days_out_of_stock":297,"lost_sales_estimate_eur":"183.51"},{"sku":"ENC3404","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/57_5a5aa2e6-1969-4981-9f6a-03f38d7b0c3a.jpg?v=1740475025","last_year_qty_sold":"2","last_year_sales_eur":"222.72","current_de_stock":0,"last_order_date":"2025-11-19","days_out_of_stock":246,"lost_sales_estimate_eur":"150.11"},{"sku":"CRSF100SN+LHNSE27SN+SCRN70BA+LSTF40SN","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/products/s-l1600_dea585a2-8d2d-436a-9bfa-4d885f6c0c0e.jpg?v=1752734432","last_year_qty_sold":"7","last_year_sales_eur":"214.21","current_de_stock":0,"last_order_date":"2025-10-15","days_out_of_stock":281,"lost_sales_estimate_eur":"164.91"},{"sku":"ENC7669","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/57_d02808aa-631a-4d6b-b6c7-a0553ce5b546.jpg?v=1740475025","last_year_qty_sold":"1","last_year_sales_eur":"173.52","current_de_stock":0,"last_order_date":"2025-11-19","days_out_of_stock":246,"lost_sales_estimate_eur":"116.95"},{"sku":"PHCT1BMRBM+PHDO1PBRBM+LSCY290SN+LDWWE2718","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/57_350fd309-d164-4b68-bd17-1b1f8069a5a6.jpg?v=1740475025","last_year_qty_sold":"1","last_year_sales_eur":"173.52","current_de_stock":0,"last_order_date":"2025-11-19","days_out_of_stock":246,"lost_sales_estimate_eur":"116.95"},{"sku":"PHUH1HETBM+LSHM300HE+ICST64E27","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/designlampe-hanfseil-eisenoptik.webp?v=1762931477","last_year_qty_sold":"4","last_year_sales_eur":"141.96","current_de_stock":0,"last_order_date":"2025-05-12","days_out_of_stock":437,"lost_sales_estimate_eur":"169.96"},{"sku":"COT9ABM","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/t-verbinder-for-kabel.webp?v=1752736354","last_year_qty_sold":"24","last_year_sales_eur":"131.16","current_de_stock":0,"last_order_date":"2025-12-21","days_out_of_stock":214,"lost_sales_estimate_eur":"76.90"},{"sku":"PCBSM2FBM","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/1745492049_680a1851f2f9c.webp?v=1767163407","last_year_qty_sold":"11","last_year_sales_eur":"128.48","current_de_stock":0,"last_order_date":"2025-12-25","days_out_of_stock":210,"lost_sales_estimate_eur":"73.92"},{"sku":"ENC1883","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/products/Spinnenlampe_decke-11.jpg?v=1729764711","last_year_qty_sold":"1","last_year_sales_eur":"114.37","current_de_stock":0,"last_order_date":"2025-07-19","days_out_of_stock":369,"lost_sales_estimate_eur":"115.62"},{"sku":"COT9ABM4PK","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/t-kabelverbinder-ip68-4er-schwarz.webp?v=1752736354","last_year_qty_sold":"10","last_year_sales_eur":"109.39","current_de_stock":0,"last_order_date":"2025-11-14","days_out_of_stock":251,"lost_sales_estimate_eur":"75.22"},{"sku":"PLADBS+LSDO210BS3PK","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/PLADBS_LSDO210BS3PK_ICST64E273PK__1__1771387020_6995388c62654.jpg?v=1771387023","last_year_qty_sold":"2","last_year_sales_eur":"94.10","current_de_stock":0,"last_order_date":"2025-12-12","days_out_of_stock":223,"lost_sales_estimate_eur":"57.49"},{"sku":"CRSF100YE+WSCH135YE+LSDO210YE+ICST64E27","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/image_-_2026-05-04T082334.736_8888.jpg?v=1779434101","last_year_qty_sold":"1","last_year_sales_eur":"84.75","current_de_stock":0,"last_order_date":"2025-12-14","days_out_of_stock":221,"lost_sales_estimate_eur":"51.31"},{"sku":"CRSF100OR+WSCH135OR+LSDO210OR+ICST64E27","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/Artboard_7_6860bt.jpg?v=1779437590","last_year_qty_sold":"1","last_year_sales_eur":"84.75","current_de_stock":0,"last_order_date":"2025-12-14","days_out_of_stock":221,"lost_sales_estimate_eur":"51.31"},{"sku":"CRSF100BL+WSCH135BT+LSDO210BL+ICST64E27","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/wbt.jpg?v=1779433829","last_year_qty_sold":"2","last_year_sales_eur":"84.75","current_de_stock":0,"last_order_date":"2025-12-30","days_out_of_stock":205,"lost_sales_estimate_eur":"47.60"},{"sku":"ENC570","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/e27-deckenlampe-rostrot-industrial.jpg?v=1747977198","last_year_qty_sold":"3","last_year_sales_eur":"84.57","current_de_stock":0,"last_order_date":"2025-12-08","days_out_of_stock":227,"lost_sales_estimate_eur":"52.60"},{"sku":"CRSF100CO+WSLS155CO+SCRN70CO+LSTF40CO","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/wandleuchte_kupfer_e27.jpg?v=1780564040","last_year_qty_sold":"5","last_year_sales_eur":"82.46","current_de_stock":0,"last_order_date":"2025-12-19","days_out_of_stock":216,"lost_sales_estimate_eur":"48.80"},{"sku":"PCBS16T10BM","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/1745493218_680a1ce23e974.webp?v=1751694551","last_year_qty_sold":"6","last_year_sales_eur":"81.35","current_de_stock":0,"last_order_date":"2025-12-14","days_out_of_stock":221,"lost_sales_estimate_eur":"49.26"},{"sku":"WSFS1BMYB+LSCP150WH","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/s-l1600__43__1743743448_67ef69d854ed5.jpg?v=1743743604","last_year_qty_sold":"2","last_year_sales_eur":"71.36","current_de_stock":0,"last_order_date":"2025-07-16","days_out_of_stock":372,"lost_sales_estimate_eur":"72.73"},{"sku":"CRFF140GL+WSWH135BM+LSDO210YE","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/CRFF140GL_WSWH135BM_LSDO210YE_1783942718_6a54ce3eb906b.jpg?v=1783942722","last_year_qty_sold":"3","last_year_sales_eur":"70.77","current_de_stock":0,"last_order_date":"2025-08-05","days_out_of_stock":352,"lost_sales_estimate_eur":"68.25"},{"sku":"PHUH1HETBM+LSHM400HE","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/products/seillampe-schwarz-metall-industriestil.jpg?v=1762931477","last_year_qty_sold":"2","last_year_sales_eur":"67.84","current_de_stock":0,"last_order_date":"2025-11-22","days_out_of_stock":243,"lost_sales_estimate_eur":"45.16"},{"sku":"ENC7912","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/Wandleuchte_im_Industrial_Stil_f_r_K_che.jpg?v=1775637265","last_year_qty_sold":"2","last_year_sales_eur":"63.98","current_de_stock":0,"last_order_date":"2025-11-22","days_out_of_stock":243,"lost_sales_estimate_eur":"42.59"},{"sku":"PCFT500BA","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/1745305710_6807406ed82bd.webp?v=1745305730","last_year_qty_sold":"1","last_year_sales_eur":"59.36","current_de_stock":0,"last_order_date":"2025-11-16","days_out_of_stock":249,"lost_sales_estimate_eur":"40.49"},{"sku":"PCGZ20NL3PK","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/1745485707_6809ff8bd3912.webp?v=1745485730","last_year_qty_sold":"1","last_year_sales_eur":"59.36","current_de_stock":0,"last_order_date":"2025-11-16","days_out_of_stock":249,"lost_sales_estimate_eur":"40.49"},{"sku":"PCFT800BA","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/1745305711_6807406f2fb85.webp?v=1745305733","last_year_qty_sold":"2","last_year_sales_eur":"59.36","current_de_stock":0,"last_order_date":"2025-11-16","days_out_of_stock":249,"lost_sales_estimate_eur":"40.49"},{"sku":"LSDO400CB+RPR44WH","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/4517_1_11zon_79af0738-1760-4a9c-9e47-7c7c57a7b4b9.webp?v=1751862558","last_year_qty_sold":"3","last_year_sales_eur":"54.28","current_de_stock":0,"last_order_date":"2025-11-02","days_out_of_stock":263,"lost_sales_estimate_eur":"39.11"},{"sku":"CRSF100BM+WSSS70BM+LSOL180BG+ICST64E27","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/51BQZfjdZJL.jpg?v=1767349433","last_year_qty_sold":"1","last_year_sales_eur":"41.03","current_de_stock":0,"last_order_date":"2025-10-26","days_out_of_stock":270,"lost_sales_estimate_eur":"30.35"},{"sku":"ENC8457","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/Retro_Wandlampe_verstellbar.jpg?v=1777538148","last_year_qty_sold":"1","last_year_sales_eur":"39.64","current_de_stock":0,"last_order_date":"2025-10-28","days_out_of_stock":268,"lost_sales_estimate_eur":"29.11"},{"sku":"PC16FTNLBM","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/1745493079_680a1c572d00d.webp?v=1745493092","last_year_qty_sold":"2","last_year_sales_eur":"38.88","current_de_stock":0,"last_order_date":"2025-12-10","days_out_of_stock":225,"lost_sales_estimate_eur":"23.97"},{"sku":"WSIWBM","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/1745483256_6809f5f85ac44.webp?v=1745483293","last_year_qty_sold":"1","last_year_sales_eur":"37.24","current_de_stock":0,"last_order_date":"2025-05-22","days_out_of_stock":427,"lost_sales_estimate_eur":"43.57"},{"sku":"PHUH1HETBM+LSHM400HE+ICST64E27","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/products/seillampe-schwarz-metall-industriestil.jpg?v=1762931477","last_year_qty_sold":"1","last_year_sales_eur":"36.44","current_de_stock":0,"last_order_date":"2025-12-08","days_out_of_stock":227,"lost_sales_estimate_eur":"22.66"},{"sku":"WSWTBM+ICT45E2760","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/1745483564_6809f72c8c8f3.webp?v=1745483579","last_year_qty_sold":"1","last_year_sales_eur":"34.47","current_de_stock":0,"last_order_date":"2025-12-27","days_out_of_stock":208,"lost_sales_estimate_eur":"19.64"},{"sku":"LSDO400BYI","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/1773544776_69b625482c5de.webp?v=1773544791","last_year_qty_sold":"4","last_year_sales_eur":"32.58","current_de_stock":0,"last_order_date":"2025-11-15","days_out_of_stock":250,"lost_sales_estimate_eur":"22.32"},{"sku":"CRSF100BM+WSCH135BM+LSHQ150BM","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/1747222922_6824818a18395.webp?v=1747222965","last_year_qty_sold":"1","last_year_sales_eur":"31.95","current_de_stock":0,"last_order_date":"2025-10-30","days_out_of_stock":266,"lost_sales_estimate_eur":"23.28"},{"sku":"ENC122","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/wandleuchte_kupfer_e27.jpg?v=1780564040","last_year_qty_sold":"6","last_year_sales_eur":"31.66","current_de_stock":0,"last_order_date":"2025-12-26","days_out_of_stock":209,"lost_sales_estimate_eur":"18.13"},{"sku":"PLWEBC+PHHT1PBRBC+WCBNBC+ICT45E2760","product_img_url":null,"last_year_qty_sold":"1","last_year_sales_eur":"31.28","current_de_stock":0,"last_order_date":"2025-07-27","days_out_of_stock":361,"lost_sales_estimate_eur":"30.94"},{"sku":"CRSF100RE+WSCH135RE+LSDO210RE","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/image_-_2026-05-04T082405.423_2515.jpg?v=1779437861","last_year_qty_sold":"1","last_year_sales_eur":"28.02","current_de_stock":0,"last_order_date":"2025-09-18","days_out_of_stock":308,"lost_sales_estimate_eur":"23.64"},{"sku":"PCBS16T10BM3PK","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/1745493218_680a1ce2b3cc8.webp?v=1751694551","last_year_qty_sold":"3","last_year_sales_eur":"27.34","current_de_stock":0,"last_order_date":"2025-12-08","days_out_of_stock":227,"lost_sales_estimate_eur":"17.00"},{"sku":"PC16FT500BA","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/1745310349_6807528d0f7ba.webp?v=1745310362","last_year_qty_sold":"1","last_year_sales_eur":"25.42","current_de_stock":0,"last_order_date":"2025-11-23","days_out_of_stock":242,"lost_sales_estimate_eur":"16.85"},{"sku":"CRSF100WH+PHRY2PCRYE","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/1762336938_690b20aad8f71.webp?v=1762337061","last_year_qty_sold":"1","last_year_sales_eur":"25.15","current_de_stock":0,"last_order_date":"2025-11-22","days_out_of_stock":243,"lost_sales_estimate_eur":"16.74"},{"sku":"WCFRBM+LDMST64E274","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/57_143cf879-7d9b-4809-b107-901a1082fb2e.jpg?v=1737113280","last_year_qty_sold":"1","last_year_sales_eur":"22.48","current_de_stock":0,"last_order_date":"2025-06-02","days_out_of_stock":416,"lost_sales_estimate_eur":"25.62"},{"sku":"PLOTBB+LDMST64E274","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/industrielle-pendelleuchte-schwarz-e27.jpg?v=1746008166","last_year_qty_sold":"1","last_year_sales_eur":"20.48","current_de_stock":0,"last_order_date":"2025-08-06","days_out_of_stock":351,"lost_sales_estimate_eur":"19.69"},{"sku":"LDSG125XMSE274","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/products/Brushed_20Silver_20Color_20Chandelier_20Ceiling_20Light_20Water_20Pipe_20E27_20Loft_20Pendant_20Light2.jpg?v=1595314088","last_year_qty_sold":"1","last_year_sales_eur":"20.38","current_de_stock":0,"last_order_date":"2025-11-14","days_out_of_stock":251,"lost_sales_estimate_eur":"14.01"},{"sku":"PCFT300BA","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/1745305710_6807406e943ce.webp?v=1745305728","last_year_qty_sold":"1","last_year_sales_eur":"14.71","current_de_stock":0,"last_order_date":"2025-12-13","days_out_of_stock":222,"lost_sales_estimate_eur":"8.95"},{"sku":"PCBSM2FCH","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/1745492054_680a185628287.webp?v=1767163407","last_year_qty_sold":"1","last_year_sales_eur":"14.70","current_de_stock":0,"last_order_date":"2025-11-15","days_out_of_stock":250,"lost_sales_estimate_eur":"10.07"},{"sku":"PCBSM2FSN","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/1745492053_680a1855325dc.webp?v=1767163321","last_year_qty_sold":"1","last_year_sales_eur":"13.70","current_de_stock":0,"last_order_date":"2025-09-24","days_out_of_stock":302,"lost_sales_estimate_eur":"11.34"},{"sku":"COT9ABM5PK","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/516P0jSlLsL_1761988290_6905cec225e05.jpg?v=1772680808","last_year_qty_sold":"1","last_year_sales_eur":"9.07","current_de_stock":0,"last_order_date":"2025-11-12","days_out_of_stock":253,"lost_sales_estimate_eur":"6.29"},{"sku":"COT9ABM2PK","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/t-kabelverbinder-ip68-2er-schwarz.webp?v=1752736354","last_year_qty_sold":"1","last_year_sales_eur":"6.07","current_de_stock":0,"last_order_date":"2025-11-03","days_out_of_stock":262,"lost_sales_estimate_eur":"4.36"},{"sku":"PCBI5WC","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/ENC5591.jpg?v=1718596414","last_year_qty_sold":"1","last_year_sales_eur":"0.00","current_de_stock":0,"last_order_date":"2025-12-03","days_out_of_stock":232,"lost_sales_estimate_eur":"0.00"},{"sku":"CRSF100BM+PHRB1PBR40BM+LSBS160BM","product_img_url":"https://cdn.shopify.com/s/files/1/0414/9864/0551/files/Pendelleuchte_innen_modern.webp?v=1746526241","last_year_qty_sold":"1","last_year_sales_eur":"0.00","current_de_stock":0,"last_order_date":"2025-01-06","days_out_of_stock":563,"lost_sales_estimate_eur":"0.00"}];
+let sortCol='lost_sales_estimate_eur',sortAsc=false;
+const MAX_DAYS=Math.max(...DATA.map(r=>+r.days_out_of_stock));
+function severity(d){return d>=365?'critical':d>=180?'high':'medium';}
+function sevLabel(d){return d>=365?'Critical':d>=180?'High':'Medium';}
+function fmt(n){return parseFloat(n).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function render(filtered){
+  const tbody=document.getElementById('tbody'),empty=document.getElementById('empty');
+  document.getElementById('row-count').textContent='Showing '+filtered.length+' of '+DATA.length;
+  if(!filtered.length){tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  tbody.innerHTML=filtered.map(r=>{
+    const days=+r.days_out_of_stock,sev=severity(days);
+    const pct=Math.min(100,Math.round(days/MAX_DAYS*100));
+    const img=r.product_img_url
+      ?'<img class="thumb" src="'+r.product_img_url+'" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+       +'<span class="thumb-fallback" style="display:none">IMG</span>'
+      :'<span class="thumb-fallback">IMG</span>';
+    return '<tr>'
+      +'<td><div class="prod">'+img+'<span class="sku">'+r.sku+'</span></div></td>'
+      +'<td class="num">&euro;'+fmt(r.last_year_sales_eur)+'</td>'
+      +'<td class="num">'+parseInt(r.last_year_qty_sold).toLocaleString()+'</td>'
+      +'<td class="num" style="color:var(--red);font-weight:700;">0</td>'
+      +'<td>'+r.last_order_date+'</td>'
+      +'<td class="num"><div class="dbar"><div class="dbar-track"><div class="dbar-fill '+sev+'" style="width:'+pct+'%"></div></div>'+days+'d</div></td>'
+      +'<td><span class="sev '+sev+'">'+sevLabel(days)+'</span></td>'
+      +'<td class="num" style="font-weight:700;color:var(--red);">&euro;'+fmt(r.lost_sales_estimate_eur)+'</td>'
+      +'</tr>';
+  }).join('');
+}
+function getFiltered(){
+  const q=document.getElementById('search').value.trim().toLowerCase();
+  let arr=q?DATA.filter(r=>r.sku.toLowerCase().includes(q)):[...DATA];
+  arr.sort((a,b)=>sortAsc?(+a[sortCol])-(+b[sortCol]):(+b[sortCol])-(+a[sortCol]));
+  return arr;
+}
+function refresh(){render(getFiltered());}
+document.getElementById('search').addEventListener('input',refresh);
+document.querySelectorAll('.sortbtn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    const col=this.dataset.col;
+    if(sortCol===col){sortAsc=!sortAsc;}else{sortCol=col;sortAsc=false;}
+    document.querySelectorAll('.sortbtn').forEach(b=>b.classList.remove('on'));
+    this.classList.add('on');
+    refresh();
+  });
+});
+document.getElementById('exportBtn').addEventListener('click',function(){
+  const filtered=getFiltered();
+  const h=['SKU','Product Image URL','2025 Sales (EUR)','2025 Qty Sold','Current DE Stock','Last Order Date','Days OOS','Est. Lost Sales (EUR)'];
+  const body=filtered.map(r=>['"'+r.sku+'"','"'+(r.product_img_url||'')+'"',r.last_year_sales_eur,r.last_year_qty_sold,r.current_de_stock,r.last_order_date,r.days_out_of_stock,r.lost_sales_estimate_eur].join(','));
+  const csv=[h.join(','),...body].join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='report-1c-shopify-de-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+});
+refresh();
+
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+    document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active');p.style.display='none';});
+    this.classList.add('active');
+    var pane=document.getElementById('tab-'+this.dataset.tab);
+    pane.classList.add('active');
+    pane.style.display='block';
+  });
+});
+
+</script>
+</body>
+</html>

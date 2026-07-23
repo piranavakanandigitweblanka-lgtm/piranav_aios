@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Germany Sales Decline Dashboard</title>
+<style>
+:root{
+  --navy:#0c1a30;--navy-2:#13284a;--ink:#1a2233;--muted:#5b6577;
+  --line:#e3e7ee;--bg:#f4f6f9;--card:#ffffff;
+  --gold:#b98b1e;--gold-soft:#faf3e0;
+  --accent:#1f5eff;--accent-soft:#eaf0ff;
+  --red:#b91c1c;--red-soft:#fff5f5;
+  --warn:#d97706;--warn-soft:#fffbeb;
+  --good:#0a7d4f;--good-soft:#e5f5ee;
+  --na:#64748b;--na-soft:#eef2f7;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;}
+
+.topbar{height:5px;background:linear-gradient(90deg,var(--navy) 0%,var(--navy-2) 55%,var(--gold) 100%);}
+
+.masthead{background:var(--card);padding:22px 32px;border-bottom:1px solid var(--line);box-shadow:0 1px 4px rgba(12,26,48,.05);}
+.masthead .inner{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:22px;}
+.mark{width:42px;height:42px;background:var(--navy);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#e8d59a;flex:none;border:1.5px solid var(--gold);letter-spacing:.5px;}
+.headtxt{flex:1;min-width:260px;}
+.kicker{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+.masthead h1{font-size:20px;font-weight:700;color:var(--navy);}
+.masthead .lede{font-size:12px;color:var(--muted);margin-top:3px;max-width:560px;}
+.statrow{display:flex;flex-wrap:wrap;gap:0;border-left:1px solid var(--line);padding-left:26px;}
+.stat{padding:0 22px;border-right:1px solid var(--line);}
+.stat:last-child{border-right:none;padding-right:0;}
+.stat .v{font-size:20px;font-weight:700;color:var(--navy);}
+.stat .l{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:3px;}
+
+.page{max-width:1180px;margin:0 auto;padding:28px 32px 48px;}
+
+/* alert banner */
+.alert{background:var(--warn-soft);border:1px solid #fde68a;border-radius:10px;padding:12px 18px;font-size:12.5px;color:var(--warn);margin-bottom:22px;display:flex;gap:10px;align-items:flex-start;}
+.alert strong{font-weight:700;}
+
+/* section */
+.section-title{display:flex;align-items:center;gap:12px;font-size:11px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;color:var(--navy-2);margin:22px 0 12px;}
+.section-title::after{content:"";flex:1;height:1px;background:var(--line);}
+.count-badge{background:var(--na-soft);color:var(--na);border-radius:999px;padding:2px 11px;font-size:11px;letter-spacing:0;font-weight:600;}
+
+/* report grid */
+.roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+
+a.rcard{display:flex;flex-direction:column;gap:10px;padding:20px;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 3px rgba(12,26,48,.05);transition:transform .15s,box-shadow .15s,border-color .15s;}
+a.rcard:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(12,26,48,.09);border-color:var(--gold);}
+div.rcard{display:flex;flex-direction:column;gap:10px;padding:20px;background:var(--card);border:1px solid var(--line);border-radius:14px;opacity:.6;}
+
+.rcard-head{display:flex;align-items:center;gap:12px;}
+.rnum{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none;}
+.rnum.live{background:var(--navy);color:#e8d59a;border:1.5px solid var(--gold);}
+.rnum.blocked{background:var(--na-soft);color:var(--na);border:1.5px solid var(--line);}
+.rnum.partial{background:var(--warn-soft);color:var(--warn);border:1.5px solid #fde68a;}
+
+.rtitle{font-size:14px;font-weight:700;line-height:1.3;}
+.rdesc{font-size:12px;color:var(--muted);line-height:1.5;}
+
+.rtags{display:flex;flex-wrap:wrap;gap:5px;}
+.rtag{font-size:10px;font-weight:700;letter-spacing:.3px;border-radius:4px;padding:2px 7px;white-space:nowrap;}
+.rtag.ch{background:var(--accent-soft);color:var(--accent);}
+.rtag.blk{background:var(--red-soft);color:var(--red);}
+.rtag.ok{background:var(--good-soft);color:var(--good);}
+.rtag.na{background:var(--na-soft);color:var(--na);}
+
+.rstatus{font-size:10px;font-weight:700;border-radius:999px;padding:3px 11px;white-space:nowrap;align-self:flex-start;}
+.rstatus.live{background:var(--good-soft);color:var(--good);}
+.rstatus.partial{background:var(--warn-soft);color:var(--warn);}
+.rstatus.blocked{background:var(--red-soft);color:var(--red);}
+
+/* channel badges row */
+.channels{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px;}
+.ch-chip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--ink);}
+.ch-chip span{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+.ch-chip .dot-live{background:var(--good);}
+.ch-chip .dot-dormant{background:var(--warn);}
+
+footer.site{max-width:1180px;margin:0 auto;padding:24px 32px 44px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;}
+
+@media(max-width:900px){.statrow{border-left:none;padding-left:0;width:100%;}}
+@media(max-width:640px){.masthead{padding:16px;}.page{padding:20px 14px 40px;}.roster{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="topbar"></div>
+<header class="masthead">
+  <div class="inner">
+    <div class="mark">DE</div>
+    <div class="headtxt">
+      <p class="kicker">Warehouse Owner Review &middot; LEDSone Germany</p>
+      <h1>Germany Sales Decline &mdash; Stock Impact Dashboard</h1>
+      <p class="lede">Products losing sales because centralized German warehouse stock is unavailable. Covers Shopify, Amazon and eBay DE &middot; Data period: 2025</p>
+    </div>
+    <div class="statrow">
+      <div class="stat"><div class="v">3</div><div class="l">Marketplaces</div></div>
+      <div class="stat"><div class="v">10</div><div class="l">DE Accounts</div></div>
+      <div class="stat"><div class="v">2026-07-23</div><div class="l">Updated</div></div>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+
+  <div class="alert">
+    <strong>&#9888; Estimate Notice:</strong>&nbsp;
+    Days out of stock is calculated from the product's last German order date to today. Lost sales is an estimate based on daily sales rate &times; days OOS. Both figures are proxies &mdash; not confirmed actuals &mdash; and require business-owner validation before final decisions.
+  </div>
+
+  <!-- German Accounts -->
+  <div class="section-title">Confirmed German Accounts <span class="count-badge">10 active</span></div>
+  <div class="channels">
+    <div class="ch-chip"><span class="dot-live"></span>Shopify DE &mdash; ledsone-de</div>
+    <div class="ch-chip"><span class="dot-live"></span>Amazon DE &mdash; LEDSone (sub 8)</div>
+    <div class="ch-chip"><span class="dot-live"></span>Amazon DE &mdash; DC Voltage (sub 6)</div>
+    <div class="ch-chip"><span class="dot-live"></span>eBay DE &mdash; led_sone</div>
+    <div class="ch-chip"><span class="dot-live"></span>eBay DE &mdash; huettenlampen</div>
+    <div class="ch-chip"><span class="dot-live"></span>eBay DE &mdash; ledsonede</div>
+    <div class="ch-chip"><span class="dot-live"></span>eBay DE &mdash; electricalsone</div>
+    <div class="ch-chip"><span class="dot-live"></span>eBay DE &mdash; sunsone</div>
+    <div class="ch-chip"><span class="dot-live"></span>eBay DE &mdash; homin_gmbh</div>
+  </div>
+
+  <!-- Reports -->
+  <div class="section-title">Reports <span class="count-badge">4 reports</span></div>
+  <div class="roster">
+
+    <a class="rcard" href="pages/report-1a-amazon-de.html">
+      <div class="rcard-head">
+        <div class="rnum live">1A</div>
+        <div class="rtitle">Amazon DE &mdash; Best Sellers Now Out of Stock</div>
+      </div>
+      <div class="rdesc">329 products that sold on Amazon Germany in 2025 and currently have zero centralized stock. Shows last order date, days OOS, and estimated lost sales.</div>
+      <div class="rtags">
+        <span class="rtag ch">Amazon DE</span>
+        <span class="rtag ok">329 products</span>
+        <span class="rtag ok">&euro;36,718 est. lost</span>
+      </div>
+      <span class="rstatus live">&#10003; Live</span>
+    </a>
+
+    <a class="rcard" href="pages/report-1b-ebay-de.html">
+      <div class="rcard-head">
+        <div class="rnum live">1B</div>
+        <div class="rtitle">eBay DE &mdash; Best Sellers Now Out of Stock</div>
+      </div>
+      <div class="rdesc">288 products sold across 6 eBay Germany accounts in 2025 with zero centralized stock. led_sone, huettenlampen, ledsonede, electricalsone, sunsone, homin_gmbh.</div>
+      <div class="rtags">
+        <span class="rtag ch">eBay DE</span>
+        <span class="rtag ok">288 products</span>
+        <span class="rtag ok">&euro;59,657 est. lost</span>
+      </div>
+      <span class="rstatus live">&#10003; Live</span>
+    </a>
+
+    <a class="rcard" href="pages/report-1c-shopify-de.html">
+      <div class="rcard-head">
+        <div class="rnum live">1C</div>
+        <div class="rtitle">Shopify DE &mdash; Best Sellers Now Out of Stock</div>
+      </div>
+      <div class="rdesc">52 products sold on ledsone.de (Shopify) in 2025 that currently have zero centralized stock. &euro;3,074 estimated lost sales, 269 avg days OOS.</div>
+      <div class="rtags">
+        <span class="rtag ch">Shopify DE</span>
+        <span class="rtag ok">52 products</span>
+        <span class="rtag ok">&euro;3,074 est. lost</span>
+      </div>
+      <span class="rstatus live">&#10003; Live</span>
+    </a>
+
+    <a class="rcard" href="pages/report-3-channel-wise.html">
+      <div class="rcard-head">
+        <div class="rnum live">2</div>
+        <div class="rtitle">Channel-Wise Stock Impact &mdash; Shopify / Amazon / eBay</div>
+      </div>
+      <div class="rdesc">634 OOS SKUs with per-channel lost sales breakdown across all Germany DE channels. €51,494 combined estimated lost — Amazon €30,890, eBay €17,760, Shopify €2,845.</div>
+      <div class="rtags">
+        <span class="rtag ch">All Channels</span>
+        <span class="rtag ok">634 SKUs</span>
+        <span class="rtag ok">&euro;51,494 est. lost</span>
+      </div>
+      <span class="rstatus live">&#10003; Live</span>
+    </a>
+
+    <a class="rcard" href="pages/report-4-slow-restock.html">
+      <div class="rcard-head">
+        <div class="rnum live">3</div>
+        <div class="rtitle">Slow Restocking &mdash; Lost Revenue Report</div>
+      </div>
+      <div class="rdesc">634 OOS SKUs with estimated lost opportunity and current supplier restock status. 577 SKUs have no restock order placed &mdash; &euro;4,960/month at risk. Total est. lost: &euro;54,962.</div>
+      <div class="rtags">
+        <span class="rtag ch">All Channels</span>
+        <span class="rtag blk">577 No Order</span>
+        <span class="rtag ok">&euro;54,962 est. lost</span>
+      </div>
+      <span class="rstatus live">&#10003; Live</span>
+    </a>
+
+    <a class="rcard" href="pages/report-5-never-oos.html">
+      <div class="rcard-head">
+        <div class="rnum live">4</div>
+        <div class="rtitle">Fast-Moving Products &mdash; Never OOS List</div>
+      </div>
+      <div class="rdesc">1,381 in-stock DE SKUs ranked by monthly velocity with recommended minimum stock levels. 7 below min, 1,360 well stocked. Formula: 1.5&times; avg monthly qty.</div>
+      <div class="rtags">
+        <span class="rtag ch">All Channels</span>
+        <span class="rtag ok">1,381 SKUs</span>
+        <span class="rtag ok">7 Below Min</span>
+      </div>
+      <span class="rstatus live">&#10003; Live</span>
+    </a>
+
+  </div>
+
+</main>
+
+<footer class="site">
+  Germany Sales Decline Dashboard &middot; AIOS &middot; Warehouse Owner Review &middot; Updated 2026-07-23 &middot; Data: PostgreSQL (order_management + inventory schemas)
+</footer>
+
+</body>
+</html>
