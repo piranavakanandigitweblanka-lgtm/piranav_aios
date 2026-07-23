@@ -81,6 +81,13 @@ div.rcard{display:flex;flex-direction:column;gap:10px;padding:20px;background:va
 
 footer.site{max-width:1180px;margin:0 auto;padding:24px 32px 44px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;}
 
+/* channel charts panel */
+.chart-panel{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;margin-top:28px;}
+.chart-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 22px 18px;box-shadow:0 1px 3px rgba(12,26,48,.05);}
+.chart-card h3{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--navy-2);margin-bottom:4px;}
+.chart-card .chart-lede{font-size:11px;color:var(--muted);margin-bottom:14px;}
+.chart-wrap{position:relative;height:200px;}
+
 @media(max-width:900px){.statrow{border-left:none;padding-left:0;width:100%;}}
 @media(max-width:640px){.masthead{padding:16px;}.page{padding:20px 14px 40px;}.roster{grid-template-columns:1fr;}}
 </style>
@@ -215,7 +222,73 @@ footer.site{max-width:1180px;margin:0 auto;padding:24px 32px 44px;border-top:1px
 
   </div>
 
+  <!-- Channel Analysis Charts -->
+  <div class="section-title">Channel Analysis <span class="count-badge">DE 2025</span></div>
+  <div class="chart-panel">
+
+    <div class="chart-card">
+      <h3>Lost Sales by Channel</h3>
+      <p class="chart-lede">Estimated lost revenue (€) per channel across 606 OOS SKUs</p>
+      <div class="chart-wrap"><canvas id="ch-lost"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <h3>OOS SKUs by Channel</h3>
+      <p class="chart-lede">Number of out-of-stock products per marketplace</p>
+      <div class="chart-wrap"><canvas id="ch-oos"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <h3>Wasted PPC Spend (After OOS)</h3>
+      <p class="chart-lede">Ad spend after product went out of stock — money with no return</p>
+      <div class="chart-wrap"><canvas id="ch-ppc"></canvas></div>
+    </div>
+
+  </div>
+
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+(function(){
+  const CHANNELS = ['Amazon DE','eBay DE','Shopify DE'];
+  const COLORS   = ['#1f5eff','#d97706','#0a7d4f'];
+  const SOFT     = ['rgba(31,94,255,.13)','rgba(217,119,6,.13)','rgba(10,125,79,.13)'];
+
+  function barCfg(labels, datasets, prefix, suffix){
+    return {
+      type:'bar',
+      data:{labels, datasets},
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${prefix}${c.parsed.y.toLocaleString()}${suffix}`}}},
+        scales:{
+          x:{grid:{display:false},ticks:{font:{size:11}}},
+          y:{grid:{color:'#e3e7ee'},ticks:{font:{size:10},callback:v=>prefix+v.toLocaleString()+suffix}}
+        }
+      }
+    };
+  }
+
+  new Chart(document.getElementById('ch-lost'), barCfg(
+    CHANNELS,
+    [{data:[27843,16893,2575], backgroundColor:SOFT, borderColor:COLORS, borderWidth:2, borderRadius:6}],
+    '€',''
+  ));
+
+  new Chart(document.getElementById('ch-oos'), barCfg(
+    CHANNELS,
+    [{data:[309,278,51], backgroundColor:SOFT, borderColor:COLORS, borderWidth:2, borderRadius:6}],
+    '',' SKUs'
+  ));
+
+  new Chart(document.getElementById('ch-ppc'), barCfg(
+    CHANNELS,
+    [{data:[2363,36318,201], backgroundColor:SOFT, borderColor:COLORS, borderWidth:2, borderRadius:6}],
+    '€',''
+  ));
+})();
+</script>
 
 <footer class="site">
   Germany Sales Decline Dashboard &middot; AIOS &middot; Warehouse Owner Review &middot; Updated 2026-07-23 &middot; Data: PostgreSQL (order_management + inventory schemas)
