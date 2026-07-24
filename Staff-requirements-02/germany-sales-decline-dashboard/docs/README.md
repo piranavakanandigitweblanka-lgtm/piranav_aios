@@ -10,6 +10,7 @@ One file per report. Each covers: purpose, build logic, SQL rules, tables used, 
 | [report-2-channel-wise.md](report-2-channel-wise.md) | Report 2 | Cross-Channel Stock Impact |
 | [report-3-slow-restock.md](report-3-slow-restock.md) | Report 3 | Slow Restock / Lost Revenue |
 | [report-4-never-oos.md](report-4-never-oos.md) | Report 4 | Fast-Moving / Never OOS List |
+| [report-5b-marketplace-gap.md](report-5b-marketplace-gap.md) | Report 5 | Marketplace Gap — DE In-Stock SKUs |
 
 ## Core Rules Applied Across All Reports
 
