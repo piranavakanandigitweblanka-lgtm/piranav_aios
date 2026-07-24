@@ -204,9 +204,7 @@ function exportCSV(){
     var missLabel=miss===0?'None':miss===1?'1 channel':miss===2?'2 channels':'3 channels';
     return [r.s,r.st,r.a?'Listed':'No',r.e?'Listed':'No',r.sh?'Listed':'No',missLabel].join(',');
   });
-  var csv=headers.join(',')+'
-'+rows.join('
-');
+  var csv=headers.join(',')+'\n'+rows.join('\n');
   var blob=new Blob([csv],{type:'text/csv'});
   var a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
