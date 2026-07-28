@@ -2,7 +2,7 @@
 
 **File:** `pages/report-5b-marketplace-gap.html`
 **Hub label:** Report 5
-**Last rebuilt:** 2026-07-28
+**Last rebuilt:** 2026-07-28 (v3 — +suffix fix)
 
 ---
 
@@ -17,11 +17,11 @@ Shows all 14,397 SKUs that currently have Germany warehouse stock > 0, and for e
 | Metric | Value |
 |---|---|
 | Total DE In-Stock SKUs | 14,397 |
-| Not Listed Anywhere | 5,667 |
-| Missing Amazon DE | 12,643 |
-| Missing eBay DE | 7,510 |
-| Missing Shopify DE | 9,216 |
-| Listed on All 3 Channels | 1,068 |
+| Not Listed Anywhere | 5,447 |
+| Missing Amazon DE | 12,204 |
+| Missing eBay DE | 7,273 |
+| Missing Shopify DE | 8,845 |
+| Listed on All 3 Channels | 1,497 |
 
 ---
 
@@ -92,7 +92,7 @@ Each SKU row gets three flags (1 = listed, 0 = not listed):
 
 | Pill | Logic |
 |---|---|
-| All | Show all 14,397 SKUs |
+| All | Show all 14,397 SKUs (total DE in-stock) |
 | Not Listed Anywhere | `a=0 AND e=0 AND sh=0` |
 | Missing Amazon | `a=0` |
 | Missing eBay | `e=0` |
@@ -150,7 +150,11 @@ File size: ~792KB (images stripped — SKU prefix shown as fallback thumbnail).
 3. `all_list = 1` on ebay_listings and shopify_listings — active listings only
 4. LEFT JOIN (not INNER) — preserves SKUs with no listing on a given channel
 5. `DISTINCT sku` in each channel subquery — one row per SKU regardless of variant count
-6. Each channel is joined twice: once on exact SKU match, once on `sku || '-IDE'` — some listings are stored with `-IDE` suffix (e.g. `CRFF140GL-IDE` for inventory SKU `CRFF140GL`). Without this, 2,042 eBay and 2,041 Shopify listings would show as missing.
+6. Three-way SKU matching per channel (Python post-processing):
+   - **Exact**: `listing_sku == inventory_sku`
+   - **-IDE suffix**: `listing_sku == inventory_sku + '-IDE'` — fixes 2,042 eBay / 2,041 Shopify false negatives
+   - **+suffix bundle**: listing starts with `inventory_sku + '+'` (e.g. `LSLT360BC+RPR44WH` matches inventory `LSLT360BC`) — fixes 439 Amazon / 237 eBay / 371 Shopify false negatives
+   - All `+`-prefix variants of each listing SKU are generated (e.g. `A+B+C` → checks `A`, `A+B`, `A+B+C`)
 
 ---
 
