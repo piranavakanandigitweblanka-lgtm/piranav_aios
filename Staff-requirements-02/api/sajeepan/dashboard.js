@@ -112,7 +112,7 @@ async function handleReq2(client, toDate, fromDate, prevFrom, prevTo) {
         product_id, title, image_link, link, price, availability
       FROM google_ads.merchant_products
       WHERE LOWER(product_id) = ANY($1::text[])
-      ORDER BY LOWER(product_id)
+      ORDER BY LOWER(product_id), (CASE WHEN country='GB' THEN 0 ELSE 1 END)
     `, [wasteIds]);
     wm.forEach(r => { wasteMeta[r.product_id.toLowerCase()] = r; });
   }
@@ -127,6 +127,7 @@ async function handleReq2(client, toDate, fromDate, prevFrom, prevTo) {
       imps:   n(r.imps),
       title:  m.title || `Product #${r.product_item_id.split('_').pop()}`,
       img:    m.image_link || '',
+      url:    m.link || '',
       price:  m.price ? Number(m.price) : null,
       avail:  m.availability || 'unknown',
     };
@@ -151,6 +152,7 @@ async function handleReq2(client, toDate, fromDate, prevFrom, prevTo) {
     cost:   n(r.cost),
     clicks: n(r.clicks),
     imps:   n(r.imps),
+    ctr:    n(r.imps) > 0 ? Math.round(n(r.clicks) / n(r.imps) * 10000) / 100 : 0,
   }));
 
   // ── 3. Campaign budget waste: L vs prev ───────────────────────────────────

@@ -344,6 +344,7 @@ footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;
 <!-- Date picker -->
 <div style="background:#fff;border:1px solid #e3e7ee;border-radius:12px;padding:12px 16px;margin-bottom:12px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);">
   <span style="font-size:12px;font-weight:700;color:#5b6577;text-transform:uppercase;letter-spacing:.5px;">Date Range</span>
+  <button class="fbtn" id="sj-preset-month" onclick="sjSetPresetMonth()">This Month</button>
   <button class="fbtn on" id="sj-preset-7"  onclick="sjSetPreset(7)">Last 7d</button>
   <button class="fbtn"    id="sj-preset-30" onclick="sjSetPreset(30)">Last 30d</button>
   <button class="fbtn"    id="sj-preset-60" onclick="sjSetPreset(60)">Last 60d</button>
@@ -565,8 +566,23 @@ footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;
 
 <!-- Stop Waste Spend: Wasteful Products -->
 <div class="r2-section">
-  <div class="r2-title">💸 Stop Waste Spend — Zero-Conv Products <span class="cnt" id="r2WasteCnt">—</span></div>
-  <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Products with clicks, spend &gt; £5, but zero conversions in the selected period. Review feed quality or pause.</p>
+  <div class="r2-title" style="justify-content:space-between;">
+    <span>💸 Stop Waste Spend — Zero-Conv Products <span class="cnt" id="r2WasteCnt">—</span></span>
+    <button onclick="r2ExportCSV('waste')" style="border:1px solid var(--line);border-radius:7px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;background:#fff;color:var(--muted);display:flex;align-items:center;gap:4px;">⬇ CSV</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+    <label style="font-size:12px;font-weight:600;color:var(--muted);">Campaign:</label>
+    <select id="r2WasteCampFilter" class="fsel" onchange="r2RenderWaste()">
+      <option value="all">All Campaigns</option>
+      <option value="21069663519">SJ_PENDANT_KLARNA</option>
+      <option value="23110323532">HIGH REVENUE PH</option>
+      <option value="23516313256">SJ_TOP_20</option>
+      <option value="23590572906">zero conv2</option>
+      <option value="22079334413">SJALL HERO</option>
+      <option value="21242723265">ALLACRSJ2 Access.</option>
+    </select>
+    <span style="font-size:12px;color:var(--muted);">Products with clicks, spend &gt; £5, zero conversions.</span>
+  </div>
   <div class="scroll" style="overflow-x:auto;">
     <table class="waste-table" id="r2WasteTable">
       <thead><tr>
@@ -579,8 +595,23 @@ footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;
 
 <!-- Search Term Intelligence -->
 <div class="r2-section">
-  <div class="r2-title">🔎 Search Term Intelligence — Negative KW Candidates <span class="cnt" id="r2KwCnt">—</span></div>
-  <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Search terms that spent £2+ with zero conversions. Add as negative keywords in Google Ads to stop irrelevant spend.</p>
+  <div class="r2-title" style="justify-content:space-between;">
+    <span>🔎 Search Term Intelligence — Negative KW Candidates <span class="cnt" id="r2KwCnt">—</span></span>
+    <button onclick="r2ExportCSV('kw')" style="border:1px solid var(--line);border-radius:7px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;background:#fff;color:var(--muted);display:flex;align-items:center;gap:4px;">⬇ CSV</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+    <label style="font-size:12px;font-weight:600;color:var(--muted);">Campaign:</label>
+    <select id="r2KwCampFilter" class="fsel" onchange="r2RenderKw()">
+      <option value="all">All Campaigns</option>
+      <option value="21069663519">SJ_PENDANT_KLARNA</option>
+      <option value="23110323532">HIGH REVENUE PH</option>
+      <option value="23516313256">SJ_TOP_20</option>
+      <option value="23590572906">zero conv2</option>
+      <option value="22079334413">SJALL HERO</option>
+      <option value="21242723265">ALLACRSJ2 Access.</option>
+    </select>
+    <span style="font-size:12px;color:var(--muted);">Spent £2+ with zero conversions — add as negatives in Google Ads.</span>
+  </div>
   <div id="r2KwList"><div class="r2-loading">Load data to see search term candidates.</div></div>
 </div>
 
@@ -600,7 +631,10 @@ footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;
 
 <!-- Cross-Platform Opportunities -->
 <div class="r2-section">
-  <div class="r2-title">🌐 Cross-Platform Opportunities — Amazon &amp; eBay Sales</div>
+  <div class="r2-title" style="justify-content:space-between;">
+    <span>🌐 Cross-Platform Opportunities — Amazon &amp; eBay Sales</span>
+    <button onclick="r2ExportCSV('cp')" style="border:1px solid var(--line);border-radius:7px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;background:#fff;color:var(--muted);display:flex;align-items:center;gap:4px;">⬇ CSV</button>
+  </div>
   <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">SKUs selling well on Amazon/eBay in the last 30 days. Check whether these are also running in your PMax campaigns — if not, they may be missed Google Ads opportunities.</p>
   <div style="background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--amber-tx);margin-bottom:12px;">⚠️ Note: Cross-linking Amazon orders to Google Ads product IDs is not automated. Use this as a signal list to check manually in your PMax product feed.</div>
   <div class="scroll" style="overflow-x:auto;">
@@ -729,10 +763,25 @@ var CAMPAIGNS = [], TREND = [], PRODUCTS = [], sjMeta = {};
 function isoDate(d){ return d.toISOString().slice(0,10); }
 function daysAgo(n){ const d=new Date(); d.setDate(d.getDate()-n); return isoDate(d); }
 
-function sjSetPreset(days){
-  ['7','30','60','90'].forEach(d=>{
+function sjSetPresetMonth(){
+  ['month','7','30','60','90'].forEach(d=>{
     const el=document.getElementById('sj-preset-'+d);
-    if(el) el.classList.toggle('on', Number(d)===days);
+    if(el) el.classList.remove('on');
+  });
+  const el=document.getElementById('sj-preset-month');
+  if(el) el.classList.add('on');
+  const now=new Date();
+  const from=isoDate(new Date(now.getFullYear(), now.getMonth(), 1));
+  const to=isoDate(now);
+  const df=document.getElementById('sjDateFrom'), dt=document.getElementById('sjDateTo');
+  if(df) df.value=from; if(dt) dt.value=to;
+  sjLoadData(from, to);
+}
+
+function sjSetPreset(days){
+  ['month','7','30','60','90'].forEach(d=>{
+    const el=document.getElementById('sj-preset-'+d);
+    if(el) el.classList.toggle('on', d===String(days));
   });
   const to=isoDate(new Date()), from=daysAgo(days-1);
   const df=document.getElementById('sjDateFrom'), dt=document.getElementById('sjDateTo');
@@ -1605,14 +1654,16 @@ function r2RenderActions(){
 }
 
 function r2RenderWaste(){
+  const campF = (document.getElementById('r2WasteCampFilter')||{value:'all'}).value;
+  const list  = campF==='all' ? R2.waste_products : R2.waste_products.filter(p=>p.cid===campF);
   const cnt = document.getElementById('r2WasteCnt');
-  if(cnt) cnt.textContent = R2.waste_products.length;
+  if(cnt) cnt.textContent = list.length;
   const tbody = document.getElementById('r2WasteTbody');
-  if(!R2.waste_products.length){
+  if(!list.length){
     tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--muted);">No zero-conversion products with spend &gt; £5 in this period. Great!</td></tr>';
     return;
   }
-  tbody.innerHTML = R2.waste_products.map((p,i)=>{
+  tbody.innerHTML = list.map((p,i)=>{
     const stockBadge = p.avail==='in stock'?'<span class="badge b-active">In Stock</span>':'<span class="badge b-outstock">'+(p.avail||'unknown')+'</span>';
     // Try to find this product in Req1 PRODUCTS array for drawer
     const prodIdx = PRODUCTS.findIndex(x => x.item.toLowerCase() === p.item.toLowerCase());
@@ -1635,21 +1686,51 @@ function r2RenderWaste(){
 }
 
 function r2RenderKw(){
+  const campF = (document.getElementById('r2KwCampFilter')||{value:'all'}).value;
+  const list  = campF==='all' ? R2.neg_kw : R2.neg_kw.filter(k=>k.cid===campF);
   const cnt = document.getElementById('r2KwCnt');
-  if(cnt) cnt.textContent = R2.neg_kw.length;
+  if(cnt) cnt.textContent = list.length;
   const el = document.getElementById('r2KwList');
-  if(!R2.neg_kw.length){
+  if(!list.length){
     el.innerHTML='<div class="r2-loading">No wasteful search terms found in this period.</div>';
     return;
   }
-  el.innerHTML = R2.neg_kw.map(k=>`
-    <div class="kw-row">
-      <div>
-        <div class="kw-term">"${k.term}"</div>
-        <div class="kw-meta">${r2CampShort(k.cid)} · ${k.clicks} clicks · ${k.imps.toLocaleString()} imps</div>
-      </div>
-      <div class="kw-cost">£${k.cost.toFixed(2)}</div>
-    </div>`).join('');
+  el.innerHTML = `<table class="r2-tbl" style="width:100%;"><thead><tr>
+    <th>#</th><th>Search Term</th><th>Campaign</th>
+    <th class="num">Cost £</th><th class="num">Clicks</th>
+    <th class="num">Imps</th><th class="num">CTR %</th><th>Status</th>
+  </tr></thead><tbody>${list.map((k,i)=>`<tr>
+    <td>${i+1}</td>
+    <td style="font-weight:600;">"${k.term}"</td>
+    <td style="font-size:11.5px;">${r2CampShort(k.cid)}</td>
+    <td class="num" style="color:var(--accent3);font-weight:700;">£${k.cost.toFixed(2)}</td>
+    <td class="num">${k.clicks}</td>
+    <td class="num">${k.imps.toLocaleString()}</td>
+    <td class="num">${k.ctr != null ? k.ctr.toFixed(2)+'%' : '—'}</td>
+    <td><span class="waste-pill waste-yes">Add Negative</span></td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+function r2ExportCSV(type){
+  let rows=[], filename='';
+  if(type==='waste'){
+    filename='waste_products.csv';
+    rows=[['#','Title','Campaign','Cost £','Clicks','Impressions','Availability','URL']];
+    R2.waste_products.forEach((p,i)=>rows.push([i+1,p.title,r2CampShort(p.cid),p.cost.toFixed(2),p.clicks,p.imps,p.avail||'',p.url||'']));
+  } else if(type==='kw'){
+    filename='search_terms.csv';
+    rows=[['#','Term','Campaign','Cost £','Clicks','Impressions','CTR %']];
+    R2.neg_kw.forEach((k,i)=>rows.push([i+1,k.term,r2CampShort(k.cid),k.cost.toFixed(2),k.clicks,k.imps,k.ctr!=null?k.ctr.toFixed(2):'']));
+  } else if(type==='cross'||type==='cp'){
+    filename='cross_platform.csv';
+    rows=[['Platform','SKU','Orders (30d)','Qty (30d)']];
+    (R2.cross_platform||[]).forEach(r=>rows.push([r.source,r.sku,r.orders_30d,r.qty_30d]));
+  }
+  const csv = rows.map(r=>r.map(v=>'"'+(String(v).replace(/"/g,'""'))+'"').join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download = filename;
+  a.click();
 }
 
 function r2RenderBudget(){
