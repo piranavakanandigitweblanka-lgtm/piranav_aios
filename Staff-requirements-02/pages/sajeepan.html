@@ -586,9 +586,9 @@ footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;
   <div class="scroll" style="overflow-x:auto;">
     <table class="waste-table" id="r2WasteTable">
       <thead><tr>
-        <th>#</th><th>Product</th><th>Campaign</th><th class="num">Cost £</th><th class="num">Clicks</th><th class="num">Imps</th><th>Stock</th><th>Action</th>
+        <th>#</th><th>Product</th><th>Product ID</th><th>Campaign</th><th class="num">Cost £</th><th class="num">Clicks</th><th class="num">Imps</th><th>Stock</th><th>Action</th>
       </tr></thead>
-      <tbody id="r2WasteTbody"><tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted);">Load data to see wasteful products.</td></tr></tbody>
+      <tbody id="r2WasteTbody"><tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted);">Load data to see wasteful products.</td></tr></tbody>
     </table>
   </div>
 </div>
@@ -1660,12 +1660,11 @@ function r2RenderWaste(){
   if(cnt) cnt.textContent = list.length;
   const tbody = document.getElementById('r2WasteTbody');
   if(!list.length){
-    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--muted);">No zero-conversion products with spend &gt; £5 in this period. Great!</td></tr>';
+    tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--muted);">No zero-conversion products with spend &gt; £5 in this period. Great!</td></tr>';
     return;
   }
   tbody.innerHTML = list.map((p,i)=>{
     const stockBadge = p.avail==='in stock'?'<span class="badge b-active">In Stock</span>':'<span class="badge b-outstock">'+(p.avail||'unknown')+'</span>';
-    // Try to find this product in Req1 PRODUCTS array for drawer
     const prodIdx = PRODUCTS.findIndex(x => x.item.toLowerCase() === p.item.toLowerCase());
     const actionBtn = prodIdx >= 0
       ? `<button class="act-btn" onclick="switchReqTab(1);setTimeout(()=>openDrawer(${prodIdx}),200)">View Detail</button>`
@@ -1674,7 +1673,8 @@ function r2RenderWaste(){
         : `<span style="font-size:11px;color:var(--muted);">No link</span>`;
     return `<tr>
       <td>${i+1}</td>
-      <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${p.title}">${p.title}</td>
+      <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${p.title}">${p.title}</td>
+      <td style="font-size:10.5px;font-family:monospace;color:var(--muted);">${p.item||'—'}</td>
       <td style="font-size:11.5px;">${r2CampShort(p.cid)}</td>
       <td class="num" style="color:var(--accent3);font-weight:700;">£${p.cost.toFixed(2)}</td>
       <td class="num">${p.clicks}</td>
@@ -1715,8 +1715,8 @@ function r2ExportCSV(type){
   let rows=[], filename='';
   if(type==='waste'){
     filename='waste_products.csv';
-    rows=[['#','Title','Campaign','Cost £','Clicks','Impressions','Availability','URL']];
-    R2.waste_products.forEach((p,i)=>rows.push([i+1,p.title,r2CampShort(p.cid),p.cost.toFixed(2),p.clicks,p.imps,p.avail||'',p.url||'']));
+    rows=[['#','Title','Product ID','Campaign','Cost £','Clicks','Impressions','Availability','URL']];
+    R2.waste_products.forEach((p,i)=>rows.push([i+1,p.title,p.item||'',r2CampShort(p.cid),p.cost.toFixed(2),p.clicks,p.imps,p.avail||'',p.url||'']));
   } else if(type==='kw'){
     filename='search_terms.csv';
     rows=[['#','Term','Campaign','Cost £','Clicks','Impressions','CTR %']];
