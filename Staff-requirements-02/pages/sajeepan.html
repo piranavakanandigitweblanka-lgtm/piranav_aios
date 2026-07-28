@@ -289,6 +289,24 @@ footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;
 .r2-loading{text-align:center;padding:40px;color:var(--muted);}
 .r2-error{background:var(--red-bg);border:1px solid var(--red-bd);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--red-tx);margin-bottom:12px;}
 @media(max-width:700px){.window-grid{grid-template-columns:1fr;}}
+/* Drawer delta indicators */
+.dr-delta{font-size:11px;margin-top:3px;font-weight:600;min-height:14px;}
+.delta-up{color:var(--accent2);}
+.delta-dn{color:var(--accent3);}
+/* Per-product daily trend table */
+.dr-trend-tbl{width:100%;border-collapse:collapse;font-size:11px;}
+.dr-trend-tbl th{padding:4px 6px;text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);border-bottom:1px solid var(--line);background:#f8f9fa;white-space:nowrap;}
+.dr-trend-tbl th:first-child{text-align:left;}
+.dr-trend-tbl td{padding:4px 6px;text-align:right;border-bottom:1px solid var(--line);}
+.dr-trend-tbl td:first-child{text-align:left;font-weight:600;font-size:11px;}
+.dr-trend-tbl tr:last-child td{border-bottom:none;}
+.dr-trend-tbl tr:hover td{background:var(--accent-soft);}
+/* Feed score bar */
+.feed-score-bar{background:var(--line);border-radius:4px;height:6px;margin-top:6px;margin-bottom:10px;overflow:hidden;}
+.feed-score-fill{height:100%;border-radius:4px;transition:width .6s;}
+.score-good{background:var(--accent2);}
+.score-ok{background:var(--accent4);}
+.score-bad{background:var(--accent3);}
 </style>
 </head>
 <body>
@@ -631,38 +649,62 @@ footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;
   <div class="drawer-body">
     <img id="drImg" class="dr-img" src="" alt="Product Image" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><rect fill=%22%23e8eaf0%22 width=%22100%22 height=%22100%22/><text x=%2250%25%22 y=%2250%25%22 font-size=%2212%22 fill=%22%23aaa%22 text-anchor=%22middle%22 dy=%22.3em%22>No Image</text></svg>'">
 
+    <!-- Performance with vs-prev deltas -->
     <div class="dr-section">
-      <div class="dr-label">Performance Metrics (30d)</div>
-      <div class="dr-grid">
-        <div class="dr-metric"><div class="dv" id="drRevenue">—</div><div class="dl">Revenue</div></div>
-        <div class="dr-metric"><div class="dv" id="drRoas">—</div><div class="dl">ROAS %</div></div>
-        <div class="dr-metric"><div class="dv" id="drCost">—</div><div class="dl">Cost</div></div>
-        <div class="dr-metric"><div class="dv" id="drConv">—</div><div class="dl">Conversions</div></div>
-        <div class="dr-metric"><div class="dv" id="drClicks">—</div><div class="dl">Clicks</div></div>
-        <div class="dr-metric"><div class="dv" id="drCtr">—</div><div class="dl">CTR %</div></div>
-        <div class="dr-metric"><div class="dv" id="drImps">—</div><div class="dl">Impressions</div></div>
-        <div class="dr-metric"><div class="dv" id="drCvr">—</div><div class="dl">Conv. Rate %</div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="dr-label" style="margin:0;">Performance Metrics</div>
+        <span id="drPeriodLabel" style="font-size:10px;color:var(--muted);"></span>
       </div>
+      <div class="dr-grid">
+        <div class="dr-metric"><div class="dv" id="drRevenue">—</div><div class="dl">Revenue</div><div class="dr-delta" id="drRevenueDelta"></div></div>
+        <div class="dr-metric"><div class="dv" id="drRoas">—</div><div class="dl">ROAS %</div><div class="dr-delta" id="drRoasDelta"></div></div>
+        <div class="dr-metric"><div class="dv" id="drCost">—</div><div class="dl">Cost</div><div class="dr-delta" id="drCostDelta"></div></div>
+        <div class="dr-metric"><div class="dv" id="drConv">—</div><div class="dl">Conversions</div><div class="dr-delta" id="drConvDelta"></div></div>
+        <div class="dr-metric"><div class="dv" id="drClicks">—</div><div class="dl">Clicks</div><div class="dr-delta" id="drClicksDelta"></div></div>
+        <div class="dr-metric"><div class="dv" id="drCtr">—</div><div class="dl">CTR %</div><div class="dr-delta" id="drCtrDelta"></div></div>
+        <div class="dr-metric"><div class="dv" id="drImps">—</div><div class="dl">Impressions</div><div class="dr-delta" id="drImpsDelta"></div></div>
+        <div class="dr-metric"><div class="dv" id="drCvr">—</div><div class="dl">Conv. Rate %</div><div class="dr-delta" id="drCvrDelta"></div></div>
+      </div>
+      <div id="drPrevLoading" style="font-size:11px;color:var(--muted);text-align:center;padding:4px 0;display:none;">Loading vs prev period…</div>
     </div>
 
+    <!-- Product Details (expanded) -->
     <div class="dr-section">
       <div class="dr-label">Product Details</div>
       <div>
-        <div class="dr-row"><span class="dk">Item ID</span><span class="dv2" id="drItemId">—</span></div>
+        <div class="dr-row"><span class="dk">Item ID</span><span class="dv2" id="drItemId" style="font-size:11px;font-family:monospace;word-break:break-all;">—</span></div>
         <div class="dr-row"><span class="dk">Campaign</span><span class="dv2" id="drCampaign">—</span></div>
-        <div class="dr-row"><span class="dk">Availability</span><span class="dv2" id="drAvail">—</span></div>
-        <div class="dr-row"><span class="dk">Price</span><span class="dv2" id="drPrice">—</span></div>
+        <div class="dr-row"><span class="dk">SKU / MPN</span><span class="dv2" id="drSku">—</span></div>
+        <div class="dr-row"><span class="dk">GTIN / Barcode</span><span class="dv2" id="drGtin" style="color:var(--muted);">Loading…</span></div>
         <div class="dr-row"><span class="dk">Brand</span><span class="dv2" id="drBrand">—</span></div>
+        <div class="dr-row"><span class="dk">Category</span><span class="dv2" id="drCategory" style="color:var(--muted);">Loading…</span></div>
         <div class="dr-row"><span class="dk">Product Type</span><span class="dv2" id="drType">—</span></div>
-        <div class="dr-row"><span class="dk">Ad Contribution</span><span class="dv2" id="drProfit">Conv Value − Ad Cost</span></div>
+        <div class="dr-row"><span class="dk">Price</span><span class="dv2" id="drPrice">—</span></div>
+        <div class="dr-row"><span class="dk">Availability</span><span class="dv2" id="drAvail">—</span></div>
+        <div class="dr-row"><span class="dk">Segment (Label 3)</span><span class="dv2" id="drLabel3" style="color:var(--muted);">Loading…</span></div>
+        <div class="dr-row"><span class="dk">Ad Contribution</span><span class="dv2" id="drProfit" style="font-size:12px;">—</span></div>
       </div>
     </div>
 
+    <!-- Daily Performance Trend (lazy loaded) -->
     <div class="dr-section">
-      <div class="dr-label">Feed Checklist</div>
+      <div class="dr-label">Daily Performance Trend (30d)</div>
+      <div id="drTrendBody" style="overflow-x:auto;max-height:260px;overflow-y:auto;">
+        <div style="text-align:center;padding:20px;color:var(--muted);font-size:12px;">Loading trend data…</div>
+      </div>
+    </div>
+
+    <!-- Feed Checklist with score -->
+    <div class="dr-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div class="dr-label" style="margin:0;">Feed &amp; Optimization</div>
+        <span id="drFeedScore" style="font-size:13px;font-weight:700;color:var(--ink);">—/100</span>
+      </div>
+      <div class="feed-score-bar"><div class="feed-score-fill score-bad" id="drFeedScoreFill" style="width:0%"></div></div>
       <div class="feed-check" id="drFeedCheck"></div>
     </div>
 
+    <!-- AI Recommendations -->
     <div class="dr-section">
       <div class="dr-label">AI Recommendations</div>
       <div class="rec-list" id="drRecs"></div>
@@ -1253,61 +1295,184 @@ function changePage(dir){pgNum=Math.max(0,pgNum+dir);renderTable();}
    PRODUCT DRAWER
    ============================================================ */
 function openDrawer(idx){
-  const p=PRODUCTS[idx];
-  const c=CAMP_MAP[p.cid];
-  const ctr=p.imps>0?(p.clicks/p.imps*100):0;
-  const cvr=p.clicks>0?(p.conv/p.clicks*100):0;
-  const adContribution=p.cv-p.cost;
+  const p = PRODUCTS[idx];
+  const c = CAMP_MAP[p.cid];
+  const ctr = p.imps > 0 ? (p.clicks / p.imps * 100) : 0;
+  const cvr = p.clicks > 0 ? (p.conv / p.clicks * 100) : 0;
 
-  document.getElementById('drTitle').textContent=p.title;
-  document.getElementById('drSub').textContent=`Item ID: ${p.item} · Campaign: ${campShort(p.cid)}`;
-  document.getElementById('drImg').src=p.img||'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect fill="%23e8eaf0" width="100" height="100"/></svg>';
-  document.getElementById('drRevenue').textContent=fmtGbp(p.cv);
-  document.getElementById('drRoas').textContent=fmtPct(p.roas);
-  document.getElementById('drCost').textContent=fmtGbp(p.cost);
-  document.getElementById('drConv').textContent=p.conv.toFixed(2);
-  document.getElementById('drClicks').textContent=fmt(p.clicks,0);
-  document.getElementById('drCtr').textContent=fmtPct(ctr);
-  document.getElementById('drImps').textContent=fmt(p.imps,0);
-  document.getElementById('drCvr').textContent=fmtPct(cvr);
-  document.getElementById('drItemId').textContent=p.item;
-  document.getElementById('drCampaign').textContent=c?c.name:p.cid;
-  document.getElementById('drAvail').textContent=p.avail;
-  document.getElementById('drPrice').textContent=p.price?('£'+p.price):'—';
-  document.getElementById('drBrand').textContent=p.brand||'—';
-  document.getElementById('drType').textContent=p.type||'—';
-  document.getElementById('drProfit').textContent=fmtGbp(adContribution)+' (Conv Value − Ad Cost only. Profit unavailable — product cost not verified)';
+  // Header
+  document.getElementById('drTitle').textContent = p.title;
+  document.getElementById('drSub').textContent   = `${campShort(p.cid)} · Item: ${p.item.replace('shopify_gb_','').split('_')[0]}`;
+  document.getElementById('drImg').src = p.img || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect fill="%23e8eaf0" width="100" height="100"/></svg>';
 
-  /* Feed checklist */
-  const feedItems=[
-    {pass:!!p.title,label:'Product title present'},
-    {pass:!!p.img,label:'Image link present'},
-    {pass:p.avail==='in stock',label:'In stock (availability)'},
-    {pass:!!p.price,label:'Price set'},
-    {pass:!!p.brand,label:'Brand set'},
-    {pass:!!p.type,label:'Product type set'},
-    {pass:!p.item.startsWith('shopify_gb'),label:'GTIN / MPN available',warn:true}
-  ];
-  document.getElementById('drFeedCheck').innerHTML=feedItems.map(f=>`
-    <div class="fc-item">
-      <div class="fc-dot ${f.pass?'fc-pass':f.warn?'fc-warn':'fc-fail'}"></div>
-      <span>${f.label}</span>
-    </div>`).join('');
+  // Period label
+  const periodEl = document.getElementById('drPeriodLabel');
+  if(periodEl && sjMeta.from) periodEl.textContent = `${sjMeta.from} → ${sjMeta.to}`;
 
-  /* AI Recommendations */
-  const recs=[];
-  if(p.conv===0&&p.cost>0) recs.push({cls:'rec-high',title:'⛔ Pause / Review — Zero Conversions',desc:`£${p.cost.toFixed(2)} spent with 0 conversions. Pause or investigate feed & landing page.`});
-  if(p.roas>0&&p.roas<150) recs.push({cls:'rec-high',title:'📉 Poor ROAS — Below 150%',desc:`ROAS ${p.roas.toFixed(0)}% is critically low. Review product pricing and bid strategy.`});
-  if(p.roas>=500&&p.cost>5) recs.push({cls:'rec-low',title:'🚀 Scale — High ROAS Product',desc:`ROAS ${p.roas.toFixed(0)}% is excellent. Consider increasing daily budget to capture more share.`});
-  if(p.imps>2000&&ctr<0.5) recs.push({cls:'rec-med',title:'👁️ Improve Title / Image — Low CTR',desc:`CTR ${ctr.toFixed(2)}% with ${fmt(p.imps,0)} impressions. Optimise title and lead image.`});
-  if(!p.img) recs.push({cls:'rec-med',title:'📷 Missing Product Image',desc:'No image link detected. Add a high-quality image to improve CTR and feed quality.'});
-  if(p.avail!=='in stock') recs.push({cls:'rec-high',title:'📦 Out of Stock — Pause Ad',desc:'Product is out of stock. Pause to avoid wasted spend.'});
-  if(recs.length===0) recs.push({cls:'rec-low',title:'✅ Product looks healthy',desc:`ROAS ${p.roas.toFixed(0)}%, ${p.conv.toFixed(2)} conversions. Continue monitoring.`});
-  document.getElementById('drRecs').innerHTML=recs.map(r=>`<div class="rec-item ${r.cls}"><div class="rec-title">${r.title}</div><div class="rec-desc">${r.desc}</div></div>`).join('');
+  // Performance metrics (immediate)
+  document.getElementById('drRevenue').textContent = fmtGbp(p.cv);
+  document.getElementById('drRoas').textContent    = fmtPct(p.roas);
+  document.getElementById('drCost').textContent    = fmtGbp(p.cost);
+  document.getElementById('drConv').textContent    = p.conv.toFixed(2);
+  document.getElementById('drClicks').textContent  = fmt(p.clicks, 0);
+  document.getElementById('drCtr').textContent     = fmtPct(ctr);
+  document.getElementById('drImps').textContent    = fmt(p.imps, 0);
+  document.getElementById('drCvr').textContent     = fmtPct(cvr);
 
+  // Clear deltas
+  ['Revenue','Roas','Cost','Conv','Clicks','Ctr','Imps','Cvr'].forEach(k=>{
+    const el = document.getElementById('dr'+k+'Delta');
+    if(el) el.innerHTML = '';
+  });
+  const prevLoad = document.getElementById('drPrevLoading');
+  if(prevLoad) prevLoad.style.display = 'block';
+
+  // Product details (immediate)
+  document.getElementById('drItemId').textContent   = p.item;
+  document.getElementById('drCampaign').textContent = c ? c.name : p.cid;
+  document.getElementById('drSku').textContent      = p.sku || '—';
+  document.getElementById('drBrand').textContent    = p.brand || '—';
+  document.getElementById('drType').textContent     = p.type || '—';
+  document.getElementById('drPrice').textContent    = p.price ? ('£'+p.price) : '—';
+  document.getElementById('drAvail').textContent    = p.avail;
+  document.getElementById('drProfit').textContent   = fmtGbp(p.cv - p.cost) + ' (Conv Value − Ad Cost. COGS unavailable)';
+  // Fields pending lazy load
+  document.getElementById('drGtin').textContent     = p.gtin || '—';
+  document.getElementById('drCategory').textContent = p.cat  || 'Loading…';
+  document.getElementById('drLabel3').textContent   = p.label3 || 'Loading…';
+
+  // Trend loading state
+  document.getElementById('drTrendBody').innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:12px;">Loading trend data…</div>';
+
+  // Feed checklist and AI recommendations (immediate, will update after lazy load)
+  drBuildFeedCheck(p, null);
+  drBuildRecs(p, ctr);
+
+  // Open drawer
   document.getElementById('drawerOverlay').classList.add('open');
   document.getElementById('productDrawer').classList.add('open');
+
+  // Lazy load: prev period + daily trend + extended meta
+  const from = (document.getElementById('sjDateFrom')||{}).value || sjMeta.from || '';
+  const to   = (document.getElementById('sjDateTo')  ||{}).value || sjMeta.to   || '';
+  if(from && to){
+    fetch(`/api/sajeepan/dashboard?type=proddetail&item=${encodeURIComponent(p.item)}&from=${from}&to=${to}`)
+      .then(r => r.json())
+      .then(json => {
+        if(!json.ok) throw new Error(json.error);
+        drApplyPrevDeltas(p, json.prev, ctr, cvr);
+        drRenderTrend(json.trend);
+        if(json.extra){
+          const ex = json.extra;
+          document.getElementById('drGtin').textContent     = ex.gtin     || '—';
+          document.getElementById('drCategory').textContent = ex.category  || '—';
+          document.getElementById('drLabel3').textContent   = ex.label3   || '—';
+          if(ex.ptype) document.getElementById('drType').textContent = ex.ptype;
+          drBuildFeedCheck(p, ex);
+        }
+        if(prevLoad) prevLoad.style.display = 'none';
+      })
+      .catch(()=>{ if(prevLoad){ prevLoad.textContent='Could not load vs prev.'; } });
+  }
 }
+
+function drApplyPrevDeltas(p, prev, ctr_curr, cvr_curr){
+  if(!prev) return;
+  const ctr_prev = prev.imp > 0 ? (prev.clk / prev.imp * 100) : 0;
+  const cvr_prev = prev.clk > 0 ? (prev.conv / prev.clk * 100) : 0;
+  function delta(cur, prv){
+    if(!prv || prv === 0) return '';
+    const pct = ((cur - prv) / prv * 100).toFixed(1);
+    const up  = Number(pct) >= 0;
+    return `<span class="dr-delta ${up?'delta-up':'delta-dn'}">${up?'▲':'▼'} ${Math.abs(pct)}% vs prev</span>`;
+  }
+  document.getElementById('drRevenueDelta').innerHTML = delta(p.cv,     prev.cv);
+  document.getElementById('drRoasDelta').innerHTML    = delta(p.roas,   prev.roas);
+  document.getElementById('drCostDelta').innerHTML    = delta(p.cost,   prev.cost);
+  document.getElementById('drConvDelta').innerHTML    = delta(p.conv,   prev.conv);
+  document.getElementById('drClicksDelta').innerHTML  = delta(p.clicks, prev.clk);
+  document.getElementById('drCtrDelta').innerHTML     = delta(ctr_curr, ctr_prev);
+  document.getElementById('drImpsDelta').innerHTML    = delta(p.imps,   prev.imp);
+  document.getElementById('drCvrDelta').innerHTML     = delta(cvr_curr, cvr_prev);
+}
+
+function drRenderTrend(trend){
+  const el = document.getElementById('drTrendBody');
+  if(!trend || !trend.length){
+    el.innerHTML='<div style="text-align:center;padding:16px;color:var(--muted);font-size:12px;">No daily data for this product.</div>';
+    return;
+  }
+  const rows = trend.map(r=>`
+    <tr>
+      <td>${r.d}</td>
+      <td>${r.imp.toLocaleString()}</td>
+      <td>${r.clk}</td>
+      <td>${r.ctr.toFixed(2)}%</td>
+      <td>£${r.cost.toFixed(2)}</td>
+      <td>£${r.cv.toFixed(2)}</td>
+      <td>${r.roas.toFixed(0)}%</td>
+    </tr>`).join('');
+  el.innerHTML=`<table class="dr-trend-tbl">
+    <thead><tr>
+      <th style="text-align:left">Date</th>
+      <th>Imps</th><th>Clks</th><th>CTR%</th>
+      <th>Cost £</th><th>Revenue £</th><th>ROAS%</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+function drBuildFeedCheck(p, extra){
+  const gtinOk    = extra ? !!extra.gtin     : !!p.gtin;
+  const catOk     = extra ? !!extra.category : !!p.cat;
+  const label3Ok  = extra ? !!extra.label3   : !!p.label3;
+  const typeOk    = !!(extra && extra.ptype ? extra.ptype : p.type && p.type !== 'Lighting');
+  const loading   = extra === null; // still fetching
+
+  const items = [
+    {w:15, pass:!!p.title,          label:'Product title present'},
+    {w:15, pass:!!p.img,            label:'Image link present'},
+    {w:10, pass:p.avail==='in stock',label:'In stock (availability)'},
+    {w:10, pass:!!p.price,          label:'Price set'},
+    {w:10, pass:!!p.brand,          label:'Brand set'},
+    {w:10, pass:typeOk,             label:'Product type set'},
+    {w:15, pass:gtinOk,             label:'GTIN / MPN present', warn:true},
+    {w:10, pass:catOk,              label:'Google Product Category set', warn:true},
+    {w:5,  pass:label3Ok,           label:'Custom Label 3 (segmentation)', warn:true},
+  ];
+
+  const score = items.reduce((s,i) => s + (i.pass ? i.w : 0), 0);
+  const scoreEl = document.getElementById('drFeedScore');
+  const fillEl  = document.getElementById('drFeedScoreFill');
+  if(scoreEl) scoreEl.textContent = score + '/100';
+  if(fillEl){
+    fillEl.style.width = score + '%';
+    fillEl.className   = 'feed-score-fill ' + (score >= 80 ? 'score-good' : score >= 50 ? 'score-ok' : 'score-bad');
+  }
+
+  const el = document.getElementById('drFeedCheck');
+  if(el) el.innerHTML = items.map(f=>`
+    <div class="fc-item">
+      <div class="fc-dot ${f.pass?'fc-pass':f.warn?'fc-warn':'fc-fail'}"></div>
+      <span style="flex:1;">${f.label}</span>
+      <span style="font-size:11px;font-weight:600;color:${f.pass?'var(--green-tx)':'var(--muted)'};">${loading && !f.pass ? '…' : f.pass ? '✓' : '✗'}</span>
+    </div>`).join('');
+}
+
+function drBuildRecs(p, ctr){
+  const recs = [];
+  if(p.conv===0&&p.cost>0) recs.push({cls:'rec-high',title:'⛔ Pause / Review — Zero Conversions',desc:`£${p.cost.toFixed(2)} spent with 0 conversions. Pause or investigate feed & landing page.`});
+  if(p.roas>0&&p.roas<150) recs.push({cls:'rec-high',title:'📉 Poor ROAS — Below 150%',desc:`ROAS ${p.roas.toFixed(0)}% is critically low. Review pricing and bid strategy.`});
+  if(p.roas>=500&&p.cost>5) recs.push({cls:'rec-low',title:'🚀 Scale — High ROAS Product',desc:`ROAS ${p.roas.toFixed(0)}% is excellent. Consider increasing budget to capture more share.`});
+  if(p.imps>2000&&ctr<0.5) recs.push({cls:'rec-med',title:'👁️ Improve Title / Image — Low CTR',desc:`CTR ${ctr.toFixed(2)}% with ${fmt(p.imps,0)} impressions. Optimise title and lead image.`});
+  if(!p.img) recs.push({cls:'rec-med',title:'📷 Missing Product Image',desc:'No image link. Add a high-quality image to improve CTR and feed quality.'});
+  if(p.avail!=='in stock') recs.push({cls:'rec-high',title:'📦 Out of Stock — Pause Ad',desc:'Product is out of stock. Pause to avoid wasted spend.'});
+  if(!p.gtin) recs.push({cls:'rec-med',title:'🔢 Missing GTIN / Barcode',desc:'No GTIN set. Adding a barcode improves feed quality score and ad eligibility.'});
+  if(recs.length===0) recs.push({cls:'rec-low',title:'✅ Product looks healthy',desc:`ROAS ${p.roas.toFixed(0)}%, ${p.conv.toFixed(2)} conversions. Continue monitoring.`});
+  const el = document.getElementById('drRecs');
+  if(el) el.innerHTML = recs.map(r=>`<div class="rec-item ${r.cls}"><div class="rec-title">${r.title}</div><div class="rec-desc">${r.desc}</div></div>`).join('');
+}
+
 function closeDrawer(){
   document.getElementById('drawerOverlay').classList.remove('open');
   document.getElementById('productDrawer').classList.remove('open');

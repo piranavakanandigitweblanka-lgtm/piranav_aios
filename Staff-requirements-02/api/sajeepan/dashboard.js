@@ -18,6 +18,74 @@ const TARGET_ROAS = {
   '21242723265': 380,
 };
 
+async function handleProdDetail(client, itemId, fromDate, toDate, prevFrom, prevTo) {
+  const n = v => Number(v) || 0;
+
+  // Daily trend for this specific product
+  const { rows: trendRows } = await client.query(`
+    SELECT date,
+      SUM(impressions) AS imp, SUM(clicks) AS clk,
+      ROUND(SUM(cost)::numeric,2) AS cost,
+      ROUND(SUM(conversion_value)::numeric,2) AS cv,
+      ROUND(SUM(conversions)::numeric,4) AS conv
+    FROM google_ads.product_performance
+    WHERE campaign_id = ANY($1::bigint[])
+      AND LOWER(product_item_id) = LOWER($2)
+      AND date BETWEEN $3 AND $4
+    GROUP BY date ORDER BY date ASC
+  `, [SJ_CAMPAIGN_IDS, itemId, fromDate, toDate]);
+
+  // Previous period aggregate for this product
+  const { rows: prevRows } = await client.query(`
+    SELECT
+      SUM(impressions) AS imp, SUM(clicks) AS clk,
+      ROUND(SUM(cost)::numeric,2) AS cost,
+      ROUND(SUM(conversion_value)::numeric,2) AS cv,
+      ROUND(SUM(conversions)::numeric,4) AS conv
+    FROM google_ads.product_performance
+    WHERE campaign_id = ANY($1::bigint[])
+      AND LOWER(product_item_id) = LOWER($2)
+      AND date BETWEEN $3 AND $4
+  `, [SJ_CAMPAIGN_IDS, itemId, prevFrom, prevTo]);
+
+  // Extended merchant_products fields
+  const { rows: metaRows } = await client.query(`
+    SELECT DISTINCT ON (LOWER(product_id))
+      product_id, description, gtin,
+      google_product_category AS category,
+      product_type AS ptype,
+      custom_label_3 AS label3
+    FROM google_ads.merchant_products
+    WHERE LOWER(product_id) = LOWER($1)
+    ORDER BY LOWER(product_id)
+  `, [itemId]);
+
+  const p = prevRows[0] || {};
+  const prev = { imp: n(p.imp), clk: n(p.clk), cost: n(p.cost), cv: n(p.cv), conv: n(p.conv) };
+  prev.roas = prev.cost > 0 ? Math.round(prev.cv / prev.cost * 10000) / 100 : 0;
+
+  const trend = trendRows.map(r => {
+    const cost = n(r.cost), cv = n(r.cv), imp = n(r.imp), clk = n(r.clk);
+    return {
+      d: r.date.toISOString().slice(0, 10),
+      imp, clk, cost, cv, conv: n(r.conv),
+      ctr:  imp  > 0 ? Math.round(clk / imp * 10000) / 100 : 0,
+      roas: cost > 0 ? Math.round(cv / cost * 10000) / 100 : 0,
+    };
+  });
+
+  const m = metaRows[0] || {};
+  const extra = {
+    description: m.description || null,
+    gtin:        m.gtin        || null,
+    category:    m.category    || null,
+    ptype:       m.ptype       || null,
+    label3:      m.label3      || null,
+  };
+
+  return { prev, trend, extra };
+}
+
 async function handleReq2(client, toDate, fromDate, prevFrom, prevTo) {
   const n = v => Number(v) || 0;
 
@@ -203,6 +271,13 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true, meta: { from: fromDate, to: toDate, prev_from: prevFrom, prev_to: prevTo }, ...r2 });
     }
 
+    if (type === 'proddetail') {
+      const item = (req.query.item || '').trim();
+      if (!item) return res.status(400).json({ ok: false, error: 'item param required' });
+      const detail = await handleProdDetail(client, item, fromDate, toDate, prevFrom, prevTo);
+      return res.status(200).json({ ok: true, meta: { from: fromDate, to: toDate, prev_from: prevFrom, prev_to: prevTo }, ...detail });
+    }
+
     // ── 1. Campaign overview (L + prev) ──────────────────────────────────
     const { rows: campRows } = await client.query(`
       SELECT
@@ -267,7 +342,9 @@ module.exports = async function handler(req, res) {
     if (ids.length > 0) {
       const { rows: metaRows } = await client.query(`
         SELECT DISTINCT ON (LOWER(product_id))
-          product_id, title, image_link, link, price, availability, brand, mpn AS sku
+          product_id, title, image_link, link, price, availability, brand, mpn AS sku,
+          gtin, google_product_category AS category, product_type AS ptype,
+          custom_label_3 AS label3
         FROM google_ads.merchant_products
         WHERE LOWER(product_id) = ANY($1::text[])
         ORDER BY LOWER(product_id)
@@ -315,14 +392,17 @@ module.exports = async function handler(req, res) {
         imps:  imp,
         clicks: clk,
         roas,
-        title: meta.title        || `Product #${r.product_item_id.split('_').pop()}`,
-        img:   meta.image_link   || '',
-        url:   meta.link         || '',
-        price: meta.price        ? Number(meta.price) : null,
-        avail: meta.availability || 'unknown',
-        brand: meta.brand        || 'LEDSone',
-        type:  'Lighting',
-        sku:   meta.sku          || null,
+        title:  meta.title       || `Product #${r.product_item_id.split('_').pop()}`,
+        img:    meta.image_link  || '',
+        url:    meta.link        || '',
+        price:  meta.price       ? Number(meta.price) : null,
+        avail:  meta.availability|| 'unknown',
+        brand:  meta.brand       || 'LEDSone',
+        type:   meta.ptype       || 'Lighting',
+        sku:    meta.sku         || null,
+        gtin:   meta.gtin        || null,
+        cat:    meta.category    || null,
+        label3: meta.label3      || null,
       };
     });
 
