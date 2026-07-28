@@ -1,8 +1,8 @@
-// Sajeepan Req1 — Live Google Ads PMax Dashboard
-// Returns: campaigns (L + prev period), daily trend, top products
-// Source: google_ads.campaign_performance + product_performance + merchant_products
-// Filter: 6 Sajeepan campaign IDs
-// Accepts: ?from=YYYY-MM-DD&to=YYYY-MM-DD (defaults to last 30 days from MAX date)
+// Sajeepan Dashboard API
+// Req1: campaigns, daily trend, top products
+// Req2: waste spend, search term intelligence, cross-platform, 30/60/90 context
+// Source: google_ads.campaign_performance + product_performance + merchant_products + order_management
+// Filter: 6 Sajeepan PMax campaign IDs
 
 const { Client } = require('pg');
 
@@ -17,6 +17,152 @@ const TARGET_ROAS = {
   '22079334413': 380,
   '21242723265': 380,
 };
+
+async function handleReq2(client, toDate, fromDate, prevFrom, prevTo) {
+  const n = v => Number(v) || 0;
+
+  // ── 1. Wasteful products: L30, conv=0, cost>5, clicks>0 ──────────────────
+  const { rows: wasteRows } = await client.query(`
+    SELECT product_item_id, campaign_id::text,
+      SUM(clicks) AS clicks, ROUND(SUM(cost)::numeric,2) AS cost,
+      SUM(impressions) AS imps
+    FROM google_ads.product_performance
+    WHERE campaign_id = ANY($1::bigint[])
+      AND date BETWEEN $2 AND $3
+      AND product_item_id != ''
+    GROUP BY product_item_id, campaign_id
+    HAVING SUM(conversions)=0 AND SUM(cost)>5 AND SUM(clicks)>0
+    ORDER BY cost DESC LIMIT 30
+  `, [SJ_CAMPAIGN_IDS, fromDate, toDate]);
+
+  // Metadata for waste products
+  const wasteIds = wasteRows.map(r => r.product_item_id.toLowerCase());
+  let wasteMeta = {};
+  if (wasteIds.length > 0) {
+    const { rows: wm } = await client.query(`
+      SELECT DISTINCT ON (LOWER(product_id))
+        product_id, title, image_link, link, price, availability
+      FROM google_ads.merchant_products
+      WHERE LOWER(product_id) = ANY($1::text[])
+      ORDER BY LOWER(product_id)
+    `, [wasteIds]);
+    wm.forEach(r => { wasteMeta[r.product_id.toLowerCase()] = r; });
+  }
+
+  const waste_products = wasteRows.map(r => {
+    const m = wasteMeta[r.product_item_id.toLowerCase()] || {};
+    return {
+      item:   r.product_item_id,
+      cid:    r.campaign_id,
+      clicks: n(r.clicks),
+      cost:   n(r.cost),
+      imps:   n(r.imps),
+      title:  m.title || `Product #${r.product_item_id.split('_').pop()}`,
+      img:    m.image_link || '',
+      price:  m.price ? Number(m.price) : null,
+      avail:  m.availability || 'unknown',
+    };
+  });
+
+  // ── 2. Search term intelligence: L30, conv=0, cost>2 ─────────────────────
+  const { rows: kwRows } = await client.query(`
+    SELECT search_term, campaign_id::text,
+      ROUND(SUM(cost)::numeric,2) AS cost, SUM(clicks) AS clicks, SUM(impressions) AS imps
+    FROM google_ads.pmax_campaign_search_term_data
+    WHERE campaign_id = ANY($1::bigint[])
+      AND date BETWEEN $2 AND $3
+      AND conversions = 0
+    GROUP BY search_term, campaign_id
+    HAVING SUM(cost) > 2
+    ORDER BY cost DESC LIMIT 25
+  `, [SJ_CAMPAIGN_IDS, fromDate, toDate]);
+
+  const neg_kw = kwRows.map(r => ({
+    term:   r.search_term,
+    cid:    r.campaign_id,
+    cost:   n(r.cost),
+    clicks: n(r.clicks),
+    imps:   n(r.imps),
+  }));
+
+  // ── 3. Campaign budget waste: L vs prev ───────────────────────────────────
+  const { rows: bwRows } = await client.query(`
+    SELECT campaign_id::text,
+      ROUND(SUM(CASE WHEN date BETWEEN $1 AND $2 THEN cost             ELSE 0 END)::numeric,2) AS cost_l,
+      ROUND(SUM(CASE WHEN date BETWEEN $1 AND $2 THEN conversion_value ELSE 0 END)::numeric,2) AS cv_l,
+      ROUND(SUM(CASE WHEN date BETWEEN $3 AND $4 THEN cost             ELSE 0 END)::numeric,2) AS cost_p,
+      ROUND(SUM(CASE WHEN date BETWEEN $3 AND $4 THEN conversion_value ELSE 0 END)::numeric,2) AS cv_p
+    FROM google_ads.campaign_performance
+    WHERE campaign_id = ANY($5::bigint[])
+      AND date BETWEEN $3 AND $2
+    GROUP BY campaign_id
+  `, [fromDate, toDate, prevFrom, prevTo, SJ_CAMPAIGN_IDS]);
+
+  const budget_waste = bwRows.map(r => {
+    const cl = n(r.cost_l), cvl = n(r.cv_l), cp = n(r.cost_p), cvp = n(r.cv_p);
+    const roas_l = cl > 0 ? Math.round(cvl / cl * 10000) / 100 : 0;
+    const roas_p = cp > 0 ? Math.round(cvp / cp * 10000) / 100 : 0;
+    const cost_chg = cp > 0 ? Math.round((cl - cp) / cp * 100) : null;
+    const is_waste = cl > cp && roas_l < roas_p;
+    return { cid: r.campaign_id, cost_l: cl, cv_l: cvl, roas_l, cost_p: cp, cv_p: cvp, roas_p, cost_chg, is_waste };
+  });
+
+  // ── 4. Cross-platform: Amazon/eBay SKUs L30 ───────────────────────────────
+  const l30Start = fromDate;
+  const { rows: cpRows } = await client.query(`
+    SELECT s.source_name, oii.item_sku,
+      COUNT(DISTINCT o.id) AS orders_30d,
+      SUM(CAST(oii.item_quantity AS int)) AS qty_30d
+    FROM order_management.orders o
+    JOIN order_management.sub_source ss ON ss.id = o.sub_source_id
+    JOIN order_management.source s ON s.id = ss.source_id
+    JOIN order_management.order_item_info oii ON oii.order_id = o.id
+    WHERE o.order_date >= $1
+      AND s.source_name IN ('AMAZON','EBAY')
+      AND oii.item_sku IS NOT NULL AND oii.item_sku != ''
+    GROUP BY s.source_name, oii.item_sku
+    HAVING COUNT(DISTINCT o.id) >= 3
+    ORDER BY orders_30d DESC LIMIT 15
+  `, [l30Start]);
+
+  const cross_platform = cpRows.map(r => ({
+    source:     r.source_name,
+    sku:        r.item_sku,
+    orders_30d: n(r.orders_30d),
+    qty_30d:    n(r.qty_30d),
+  }));
+
+  // ── 5. Rolling 30/60/90 windows ──────────────────────────────────────────
+  const d = new Date(toDate);
+  const d30 = new Date(d); d30.setDate(d30.getDate() - 29);
+  const d60 = new Date(d); d60.setDate(d60.getDate() - 59);
+  const d90 = new Date(d); d90.setDate(d90.getDate() - 89);
+  const fmt = x => x.toISOString().slice(0, 10);
+
+  const { rows: windowRows } = await client.query(`
+    SELECT
+      ROUND(SUM(CASE WHEN date >= $1 THEN cost             ELSE 0 END)::numeric,2) AS cost_30,
+      ROUND(SUM(CASE WHEN date >= $1 THEN conversion_value ELSE 0 END)::numeric,2) AS cv_30,
+      ROUND(SUM(CASE WHEN date >= $1 THEN conversions      ELSE 0 END)::numeric,2) AS conv_30,
+      ROUND(SUM(CASE WHEN date >= $2 THEN cost             ELSE 0 END)::numeric,2) AS cost_60,
+      ROUND(SUM(CASE WHEN date >= $2 THEN conversion_value ELSE 0 END)::numeric,2) AS cv_60,
+      ROUND(SUM(CASE WHEN date >= $2 THEN conversions      ELSE 0 END)::numeric,2) AS conv_60,
+      ROUND(SUM(CASE WHEN date >= $3 THEN cost             ELSE 0 END)::numeric,2) AS cost_90,
+      ROUND(SUM(CASE WHEN date >= $3 THEN conversion_value ELSE 0 END)::numeric,2) AS cv_90,
+      ROUND(SUM(CASE WHEN date >= $3 THEN conversions      ELSE 0 END)::numeric,2) AS conv_90
+    FROM google_ads.campaign_performance
+    WHERE campaign_id = ANY($4::bigint[]) AND date >= $3
+  `, [fmt(d30), fmt(d60), fmt(d90), SJ_CAMPAIGN_IDS]);
+
+  const w = windowRows[0] || {};
+  const windows = {
+    d30: { cost: n(w.cost_30), cv: n(w.cv_30), conv: n(w.conv_30), roas: n(w.cost_30) > 0 ? Math.round(n(w.cv_30) / n(w.cost_30) * 10000) / 100 : 0 },
+    d60: { cost: n(w.cost_60), cv: n(w.cv_60), conv: n(w.conv_60), roas: n(w.cost_60) > 0 ? Math.round(n(w.cv_60) / n(w.cost_60) * 10000) / 100 : 0 },
+    d90: { cost: n(w.cost_90), cv: n(w.cv_90), conv: n(w.conv_90), roas: n(w.cost_90) > 0 ? Math.round(n(w.cv_90) / n(w.cost_90) * 10000) / 100 : 0 },
+  };
+
+  return { waste_products, neg_kw, budget_waste, cross_platform, windows };
+}
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -49,6 +195,13 @@ module.exports = async function handler(req, res) {
     const prevStart = new Date(prevEnd); prevStart.setDate(prevStart.getDate() - spanDays);
     const fmt = d => d.toISOString().slice(0, 10);
     const prevFrom = fmt(prevStart), prevTo = fmt(prevEnd);
+
+    // Route by ?type=
+    const type = req.query.type || 'req1';
+    if (type === 'req2') {
+      const r2 = await handleReq2(client, toDate, fromDate, prevFrom, prevTo);
+      return res.status(200).json({ ok: true, meta: { from: fromDate, to: toDate, prev_from: prevFrom, prev_to: prevTo }, ...r2 });
+    }
 
     // ── 1. Campaign overview (L + prev) ──────────────────────────────────
     const { rows: campRows } = await client.query(`

@@ -242,6 +242,53 @@ tbody tr:hover{background:var(--accent-soft);}
 .fbtn{border:1px solid var(--line);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;cursor:pointer;background:var(--card);color:var(--muted);transition:all .15s;}
 .fbtn.on{background:var(--accent);border-color:var(--accent);color:#fff;}
 footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;padding-bottom:24px;}
+
+/* Requirement Tab Nav */
+.req-tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--card);border-radius:12px;padding:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);flex-wrap:wrap;}
+.req-tab{flex:1;min-width:200px;border:1px solid var(--line);border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;background:var(--card);color:var(--muted);transition:all .15s;text-align:center;}
+.req-tab.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+.req-tab .tab-badge{font-size:10px;font-weight:700;border-radius:20px;padding:1px 7px;background:rgba(255,255,255,.25);margin-left:6px;}
+
+/* Req2 specific */
+.r2-section{background:var(--card);border-radius:16px;padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.07);}
+.r2-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.r2-title .cnt{background:var(--accent-soft);color:var(--accent);border-radius:20px;padding:2px 9px;font-size:12px;font-weight:700;}
+.r2-unsupported{background:#f8f9fa;border:1px dashed var(--line);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--muted);margin-bottom:8px;}
+.waste-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+.waste-table th{text-align:left;padding:8px 10px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;border-bottom:2px solid var(--line);background:#f8f9fb;}
+.waste-table td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle;}
+.waste-table tr:last-child td{border-bottom:none;}
+.waste-table tr:hover td{background:var(--accent-soft);}
+.kw-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:8px;background:var(--bg);margin-bottom:6px;}
+.kw-term{font-size:13px;font-weight:600;color:var(--ink);}
+.kw-meta{font-size:11px;color:var(--muted);}
+.kw-cost{font-size:13px;font-weight:700;color:var(--accent3);}
+.waste-pill{display:inline-block;border-radius:6px;padding:2px 8px;font-size:10.5px;font-weight:700;}
+.waste-yes{background:var(--red-bg);color:var(--red-tx);border:1px solid var(--red-bd);}
+.waste-no{background:var(--green-bg);color:var(--green-tx);border:1px solid var(--green-bd);}
+.window-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.window-card{background:var(--bg);border-radius:12px;padding:16px;border:1px solid var(--line);}
+.window-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px;}
+.window-metric{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--line);font-size:12.5px;}
+.window-metric:last-child{border-bottom:none;}
+.window-metric .wk{color:var(--muted);}
+.window-metric .wv{font-weight:700;color:var(--ink);}
+.cp-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+.cp-table th{text-align:left;padding:8px 10px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;border-bottom:2px solid var(--line);background:#f8f9fb;}
+.cp-table td{padding:8px 10px;border-bottom:1px solid var(--line);}
+.cp-table tr:last-child td{border-bottom:none;}
+.cp-table tr:hover td{background:var(--accent-soft);}
+.morning-action{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:10px;margin-bottom:8px;border-left:4px solid transparent;}
+.ma-red{background:var(--red-bg);border-left-color:var(--accent3);}
+.ma-amber{background:var(--amber-bg);border-left-color:var(--accent4);}
+.ma-blue{background:var(--blue-bg);border-left-color:var(--accent);}
+.ma-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;background:rgba(0,0,0,.08);color:var(--ink);}
+.ma-body{flex:1;}
+.ma-title{font-size:13px;font-weight:700;color:var(--ink);}
+.ma-desc{font-size:11.5px;color:var(--muted);margin-top:3px;}
+.r2-loading{text-align:center;padding:40px;color:var(--muted);}
+.r2-error{background:var(--red-bg);border:1px solid var(--red-bd);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--red-tx);margin-bottom:12px;}
+@media(max-width:700px){.window-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -267,6 +314,14 @@ footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;
   </div>
 </div>
 
+<!-- Requirement Tabs -->
+<div class="req-tabs">
+  <button class="req-tab on" id="tab-req1" onclick="switchReqTab(1)">📊 Requirement 1 — Campaign &amp; Product Intelligence<span class="tab-badge">LIVE</span></button>
+  <button class="req-tab" id="tab-req2" onclick="switchReqTab(2)">🔍 Requirement 2 — Stop Waste &amp; Intel<span class="tab-badge">LIVE</span></button>
+</div>
+
+<!-- REQ 1 PANEL -->
+<div id="req1Panel">
 <!-- Controls -->
 <!-- Date picker -->
 <div style="background:#fff;border:1px solid #e3e7ee;border-radius:12px;padding:12px 16px;margin-bottom:12px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);">
@@ -468,6 +523,101 @@ footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;
   </div>
 </div>
 
+</div><!-- /req1Panel -->
+
+<!-- REQ 2 PANEL -->
+<div id="req2Panel" style="display:none">
+
+<div style="background:#fff;border:1px solid #e3e7ee;border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);">
+  <span style="font-size:12px;font-weight:700;color:#5b6577;text-transform:uppercase;letter-spacing:.5px;">Date Range</span>
+  <button class="fbtn on" id="r2-preset-30" onclick="r2SetPreset(30)">Last 30d</button>
+  <button class="fbtn" id="r2-preset-60" onclick="r2SetPreset(60)">Last 60d</button>
+  <button class="fbtn" id="r2-preset-90" onclick="r2SetPreset(90)">Last 90d</button>
+  <span id="r2LastUpd" style="margin-left:auto;font-size:12px;color:#5b6577;font-weight:600;">—</span>
+  <button onclick="r2Refresh()" style="border:none;border-radius:7px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;background:#0f172a;color:#fff;">&#8635; Refresh</button>
+</div>
+<div id="r2Loading" class="r2-loading" style="display:none;">&#8987; Loading Req 2 data…</div>
+<div id="r2Error"   class="r2-error" style="display:none;"></div>
+
+<!-- Morning Priority Actions -->
+<div class="r2-section">
+  <div class="r2-title">🌅 Morning Priority Actions <span class="cnt" id="r2ActionCnt">—</span></div>
+  <div id="r2Actions"><div class="r2-loading">Load data to generate actions.</div></div>
+</div>
+
+<!-- Stop Waste Spend: Wasteful Products -->
+<div class="r2-section">
+  <div class="r2-title">💸 Stop Waste Spend — Zero-Conv Products <span class="cnt" id="r2WasteCnt">—</span></div>
+  <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Products with clicks, spend &gt; £5, but zero conversions in the selected period. Review feed quality or pause.</p>
+  <div class="scroll" style="overflow-x:auto;">
+    <table class="waste-table" id="r2WasteTable">
+      <thead><tr>
+        <th>#</th><th>Product</th><th>Campaign</th><th class="num">Cost £</th><th class="num">Clicks</th><th class="num">Imps</th><th>Stock</th><th>Action</th>
+      </tr></thead>
+      <tbody id="r2WasteTbody"><tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted);">Load data to see wasteful products.</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Search Term Intelligence -->
+<div class="r2-section">
+  <div class="r2-title">🔎 Search Term Intelligence — Negative KW Candidates <span class="cnt" id="r2KwCnt">—</span></div>
+  <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Search terms that spent £2+ with zero conversions. Add as negative keywords in Google Ads to stop irrelevant spend.</p>
+  <div id="r2KwList"><div class="r2-loading">Load data to see search term candidates.</div></div>
+</div>
+
+<!-- Budget Waste per Campaign -->
+<div class="r2-section">
+  <div class="r2-title">📉 Campaign Budget Waste Analysis</div>
+  <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Compares current period vs previous period. A waste signal fires when cost increased AND ROAS declined simultaneously.</p>
+  <div class="scroll" style="overflow-x:auto;">
+    <table class="waste-table" id="r2BudgetTable">
+      <thead><tr>
+        <th>Campaign</th><th class="num">Cost (L)</th><th class="num">ROAS (L)</th><th class="num">Cost (Prev)</th><th class="num">ROAS (Prev)</th><th class="num">Cost Δ</th><th>Signal</th>
+      </tr></thead>
+      <tbody id="r2BudgetTbody"><tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted);">Load data to see budget analysis.</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Cross-Platform Opportunities -->
+<div class="r2-section">
+  <div class="r2-title">🌐 Cross-Platform Opportunities — Amazon &amp; eBay Sales</div>
+  <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">SKUs selling well on Amazon/eBay in the last 30 days. Check whether these are also running in your PMax campaigns — if not, they may be missed Google Ads opportunities.</p>
+  <div style="background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--amber-tx);margin-bottom:12px;">⚠️ Note: Cross-linking Amazon orders to Google Ads product IDs is not automated. Use this as a signal list to check manually in your PMax product feed.</div>
+  <div class="scroll" style="overflow-x:auto;">
+    <table class="cp-table" id="r2CpTable">
+      <thead><tr>
+        <th>Platform</th><th>SKU</th><th class="num">Orders (L30)</th><th class="num">Units (L30)</th>
+      </tr></thead>
+      <tbody id="r2CpTbody"><tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted);">Load data to see cross-platform opportunities.</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 30/60/90-Day Decision Context -->
+<div class="r2-section">
+  <div class="r2-title">📅 30 / 60 / 90-Day Decision Context</div>
+  <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Rolling windows from latest data date. Use for identifying longer-term ROAS trends, budget planning, and bid strategy decisions.</p>
+  <div class="window-grid" id="r2WindowGrid">
+    <div class="window-card"><div class="window-label">Last 30 Days</div><div id="r2W30">—</div></div>
+    <div class="window-card"><div class="window-label">Last 60 Days</div><div id="r2W60">—</div></div>
+    <div class="window-card"><div class="window-label">Last 90 Days</div><div id="r2W90">—</div></div>
+  </div>
+</div>
+
+<!-- Unsupported Features Notice -->
+<div class="r2-section" style="background:#f8f9fa;border:1px dashed var(--line);">
+  <div class="r2-title" style="color:var(--muted);">ℹ️ Features Not Supported in This DB</div>
+  <div class="r2-unsupported">❌ <strong>Geo Exclude Recommendations</strong> — No geo performance table in google_ads schema. Review in Google Ads UI.</div>
+  <div class="r2-unsupported">❌ <strong>Margin Safety</strong> — Product cost/COGS data not available in DB. Ad contribution (Conv Value − Cost) shown in Req 1 drawer only.</div>
+  <div class="r2-unsupported">❌ <strong>Google Keyword Planner Integration</strong> — Not connected to this system.</div>
+  <div class="r2-unsupported">❌ <strong>P3 Clean-Up Tracker</strong> — No action log table. Use a shared spreadsheet to track manual exclusions.</div>
+  <div class="r2-unsupported">❌ <strong>Amazon Search Term → Google Ads join</strong> — Amazon order data contains SKU but no query-level join to PMax search terms exists in DB.</div>
+</div>
+
+</div><!-- /req2Panel -->
+
 <!-- Product Detail Drawer -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="productDrawer">
@@ -520,7 +670,7 @@ footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;
   </div>
 </div>
 
-<footer class="site">Sajeepan · Google Ads PMax Product Intelligence Dashboard · AIOS · Requirement 1 · 2026-07-14</footer>
+<footer class="site">Sajeepan · Google Ads PMax Dashboard · AIOS · Requirements 1 &amp; 2 · 2026-07-28</footer>
 </div>
 
 <script>
@@ -1163,6 +1313,232 @@ function closeDrawer(){
   document.getElementById('productDrawer').classList.remove('open');
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+
+/* ============================================================
+   REQ TAB SWITCHER
+   ============================================================ */
+function switchReqTab(n){
+  document.getElementById('req1Panel').style.display = n===1?'':'none';
+  document.getElementById('req2Panel').style.display = n===2?'':'none';
+  document.getElementById('tab-req1').classList.toggle('on', n===1);
+  document.getElementById('tab-req2').classList.toggle('on', n===2);
+  if(n===2 && !r2Loaded) r2SetPreset(30);
+}
+
+/* ============================================================
+   REQUIREMENT 2 — STOP WASTE & INTEL
+   ============================================================ */
+var R2 = { waste_products:[], neg_kw:[], budget_waste:[], cross_platform:[], windows:{} };
+var r2Loaded = false;
+
+var CAMP_SHORTS = {
+  '21069663519':'SJ_PENDANT_KLARNA',
+  '23110323532':'HIGH REVENUE PH',
+  '23516313256':'SJ_TOP_20',
+  '23590572906':'zero conv2',
+  '22079334413':'SJALL HERO',
+  '21242723265':'ALLACRSJ2 Access.'
+};
+
+function r2CampShort(id){ return CAMP_SHORTS[id] || id; }
+
+function r2SetPreset(days){
+  ['30','60','90'].forEach(d=>{
+    const el=document.getElementById('r2-preset-'+d);
+    if(el) el.classList.toggle('on', Number(d)===days);
+  });
+  const to=isoDate(new Date()), from=daysAgo(days-1);
+  r2LoadData(from, to);
+}
+
+function r2Refresh(){
+  r2LoadData(null, null);
+}
+
+async function r2LoadData(from, to){
+  const loading = document.getElementById('r2Loading');
+  const errBox  = document.getElementById('r2Error');
+  if(loading) loading.style.display='block';
+  if(errBox)  errBox.style.display='none';
+  try {
+    const url = from && to ? `/api/sajeepan/dashboard?type=req2&from=${from}&to=${to}` : '/api/sajeepan/dashboard?type=req2';
+    const res  = await fetch(url);
+    const json = await res.json();
+    if(!json.ok) throw new Error(json.error||'API error');
+    R2.waste_products  = json.waste_products  || [];
+    R2.neg_kw          = json.neg_kw          || [];
+    R2.budget_waste    = json.budget_waste    || [];
+    R2.cross_platform  = json.cross_platform  || [];
+    R2.windows         = json.windows         || {};
+    const meta = json.meta || {};
+    const upd = document.getElementById('r2LastUpd');
+    if(upd) upd.textContent = `Data: ${meta.from||''} → ${meta.to||''}`;
+    r2Loaded = true;
+    r2Render();
+  } catch(err){
+    if(errBox){ errBox.style.display='block'; errBox.innerHTML=`<strong>Could not load Req 2 data:</strong> ${err.message}`; }
+  } finally {
+    if(loading) loading.style.display='none';
+  }
+}
+
+function r2Render(){
+  r2RenderActions();
+  r2RenderWaste();
+  r2RenderKw();
+  r2RenderBudget();
+  r2RenderCrossPlatform();
+  r2RenderWindows();
+}
+
+function r2RenderActions(){
+  const el = document.getElementById('r2Actions');
+  const actions = [];
+  let n = 1;
+
+  // Top waste product (cost, 0 conv)
+  const topWaste = R2.waste_products[0];
+  if(topWaste){
+    actions.push({cls:'ma-red', title:`Pause / Review: ${topWaste.title.substring(0,55)}`,
+      desc:`£${topWaste.cost.toFixed(2)} spent · ${topWaste.clicks} clicks · 0 conversions. Check feed quality or add product exclusion in Google Ads.`});
+  }
+
+  // Budget waste campaigns
+  const wastedCamps = R2.budget_waste.filter(c=>c.is_waste).slice(0,2);
+  wastedCamps.forEach(c=>{
+    const chg = c.cost_chg !== null ? ` (cost +${c.cost_chg}%)` : '';
+    actions.push({cls:'ma-amber', title:`Budget Waste Signal: ${r2CampShort(c.cid)}`,
+      desc:`Cost ↑ but ROAS ↓. Current ROAS ${c.roas_l.toFixed(0)}% vs prev ${c.roas_p.toFixed(0)}%${chg}. Review product mix and exclusions.`});
+  });
+
+  // Top negative keyword
+  const topKw = R2.neg_kw[0];
+  if(topKw){
+    actions.push({cls:'ma-amber', title:`Add Negative Keyword: "${topKw.term}"`,
+      desc:`£${topKw.cost.toFixed(2)} spent · ${topKw.clicks} clicks · 0 conversions in ${r2CampShort(topKw.cid)}. Add as negative keyword to save wasted spend.`});
+  }
+
+  // Cross-platform opportunity
+  const topCp = R2.cross_platform[0];
+  if(topCp){
+    actions.push({cls:'ma-blue', title:`Cross-Platform Opportunity: SKU ${topCp.sku}`,
+      desc:`${topCp.orders_30d} orders on ${topCp.source} in L30. Verify this SKU is active in your PMax product feed.`});
+  }
+
+  const cnt = document.getElementById('r2ActionCnt');
+  if(cnt) cnt.textContent = actions.length;
+
+  if(!actions.length){
+    el.innerHTML='<div class="r2-loading">No actions generated — all campaigns healthy.</div>';
+    return;
+  }
+  el.innerHTML = actions.map((a,i)=>`
+    <div class="morning-action ${a.cls}">
+      <div class="ma-num">${i+1}</div>
+      <div class="ma-body">
+        <div class="ma-title">${a.title}</div>
+        <div class="ma-desc">${a.desc}</div>
+      </div>
+    </div>`).join('');
+}
+
+function r2RenderWaste(){
+  const cnt = document.getElementById('r2WasteCnt');
+  if(cnt) cnt.textContent = R2.waste_products.length;
+  const tbody = document.getElementById('r2WasteTbody');
+  if(!R2.waste_products.length){
+    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--muted);">No zero-conversion products with spend &gt; £5 in this period. Great!</td></tr>';
+    return;
+  }
+  tbody.innerHTML = R2.waste_products.map((p,i)=>{
+    const stockBadge = p.avail==='in stock'?'<span class="badge b-active">In Stock</span>':'<span class="badge b-outstock">'+(p.avail||'unknown')+'</span>';
+    return `<tr>
+      <td>${i+1}</td>
+      <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${p.title}">${p.title}</td>
+      <td style="font-size:11.5px;">${r2CampShort(p.cid)}</td>
+      <td class="num" style="color:var(--accent3);font-weight:700;">£${p.cost.toFixed(2)}</td>
+      <td class="num">${p.clicks}</td>
+      <td class="num">${p.imps.toLocaleString()}</td>
+      <td>${stockBadge}</td>
+      <td><a href="${p.url||'#'}" target="_blank" style="font-size:11px;color:var(--accent);font-weight:600;text-decoration:underline;" ${!p.url?'style="pointer-events:none;opacity:.4"':''}>View Product</a></td>
+    </tr>`;
+  }).join('');
+}
+
+function r2RenderKw(){
+  const cnt = document.getElementById('r2KwCnt');
+  if(cnt) cnt.textContent = R2.neg_kw.length;
+  const el = document.getElementById('r2KwList');
+  if(!R2.neg_kw.length){
+    el.innerHTML='<div class="r2-loading">No wasteful search terms found in this period.</div>';
+    return;
+  }
+  el.innerHTML = R2.neg_kw.map(k=>`
+    <div class="kw-row">
+      <div>
+        <div class="kw-term">"${k.term}"</div>
+        <div class="kw-meta">${r2CampShort(k.cid)} · ${k.clicks} clicks · ${k.imps.toLocaleString()} imps</div>
+      </div>
+      <div class="kw-cost">£${k.cost.toFixed(2)}</div>
+    </div>`).join('');
+}
+
+function r2RenderBudget(){
+  const tbody = document.getElementById('r2BudgetTbody');
+  if(!R2.budget_waste.length){
+    tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--muted);">No campaign data.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = R2.budget_waste.sort((a,b)=>b.cost_l-a.cost_l).map(c=>{
+    const signal = c.is_waste
+      ? '<span class="waste-pill waste-yes">⚠️ WASTE SIGNAL</span>'
+      : '<span class="waste-pill waste-no">✓ OK</span>';
+    const chgStr = c.cost_chg !== null ? (c.cost_chg>=0?`+${c.cost_chg}%`:`${c.cost_chg}%`) : '—';
+    const chgColor = c.cost_chg > 20 ? 'color:var(--accent3)' : c.cost_chg < -10 ? 'color:var(--accent2)' : '';
+    return `<tr>
+      <td style="font-weight:600;">${r2CampShort(c.cid)}</td>
+      <td class="num">£${c.cost_l.toFixed(0)}</td>
+      <td class="num">${c.roas_l.toFixed(0)}%</td>
+      <td class="num">£${c.cost_p.toFixed(0)}</td>
+      <td class="num">${c.roas_p.toFixed(0)}%</td>
+      <td class="num" style="${chgColor};font-weight:700;">${chgStr}</td>
+      <td>${signal}</td>
+    </tr>`;
+  }).join('');
+}
+
+function r2RenderCrossPlatform(){
+  const tbody = document.getElementById('r2CpTbody');
+  if(!R2.cross_platform.length){
+    tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);">No Amazon/eBay SKUs with 3+ orders in this period.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = R2.cross_platform.map((r,i)=>`
+    <tr>
+      <td><span class="badge" style="background:${r.source==='AMAZON'?'#ff9900':'#e53238'};color:#fff;border:none;">${r.source}</span></td>
+      <td style="font-weight:600;font-family:monospace;">${r.sku}</td>
+      <td class="num">${r.orders_30d}</td>
+      <td class="num">${r.qty_30d}</td>
+    </tr>`).join('');
+}
+
+function r2RenderWindows(){
+  function wMetrics(w){
+    if(!w || !w.cost) return '<div style="color:var(--muted);font-size:12px;">No data</div>';
+    return `
+      <div class="window-metric"><span class="wk">Cost</span><span class="wv">£${w.cost.toFixed(0)}</span></div>
+      <div class="window-metric"><span class="wk">Revenue</span><span class="wv">£${w.cv.toFixed(0)}</span></div>
+      <div class="window-metric"><span class="wk">ROAS</span><span class="wv">${w.roas.toFixed(0)}%</span></div>
+      <div class="window-metric"><span class="wk">Conversions</span><span class="wv">${w.conv.toFixed(1)}</span></div>`;
+  }
+  const ws = R2.windows;
+  const el30 = document.getElementById('r2W30');
+  const el60 = document.getElementById('r2W60');
+  const el90 = document.getElementById('r2W90');
+  if(el30) el30.innerHTML = wMetrics(ws.d30);
+  if(el60) el60.innerHTML = wMetrics(ws.d60);
+  if(el90) el90.innerHTML = wMetrics(ws.d90);
+}
 
 /* ============================================================
    INIT
