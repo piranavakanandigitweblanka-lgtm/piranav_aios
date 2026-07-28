@@ -51,10 +51,10 @@ async function handleProdDetail(client, itemId, fromDate, toDate, prevFrom, prev
   // Extended merchant_products fields
   const { rows: metaRows } = await client.query(`
     SELECT DISTINCT ON (LOWER(product_id))
-      product_id, description,
-      google_product_category AS category,
-      product_type AS ptype,
-      custom_label_3 AS label3
+      product_id, description, feed_label,
+      product_category AS category,
+      product_types AS ptype,
+      custom_label3 AS label3
     FROM google_ads.merchant_products
     WHERE LOWER(product_id) = LOWER($1)
     ORDER BY LOWER(product_id)
@@ -77,6 +77,7 @@ async function handleProdDetail(client, itemId, fromDate, toDate, prevFrom, prev
   const m = metaRows[0] || {};
   const extra = {
     description: m.description || null,
+    feed_label:  m.feed_label  || null,
     category:    m.category    || null,
     ptype:       m.ptype       || null,
     label3:      m.label3      || null,
@@ -342,8 +343,8 @@ module.exports = async function handler(req, res) {
       const { rows: metaRows } = await client.query(`
         SELECT DISTINCT ON (LOWER(product_id))
           product_id, title, image_link, link, price, availability, brand, mpn AS sku,
-          google_product_category AS category, product_type AS ptype,
-          custom_label_3 AS label3
+          feed_label, product_category AS category, product_types AS ptype,
+          custom_label3 AS label3
         FROM google_ads.merchant_products
         WHERE LOWER(product_id) = ANY($1::text[])
         ORDER BY LOWER(product_id)
@@ -396,11 +397,12 @@ module.exports = async function handler(req, res) {
         url:    meta.link        || '',
         price:  meta.price       ? Number(meta.price) : null,
         avail:  meta.availability|| 'unknown',
-        brand:  meta.brand       || 'LEDSone',
-        type:   meta.ptype       || 'Lighting',
-        sku:    meta.sku         || null,
-        cat:    meta.category    || null,
-        label3: meta.label3      || null,
+        brand:      meta.brand       || 'LEDSone',
+        type:       meta.ptype       || 'Lighting',
+        sku:        meta.sku         || null,
+        feed_label: meta.feed_label  || null,
+        cat:        meta.category    || null,
+        label3:     meta.label3      || null,
       };
     });
 

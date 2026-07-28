@@ -674,8 +674,8 @@ footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;
       <div>
         <div class="dr-row"><span class="dk">Item ID</span><span class="dv2" id="drItemId" style="font-size:11px;font-family:monospace;word-break:break-all;">—</span></div>
         <div class="dr-row"><span class="dk">Campaign</span><span class="dv2" id="drCampaign">—</span></div>
+        <div class="dr-row"><span class="dk">Feed Label</span><span class="dv2" id="drFeedLabel" style="color:var(--muted);">—</span></div>
         <div class="dr-row"><span class="dk">SKU / MPN</span><span class="dv2" id="drSku">—</span></div>
-        <div class="dr-row"><span class="dk">GTIN / Barcode</span><span class="dv2" style="color:var(--muted);font-size:11px;">Not in DB — check Google Merchant Centre</span></div>
         <div class="dr-row"><span class="dk">Brand</span><span class="dv2" id="drBrand">—</span></div>
         <div class="dr-row"><span class="dk">Category</span><span class="dv2" id="drCategory" style="color:var(--muted);">Loading…</span></div>
         <div class="dr-row"><span class="dk">Product Type</span><span class="dv2" id="drType">—</span></div>
@@ -1330,6 +1330,7 @@ function openDrawer(idx){
   // Product details (immediate)
   document.getElementById('drItemId').textContent   = p.item;
   document.getElementById('drCampaign').textContent = c ? c.name : p.cid;
+  document.getElementById('drFeedLabel').textContent= p.feed_label || '—';
   document.getElementById('drSku').textContent      = p.sku || '—';
   document.getElementById('drBrand').textContent    = p.brand || '—';
   document.getElementById('drType').textContent     = p.type || '—';
@@ -1363,7 +1364,8 @@ function openDrawer(idx){
         drRenderTrend(json.trend);
         if(json.extra){
           const ex = json.extra;
-          document.getElementById('drCategory').textContent = ex.category  || '—';
+          if(ex.feed_label) document.getElementById('drFeedLabel').textContent = ex.feed_label;
+          document.getElementById('drCategory').textContent = ex.category || '—';
           document.getElementById('drLabel3').textContent   = ex.label3   || '—';
           if(ex.ptype) document.getElementById('drType').textContent = ex.ptype;
           drBuildFeedCheck(p, ex);
