@@ -182,7 +182,9 @@ async function handleReq2(client, toDate, fromDate, prevFrom, prevTo) {
   const { rows: cpRows } = await client.query(`
     SELECT s.source_name, oii.item_sku,
       COUNT(DISTINCT o.id) AS orders_30d,
-      SUM(CAST(oii.item_quantity AS int)) AS qty_30d
+      SUM(CAST(oii.item_quantity AS int)) AS qty_30d,
+      (SELECT mp.title FROM google_ads.merchant_products mp
+       WHERE LOWER(mp.mpn) = LOWER(oii.item_sku) AND mp.country = 'GB' LIMIT 1) AS product_title
     FROM order_management.orders o
     JOIN order_management.sub_source ss ON ss.id = o.sub_source_id
     JOIN order_management.source s ON s.id = ss.source_id
@@ -195,11 +197,36 @@ async function handleReq2(client, toDate, fromDate, prevFrom, prevTo) {
     ORDER BY orders_30d DESC LIMIT 15
   `, [l30Start]);
 
+  // Top search terms by clicks+imps for SJ campaigns in period
+  const { rows: stTopRows } = await client.query(`
+    SELECT search_term, SUM(clicks) AS clicks, SUM(impressions) AS imps, ROUND(SUM(cost)::numeric,2) AS cost
+    FROM google_ads.pmax_campaign_search_term_data
+    WHERE campaign_id = ANY($1::bigint[]) AND date BETWEEN $2 AND $3
+    GROUP BY search_term
+    ORDER BY (SUM(clicks) + SUM(impressions)) DESC
+    LIMIT 300
+  `, [SJ_CAMPAIGN_IDS, fromDate, toDate]);
+
+  // Match each SKU's product title words against top search terms
+  const STOP = new Set(['the','and','for','with','led','light','watt','pack','set','new','uk','in','a','of','to','cm','mm']);
+  function matchTermsForTitle(title) {
+    if (!title) return [];
+    const words = title.toLowerCase().split(/[\s\-\/]+/)
+      .filter(w => w.length > 3 && !STOP.has(w));
+    if (!words.length) return [];
+    return stTopRows
+      .filter(st => words.some(w => st.search_term.toLowerCase().includes(w)))
+      .slice(0, 5)
+      .map(st => ({ term: st.search_term, clicks: n(st.clicks), imps: n(st.imps), cost: n(st.cost) }));
+  }
+
   const cross_platform = cpRows.map(r => ({
-    source:     r.source_name,
-    sku:        r.item_sku,
-    orders_30d: n(r.orders_30d),
-    qty_30d:    n(r.qty_30d),
+    source:        r.source_name,
+    sku:           r.item_sku,
+    title:         r.product_title || null,
+    orders_30d:    n(r.orders_30d),
+    qty_30d:       n(r.qty_30d),
+    search_terms:  matchTermsForTitle(r.product_title),
   }));
 
   // ── 5. Rolling 30/60/90 windows ──────────────────────────────────────────
