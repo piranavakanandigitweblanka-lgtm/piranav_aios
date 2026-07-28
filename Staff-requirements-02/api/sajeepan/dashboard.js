@@ -51,7 +51,7 @@ async function handleProdDetail(client, itemId, fromDate, toDate, prevFrom, prev
   // Extended merchant_products fields
   const { rows: metaRows } = await client.query(`
     SELECT DISTINCT ON (LOWER(product_id))
-      product_id, description, gtin,
+      product_id, description,
       google_product_category AS category,
       product_type AS ptype,
       custom_label_3 AS label3
@@ -77,7 +77,6 @@ async function handleProdDetail(client, itemId, fromDate, toDate, prevFrom, prev
   const m = metaRows[0] || {};
   const extra = {
     description: m.description || null,
-    gtin:        m.gtin        || null,
     category:    m.category    || null,
     ptype:       m.ptype       || null,
     label3:      m.label3      || null,
@@ -343,7 +342,7 @@ module.exports = async function handler(req, res) {
       const { rows: metaRows } = await client.query(`
         SELECT DISTINCT ON (LOWER(product_id))
           product_id, title, image_link, link, price, availability, brand, mpn AS sku,
-          gtin, google_product_category AS category, product_type AS ptype,
+          google_product_category AS category, product_type AS ptype,
           custom_label_3 AS label3
         FROM google_ads.merchant_products
         WHERE LOWER(product_id) = ANY($1::text[])
@@ -400,7 +399,6 @@ module.exports = async function handler(req, res) {
         brand:  meta.brand       || 'LEDSone',
         type:   meta.ptype       || 'Lighting',
         sku:    meta.sku         || null,
-        gtin:   meta.gtin        || null,
         cat:    meta.category    || null,
         label3: meta.label3      || null,
       };

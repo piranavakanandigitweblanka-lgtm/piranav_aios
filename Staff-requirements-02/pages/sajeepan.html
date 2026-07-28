@@ -675,7 +675,7 @@ footer.site{margin-top:24px;color:var(--muted);font-size:12px;text-align:center;
         <div class="dr-row"><span class="dk">Item ID</span><span class="dv2" id="drItemId" style="font-size:11px;font-family:monospace;word-break:break-all;">—</span></div>
         <div class="dr-row"><span class="dk">Campaign</span><span class="dv2" id="drCampaign">—</span></div>
         <div class="dr-row"><span class="dk">SKU / MPN</span><span class="dv2" id="drSku">—</span></div>
-        <div class="dr-row"><span class="dk">GTIN / Barcode</span><span class="dv2" id="drGtin" style="color:var(--muted);">Loading…</span></div>
+        <div class="dr-row"><span class="dk">GTIN / Barcode</span><span class="dv2" style="color:var(--muted);font-size:11px;">Not in DB — check Google Merchant Centre</span></div>
         <div class="dr-row"><span class="dk">Brand</span><span class="dv2" id="drBrand">—</span></div>
         <div class="dr-row"><span class="dk">Category</span><span class="dv2" id="drCategory" style="color:var(--muted);">Loading…</span></div>
         <div class="dr-row"><span class="dk">Product Type</span><span class="dv2" id="drType">—</span></div>
@@ -1337,8 +1337,7 @@ function openDrawer(idx){
   document.getElementById('drAvail').textContent    = p.avail;
   document.getElementById('drProfit').textContent   = fmtGbp(p.cv - p.cost) + ' (Conv Value − Ad Cost. COGS unavailable)';
   // Fields pending lazy load
-  document.getElementById('drGtin').textContent     = p.gtin || '—';
-  document.getElementById('drCategory').textContent = p.cat  || 'Loading…';
+  document.getElementById('drCategory').textContent = p.cat    || 'Loading…';
   document.getElementById('drLabel3').textContent   = p.label3 || 'Loading…';
 
   // Trend loading state
@@ -1364,7 +1363,6 @@ function openDrawer(idx){
         drRenderTrend(json.trend);
         if(json.extra){
           const ex = json.extra;
-          document.getElementById('drGtin').textContent     = ex.gtin     || '—';
           document.getElementById('drCategory').textContent = ex.category  || '—';
           document.getElementById('drLabel3').textContent   = ex.label3   || '—';
           if(ex.ptype) document.getElementById('drType').textContent = ex.ptype;
@@ -1423,22 +1421,20 @@ function drRenderTrend(trend){
 }
 
 function drBuildFeedCheck(p, extra){
-  const gtinOk    = extra ? !!extra.gtin     : !!p.gtin;
-  const catOk     = extra ? !!extra.category : !!p.cat;
-  const label3Ok  = extra ? !!extra.label3   : !!p.label3;
-  const typeOk    = !!(extra && extra.ptype ? extra.ptype : p.type && p.type !== 'Lighting');
-  const loading   = extra === null; // still fetching
+  const catOk    = extra ? !!extra.category : !!p.cat;
+  const label3Ok = extra ? !!extra.label3   : !!p.label3;
+  const typeOk   = !!(extra && extra.ptype ? extra.ptype : p.type && p.type !== 'Lighting');
+  const loading  = extra === null; // still fetching
 
   const items = [
-    {w:15, pass:!!p.title,          label:'Product title present'},
-    {w:15, pass:!!p.img,            label:'Image link present'},
+    {w:20, pass:!!p.title,           label:'Product title present'},
+    {w:20, pass:!!p.img,             label:'Image link present'},
     {w:10, pass:p.avail==='in stock',label:'In stock (availability)'},
-    {w:10, pass:!!p.price,          label:'Price set'},
-    {w:10, pass:!!p.brand,          label:'Brand set'},
-    {w:10, pass:typeOk,             label:'Product type set'},
-    {w:15, pass:gtinOk,             label:'GTIN / MPN present', warn:true},
-    {w:10, pass:catOk,              label:'Google Product Category set', warn:true},
-    {w:5,  pass:label3Ok,           label:'Custom Label 3 (segmentation)', warn:true},
+    {w:10, pass:!!p.price,           label:'Price set'},
+    {w:10, pass:!!p.brand,           label:'Brand set'},
+    {w:10, pass:typeOk,              label:'Product type set'},
+    {w:15, pass:catOk,               label:'Google Product Category set', warn:true},
+    {w:5,  pass:label3Ok,            label:'Custom Label 3 (segmentation)', warn:true},
   ];
 
   const score = items.reduce((s,i) => s + (i.pass ? i.w : 0), 0);
@@ -1467,7 +1463,6 @@ function drBuildRecs(p, ctr){
   if(p.imps>2000&&ctr<0.5) recs.push({cls:'rec-med',title:'👁️ Improve Title / Image — Low CTR',desc:`CTR ${ctr.toFixed(2)}% with ${fmt(p.imps,0)} impressions. Optimise title and lead image.`});
   if(!p.img) recs.push({cls:'rec-med',title:'📷 Missing Product Image',desc:'No image link. Add a high-quality image to improve CTR and feed quality.'});
   if(p.avail!=='in stock') recs.push({cls:'rec-high',title:'📦 Out of Stock — Pause Ad',desc:'Product is out of stock. Pause to avoid wasted spend.'});
-  if(!p.gtin) recs.push({cls:'rec-med',title:'🔢 Missing GTIN / Barcode',desc:'No GTIN set. Adding a barcode improves feed quality score and ad eligibility.'});
   if(recs.length===0) recs.push({cls:'rec-low',title:'✅ Product looks healthy',desc:`ROAS ${p.roas.toFixed(0)}%, ${p.conv.toFixed(2)} conversions. Continue monitoring.`});
   const el = document.getElementById('drRecs');
   if(el) el.innerHTML = recs.map(r=>`<div class="rec-item ${r.cls}"><div class="rec-title">${r.title}</div><div class="rec-desc">${r.desc}</div></div>`).join('');
