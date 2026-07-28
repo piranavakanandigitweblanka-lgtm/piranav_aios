@@ -2,13 +2,13 @@
 
 **File:** `pages/report-5b-marketplace-gap.html`
 **Hub label:** Report 5
-**Last rebuilt:** 2026-07-24
+**Last rebuilt:** 2026-07-28
 
 ---
 
 ## Purpose
 
-Shows all 14,529 SKUs that currently have Germany warehouse stock > 0, and for each SKU shows whether it has an active listing on Amazon DE, eBay DE, and Shopify DE. Used to identify stocked products that are missing from one or more sales channels — a direct cause of lost Germany revenue.
+Shows all 14,397 SKUs that currently have Germany warehouse stock > 0, and for each SKU shows whether it has an active listing on Amazon DE, eBay DE, and Shopify DE. Used to identify stocked products that are missing from one or more sales channels — a direct cause of lost Germany revenue.
 
 ---
 
@@ -16,12 +16,12 @@ Shows all 14,529 SKUs that currently have Germany warehouse stock > 0, and for e
 
 | Metric | Value |
 |---|---|
-| Total DE In-Stock SKUs | 14,529 |
-| Not Listed Anywhere | 7,443 |
-| Missing Amazon DE | 12,948 |
-| Missing eBay DE | 9,617 |
-| Missing Shopify DE | 11,427 |
-| Listed on All 3 Channels | 351 |
+| Total DE In-Stock SKUs | 14,397 |
+| Not Listed Anywhere | 5,667 |
+| Missing Amazon DE | 12,643 |
+| Missing eBay DE | 7,510 |
+| Missing Shopify DE | 9,216 |
+| Listed on All 3 Channels | 1,068 |
 
 ---
 
@@ -92,7 +92,7 @@ Each SKU row gets three flags (1 = listed, 0 = not listed):
 
 | Pill | Logic |
 |---|---|
-| All | Show all 14,529 SKUs |
+| All | Show all 14,397 SKUs |
 | Not Listed Anywhere | `a=0 AND e=0 AND sh=0` |
 | Missing Amazon | `a=0` |
 | Missing eBay | `e=0` |
@@ -150,6 +150,7 @@ File size: ~792KB (images stripped — SKU prefix shown as fallback thumbnail).
 3. `all_list = 1` on ebay_listings and shopify_listings — active listings only
 4. LEFT JOIN (not INNER) — preserves SKUs with no listing on a given channel
 5. `DISTINCT sku` in each channel subquery — one row per SKU regardless of variant count
+6. Each channel is joined twice: once on exact SKU match, once on `sku || '-IDE'` — some listings are stored with `-IDE` suffix (e.g. `CRFF140GL-IDE` for inventory SKU `CRFF140GL`). Without this, 2,042 eBay and 2,041 Shopify listings would show as missing.
 
 ---
 
