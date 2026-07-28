@@ -39,9 +39,7 @@ Analytics: **GA4**
 
 ### Hosting & API
 - **Vercel** (Hobby plan, max 12 serverless functions)
-- Two repos deployed:
-  - `Staff-requirements` — original, larger team (12+ members)
-  - `Staff-requirements-02` — current active repo (6 members, live data)
+- Active repo: `Staff-requirements-02` — 6 members, all live PostgreSQL data
 - API files live in `/api/member/dashboard.js`
 - All APIs use **Node.js + `pg` library** (CommonJS `module.exports`)
 - No Express, no framework — plain Vercel serverless handlers
