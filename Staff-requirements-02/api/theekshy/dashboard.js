@@ -1,14 +1,33 @@
-// Theekshy Dashboard — single endpoint for all 4 requirements
-// ?type=req1  → campaign overview + daily trend + products (Req 1)
-// ?type=req2  → search terms (Req 2)
-// ?type=feed  → feed optimisation + stock status (Req 3 + 4)
+// Theekshy Dashboard — single endpoint for all requirements
+// ?type=req1    → campaign overview + daily trend + products (Req 1)
+// ?type=req2    → search terms (Req 2 — Search Term Optimisation)
+// ?type=feed    → feed optimisation + stock status (Req 3 + 4)
+// ?type=prodopt → product optimisation — ROAS + stock (Req 5, GA4 unavailable)
 // All accept ?from=YYYY-MM-DD&to=YYYY-MM-DD (default: last 30d from MAX date)
+//
+// ROAS thresholds (CSV-authoritative, fixed universal thresholds):
+//   Critical : ROAS < 3.0× (< 300%)
+//   Monitor  : 3.0× ≤ ROAS < 4.5× (300–449%)
+//   Healthy  : ROAS ≥ 4.5× (≥ 450%)
 
 const { Client } = require('pg');
 
 const TH_CAMPAIGNS = [23714290257, 23684837882];
 const TH_LABELS    = { '23714290257': 'THEE_GEMS', '23684837882': 'THEE_MYSTERY' };
-const TH_TROAS     = { '23714290257': 4.00,         '23684837882': 2.50 };
+
+function csvCampStatus(roasPct) {
+  if (roasPct < 300) return 'critical';
+  if (roasPct < 450) return 'monitor';
+  return 'healthy';
+}
+
+function csvProdStatus(roasPct, conv, cost, stockOut) {
+  if (stockOut)              return 'paused';
+  if (conv === 0 && cost > 0) return 'critical'; // High Spend / 0 Conv
+  if (roasPct < 300)         return 'critical';
+  if (roasPct < 450)         return 'monitor';
+  return 'healthy';
+}
 
 async function handleReq1(client, fromDate, toDate, prevFrom, prevTo) {
   const spanDays = Math.round((new Date(toDate) - new Date(fromDate)) / 86400000);
@@ -69,9 +88,10 @@ async function handleReq1(client, fromDate, toDate, prevFrom, prevTo) {
     const id = String(r.campaign_id);
     const [cl, vl, nl, il, kl] = [n(r.cost_l), n(r.cv_l), n(r.conv_l), n(r.imp_l), n(r.clk_l)];
     const [cp, vp, np] = [n(r.cost_p), n(r.cv_p), n(r.conv_p)];
+    const roasPct = cl > 0 ? Math.round(vl/cl*10000)/100 : 0;
     return { id, name: r.campaign_name, label: TH_LABELS[id]||id, budget: r.budget ? Number(r.budget) : null,
-      status: r.campaign_status, tRoas: TH_TROAS[id]||3.0,
-      l: { cost:cl, cv:vl, conv:nl, imp:il, clk:kl, roas: cl>0 ? Math.round(vl/cl*10000)/100 : 0 },
+      status: r.campaign_status, csvStatus: csvCampStatus(roasPct),
+      l: { cost:cl, cv:vl, conv:nl, imp:il, clk:kl, roas: roasPct },
       prev: { cost:cp, cv:vp, conv:np, roas: cp>0 ? Math.round(vp/cp*10000)/100 : 0 } };
   });
   const daily = dailyRows.map(r => ({ d: r.date.toISOString().slice(0,10), cid: r.cid,
@@ -179,6 +199,83 @@ async function handleFeed(client, fromDate, toDate) {
   return { products, meta: { from: fromDate, to: toDate } };
 }
 
+async function handleProdOpt(client, fromDate, toDate) {
+  // Product Optimisation (CSV Sheet 2)
+  // Available: product ROAS, stock, merchant data
+  // Unavailable: GA4 Bounce Rate, ATC Rate, Engagement Time
+  const { rows: perfRows } = await client.query(`
+    SELECT pp.product_item_id, pp.campaign_id::text AS cid,
+      SUM(pp.impressions) AS imp, SUM(pp.clicks) AS clicks,
+      ROUND(SUM(pp.cost)::numeric,2) AS cost,
+      ROUND(SUM(pp.conversions)::numeric,4) AS conv,
+      ROUND(SUM(pp.conversion_value)::numeric,2) AS cv
+    FROM google_ads.product_performance pp
+    WHERE pp.campaign_id = ANY($1::bigint[]) AND pp.date BETWEEN $2 AND $3 AND pp.product_item_id != ''
+    GROUP BY pp.product_item_id, pp.campaign_id ORDER BY cost DESC LIMIT 300
+  `, [TH_CAMPAIGNS, fromDate, toDate]);
+
+  const ids = perfRows.map(r => r.product_item_id.toLowerCase());
+  if (ids.length === 0) return { products: [], ga4_available: false, meta: { from: fromDate, to: toDate } };
+
+  let gmcMap = {}, shopMap = {}, invMap = {};
+  try {
+    const { rows: gmcRows } = await client.query(`
+      SELECT DISTINCT ON (LOWER(product_id)) product_id, title, availability, price, currency, mpn AS sku, image_link
+      FROM google_ads.merchant_products WHERE LOWER(product_id) = ANY($1::text[])
+      ORDER BY LOWER(product_id), (CASE WHEN currency='GBP' THEN 0 ELSE 1 END)
+    `, [ids]);
+    gmcRows.forEach(m => { gmcMap[m.product_id.toLowerCase()] = {
+      title: m.title, avail: m.availability, price: m.price ? Number(m.price) : null,
+      sku: m.sku, img: m.image_link||'' }; });
+  } catch(e) {}
+
+  try {
+    const { rows: shopRows } = await client.query(`
+      SELECT DISTINCT ON (sl.item_id::text) sl.item_id::text AS variant_id, sl.sku, sl.status AS shop_status
+      FROM listings.shopify_listings sl
+      WHERE sl.site='UK' AND sl.item_id::text = ANY($1::text[])
+      ORDER BY sl.item_id::text
+    `, [ids]);
+    shopRows.forEach(r => { shopMap[r.variant_id] = { sku: r.sku, shop_status: r.shop_status }; });
+  } catch(e) {}
+
+  try {
+    const skus = Object.values(shopMap).map(r => r.sku).filter(Boolean);
+    if (skus.length > 0) {
+      const { rows: invRows } = await client.query(`
+        SELECT p.sku, SUM(ps.quantity::numeric)::int AS total_stock
+        FROM inventory.products p
+        JOIN inventory.physical_product_stock ps ON ps.inventory::varchar = p.id::varchar
+        WHERE p.sku = ANY($1::text[]) GROUP BY p.sku
+      `, [skus]);
+      invRows.forEach(r => { invMap[r.sku] = r.total_stock; });
+    }
+  } catch(e) {}
+
+  const n = v => Number(v) || 0;
+  const products = perfRows.map(r => {
+    const gmc  = gmcMap[r.product_item_id.toLowerCase()] || {};
+    const shop = shopMap[r.product_item_id] || {};
+    const sku  = shop.sku || gmc.sku || null;
+    const stock = sku ? (invMap[sku] !== undefined ? invMap[sku] : null) : null;
+    const cost = n(r.cost), conv = n(r.conv), cv = n(r.cv);
+    const roasPct = cost > 0 ? Math.round(cv/cost*10000)/100 : 0;
+    const stockOut = stock !== null && stock === 0;
+    const csvStatus = csvProdStatus(roasPct, conv, cost, stockOut);
+    const conditions = [];
+    if (stockOut)              conditions.push('Out of Stock');
+    else if (conv === 0 && cost > 0) conditions.push('High Spend / 0 Conversions');
+    else if (roasPct < 300)   conditions.push('ROAS Below Target (<3.0×)');
+    else if (roasPct < 450)   conditions.push('ROAS Borderline (3.0–4.5×)');
+    else                      conditions.push('ROAS Healthy (≥4.5×)');
+    return { pid: r.product_item_id, cid: r.cid, cost, clicks: n(r.clicks), imp: n(r.imp),
+      conv, cv, roas: roasPct, title: gmc.title||null, sku, img: gmc.img||'',
+      gmc_avail: gmc.avail||null, stock, csvStatus, conditions,
+      camp: r.cid==='23714290257'?'THEE_GEMS':'THEE_MYSTERY' };
+  });
+  return { products, ga4_available: false, meta: { from: fromDate, to: toDate } };
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=60');
@@ -206,9 +303,10 @@ module.exports = async function handler(req, res) {
     }
 
     let result;
-    if (type === 'req1') result = await handleReq1(client, fromDate, toDate, null, null);
-    else if (type === 'req2') result = await handleReq2(client, fromDate, toDate);
-    else if (type === 'feed') result = await handleFeed(client, fromDate, toDate);
+    if (type === 'req1')         result = await handleReq1(client, fromDate, toDate, null, null);
+    else if (type === 'req2')    result = await handleReq2(client, fromDate, toDate);
+    else if (type === 'feed')    result = await handleFeed(client, fromDate, toDate);
+    else if (type === 'prodopt') result = await handleProdOpt(client, fromDate, toDate);
     else return res.status(400).json({ ok: false, error: 'Unknown type: ' + type });
 
     return res.status(200).json({ ok: true, ...result });

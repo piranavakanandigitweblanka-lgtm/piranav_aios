@@ -136,6 +136,7 @@ footer.site{margin-top:22px;color:var(--muted);font-size:12px;text-align:center;
 
 <nav class="top-nav" role="tablist">
   <button class="nav-btn active" id="nav-1" role="tab" aria-selected="true" aria-controls="panel-1" onclick="showTab(1)">Campaign Optimisation<span class="nl">Requirement 1</span></button>
+  <button class="nav-btn" id="nav-5" role="tab" aria-selected="false" aria-controls="panel-5" onclick="showTab(5)">Product Optimisation<span class="nl">Requirement 5 · ROAS + Stock</span></button>
   <button class="nav-btn" id="nav-2" role="tab" aria-selected="false" aria-controls="panel-2" onclick="showTab(2)">Search Term Optimisation<span class="nl">Requirement 2</span></button>
   <button class="nav-btn" id="nav-3" role="tab" aria-selected="false" aria-controls="panel-3" onclick="showTab(3)">Feed Optimisation<span class="nl">Requirement 3</span></button>
   <button class="nav-btn" id="nav-4" role="tab" aria-selected="false" aria-controls="panel-4" onclick="showTab(4)">Stock Status<span class="nl">Requirement 4</span></button>
@@ -874,6 +875,87 @@ footer.site{margin-top:22px;color:var(--muted);font-size:12px;text-align:center;
   <footer class="site">Theekshy · Google Ads Performance Dashboard · Requirement 4 · Stock Status Snapshot · LEDSone UK · Built by Piranav · Source: inventory · shopify_listings · merchant_products · Latest Data: 2026-07-15 · Mode: Snapshot – Not Live</footer>
 </div>
 
+<!-- PANEL 5 — Requirement 5: Product Optimisation (ROAS + Stock; GA4 unavailable) -->
+<div class="tab-panel" id="panel-5" role="tabpanel" aria-labelledby="nav-5">
+  <header class="rpt">
+    <div class="req-tag">Requirement 5 · Product Optimisation · LEDSone UK</div>
+    <h1>Product Optimisation — ROAS &amp; Stock Status</h1>
+    <p class="sub">Product-level ROAS conditions from your CSV action plan. GA4 metrics (Bounce Rate, ATC Rate, Engagement Time) require GA4 integration — marked as unavailable below.</p>
+    <div class="chips">
+      <span class="chip">Source: google_ads.product_performance</span>
+      <span class="chip">Campaigns: THEE_GEMS · THEE_MYSTERY</span>
+      <span class="chip" style="background:#fef3c7;color:#92400e;">⚠ GA4 Bounce Rate / ATC / Engagement Time — Not Available in DB</span>
+    </div>
+  </header>
+
+  <div class="info-note">
+    <strong>CSV Business Rules applied (what this system can compute):</strong><br>
+    🔴 Critical: ROAS &lt; 3.0× | High Spend / 0 Conversions | Out of Stock (paused ads)<br>
+    🟡 Monitor: ROAS 3.0–4.5×<br>
+    🟢 Healthy: ROAS ≥ 4.5×<br>
+    <strong>Not available:</strong> Bounce Rate (&gt;70% Critical), ATC Rate (&lt;2% Critical), Avg Engagement Time (&lt;30s Critical) — GA4 schema not present in DB.
+  </div>
+
+  <div id="r5Loading" style="text-align:center;padding:32px;color:var(--muted);display:none;">⏳ Loading product data…</div>
+  <div id="r5Error" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:10px;padding:12px 16px;font-size:13px;color:#991b1b;margin-bottom:12px;"></div>
+
+  <!-- KPIs -->
+  <div class="kpis" id="r5Kpis" style="display:none;">
+    <div class="kpi err"><div class="lbl">🔴 Critical</div><div class="val" id="r5KpiCrit">—</div><div class="note">ROAS &lt;3.0× or 0 conv</div></div>
+    <div class="kpi warn"><div class="lbl">🟡 Monitor</div><div class="val" id="r5KpiMon">—</div><div class="note">ROAS 3.0–4.5×</div></div>
+    <div class="kpi ok"><div class="lbl">🟢 Healthy</div><div class="val" id="r5KpiHealth">—</div><div class="note">ROAS ≥ 4.5×</div></div>
+    <div class="kpi info"><div class="lbl">⚫ Paused (OOS)</div><div class="val" id="r5KpiPaused">—</div><div class="note">Out of stock</div></div>
+    <div class="kpi info"><div class="lbl">Total Products</div><div class="val" id="r5KpiTotal">—</div><div class="note">Period tracked</div></div>
+  </div>
+
+  <!-- Filters -->
+  <div class="controls" id="r5Controls" style="display:none;">
+    <select class="fsel" id="r5CampFilter" onchange="r5Render()">
+      <option value="all">All Campaigns</option>
+      <option value="THEE_GEMS">THEE_GEMS</option>
+      <option value="THEE_MYSTERY">THEE_MYSTERY</option>
+    </select>
+    <select class="fsel" id="r5StatusFilter" onchange="r5Render()">
+      <option value="all">All Statuses</option>
+      <option value="critical">🔴 Critical</option>
+      <option value="monitor">🟡 Monitor</option>
+      <option value="healthy">🟢 Healthy</option>
+      <option value="paused">⚫ Paused</option>
+    </select>
+    <input class="srch" id="r5Search" type="text" placeholder="🔍 Search product ID or title…" oninput="r5Render()">
+    <span id="r5CountLabel" style="font-size:12px;color:var(--muted);margin-left:auto;"></span>
+  </div>
+
+  <!-- Product Table -->
+  <div class="tbox" id="r5TableBox" style="display:none;">
+    <div class="tbar">
+      <span>Product Optimisation Action Log</span>
+      <span style="font-size:11px;">Source: google_ads.product_performance · Rolling 30d · CSV thresholds applied</span>
+    </div>
+    <div class="scroll">
+      <table style="width:100%;border-collapse:collapse;font-size:12.5px;min-width:900px;">
+        <thead>
+          <tr style="background:#f8f9fb;">
+            <th style="padding:9px 10px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;border-bottom:2px solid var(--line);">#</th>
+            <th style="padding:9px 10px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;border-bottom:2px solid var(--line);">Product</th>
+            <th style="padding:9px 10px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;border-bottom:2px solid var(--line);">Campaign</th>
+            <th style="padding:9px 10px;text-align:right;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;border-bottom:2px solid var(--line);">Cost £</th>
+            <th style="padding:9px 10px;text-align:right;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;border-bottom:2px solid var(--line);">Conv Value £</th>
+            <th style="padding:9px 10px;text-align:right;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;border-bottom:2px solid var(--line);">ROAS ×</th>
+            <th style="padding:9px 10px;text-align:right;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;border-bottom:2px solid var(--line);">Conv.</th>
+            <th style="padding:9px 10px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;border-bottom:2px solid var(--line);">Stock</th>
+            <th style="padding:9px 10px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;border-bottom:2px solid var(--line);">GA4 Bounce</th>
+            <th style="padding:9px 10px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;border-bottom:2px solid var(--line);">GA4 ATC%</th>
+            <th style="padding:9px 10px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;border-bottom:2px solid var(--line);">Condition</th>
+            <th style="padding:9px 10px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#42506a;border-bottom:2px solid var(--line);">Status</th>
+          </tr>
+        </thead>
+        <tbody id="r5Tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div><!-- /panel-5 -->
+
 </div><!-- /wrap -->
 
 <!-- R3 Content Verification Modal — outside all panels so display:none panels don't hide it -->
@@ -1016,8 +1098,8 @@ function badgeHtml(status){
 
 // AUTHORITATIVE CAMPAIGNS
 var CAMPAIGNS={
-  '23714290257':{name:'Pmax UK | Theekshy | Shoptimised | THEE_GEMS | ORDERS>1 | MCV | UK',label:'THEE_GEMS',budget:20,tRoas:4.00},
-  '23684837882':{name:'Pmax | Theekshy | Shoptimised | THEE_MYSTERY| Non-Converting | MCV | UK',label:'THEE_MYSTERY',budget:10,tRoas:2.50}
+  '23714290257':{name:'Pmax UK | Theekshy | Shoptimised | THEE_GEMS | ORDERS>1 | MCV | UK',label:'THEE_GEMS',budget:20},
+  '23684837882':{name:'Pmax | Theekshy | Shoptimised | THEE_MYSTERY| Non-Converting | MCV | UK',label:'THEE_MYSTERY',budget:10}
 };
 
 // ── Live state (populated by API) ────────────────────────────────────────────
@@ -1272,7 +1354,7 @@ function renderCampaignCards(){
     html+='<div class="c-card '+status.toLowerCase()+'">'
       +'<div class="c-card-header"><div>'
       +'<div class="c-card-name">'+info.name+'</div>'
-      +'<div class="c-card-id">ID: '+cid+' · Budget: £'+info.budget+'/day · tROAS: '+info.tRoas+'x</div>'
+      +'<div class="c-card-id">ID: '+cid+' · Budget: £'+info.budget+'/day · Thresholds: Critical &lt;3.0× · Monitor 3.0–4.5× · Healthy ≥4.5×</div>'
       +'</div>'+badgeHtml(status)+'</div>'
       +'<div class="c-metrics">'
       +'<div class="c-m"><div class="c-m-lbl">ROAS (30d)</div><div class="c-m-val '+valCls+'">'+roasDisp+'</div></div>'
@@ -1972,6 +2054,7 @@ showTab=function(n){
   if(n===2&&!TH_LOADED.r2){TH_LOADED.r2=true;r2SetRangeLive('7d');}
   if(n===3&&!TH_LOADED.r3)thLoadFeed(3);
   if(n===4&&!TH_LOADED.r4)thLoadFeed(4);
+  if(n===5)thLoadProdOpt();
 };
 
 // ── Req 1 date preset helpers ─────────────────────────────────────────────────
@@ -2105,6 +2188,111 @@ function thLoadFeed(reqNum){
 thLoadReq1();
 // Req 3 also pre-loads in background (panel 3 + 4 share same API)
 setTimeout(function(){if(!TH_LOADED.r3)thLoadFeed(3);},800);
+
+/* ============================================================
+   REQUIREMENT 5 — Product Optimisation (ROAS + Stock; GA4 N/A)
+   ============================================================ */
+var R5_PRODS = [];
+var R5_LOADED = false;
+
+function thLoadProdOpt() {
+  if (R5_LOADED) { r5Render(); return; }
+  R5_LOADED = true;
+  var el = document.getElementById('r5Loading');
+  var errEl = document.getElementById('r5Error');
+  if (el) el.style.display = 'block';
+  if (errEl) errEl.style.display = 'none';
+
+  var from = (document.getElementById('thDateFrom')||{}).value || '';
+  var to   = (document.getElementById('thDateTo')  ||{}).value || '';
+  var url  = '/api/theekshy/dashboard?type=prodopt' + (from && to ? '&from='+from+'&to='+to : '');
+
+  fetch(url)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (el) el.style.display = 'none';
+      if (!d.ok) { if(errEl){errEl.style.display='block';errEl.textContent='Error: '+(d.error||'API error');} return; }
+      R5_PRODS = d.products || [];
+      r5UpdateKpis();
+      r5Render();
+      ['r5Kpis','r5Controls','r5TableBox'].forEach(function(id){ var e=document.getElementById(id); if(e) e.style.display=''; });
+    })
+    .catch(function(e){
+      if (el) el.style.display = 'none';
+      if (errEl) { errEl.style.display='block'; errEl.textContent='Fetch failed: '+e.message; }
+    });
+}
+
+function r5UpdateKpis() {
+  var crit=0, mon=0, hlth=0, pau=0;
+  R5_PRODS.forEach(function(p){
+    if(p.csvStatus==='critical') crit++;
+    else if(p.csvStatus==='monitor') mon++;
+    else if(p.csvStatus==='healthy') hlth++;
+    else if(p.csvStatus==='paused') pau++;
+  });
+  function se(id,v){ var e=document.getElementById(id); if(e) e.textContent=v; }
+  se('r5KpiCrit', crit);
+  se('r5KpiMon', mon);
+  se('r5KpiHealth', hlth);
+  se('r5KpiPaused', pau);
+  se('r5KpiTotal', R5_PRODS.length);
+}
+
+function r5Render() {
+  var camp   = (document.getElementById('r5CampFilter')||{value:'all'}).value;
+  var status = (document.getElementById('r5StatusFilter')||{value:'all'}).value;
+  var q      = ((document.getElementById('r5Search')||{value:''}).value||'').toLowerCase();
+
+  var data = R5_PRODS.filter(function(p){
+    if (camp !== 'all' && p.camp !== camp) return false;
+    if (status !== 'all' && p.csvStatus !== status) return false;
+    if (q && !(p.pid||'').toLowerCase().includes(q) && !(p.title||'').toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  var cnt = document.getElementById('r5CountLabel');
+  if (cnt) cnt.textContent = data.length + ' products';
+
+  var statusLabels = {
+    critical: '<span class="badge badge-critical">🔴 Critical</span>',
+    monitor:  '<span class="badge badge-monitor">🟡 Monitor</span>',
+    healthy:  '<span class="badge badge-healthy">🟢 Healthy</span>',
+    paused:   '<span class="badge badge-pending">⚫ Paused</span>'
+  };
+
+  var tbody = document.getElementById('r5Tbody');
+  if (!tbody) return;
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--muted);">No products match the current filters.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = data.slice(0, 200).map(function(p, i){
+    var roasX = (p.roas / 100).toFixed(2);
+    var stockCell = p.stock === null ? '<span style="color:var(--muted);font-size:11px;">Unknown</span>'
+      : p.stock === 0 ? '<span class="badge badge-critical">Out of Stock</span>'
+      : '<span class="badge badge-healthy">'+p.stock+'</span>';
+    var nameCell = p.title
+      ? '<span style="font-weight:600;max-width:220px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="'+p.title+'">'+p.title+'</span><span style="font-size:10.5px;color:var(--muted);">'+p.pid.replace('shopify_gb_','').split('_')[0]+'</span>'
+      : '<span style="font-size:11px;color:var(--muted);">'+p.pid+'</span>';
+    var condTxt = (p.conditions||[]).join(', ');
+    return '<tr style="border-bottom:1px solid var(--line);">'+
+      '<td style="padding:8px 10px;">'+(i+1)+'</td>'+
+      '<td style="padding:8px 10px;">'+nameCell+'</td>'+
+      '<td style="padding:8px 10px;font-size:11.5px;font-weight:600;">'+p.camp+'</td>'+
+      '<td style="padding:8px 10px;text-align:right;">£'+p.cost.toFixed(2)+'</td>'+
+      '<td style="padding:8px 10px;text-align:right;">£'+p.cv.toFixed(2)+'</td>'+
+      '<td style="padding:8px 10px;text-align:right;font-weight:700;color:'+(p.roas>=450?'#059669':p.roas>=300?'#d97706':'#b91c1c')+';">'+roasX+'×</td>'+
+      '<td style="padding:8px 10px;text-align:right;">'+p.conv.toFixed(2)+'</td>'+
+      '<td style="padding:8px 10px;">'+stockCell+'</td>'+
+      '<td style="padding:8px 10px;font-size:11px;color:var(--muted);">N/A — GA4 not in DB</td>'+
+      '<td style="padding:8px 10px;font-size:11px;color:var(--muted);">N/A — GA4 not in DB</td>'+
+      '<td style="padding:8px 10px;font-size:11.5px;">'+condTxt+'</td>'+
+      '<td style="padding:8px 10px;">'+(statusLabels[p.csvStatus]||p.csvStatus)+'</td>'+
+      '</tr>';
+  }).join('');
+}
 </script>
 </body>
 </html>
