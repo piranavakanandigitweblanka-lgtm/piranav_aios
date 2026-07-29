@@ -609,6 +609,7 @@ async function loadLive(){
 
     applyFilters();
     updateLogBadge();
+    log_render();
 
   }catch(err){
     tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--red)">&#9888; Failed to load live data: '+err.message+'</td></tr>';
