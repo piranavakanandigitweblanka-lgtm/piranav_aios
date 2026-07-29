@@ -128,6 +128,21 @@ footer.site{max-width:1440px;margin:0 auto;padding:20px 32px 36px;border-top:1px
 
 .csv-btn:hover{background:var(--accent);color:#fff;}
 
+
+.tab-nav{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:20px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px;}
+.tab-btn{border:none;background:transparent;border-radius:8px;padding:8px 20px;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);transition:all .15s;white-space:nowrap;}
+.tab-btn:hover{background:var(--accent-soft);color:var(--accent);}
+.tab-btn.active{background:var(--navy);color:#e8d59a;}
+.tb-count{font-size:11px;font-weight:400;opacity:.8;margin-left:4px;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.mark-btn{font-size:10px;font-weight:700;padding:2px 7px;border:1.5px solid var(--warn);border-radius:4px;background:var(--warn-soft);color:var(--warn);cursor:pointer;margin-left:5px;white-space:nowrap;vertical-align:middle;}
+.mark-btn:hover{background:var(--warn);color:#fff;}
+.mark-btn.done{border-color:var(--good);background:var(--good-soft);color:var(--good);cursor:default;pointer-events:none;}
+.badge-pend{background:var(--warn-soft);color:var(--warn);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;}
+.badge-conf{background:var(--good-soft);color:var(--good);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;}
+.log-controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
+.log-empty{text-align:center;padding:40px;color:var(--muted);font-size:13px;}
 </style>
 
 </head>
@@ -175,6 +190,13 @@ footer.site{max-width:1440px;margin:0 auto;padding:20px 32px 36px;border-top:1px
 
 
   <a class="back-btn" href="../index.html">&#8592; Back to Hub</a>
+
+  <nav class="tab-nav" role="tablist">
+    <button class="tab-btn active" id="tab-btn-1" onclick="showTab(1)" role="tab">Gap Report</button>
+    <button class="tab-btn" id="tab-btn-2" onclick="showTab(2)" role="tab">Listing Added Log <span class="tb-count" id="log-count-badge">(0)</span></button>
+  </nav>
+
+  <div class="tab-panel active" id="tab-panel-1">
 
 
 
@@ -251,7 +273,7 @@ footer.site{max-width:1440px;margin:0 auto;padding:20px 32px 36px;border-top:1px
 
           <th>Shopify DE</th>
 
-          <th>Missing</th>
+          <th>Missing</th><th style="width:100px">Add</th>
 
         </tr>
 
@@ -279,6 +301,42 @@ footer.site{max-width:1440px;margin:0 auto;padding:20px 32px 36px;border-top:1px
 
   </div>
 
+
+
+  </div><!-- /tab-panel-1 -->
+
+  <div class="tab-panel" id="tab-panel-2">
+
+    <div class="log-controls">
+      <select id="log-channel-filter" onchange="log_render()" style="font-size:12px;padding:7px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);">
+        <option value="all">All Channels</option>
+        <option value="Amazon DE">Amazon DE</option>
+        <option value="eBay DE">eBay DE</option>
+        <option value="Shopify DE">Shopify DE</option>
+      </select>
+      <select id="log-status-filter" onchange="log_render()" style="font-size:12px;padding:7px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);">
+        <option value="all">All Status</option>
+        <option value="Pending">Pending</option>
+        <option value="Confirmed">Confirmed Live</option>
+      </select>
+      <button class="csv-btn" onclick="log_exportCSV()" style="margin-left:auto;">&#8595; Export Log CSV</button>
+      <button onclick="log_clearAll()" style="font-size:11px;font-weight:700;padding:6px 14px;border:1.5px solid var(--red);border-radius:8px;background:var(--red-soft);color:var(--red);cursor:pointer;">Clear All</button>
+    </div>
+
+    <div style="font-size:11.5px;color:var(--muted);margin-bottom:12px;">
+      Saved in your browser &middot; <strong>Confirmed</strong> = API now shows SKU is live on that channel &middot; <strong>Pending</strong> = not yet verified
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>SKU</th><th>Channel</th><th>DE Stock</th><th>Marked Added</th><th>Status</th><th style="width:80px">Remove</th>
+        </tr></thead>
+        <tbody id="log-tbody"></tbody>
+      </table>
+    </div>
+
+  </div><!-- /tab-panel-2 -->
 
 
 </main>
@@ -455,6 +513,15 @@ function render(){
 
     var imgCell='<span class="thumb-fallback">'+escH(prefix)+'</span>';
 
+    var _log=log_load();
+    function _isl(sku,ch){return _log.some(function(e){return e.sku===sku&&e.channel===ch;});}
+    function _cell(sku,ch,listed){
+      if(listed) return '<span class="badge-yes">&#10003; Listed</span>';
+      var lggd=_isl(sku,ch);
+      return '<span class="badge-no">&#10007; No</span><button class="mark-btn'+(lggd?' done':'')+'" onclick="markAdded('+JSON.stringify(sku)+','+JSON.stringify(ch)+')">'+(lggd?'&#10003; Added':'+ Add')+'</button>';
+    }
+    var _anyL=_isl(r.s,'Amazon DE')||_isl(r.s,'eBay DE')||_isl(r.s,'Shopify DE');
+
     return '<tr>'
 
       +'<td>'+imgCell+'</td>'
@@ -463,13 +530,15 @@ function render(){
 
       +'<td>'+r.st.toLocaleString()+'</td>'
 
-      +'<td><span class="'+(r.a?'badge-yes':'badge-no')+'">'+(r.a?'&#10003; Listed':'&#10007; No')+'</span></td>'
+      +'<td>'+_cell(r.s,'Amazon DE',r.a)+'</td>'
 
-      +'<td><span class="'+(r.e?'badge-yes':'badge-no')+'">'+(r.e?'&#10003; Listed':'&#10007; No')+'</span></td>'
+      +'<td>'+_cell(r.s,'eBay DE',r.e)+'</td>'
 
-      +'<td><span class="'+(r.sh?'badge-yes':'badge-no')+'">'+(r.sh?'&#10003; Listed':'&#10007; No')+'</span></td>'
+      +'<td>'+_cell(r.s,'Shopify DE',r.sh)+'</td>'
 
       +'<td><span class="'+missClass+'">'+missLabel+'</span></td>'
+
+      +'<td style="font-size:11px;">'+(_anyL?'<span style="color:var(--warn);font-weight:700">&#9679; Logged</span>':'')+'</td>'
 
       +'</tr>';
 
@@ -539,10 +608,114 @@ async function loadLive(){
     document.getElementById('footer-date').textContent=d;
 
     applyFilters();
+    updateLogBadge();
 
   }catch(err){
     tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--red)">&#9888; Failed to load live data: '+err.message+'</td></tr>';
   }
+}
+
+
+// Tabs
+function showTab(n){
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('tab-panel-'+n).classList.add('active');
+  document.getElementById('tab-btn-'+n).classList.add('active');
+  if(n===2) log_render();
+}
+
+// Listing Added Log
+var LOG_KEY='de_marketplace_added_log_v1';
+function log_load(){try{return JSON.parse(localStorage.getItem(LOG_KEY)||'[]');}catch(e){return [];}}
+function log_save(e){localStorage.setItem(LOG_KEY,JSON.stringify(e));}
+
+function markAdded(sku,channel){
+  var entries=log_load();
+  if(entries.some(function(e){return e.sku===sku&&e.channel===channel;})) return;
+  entries.unshift({sku:sku,channel:channel,addedAt:new Date().toISOString()});
+  log_save(entries);
+  updateLogBadge();
+  applyFilters();
+}
+
+function log_remove(sku,channel){
+  log_save(log_load().filter(function(e){return !(e.sku===sku&&e.channel===channel);}));
+  updateLogBadge();
+  log_render();
+  applyFilters();
+}
+
+function log_clearAll(){
+  if(!confirm('Clear all log entries?')) return;
+  localStorage.removeItem(LOG_KEY);
+  updateLogBadge();
+  log_render();
+  applyFilters();
+}
+
+function updateLogBadge(){
+  var el=document.getElementById('log-count-badge');
+  if(el) el.textContent='('+log_load().length+')';
+}
+
+function log_isConfirmed(sku,channel){
+  var r=DATA.find(function(d){return d.s===sku;});
+  if(!r) return false;
+  if(channel==='Amazon DE') return r.a===1;
+  if(channel==='eBay DE')   return r.e===1;
+  if(channel==='Shopify DE') return r.sh===1;
+  return false;
+}
+
+function log_render(){
+  var tbody=document.getElementById('log-tbody');
+  if(!tbody) return;
+  var entries=log_load();
+  var chF=document.getElementById('log-channel-filter').value;
+  var stF=document.getElementById('log-status-filter').value;
+  var filtered=entries.filter(function(e){
+    if(chF!=='all'&&e.channel!==chF) return false;
+    var conf=log_isConfirmed(e.sku,e.channel);
+    if(stF==='Pending'&&conf) return false;
+    if(stF==='Confirmed'&&!conf) return false;
+    return true;
+  });
+  if(!filtered.length){
+    tbody.innerHTML='<tr><td colspan="6" class="log-empty">No entries yet. Click &ldquo;+ Add&rdquo; on any missing channel badge in the Gap Report tab.</td></tr>';
+    return;
+  }
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  tbody.innerHTML=filtered.map(function(e){
+    var conf=log_isConfirmed(e.sku,e.channel);
+    var status=conf?'<span class="badge-conf">&#10003; Confirmed Live</span>':'<span class="badge-pend">&#9679; Pending</span>';
+    var d=new Date(e.addedAt);
+    var ds=d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    var row=DATA.find(function(d){return d.s===e.sku;});
+    var stock=row?row.st.toLocaleString():'--';
+    return '<tr>'
+      +'<td><div class="sku-txt">'+esc(e.sku)+'</div></td>'
+      +'<td>'+esc(e.channel)+'</td>'
+      +'<td>'+stock+'</td>'
+      +'<td style="font-size:11.5px;color:var(--muted)">'+ds+'</td>'
+      +'<td>'+status+'</td>'
+      +'<td><button onclick="log_remove('+JSON.stringify(e.sku)+','+JSON.stringify(e.channel)+')" style="font-size:10px;font-weight:700;padding:2px 8px;border:1.5px solid var(--line);border-radius:4px;background:var(--card);cursor:pointer;color:var(--muted);">Remove</button></td>'
+      +'</tr>';
+  }).join('');
+}
+
+function log_exportCSV(){
+  var entries=log_load();
+  var rows=entries.map(function(e){
+    var row=DATA.find(function(d){return d.s===e.sku;});
+    return [e.sku,e.channel,row?row.st:'',e.addedAt,log_isConfirmed(e.sku,e.channel)?'Confirmed Live':'Pending'].join(',');
+  });
+  var csv='SKU,Channel,DE Stock,Marked Added At,Status\n'+rows.join('\n');
+  var blob=new Blob([csv],{type:'text/csv'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='de_listing_added_log_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
 }
 
 </script>
