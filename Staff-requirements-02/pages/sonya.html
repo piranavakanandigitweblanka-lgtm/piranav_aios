@@ -123,6 +123,25 @@
   .tbadge-none{background:#f3f4f6;color:#6b7280;border-color:#e5e7eb;}
   .tbadge-trendlist{background:#ede9fe;color:#4c1d95;border-color:#c4b5fd;}
   .tbadge-monitor{background:#f3f4f6;color:#374151;border-color:#d1d5db;}
+  /* R6 Daily Orders */
+  .r6th{padding:10px 10px;text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--line);white-space:nowrap;}
+  .r6th.num{text-align:right;}
+  .r6sort{cursor:pointer;user-select:none;}
+  .r6sort:hover{color:var(--accent);}
+  .r6td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:12.5px;}
+  .r6td.num{text-align:right;font-variant-numeric:tabular-nums;}
+  .r6tr:hover td{background:var(--accent-soft);}
+  .r6img{width:44px;height:44px;object-fit:cover;border-radius:6px;border:1px solid var(--line);}
+  .r6url{color:var(--accent);text-decoration:none;font-size:11px;word-break:break-all;}
+  .r6url:hover{text-decoration:underline;}
+  .r6stock-in{color:#059669;font-weight:700;}
+  .r6stock-low{color:#d97706;font-weight:700;}
+  .r6stock-out{color:#dc2626;font-weight:700;}
+  .r6stock-none{color:#9ca3af;}
+  .r6price-higher{color:#059669;}
+  .r6price-lower{color:#dc2626;}
+  .r6pager-btn{border:1px solid var(--line);background:var(--card);border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;}
+  .r6pager-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
 </style>
 </head>
 <body>
@@ -139,6 +158,7 @@
     <button class="nav-btn"        id="nav-3" role="tab" aria-selected="false" aria-controls="panel-3" onclick="showTab(3)">Trend<span class="nl">Requirement 3</span></button>
     <button class="nav-btn"        id="nav-4" role="tab" aria-selected="false" aria-controls="panel-4" onclick="showTab(4)">Opportunity<span class="nl">Requirement 4</span></button>
     <button class="nav-btn"        id="nav-5" role="tab" aria-selected="false" aria-controls="panel-5" onclick="showTab(5)">Stop Waste Spend<span class="nl">Requirement 5</span></button>
+    <button class="nav-btn"        id="nav-6" role="tab" aria-selected="false" aria-controls="panel-6" onclick="showTab(6);doLoadR6()">Daily Orders<span class="nl">Data View · R6</span></button>
     <button id="globalRefreshBtn" onclick="globalRefresh()" title="Refresh live data for current tab" style="margin-left:auto;display:flex;align-items:center;gap:6px;background:#0f172a;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .2s;">
       <span id="globalRefreshIcon" style="font-size:15px;display:inline-block;transition:transform .5s;">&#8635;</span> Refresh Data
     </button>
@@ -663,7 +683,79 @@
     <div id="swsEmpty" style="display:none;text-align:center;padding:30px;color:#888">No campaigns match the current filter.</div>
   </div>
 
-  <footer class="site">Sonya · Google Ads Campaign Dashboard · AIOS · Requirement 1 · Updated 2026-07-08 (Stage: accordion — 4 periods per row)</footer>
+  <!-- PANEL 6 — Daily Orders (R6) -->
+  <div class="tab-panel" id="panel-6" role="tabpanel">
+    <header class="rpt">
+      <div class="req-tag">Requirement 6 · Data View · Daily Orders</div>
+      <h1>Daily Orders Dashboard</h1>
+      <div class="sub">Staff: <strong>Sonya</strong> &nbsp;·&nbsp; Yesterday's UK orders across all marketplaces with stock, pricing and 7-day Shopify UK sales.</div>
+    </header>
+
+    <!-- Summary Cards -->
+    <div class="kpis" id="r6Kpis" style="margin-bottom:14px;">
+      <div class="kpi info"><div class="lbl">Selected Date</div><div class="val" id="r6KpiDate">—</div></div>
+      <div class="kpi"><div class="lbl">Total UK Orders</div><div class="val" id="r6KpiTotal">—</div></div>
+      <div class="kpi ok"><div class="lbl">LEDsone UK Orders</div><div class="val" id="r6KpiLedsone">—</div></div>
+      <div class="kpi"><div class="lbl">Last Refresh</div><div class="val" id="r6KpiRefresh" style="font-size:13px;">—</div></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="controls" style="flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+      <label style="font-size:12px;font-weight:600;color:var(--muted);">Date:</label>
+      <input type="date" id="r6DateInput" style="border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;color:var(--ink);background:var(--card);">
+      <button onclick="r6LoadData()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;">Load</button>
+      <input type="text"   id="r6SearchSku"  placeholder="Search SKU…"  oninput="r6Filter()" class="srch">
+      <select id="r6FilterMarket" onchange="r6Filter()" style="border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;color:var(--ink);background:var(--card);">
+        <option value="">All Marketplaces</option>
+      </select>
+      <select id="r6FilterStock" onchange="r6Filter()" style="border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;color:var(--ink);background:var(--card);">
+        <option value="">All Stock</option>
+        <option value="in">In Stock (>0)</option>
+        <option value="low">Low Stock (1–5)</option>
+        <option value="out">Out of Stock (0)</option>
+        <option value="none">No Data</option>
+      </select>
+      <select id="r6FilterPrice" onchange="r6Filter()" style="border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;color:var(--ink);background:var(--card);">
+        <option value="">All Prices</option>
+        <option value="higher">Selling > LEDsone UK</option>
+        <option value="lower">Selling &lt; LEDsone UK</option>
+        <option value="same">Same Price</option>
+        <option value="nouk">No LEDsone UK Price</option>
+      </select>
+      <span id="r6RowCount" style="font-size:12px;color:var(--muted);margin-left:4px;"></span>
+      <button onclick="r6ExportCsv()" style="margin-left:auto;background:#f1f5f9;border:1px solid var(--line);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;">⬇ CSV</button>
+    </div>
+
+    <!-- Loading / Error / Table -->
+    <div id="r6Loading" style="text-align:center;padding:40px;color:var(--muted);font-size:14px;display:none;">Loading daily orders…</div>
+    <div id="r6Error"   style="display:none;background:#fff5f5;border:1px solid #fca5a5;border-radius:10px;padding:14px 18px;font-size:13px;color:#9b1c1c;margin-bottom:14px;"></div>
+    <div id="r6Empty"   style="display:none;text-align:center;padding:40px;color:var(--muted);">No orders found for selected date.</div>
+
+    <div id="r6TableWrap" style="display:none;overflow-x:auto;border-radius:12px;border:1px solid var(--line);">
+      <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+        <thead id="r6Thead" style="position:sticky;top:0;background:#f8fafc;z-index:2;">
+          <tr>
+            <th onclick="r6Sort('sku')"         class="r6th r6sort">SKU</th>
+            <th onclick="r6Sort('stock')"        class="r6th r6sort num">Stock</th>
+            <th class="r6th">Image</th>
+            <th class="r6th">URL</th>
+            <th onclick="r6Sort('sub_source')"   class="r6th r6sort">Marketplace</th>
+            <th onclick="r6Sort('l7_shopify_uk')" class="r6th r6sort num">L7d Shopify UK</th>
+            <th onclick="r6Sort('sold_price')"   class="r6th r6sort num">Selling Price</th>
+            <th onclick="r6Sort('ledsone_uk_price')" class="r6th r6sort num">LEDsone UK £</th>
+            <th onclick="r6Sort('qty')"          class="r6th r6sort num">Qty Sold</th>
+            <th class="r6th">Title</th>
+          </tr>
+        </thead>
+        <tbody id="r6Tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div id="r6Pager" style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:12px;"></div>
+  </div>
+
+  <footer class="site">Sonya · Google Ads Campaign Dashboard · AIOS · Updated 2026-07-29</footer>
 </div>
 
 <script>
@@ -937,6 +1029,7 @@ function globalRefresh() {
     case 3: { const f = document.getElementById('t3DateFrom'); const t = document.getElementById('t3DateTo'); if (f && t && f.value && t.value) tLoadData(f.value, t.value); break; }
     case 4: { const f = document.getElementById('o4DateFrom'); const t = document.getElementById('o4DateTo'); if (f && t && f.value && t.value) oLoadData(f.value, t.value); break; }
     case 5: { swsLoadData(); break; }
+    case 6: { r6LoadData(); break; }
   }
 }
 
@@ -12674,6 +12767,206 @@ showTab = function(n) {
   enableDragScroll(document.getElementById('s4Scroll'));
   enableDragScroll(document.getElementById('s5Scroll'));
 })();
+
+// ============================================================
+// R6 — Daily Orders Dashboard
+// ============================================================
+var r6AllRows = [], r6Filtered = [], r6SortCol = '', r6SortAsc = true;
+var r6Page = 1, r6PageSize = 50;
+var r6Loaded = false;
+
+function doLoadR6() {
+  if (!r6Loaded) r6LoadData();
+}
+
+function r6LoadData() {
+  const dateEl = document.getElementById('r6DateInput');
+  const dateParam = dateEl && dateEl.value ? '?date=' + dateEl.value : '';
+
+  document.getElementById('r6Loading').style.display  = 'block';
+  document.getElementById('r6Error').style.display    = 'none';
+  document.getElementById('r6Empty').style.display    = 'none';
+  document.getElementById('r6TableWrap').style.display= 'none';
+  document.getElementById('r6Pager').innerHTML        = '';
+
+  fetch('/api/sonya/daily-orders' + dateParam)
+    .then(function(res) { return res.json(); })
+    .then(function(d) {
+      document.getElementById('r6Loading').style.display = 'none';
+      if (!d.ok) { r6ShowError(d.error || 'API error'); return; }
+
+      // Summary cards
+      document.getElementById('r6KpiDate').textContent    = d.summary.date || '—';
+      document.getElementById('r6KpiTotal').textContent   = d.summary.total_uk_orders;
+      document.getElementById('r6KpiLedsone').textContent = d.summary.ledsone_uk_orders;
+      document.getElementById('r6KpiRefresh').textContent = d.summary.refreshed_at
+        ? new Date(d.summary.refreshed_at).toLocaleTimeString() : '—';
+
+      if (!d.rows || !d.rows.length) {
+        document.getElementById('r6Empty').style.display = 'block';
+        return;
+      }
+
+      r6AllRows = d.rows;
+      r6Loaded  = true;
+
+      // Populate marketplace filter
+      var markets = [...new Set(d.rows.map(function(r){ return r.sub_source; }))].sort();
+      var sel = document.getElementById('r6FilterMarket');
+      sel.innerHTML = '<option value="">All Marketplaces</option>';
+      markets.forEach(function(m) {
+        var o = document.createElement('option'); o.value = m; o.textContent = m; sel.appendChild(o);
+      });
+
+      r6Filter();
+    })
+    .catch(function(e) {
+      document.getElementById('r6Loading').style.display = 'none';
+      r6ShowError(e.message || 'Network error');
+    });
+}
+
+function r6ShowError(msg) {
+  var el = document.getElementById('r6Error');
+  el.textContent = 'Error: ' + msg;
+  el.style.display = 'block';
+}
+
+function r6Filter() {
+  var sku     = (document.getElementById('r6SearchSku')    || {}).value || '';
+  var market  = (document.getElementById('r6FilterMarket') || {}).value || '';
+  var stock   = (document.getElementById('r6FilterStock')  || {}).value || '';
+  var price   = (document.getElementById('r6FilterPrice')  || {}).value || '';
+  var skuQ    = sku.toLowerCase();
+
+  r6Filtered = r6AllRows.filter(function(r) {
+    if (skuQ && r.sku.toLowerCase().indexOf(skuQ) < 0 &&
+                r.title.toLowerCase().indexOf(skuQ) < 0) return false;
+    if (market && r.sub_source !== market) return false;
+    if (stock) {
+      var s = r.stock;
+      if (stock === 'in'   && !(s !== null && s > 5))  return false;
+      if (stock === 'low'  && !(s !== null && s >= 1 && s <= 5)) return false;
+      if (stock === 'out'  && !(s !== null && s <= 0)) return false;
+      if (stock === 'none' && s !== null) return false;
+    }
+    if (price) {
+      var sp = r.sold_price, lp = r.ledsone_uk_price;
+      if (price === 'higher' && !(sp !== null && lp !== null && sp > lp))  return false;
+      if (price === 'lower'  && !(sp !== null && lp !== null && sp < lp))  return false;
+      if (price === 'same'   && !(sp !== null && lp !== null && sp === lp)) return false;
+      if (price === 'nouk'   && lp !== null) return false;
+    }
+    return true;
+  });
+
+  r6Page = 1;
+  r6Render();
+  document.getElementById('r6RowCount').textContent = r6Filtered.length + ' rows';
+}
+
+function r6Sort(col) {
+  if (r6SortCol === col) { r6SortAsc = !r6SortAsc; }
+  else { r6SortCol = col; r6SortAsc = true; }
+  r6Filtered.sort(function(a, b) {
+    var av = a[col], bv = b[col];
+    if (av === null) av = r6SortAsc ? Infinity : -Infinity;
+    if (bv === null) bv = r6SortAsc ? Infinity : -Infinity;
+    if (typeof av === 'string') av = av.toLowerCase();
+    if (typeof bv === 'string') bv = bv.toLowerCase();
+    return r6SortAsc ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
+  });
+  r6Page = 1;
+  r6Render();
+}
+
+function r6Render() {
+  var tbody = document.getElementById('r6Tbody');
+  if (!r6Filtered.length) {
+    document.getElementById('r6TableWrap').style.display = 'none';
+    document.getElementById('r6Empty').style.display     = 'block';
+    document.getElementById('r6Pager').innerHTML         = '';
+    return;
+  }
+  document.getElementById('r6TableWrap').style.display = 'block';
+  document.getElementById('r6Empty').style.display     = 'none';
+
+  var start = (r6Page - 1) * r6PageSize;
+  var page  = r6Filtered.slice(start, start + r6PageSize);
+
+  tbody.innerHTML = page.map(function(r) {
+    // Stock display
+    var stockHtml;
+    if (r.stock === null)       stockHtml = '<span class="r6stock-none">—</span>';
+    else if (r.stock <= 0)      stockHtml = '<span class="r6stock-out">' + r.stock + '</span>';
+    else if (r.stock <= 5)      stockHtml = '<span class="r6stock-low">' + r.stock + '</span>';
+    else                        stockHtml = '<span class="r6stock-in">' + r.stock + '</span>';
+
+    // Price display
+    var sp = r.sold_price, lp = r.ledsone_uk_price;
+    var priceClass = '';
+    if (sp !== null && lp !== null) {
+      if (sp > lp) priceClass = 'r6price-higher';
+      else if (sp < lp) priceClass = 'r6price-lower';
+    }
+    var spHtml = sp !== null ? '<span class="' + priceClass + '">£' + Number(sp).toFixed(2) + '</span>' : '—';
+    var lpHtml = lp !== null ? '£' + Number(lp).toFixed(2) : '—';
+
+    // Image
+    var imgHtml = r.image
+      ? '<img class="r6img" src="' + r.image.replace(/"/g,'') + '" alt="" onerror="this.style.display=\'none\'">'
+      : '<div style="width:44px;height:44px;background:var(--line);border-radius:6px;"></div>';
+
+    // URL
+    var urlHtml = r.ledsone_url
+      ? '<a href="' + r.ledsone_url + '" target="_blank" rel="noopener" class="r6url">ledsone.co.uk ↗</a>'
+      : '<span style="color:var(--muted);font-size:11px;">—</span>';
+
+    return '<tr class="r6tr">'
+      + '<td class="r6td"><strong>' + r.sku + '</strong></td>'
+      + '<td class="r6td num">' + stockHtml + '</td>'
+      + '<td class="r6td">' + imgHtml + '</td>'
+      + '<td class="r6td">' + urlHtml + '</td>'
+      + '<td class="r6td">' + (r.sub_source || '—') + '</td>'
+      + '<td class="r6td num">' + (r.l7_shopify_uk || 0) + '</td>'
+      + '<td class="r6td num">' + spHtml + '</td>'
+      + '<td class="r6td num">' + lpHtml + '</td>'
+      + '<td class="r6td num">' + r.qty + '</td>'
+      + '<td class="r6td" style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + (r.title||'').replace(/"/g,'') + '">' + (r.title || '—') + '</td>'
+      + '</tr>';
+  }).join('');
+
+  // Pagination
+  var totalPages = Math.ceil(r6Filtered.length / r6PageSize);
+  var pager = document.getElementById('r6Pager');
+  pager.innerHTML = '';
+  if (totalPages > 1) {
+    for (var i = 1; i <= totalPages; i++) {
+      var btn = document.createElement('button');
+      btn.className = 'r6pager-btn' + (i === r6Page ? ' active' : '');
+      btn.textContent = i;
+      (function(pg){ btn.onclick = function(){ r6Page = pg; r6Render(); }; })(i);
+      pager.appendChild(btn);
+    }
+  }
+}
+
+function r6ExportCsv() {
+  if (!r6Filtered.length) return;
+  var headers = ['SKU','Stock','Marketplace','L7d Shopify UK','Selling Price','LEDsone UK Price','Qty Sold','Title','LEDsone URL'];
+  var rows = r6Filtered.map(function(r) {
+    return [r.sku, r.stock !== null ? r.stock : '', r.sub_source,
+            r.l7_shopify_uk, r.sold_price !== null ? r.sold_price : '',
+            r.ledsone_uk_price !== null ? r.ledsone_uk_price : '',
+            r.qty, '"' + (r.title||'').replace(/"/g,"'") + '"', r.ledsone_url || ''].join(',');
+  });
+  var csv = [headers.join(',')].concat(rows).join('\n');
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  var d = document.getElementById('r6KpiDate').textContent || 'export';
+  a.download = 'sonya_r6_daily_orders_' + d + '.csv';
+  a.click();
+}
 
 </script>
 </body>

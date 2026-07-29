@@ -125,7 +125,7 @@
     <a class="row" href="pages/sonya.html" data-name="sonya" data-member="sonya">
       <span class="avatar live">S</span>
       <span class="who"><span class="nm">Sonya</span><span class="role">Google Ads · UK</span></span>
-      <span class="status live" id="badge-sonya">5 Reports Live</span>
+      <span class="status live" id="badge-sonya">6 Reports Live</span>
     </a>
     <a class="row" href="pages/theekshy.html" data-name="theekshy" data-member="theekshy">
       <span class="avatar live">T</span>
@@ -151,25 +151,7 @@ document.getElementById('member-search').addEventListener('input',function(){
   });
 });
 
-// Live req count update from /api/status
-fetch('/api/status')
-  .then(function(r){return r.json();})
-  .then(function(d){
-    if(!d.ok)return;
-    d.members.forEach(function(m){
-      var el=document.getElementById('badge-'+m.id);
-      if(el)el.textContent=m.reqs+' Report'+(m.reqs===1?'':'s')+' Live';
-    });
-    // update header "Active Dashboards" count
-    var total=d.members.filter(function(m){return m.reqs>0;}).length;
-    var statEls=document.querySelectorAll('.stat .v');
-    // second stat = Active Dashboards
-    if(statEls[1])statEls[1].textContent=total;
-    // updated date
-    var today=new Date().toISOString().slice(0,10);
-    if(statEls[2])statEls[2].textContent=today;
-  })
-  .catch(function(){});
+// Badge counts are hardcoded in HTML — no API call needed
 </script>
 </body>
 </html>
