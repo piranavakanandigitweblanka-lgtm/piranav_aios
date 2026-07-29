@@ -58,15 +58,15 @@ module.exports = async function handler(req, res) {
     const [amzRes, ebayRes, shopRes] = await Promise.all([
       client.query(`
         SELECT DISTINCT sku FROM listings.amazon_listings
-        WHERE site = 'Germany'
+        WHERE site = 'Germany' AND sku IS NOT NULL AND sku != ''
       `),
       client.query(`
         SELECT DISTINCT sku FROM listings.ebay_listings
-        WHERE site = 'Germany' AND all_list = 1
+        WHERE site = 'Germany' AND all_list = 1 AND sku IS NOT NULL AND sku != ''
       `),
       client.query(`
         SELECT DISTINCT sku FROM listings.shopify_listings
-        WHERE site = 'Germany' AND all_list = 1
+        WHERE site = 'Germany' AND all_list = 1 AND sku IS NOT NULL AND sku != ''
       `),
     ]);
 
