@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEO Intelligence — ledsone.co.uk</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#0c1a30;--navy-2:#13284a;--ink:#1a2233;--muted:#5b6577;
+  --line:#e3e7ee;--bg:#f4f6f9;--card:#ffffff;
+  --gold:#b98b1e;--gold-soft:#faf3e0;
+  --accent:#1f5eff;--accent-soft:#eaf0ff;
+  --red:#b91c1c;--red-soft:#fff5f5;
+  --warn:#d97706;--warn-soft:#fffbeb;
+  --good:#0a7d4f;--good-soft:#e5f5ee;
+  --na:#64748b;--na-soft:#eef2f7;
+  --purple:#9333ea;--purple-soft:#f5f3ff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;}
+
+.topbar{height:5px;background:linear-gradient(90deg,var(--navy) 0%,var(--navy-2) 55%,var(--gold) 100%);}
+
+.masthead{background:var(--card);padding:22px 32px;border-bottom:1px solid var(--line);box-shadow:0 1px 4px rgba(12,26,48,.05);}
+.masthead .inner{max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:22px;}
+.mark{width:44px;height:44px;background:var(--navy);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#e8d59a;flex:none;border:1.5px solid var(--gold);letter-spacing:.5px;}
+.headtxt{flex:1;min-width:220px;}
+.kicker{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+.masthead h1{font-size:19px;font-weight:700;color:var(--navy);}
+.masthead .lede{font-size:12px;color:var(--muted);margin-top:3px;}
+.statrow{display:flex;flex-wrap:wrap;gap:0;border-left:1px solid var(--line);padding-left:26px;}
+.stat{padding:0 18px;border-right:1px solid var(--line);}
+.stat:last-child{border-right:none;padding-right:0;}
+.stat .v{font-size:18px;font-weight:700;color:var(--navy);}
+.stat .l{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:2px;}
+
+.page{max-width:1280px;margin:0 auto;padding:22px 32px 48px;}
+
+.back{display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;padding:7px 13px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--muted);text-decoration:none;font-size:12px;font-weight:600;transition:all .15s;}
+.back:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent);}
+
+/* Tab nav */
+.top-nav{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:20px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px;}
+.nav-btn{border:none;background:transparent;border-radius:10px;padding:9px 18px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--muted);transition:background .15s,color .15s;white-space:nowrap;text-align:left;}
+.nav-btn:hover{background:var(--accent-soft);color:var(--accent);}
+.nav-btn.active{background:var(--accent);color:#fff;}
+.nav-btn .nl{display:block;font-size:10.5px;font-weight:400;margin-top:1px;opacity:.8;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* Alert */
+.alert{background:var(--warn-soft);border:1px solid #fde68a;border-radius:10px;padding:11px 16px;font-size:12px;color:#78350f;margin-bottom:18px;line-height:1.6;}
+.alert strong{font-weight:700;}
+
+/* Section titles */
+.section-title{display:flex;align-items:center;gap:12px;font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--navy-2);margin:22px 0 12px;}
+.section-title::after{content:"";flex:1;height:1px;background:var(--line);}
+
+/* KPI cards */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:11px;margin-bottom:18px;}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:15px 17px;position:relative;}
+.kpi .src{position:absolute;top:10px;right:12px;font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);background:var(--bg);border-radius:4px;padding:1px 5px;}
+.kpi .lbl{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-right:40px;}
+.kpi .val{font-size:22px;font-weight:700;margin-top:5px;line-height:1;color:var(--navy);}
+.kpi .delta{font-size:11px;margin-top:4px;}
+.kpi .delta.up{color:var(--good);}
+.kpi .delta.down{color:var(--red);}
+.kpi .delta.flat{color:var(--muted);}
+.kpi .note{font-size:10.5px;color:var(--muted);margin-top:3px;}
+.kpi.warn .val{color:var(--warn);}
+.kpi.good .val{color:var(--good);}
+
+/* Charts */
+.chart-row{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px;}
+.chart-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;}
+.chart-card h3{font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.chart-card .ch-sub{font-size:11px;color:var(--muted);margin-bottom:14px;}
+.chart-wrap{position:relative;height:260px;}
+.chart-wrap canvas{max-height:260px;}
+
+/* Table */
+.tbox{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:14px;}
+.tbar{padding:11px 17px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;}
+.tbar strong{color:var(--ink);font-weight:700;}
+.scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead th{background:#f0f3f8;text-align:left;padding:9px 12px;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:#42506a;border-bottom:2px solid var(--line);white-space:nowrap;}
+thead th.num,td.num{text-align:right;}
+tbody td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:#f8fafc;}
+.delta-cell{font-size:10.5px;font-weight:700;}
+.delta-cell.up{color:var(--good);}
+.delta-cell.dn{color:var(--red);}
+.delta-cell.na{color:var(--muted);}
+
+/* Badges */
+.badge{display:inline-block;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;white-space:nowrap;}
+.badge-live{background:var(--good-soft);color:var(--good);}
+.badge-csv{background:var(--accent-soft);color:var(--accent);}
+.badge-limited{background:var(--warn-soft);color:var(--warn);}
+.badge-na{background:var(--na-soft);color:var(--na);}
+.badge-partial{background:#fff7ed;color:#c2410c;}
+
+/* Data quality panel */
+.dq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:11px;margin-bottom:14px;}
+.dq-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+.dq-card .dq-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.dq-dot{width:9px;height:9px;border-radius:50%;flex:none;}
+.dq-dot.live{background:var(--good);}
+.dq-dot.csv{background:var(--accent);}
+.dq-dot.limited{background:var(--warn);}
+.dq-dot.na{background:var(--na);}
+.dq-name{font-size:12.5px;font-weight:700;color:var(--navy);}
+.dq-card .dq-cov{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.dq-card .dq-note{font-size:10.5px;color:var(--muted);line-height:1.5;}
+
+/* Placeholder tabs */
+.placeholder{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:60px 30px;text-align:center;}
+.ph-icon{font-size:38px;margin-bottom:14px;}
+.placeholder h2{font-size:17px;color:var(--navy);margin-bottom:8px;}
+.placeholder p{color:var(--muted);font-size:13px;max-width:380px;margin:0 auto;}
+
+/* Loading spinner */
+.loading{text-align:center;padding:48px 20px;color:var(--muted);font-size:13px;}
+.spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:10px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Info note */
+.info-note{background:#f0f9ff;border:1px solid #bae6fd;border-radius:9px;padding:10px 14px;font-size:11.5px;color:#0c4a6e;margin-bottom:14px;line-height:1.6;}
+
+footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:center;}
+@media(max-width:900px){
+  .chart-row{grid-template-columns:1fr;}
+  .statrow{border-left:none;padding-left:0;margin-top:10px;}
+}
+@media(max-width:600px){
+  .page{padding:16px 14px 36px;}
+  .masthead{padding:16px 14px;}
+  .kpi .val{font-size:18px;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"></div>
+
+<div class="masthead">
+  <div class="inner">
+    <div class="mark">SEO</div>
+    <div class="headtxt">
+      <div class="kicker">AIOS &bull; Organic Intelligence V1 &bull; ledsone.co.uk</div>
+      <h1>SEO Intelligence Dashboard</h1>
+      <p class="lede">37-month historical data &bull; SEMrush + Google Search Console + Google Ads</p>
+    </div>
+    <div class="statrow">
+      <div class="stat"><div class="v">37</div><div class="l">Months Data</div></div>
+      <div class="stat"><div class="v">4</div><div class="l">Sources</div></div>
+      <div class="stat"><div class="v" id="hd-latest">—</div><div class="l">Latest GSC</div></div>
+      <div class="stat"><div class="v" id="hd-kws">—</div><div class="l">Organic KWs</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+  <a href="../index.html" class="back">&#8592; Back to Dashboard Index</a>
+
+  <div class="top-nav">
+    <button class="nav-btn active" onclick="switchTab('exec',this)">Executive Overview<span class="nl">Phase 1 — Live</span></button>
+    <button class="nav-btn" onclick="switchTab('products',this)">Product Intelligence<span class="nl">Phase 2 — Pending</span></button>
+    <button class="nav-btn" onclick="switchTab('keywords',this)">Keyword Intelligence<span class="nl">Phase 3 — Pending</span></button>
+    <button class="nav-btn" onclick="switchTab('landing',this)">Landing Pages<span class="nl">Phase 4 — Pending</span></button>
+    <button class="nav-btn" onclick="switchTab('actions',this)">Action Centre<span class="nl">Phase 5 — Pending</span></button>
+    <button class="nav-btn" onclick="switchTab('technical',this)">Technical SEO<span class="nl">Phase 6 — Pending</span></button>
+  </div>
+
+  <!-- ── Tab 1: Executive Overview ─────────────────────────────── -->
+  <div id="tab-exec" class="tab-panel active">
+    <div class="alert">
+      <strong>&#9888; GSC Data Note:</strong> The PostgreSQL pipeline stores approximately 50% of Google Search Console click totals (device-level thresholding in the overview table). Jul 2026 pipeline: 3,854 clicks. Use GSC figures here for trend direction only, not absolute benchmarks.
+    </div>
+
+    <div id="exec-content">
+      <div class="loading"><div class="spinner"></div><br>Loading SEO intelligence data&hellip;</div>
+    </div>
+  </div>
+
+  <!-- ── Stub tabs ───────────────────────────────────────────── -->
+  <div id="tab-products" class="tab-panel">
+    <div class="placeholder"><div class="ph-icon">&#128230;</div><h2>Product Intelligence</h2><p>Phase 2 &mdash; Keyword performance by product category, top-converting organic product pages, inventory-linked visibility scoring.</p></div>
+  </div>
+  <div id="tab-keywords" class="tab-panel">
+    <div class="placeholder"><div class="ph-icon">&#128269;</div><h2>Keyword Intelligence</h2><p>Phase 3 &mdash; 36-month keyword rank history, position bucket trends, top-3 / top-10 keyword deep-dive from SEMrush + GSC.</p></div>
+  </div>
+  <div id="tab-landing" class="tab-panel">
+    <div class="placeholder"><div class="ph-icon">&#128203;</div><h2>Landing Page Intelligence</h2><p>Phase 4 &mdash; Top organic landing pages by clicks and impressions, CTR opportunity scoring, page-level position tracking.</p></div>
+  </div>
+  <div id="tab-actions" class="tab-panel">
+    <div class="placeholder"><div class="ph-icon">&#9889;</div><h2>Action Centre</h2><p>Phase 5 &mdash; Prioritised SEO actions derived from data: quick wins, opportunity pages, content gaps, cannibalization alerts.</p></div>
+  </div>
+  <div id="tab-technical" class="tab-panel">
+    <div class="placeholder"><div class="ph-icon">&#9881;</div><h2>Technical SEO</h2><p>Phase 6 &mdash; Index coverage trends, crawl budget indicators, Core Web Vitals signals, structured data health.</p></div>
+  </div>
+
+  <footer class="site">AIOS SEO Intelligence Dashboard V1 &bull; ledsone.co.uk &bull; Built 2026-07-29 &bull; Phase 1 Executive Overview</footer>
+</div>
+
+<script>
+/* ── Tab switching ─────────────────────────────────────────── */
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ── CSV parser ────────────────────────────────────────────── */
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',');
+  return lines.slice(1).map(line => {
+    const vals = line.split(',');
+    const obj = {};
+    headers.forEach((h, i) => { obj[h.trim()] = vals[i] ? vals[i].trim() : ''; });
+    return obj;
+  });
+}
+
+function fNum(n, dec) {
+  if (n === null || n === undefined || n === '') return '—';
+  const v = parseFloat(n);
+  if (isNaN(v)) return '—';
+  return v.toLocaleString('en-GB', { minimumFractionDigits: dec || 0, maximumFractionDigits: dec || 0 });
+}
+function fGBP(n) {
+  if (!n || isNaN(parseFloat(n))) return '—';
+  return '£' + parseFloat(n).toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+function pct(val, prev) {
+  if (!prev || parseFloat(prev) === 0) return null;
+  return ((parseFloat(val) - parseFloat(prev)) / Math.abs(parseFloat(prev)) * 100).toFixed(1);
+}
+function deltaHtml(val, prev, reverse) {
+  const p = pct(val, prev);
+  if (p === null) return '<span class="delta-cell na">—</span>';
+  const up = reverse ? parseFloat(p) < 0 : parseFloat(p) > 0;
+  const cls = parseFloat(p) === 0 ? 'na' : (up ? 'up' : 'dn');
+  const arrow = parseFloat(p) > 0 ? '&#8593;' : (parseFloat(p) < 0 ? '&#8595;' : '');
+  return `<span class="delta-cell ${cls}">${arrow}${Math.abs(p)}%</span>`;
+}
+function fMonth(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso + (iso.length === 7 ? '-01' : ''));
+  return d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
+}
+
+/* ── Chart instances (for destroy on reload) ──────────────── */
+const charts = {};
+
+/* ── Main executive loader ─────────────────────────────────── */
+let execLoaded = false;
+async function loadExec() {
+  if (execLoaded) return;
+  execLoaded = true;
+
+  try {
+    const [csvRes, gscRes, posRes, adsRes, dqRes] = await Promise.all([
+      fetch('/data/seo-master-dataset.csv'),
+      fetch('/api/seo/executive?type=gsc-monthly'),
+      fetch('/api/seo/executive?type=position-dist'),
+      fetch('/api/seo/executive?type=ads-monthly'),
+      fetch('/api/seo/executive?type=data-quality'),
+    ]);
+
+    const csvText = await csvRes.text();
+    const gscJson = await gscRes.json();
+    const posJson = await posRes.json();
+    const adsJson = await adsRes.json();
+    const dqJson  = await dqRes.json();
+
+    const csv    = parseCSV(csvText);
+    const gscRows = gscJson.ok ? gscJson.rows : [];
+    const posRows = posJson.ok ? posJson.rows : [];
+    const adsRows = adsJson.ok ? adsJson.rows : [];
+    const dqSrc   = dqJson.ok ? dqJson.sources : {};
+
+    renderExec(csv, gscRows, posRows, adsRows, dqSrc);
+  } catch (e) {
+    document.getElementById('exec-content').innerHTML =
+      `<div class="alert"><strong>Load error:</strong> ${e.message}</div>`;
+  }
+}
+
+function renderExec(csv, gscRows, posRows, adsRows, dqSrc) {
+  /* latest values for header */
+  const latestGsc = gscRows.length ? gscRows[gscRows.length - 1] : null;
+  const latestAds = adsRows.length ? adsRows[adsRows.length - 1] : null;
+  /* latest SEMrush month (last row with SE flag) */
+  const seRows = csv.filter(r => r.data_flags && r.data_flags.includes('SE'));
+  const latestSe = seRows.length ? seRows[seRows.length - 1] : null;
+
+  if (latestGsc) {
+    document.getElementById('hd-latest').textContent = fMonth(latestGsc.month ? latestGsc.month.slice(0,7) : '');
+  }
+  if (latestSe) {
+    const kw = parseInt(latestSe.semrush_organic_keywords) || 0;
+    document.getElementById('hd-kws').textContent = kw >= 1000 ? (kw/1000).toFixed(1)+'K' : kw;
+  }
+
+  /* ── KPI cards ─────────────────────────────────────────── */
+  const prevGsc = gscRows.length >= 2 ? gscRows[gscRows.length - 2] : null;
+  const prevAds = adsRows.length >= 2 ? adsRows[adsRows.length - 2] : null;
+  const prevSe  = seRows.length >= 2 ? seRows[seRows.length - 2] : null;
+
+  const kpiHtml = `
+    <div class="kpis">
+      <div class="kpi">
+        <div class="src">SEMrush</div>
+        <div class="lbl">Organic Keywords</div>
+        <div class="val">${fNum(latestSe ? latestSe.semrush_organic_keywords : '')}</div>
+        ${prevSe ? `<div class="delta ${parseFloat(latestSe.semrush_organic_keywords) >= parseFloat(prevSe.semrush_organic_keywords) ? 'up' : 'down'}">${deltaHtml(latestSe.semrush_organic_keywords, prevSe.semrush_organic_keywords).replace('class="delta-cell','class="').replace('</span>','')} vs ${fMonth(prevSe.month ? prevSe.month.slice(0,7) : '')}</div>` : ''}
+        <div class="note">${latestSe ? fMonth(latestSe.month ? latestSe.month.slice(0,7) : '') : '—'}</div>
+      </div>
+      <div class="kpi">
+        <div class="src">SEMrush</div>
+        <div class="lbl">Traffic Estimate</div>
+        <div class="val">${fNum(latestSe ? latestSe.semrush_traffic_est : '')}</div>
+        ${prevSe && latestSe ? `<div class="delta ${parseFloat(latestSe.semrush_traffic_est) >= parseFloat(prevSe.semrush_traffic_est) ? 'up' : 'down'}">${deltaHtml(latestSe.semrush_traffic_est, prevSe.semrush_traffic_est).replace('class="delta-cell','class="').replace('</span>','')} vs ${fMonth(prevSe.month ? prevSe.month.slice(0,7) : '')}</div>` : ''}
+        <div class="note">Estimated organic visits</div>
+      </div>
+      <div class="kpi warn">
+        <div class="src">GSC (DB)</div>
+        <div class="lbl">Clicks (pipeline)</div>
+        <div class="val">${latestGsc ? fNum(latestGsc.clicks) : '—'}</div>
+        ${prevGsc && latestGsc ? `<div class="delta ${parseInt(latestGsc.clicks) >= parseInt(prevGsc.clicks) ? 'up' : 'down'}">${deltaHtml(latestGsc.clicks, prevGsc.clicks).replace('class="delta-cell','class="').replace('</span>','')} vs ${fMonth(prevGsc.month ? prevGsc.month.slice(0,7) : '')}</div>` : ''}
+        <div class="note">&#9888; ~50% of true GSC total</div>
+      </div>
+      <div class="kpi">
+        <div class="src">GSC (DB)</div>
+        <div class="lbl">Avg Position</div>
+        <div class="val">${latestGsc ? latestGsc.avg_position : '—'}</div>
+        ${prevGsc && latestGsc ? `<div class="delta ${parseFloat(latestGsc.avg_position) <= parseFloat(prevGsc.avg_position) ? 'up' : 'down'}">${deltaHtml(latestGsc.avg_position, prevGsc.avg_position, true).replace('class="delta-cell','class="').replace('</span>','')} vs ${fMonth(prevGsc.month ? prevGsc.month.slice(0,7) : '')}</div>` : ''}
+        <div class="note">Lower = better</div>
+      </div>
+      <div class="kpi">
+        <div class="src">Google Ads</div>
+        <div class="lbl">Monthly Spend</div>
+        <div class="val">${latestAds ? fGBP(latestAds.cost_gbp) : '—'}</div>
+        ${prevAds && latestAds ? `<div class="delta ${parseFloat(latestAds.cost_gbp) <= parseFloat(prevAds.cost_gbp) ? 'up' : 'down'}">${deltaHtml(latestAds.cost_gbp, prevAds.cost_gbp, true).replace('class="delta-cell','class="').replace('</span>','')} vs ${fMonth(prevAds.month ? prevAds.month.slice(0,7) : '')}</div>` : ''}
+        <div class="note">${latestAds ? fMonth(latestAds.month ? latestAds.month.slice(0,7) : '') : '—'} • UK account</div>
+      </div>
+      <div class="kpi good">
+        <div class="src">Google Ads</div>
+        <div class="lbl">ROAS</div>
+        <div class="val">${latestAds ? parseFloat(latestAds.roas).toFixed(2) + 'x' : '—'}</div>
+        ${prevAds && latestAds ? `<div class="delta ${parseFloat(latestAds.roas) >= parseFloat(prevAds.roas) ? 'up' : 'down'}">${deltaHtml(latestAds.roas, prevAds.roas).replace('class="delta-cell','class="').replace('</span>','')} vs ${fMonth(prevAds.month ? prevAds.month.slice(0,7) : '')}</div>` : ''}
+        <div class="note">Revenue / Ad Spend</div>
+      </div>
+    </div>`;
+
+  /* ── 37-month organic trend chart data ──────────────────── */
+  const trendLabels = csv.map(r => {
+    const d = new Date(r.month + '-01');
+    return d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' });
+  });
+  const seTraffic = csv.map(r => r.semrush_traffic_est ? parseFloat(r.semrush_traffic_est) : null);
+  const seKws     = csv.map(r => r.semrush_organic_keywords ? parseInt(r.semrush_organic_keywords) : null);
+
+  /* map GSC rows by month for overlay */
+  const gscByMonth = {};
+  gscRows.forEach(r => { gscByMonth[r.month ? r.month.slice(0,7) : ''] = r; });
+  const gscClicks = csv.map(r => {
+    const g = gscByMonth[r.month];
+    return g ? parseInt(g.clicks) : null;
+  });
+
+  /* ads monthly spend for overlay */
+  const adsByMonth = {};
+  adsRows.forEach(r => { adsByMonth[r.month ? r.month.slice(0,7) : ''] = r; });
+  const adsCost = csv.map(r => {
+    const a = adsByMonth[r.month];
+    return a ? parseFloat(a.cost_gbp) : null;
+  });
+
+  /* ── Position distribution donut data ───────────────────── */
+  const bucketLabels = { pos_1_3:'Pos 1–3', pos_4_10:'Pos 4–10', pos_11_20:'Pos 11–20', pos_21_50:'Pos 21–50', pos_51_100:'Pos 51–100' };
+  const bucketColors = ['#0a7d4f','#1f5eff','#d97706','#b91c1c','#64748b'];
+  const posBucketOrder = ['pos_1_3','pos_4_10','pos_11_20','pos_21_50','pos_51_100'];
+  const posMap = {};
+  posRows.forEach(r => { posMap[r.bucket] = r; });
+  const donutData   = posBucketOrder.map(b => posMap[b] ? parseInt(posMap[b].query_count) : 0);
+  const donutLabels = posBucketOrder.map(b => bucketLabels[b] || b);
+  const totalKws    = donutData.reduce((a, b) => a + b, 0);
+
+  /* ── MoM comparison table (last 6 months from merged data) ─ */
+  const last6csv = csv.slice(-6);
+  let momRows = '';
+  last6csv.forEach((row, i) => {
+    const prev = i > 0 ? last6csv[i - 1] : null;
+    const gsc  = gscByMonth[row.month] || {};
+    const ads  = adsByMonth[row.month] || {};
+    const prevGscR = prev ? (gscByMonth[prev.month] || {}) : {};
+    const prevAdsR = prev ? (adsByMonth[prev.month] || {}) : {};
+
+    const flags = row.data_flags || '';
+    const hasSe  = flags.includes('SE');
+    const hasGsc = flags.includes('GSC');
+    const hasAds = flags.includes('ADS');
+
+    momRows += `<tr>
+      <td><strong>${fMonth(row.month)}</strong><br><span style="font-size:10px;color:var(--muted)">${row.quarter}</span></td>
+      <td class="num">${hasSe ? fNum(row.semrush_organic_keywords) : '<span style="color:var(--muted)">—</span>'}</td>
+      <td class="num">${prev && hasSe ? deltaHtml(row.semrush_organic_keywords, prev.semrush_organic_keywords) : '<span class="delta-cell na">—</span>'}</td>
+      <td class="num">${hasSe ? fNum(row.semrush_traffic_est) : '<span style="color:var(--muted)">—</span>'}</td>
+      <td class="num">${prev && hasSe ? deltaHtml(row.semrush_traffic_est, prev.semrush_traffic_est) : '<span class="delta-cell na">—</span>'}</td>
+      <td class="num">${hasGsc ? fNum(gsc.clicks) : '<span style="color:var(--muted)">—</span>'}</td>
+      <td class="num">${hasGsc && gsc.avg_position ? gsc.avg_position : '<span style="color:var(--muted)">—</span>'}</td>
+      <td class="num">${hasAds ? fGBP(ads.cost_gbp || row.ads_cost_gbp) : '<span style="color:var(--muted)">—</span>'}</td>
+      <td class="num">${hasAds ? (parseFloat(ads.roas || row.ads_roas) || 0).toFixed(2)+'x' : '<span style="color:var(--muted)">—</span>'}</td>
+    </tr>`;
+  });
+
+  /* ── Data quality panel ─────────────────────────────────── */
+  function dqCard(name, dot, badgeCls, badge, cov, note) {
+    return `<div class="dq-card"><div class="dq-head"><div class="dq-dot ${dot}"></div><div class="dq-name">${name} <span class="badge badge-${badgeCls}">${badge}</span></div></div><div class="dq-cov">${cov}</div><div class="dq-note">${note}</div></div>`;
+  }
+  const gscSrc = dqSrc.gsc || {};
+  const adsSrc = dqSrc.google_ads || {};
+  const dqHtml = `
+    <div class="dq-grid">
+      ${dqCard('SEMrush','csv','csv','Static CSV','Jul 2023 – Jun 2026 (36 months)','36-month organic keyword + traffic data. Loaded from master dataset CSV. Update CSV to refresh.')}
+      ${dqCard('Google Search Console','live','live','Live DB',
+        gscSrc.earliest ? fMonth(gscSrc.earliest.slice(0,7)) + ' – ' + fMonth(gscSrc.latest.slice(0,7)) : 'Checking…',
+        '&#9888; PostgreSQL pipeline ≈ 50% of true GSC clicks. Device-thresholded overview table. Trend direction reliable, absolute values not.')}
+      ${dqCard('Google Ads','live','live','Live DB',
+        adsSrc.earliest ? fMonth(adsSrc.earliest.slice(0,7)) + ' – ' + fMonth(adsSrc.latest.slice(0,7)) : 'Checking…',
+        'UK account (4503486236). Cost in GBP. 346 campaigns. ROAS, CPC, CTR are direct columns — no recalculation needed.')}
+      ${dqCard('GA4','limited','limited','Limited','Mar–Apr 2026 (aggregate exports only)','Only 2-month aggregate available. Not suitable for monthly KPIs. Included in CSV only for reference.')}
+      ${dqCard('Shopify','na','na','Unavailable','—','MCP connection failed during build. Organic revenue from Shopify not available. Revenue shown is Google Ads conversion value only.')}
+      ${dqCard('Products / Search Terms','csv','csv','Static CSV','Sep 2024 – Jul 2026 (product campaigns)','Ads product performance and search term data from master dataset CSV.')}
+    </div>`;
+
+  /* ── Inject HTML ────────────────────────────────────────── */
+  document.getElementById('exec-content').innerHTML = `
+    ${kpiHtml}
+
+    <div class="section-title">37-Month Organic Traffic Trend</div>
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>SEMrush Estimated Organic Traffic + GSC Clicks Overlay</h3>
+        <div class="ch-sub">SEMrush: Jul 2023 – Jun 2026 (static CSV) &bull; GSC: Mar – Jul 2026 (PostgreSQL pipeline, ~50% of true clicks)</div>
+        <div class="chart-wrap"><canvas id="chart-trend"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Keyword Position Distribution</h3>
+        <div class="ch-sub">Current month &bull; ${fNum(totalKws)} total keywords tracked (GSC query table)</div>
+        <div class="chart-wrap"><canvas id="chart-donut"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section-title">Google Ads Overlay</div>
+    <div class="chart-card" style="margin-bottom:14px">
+      <h3>Monthly Ad Spend &amp; ROAS — UK Account</h3>
+      <div class="ch-sub">Feb 2020 – present &bull; Live from PostgreSQL &bull; Cost in GBP &bull; ROAS = Conversion Value / Cost</div>
+      <div class="chart-wrap" style="height:200px"><canvas id="chart-ads"></canvas></div>
+    </div>
+
+    <div class="section-title">Month-on-Month Comparison — Last 6 Months</div>
+    <div class="info-note">
+      SEMrush columns: from master dataset CSV (static, last export Jun 2026). GSC columns: live from PostgreSQL pipeline (&#9888; ~50% of true clicks). Ads columns: live from PostgreSQL.
+    </div>
+    <div class="tbox">
+      <div class="tbar"><strong>MoM Performance Table</strong><span>6 months &bull; All available sources</span></div>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th class="num">SE Keywords</th>
+              <th class="num">KW MoM</th>
+              <th class="num">SE Traffic Est</th>
+              <th class="num">Traffic MoM</th>
+              <th class="num">GSC Clicks (DB)</th>
+              <th class="num">GSC Avg Pos</th>
+              <th class="num">Ads Spend</th>
+              <th class="num">Ads ROAS</th>
+            </tr>
+          </thead>
+          <tbody>${momRows}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-title">Data Quality Panel</div>
+    ${dqHtml}
+  `;
+
+  /* ── Render Chart.js charts ─────────────────────────────── */
+  if (charts.trend) charts.trend.destroy();
+  if (charts.donut) charts.donut.destroy();
+  if (charts.ads)   charts.ads.destroy();
+
+  const commonFont = { family: "'Segoe UI', system-ui, sans-serif", size: 11 };
+
+  /* Trend chart */
+  charts.trend = new Chart(document.getElementById('chart-trend'), {
+    type: 'line',
+    data: {
+      labels: trendLabels,
+      datasets: [
+        {
+          label: 'SEMrush Organic Traffic Est.',
+          data: seTraffic,
+          borderColor: '#1f5eff',
+          backgroundColor: 'rgba(31,94,255,0.06)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          pointHoverRadius: 5,
+          yAxisID: 'y',
+          spanGaps: false,
+        },
+        {
+          label: 'GSC Clicks (DB pipeline)',
+          data: gscClicks,
+          borderColor: '#d97706',
+          backgroundColor: 'rgba(217,119,6,0.0)',
+          borderDash: [4, 3],
+          tension: 0.2,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          pointStyle: 'circle',
+          yAxisID: 'y',
+          spanGaps: false,
+        },
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { font: commonFont, boxWidth: 12 } },
+        tooltip: { bodyFont: commonFont, titleFont: commonFont }
+      },
+      scales: {
+        x: { ticks: { font: commonFont, maxRotation: 45, autoSkip: true, maxTicksLimit: 18 }, grid: { color: '#f0f3f8' } },
+        y: { ticks: { font: commonFont, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'K' : v }, grid: { color: '#f0f3f8' }, title: { display: true, text: 'Traffic / Clicks', font: commonFont } }
+      }
+    }
+  });
+
+  /* Donut chart */
+  charts.donut = new Chart(document.getElementById('chart-donut'), {
+    type: 'doughnut',
+    data: {
+      labels: donutLabels,
+      datasets: [{
+        data: donutData,
+        backgroundColor: bucketColors,
+        borderWidth: 2,
+        borderColor: '#fff',
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '62%',
+      plugins: {
+        legend: { position: 'bottom', labels: { font: commonFont, boxWidth: 12, padding: 10 } },
+        tooltip: {
+          bodyFont: commonFont,
+          callbacks: {
+            label: ctx => {
+              const r = posRows.find(p => bucketLabels[p.bucket] === ctx.label) || {};
+              return [
+                ` ${ctx.formattedValue} keywords`,
+                ` ${fNum(r.clicks)} clicks`,
+              ];
+            }
+          }
+        }
+      }
+    }
+  });
+
+  /* Ads trend chart — last 12 months bars + ROAS line */
+  const adsLast12 = adsRows.slice(-12);
+  const adsRoasData = adsLast12.map(r => parseFloat(r.roas));
+  const adsCostData = adsLast12.map(r => parseFloat(r.cost_gbp));
+  const adsLabels   = adsLast12.map(r => r.month ? fMonth(r.month.slice(0,7)) : '');
+
+  charts.ads = new Chart(document.getElementById('chart-ads'), {
+    type: 'bar',
+    data: {
+      labels: adsLabels,
+      datasets: [
+        {
+          label: 'Ad Spend (£)',
+          data: adsCostData,
+          backgroundColor: 'rgba(217,119,6,0.18)',
+          borderColor: '#d97706',
+          borderWidth: 1.5,
+          yAxisID: 'y',
+          order: 2,
+        },
+        {
+          label: 'ROAS',
+          data: adsRoasData,
+          type: 'line',
+          borderColor: '#9333ea',
+          backgroundColor: 'transparent',
+          tension: 0.3,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          yAxisID: 'y2',
+          order: 1,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { font: commonFont, boxWidth: 12 } },
+        tooltip: {
+          bodyFont: commonFont,
+          callbacks: {
+            label: ctx => {
+              if (ctx.dataset.label === 'Ad Spend (£)') return ` Spend: £${ctx.raw.toLocaleString('en-GB',{maximumFractionDigits:0})}`;
+              return ` ROAS: ${ctx.raw.toFixed(2)}x`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { font: commonFont }, grid: { color: '#f0f3f8' } },
+        y:  { ticks: { font: commonFont, callback: v => '£'+v.toLocaleString('en-GB',{maximumFractionDigits:0}) }, grid: { color: '#f0f3f8' }, title: { display: true, text: 'Cost (GBP)', font: commonFont } },
+        y2: { position: 'right', ticks: { font: commonFont, callback: v => v+'x' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'ROAS', font: commonFont } }
+      }
+    }
+  });
+}
+
+/* Run exec tab on page load */
+loadExec();
+</script>
+</body>
+</html>
