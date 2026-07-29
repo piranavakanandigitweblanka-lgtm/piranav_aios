@@ -705,8 +705,16 @@
       <input type="date" id="r6DateInput" style="border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;color:var(--ink);background:var(--card);">
       <button onclick="r6LoadData()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;">Load</button>
       <input type="text"   id="r6SearchSku"  placeholder="Search SKU…"  oninput="r6Filter()" class="srch">
+      <select id="r6FilterChannel" onchange="r6PopulateMarkets(this.value);r6Filter()" style="border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;color:var(--ink);background:var(--card);">
+        <option value="">All Channels</option>
+        <option value="1">Amazon</option>
+        <option value="2">eBay</option>
+        <option value="3">Shopify</option>
+        <option value="16">B&amp;Q</option>
+        <option value="6">Wayfair</option>
+      </select>
       <select id="r6FilterMarket" onchange="r6Filter()" style="border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;color:var(--ink);background:var(--card);">
-        <option value="">All Marketplaces</option>
+        <option value="">All Sub-sources</option>
       </select>
       <select id="r6FilterStock" onchange="r6Filter()" style="border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;color:var(--ink);background:var(--card);">
         <option value="">All Stock</option>
@@ -739,7 +747,8 @@
             <th onclick="r6Sort('stock')"        class="r6th r6sort num">Stock</th>
             <th class="r6th">Image</th>
             <th class="r6th">URL</th>
-            <th onclick="r6Sort('sub_source')"   class="r6th r6sort">Marketplace</th>
+            <th class="r6th">Channel</th>
+            <th onclick="r6Sort('sub_source')"   class="r6th r6sort">Sub-source</th>
             <th onclick="r6Sort('l7_shopify_uk')" class="r6th r6sort num">L7d Shopify UK</th>
             <th onclick="r6Sort('sold_price')"   class="r6th r6sort num">Selling Price</th>
             <th onclick="r6Sort('ledsone_uk_price')" class="r6th r6sort num">LEDsone UK £</th>
@@ -12812,11 +12821,7 @@ function r6LoadData() {
 
       // Populate marketplace filter
       var markets = [...new Set(d.rows.map(function(r){ return r.sub_source; }))].sort();
-      var sel = document.getElementById('r6FilterMarket');
-      sel.innerHTML = '<option value="">All Marketplaces</option>';
-      markets.forEach(function(m) {
-        var o = document.createElement('option'); o.value = m; o.textContent = m; sel.appendChild(o);
-      });
+      r6PopulateMarkets('');
 
       r6Filter();
     })
@@ -12832,16 +12837,48 @@ function r6ShowError(msg) {
   el.style.display = 'block';
 }
 
+function r6PopulateMarkets(sourceId) {
+  var sel = document.getElementById('r6FilterMarket');
+  var prev = sel.value;
+  sel.innerHTML = '<option value="">All Sub-sources</option>';
+  var markets = [...new Set(r6AllRows
+    .filter(function(r) { return !sourceId || String(r.source_id) === String(sourceId); })
+    .map(function(r) { return r.sub_source; })
+  )].sort();
+  markets.forEach(function(m) {
+    var o = document.createElement('option');
+    o.value = m; o.textContent = m;
+    sel.appendChild(o);
+  });
+  // Restore previous selection if still valid
+  if (prev && markets.indexOf(prev) >= 0) sel.value = prev; else sel.value = '';
+}
+
+var R6_CHANNEL = {
+  1:  { label: 'Amazon',  style: 'background:#fff3e0;color:#e65100;border:1px solid #ffcc80;' },
+  2:  { label: 'eBay',    style: 'background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7;' },
+  3:  { label: 'Shopify', style: 'background:#e3f2fd;color:#0d47a1;border:1px solid #90caf9;' },
+  6:  { label: 'Wayfair', style: 'background:#f3e8ff;color:#6b21a8;border:1px solid #d8b4fe;' },
+  16: { label: 'B&Q',     style: 'background:#fef9c3;color:#854d0e;border:1px solid #fde047;' },
+};
+
+function r6ChipHtml(sourceId) {
+  var ch = R6_CHANNEL[sourceId] || { label: 'Other', style: 'background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;' };
+  return '<span style="' + ch.style + 'border-radius:999px;padding:2px 9px;font-size:10px;font-weight:700;white-space:nowrap;">' + ch.label + '</span>';
+}
+
 function r6Filter() {
-  var sku     = (document.getElementById('r6SearchSku')    || {}).value || '';
-  var market  = (document.getElementById('r6FilterMarket') || {}).value || '';
-  var stock   = (document.getElementById('r6FilterStock')  || {}).value || '';
-  var price   = (document.getElementById('r6FilterPrice')  || {}).value || '';
+  var sku     = (document.getElementById('r6SearchSku')     || {}).value || '';
+  var channel = (document.getElementById('r6FilterChannel') || {}).value || '';
+  var market  = (document.getElementById('r6FilterMarket')  || {}).value || '';
+  var stock   = (document.getElementById('r6FilterStock')   || {}).value || '';
+  var price   = (document.getElementById('r6FilterPrice')   || {}).value || '';
   var skuQ    = sku.toLowerCase();
 
   r6Filtered = r6AllRows.filter(function(r) {
     if (skuQ && r.sku.toLowerCase().indexOf(skuQ) < 0 &&
                 r.title.toLowerCase().indexOf(skuQ) < 0) return false;
+    if (channel && String(r.source_id) !== String(channel)) return false;
     if (market && r.sub_source !== market) return false;
     if (stock) {
       var s = r.stock;
@@ -12927,7 +12964,8 @@ function r6Render() {
       + '<td class="r6td num">' + stockHtml + '</td>'
       + '<td class="r6td">' + imgHtml + '</td>'
       + '<td class="r6td">' + urlHtml + '</td>'
-      + '<td class="r6td">' + (r.sub_source || '—') + '</td>'
+      + '<td class="r6td">' + r6ChipHtml(r.source_id) + '</td>'
+      + '<td class="r6td" style="font-size:11px;color:var(--muted);">' + (r.sub_source || '—') + '</td>'
       + '<td class="r6td num">' + (r.l7_shopify_uk || 0) + '</td>'
       + '<td class="r6td num">' + spHtml + '</td>'
       + '<td class="r6td num">' + lpHtml + '</td>'

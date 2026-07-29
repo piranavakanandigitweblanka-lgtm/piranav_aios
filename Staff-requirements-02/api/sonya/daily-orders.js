@@ -43,9 +43,8 @@ module.exports = async function handler(req, res) {
     // ── Summary counts ──────────────────────────────────────────────────────
     const { rows: summaryRows } = await client.query(`
       SELECT
-        COUNT(DISTINCT o.id)                                             AS total_uk_orders,
-        COUNT(DISTINCT o.id) FILTER (WHERE ss.name ILIKE '%ledsone%'
-          AND ss.name NOT ILIKE '%amazon%' AND ss.name NOT ILIKE '%ebay%') AS ledsone_uk_orders
+        COUNT(DISTINCT o.id)                                      AS total_uk_orders,
+        COUNT(DISTINCT o.id) FILTER (WHERE ss.source_id = 3)     AS ledsone_uk_orders
       FROM order_management.orders o
       LEFT JOIN order_management.sub_source ss ON ss.id = o.sub_source_id
       WHERE DATE(o.order_date) = $1
@@ -64,6 +63,7 @@ module.exports = async function handler(req, res) {
       SELECT
         oi.real_sku                               AS sku,
         ss.name                                   AS sub_source,
+        ss.source_id                              AS source_id,
         SUM(oi.item_quantity::int)                AS qty,
         MAX(oi.item_price::numeric)               AS sold_price,
         MAX(oi.item_img)                          AS image,
@@ -75,7 +75,7 @@ module.exports = async function handler(req, res) {
         AND o.market_place = '23'
         AND oi.real_sku IS NOT NULL
         AND oi.real_sku <> ''
-      GROUP BY oi.real_sku, ss.name
+      GROUP BY oi.real_sku, ss.name, ss.source_id
       ORDER BY SUM(oi.item_quantity::int) DESC
     `, [targetDate]);
 
@@ -117,7 +117,7 @@ module.exports = async function handler(req, res) {
       };
     });
 
-    // ── Last 7 days Shopify UK sales (ledsone sub_sources only) ─────────────
+    // ── Last 7 days Shopify UK sales (source_id = 3)
     const { rows: l7Rows } = await client.query(`
       SELECT oi.real_sku, SUM(oi.item_quantity::int) AS l7_qty
       FROM order_management.orders o
@@ -126,9 +126,7 @@ module.exports = async function handler(req, res) {
       WHERE DATE(o.order_date) BETWEEN $1 AND $2
         AND o.market_place = '23'
         AND oi.real_sku = ANY($3::text[])
-        AND ss.name ILIKE '%ledsone%'
-        AND ss.name NOT ILIKE '%amazon%'
-        AND ss.name NOT ILIKE '%ebay%'
+        AND ss.source_id = 3
       GROUP BY oi.real_sku
     `, [l7From, targetDate, skus]);
     const l7Map = {};
@@ -140,6 +138,7 @@ module.exports = async function handler(req, res) {
       return {
         sku:               r.sku,
         sub_source:        r.sub_source || '—',
+        source_id:         Number(r.source_id),
         qty:               Number(r.qty),
         sold_price:        r.sold_price !== null ? Number(r.sold_price) : null,
         image:             r.image || null,
