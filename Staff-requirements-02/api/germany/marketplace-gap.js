@@ -23,7 +23,7 @@ function getBaseSkus(listingSku) {
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   // Cache 6 hours at CDN edge; stale-while-revalidate keeps it snappy
-  res.setHeader('Cache-Control', 's-maxage=21600, stale-while-revalidate=3600');
+  res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=30');
 
   const connStr = process.env.DATABASE_URL;
   if (!connStr) return res.status(500).json({ ok: false, error: 'DATABASE_URL not configured' });
