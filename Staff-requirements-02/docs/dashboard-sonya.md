@@ -3,17 +3,17 @@
 **File:** `pages/sonya.html`
 **Title:** Sonya — Google Ads Campaign Dashboard
 **Scope:** Google Ads — campaign ID 20810136438 + campaigns named '%Sonya%'
-**Last updated:** 2026-07-23
+**Last updated:** 2026-07-29
 
 ---
 
 ## Purpose
 
-Full Google Ads performance dashboard for Sonya. Five-tab view covering campaign performance, product-level data, trends, opportunity SKUs, and stop-waste-spend analysis — all date-range filterable.
+Full Google Ads performance dashboard for Sonya. Six-tab view covering campaign performance, product-level data, trends, opportunity SKUs, stop-waste-spend analysis, and daily orders — all date-range filterable.
 
 ---
 
-## Structure — 5 Tabs
+## Structure — 6 Tabs
 
 | Tab | Requirement | Title | API endpoint |
 |---|---|---|---|
@@ -22,6 +22,7 @@ Full Google Ads performance dashboard for Sonya. Five-tab view covering campaign
 | 3 | Req 3 | Trend & Segment Dashboard | `/api/sonya/trend-performance` |
 | 4 | Req 4 | Opportunity SKUs Dashboard | `/api/sonya/opportunity` |
 | 5 | Req 5 | Stop Waste Spend | `/api/sonya/stop-waste-spend` |
+| 6 | Req 6 | Daily Orders | `/api/sonya/daily-orders` |
 
 ---
 
@@ -125,6 +126,54 @@ WHERE (c.campaign_name ILIKE '%Sonya%' OR cp.campaign_id = 20810136438)
 ```
 
 CSV export: `sonya_req5_stop_waste_spend.csv`
+
+---
+
+### `/api/sonya/daily-orders.js` — Req 6
+
+**Purpose:** Yesterday's UK orders across all marketplaces with stock, Shopify UK price, and 7-day sales velocity.
+
+**Date param:** `?date=YYYY-MM-DD` (defaults to `DATE(MAX(order_date)) - 1`)
+
+**UK filter:** `orders.market_place = '23'`
+
+**Channel classification:** Uses `sub_source.source_id` (authoritative — from knowledge base):
+```
+source_id = 1  → Amazon
+source_id = 2  → eBay
+source_id = 3  → Shopify
+source_id = 6  → Wayfair
+source_id = 16 → B&Q
+```
+
+**Tables:**
+```sql
+order_management.orders              -- order header, market_place, sub_source_id
+order_management.order_item_info     -- real_sku, item_title, item_price, item_img, item_quantity
+order_management.sub_source          -- name, source_id (channel)
+inventory.products                   -- sku → inventory id
+inventory.physical_product_stock     -- SUM(quantity) per SKU
+listings.shopify_listings            -- site='UK', listing_url ILIKE '%ledsone.co.uk%', is_parent=0
+```
+
+**Returns:**
+```json
+{
+  "summary": { "total_uk_orders": 939, "ledsone_uk_orders": 268, "date": "2026-07-28", "refreshed_at": "..." },
+  "rows": [
+    { "sku": "ENC9764", "source_id": 3, "sub_source": "ledsone", "qty": 3,
+      "sold_price": 39.65, "stock": 45, "ledsone_uk_price": 39.65,
+      "ledsone_url": "https://ledsone.co.uk/...", "l7_shopify_uk": 3,
+      "image": "...", "title": "..." }
+  ]
+}
+```
+
+**L7d Shopify UK sales:** Filtered by `source_id = 3` only — excludes Amazon/eBay/B&Q orders.
+
+**Filters in UI:** Channel (source_id), Sub-source (auto-filtered by channel), Stock status, Price comparison (Selling vs LEDsone UK), SKU search, Date picker
+
+**CSV export:** `sonya_r6_daily_orders_{date}.csv`
 
 ---
 
