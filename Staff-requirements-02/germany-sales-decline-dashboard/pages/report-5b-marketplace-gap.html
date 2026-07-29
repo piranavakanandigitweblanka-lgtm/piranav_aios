@@ -719,6 +719,37 @@ function log_exportCSV(){
   a.click();
 }
 
+
+// Auto-poll every 2 minutes — silently refresh DATA and re-render log
+setInterval(async function(){
+  try{
+    var res=await fetch('../../api/germany/marketplace-gap');
+    if(!res.ok) return;
+    var json=await res.json();
+    if(!json.ok||!json.rows) return;
+    DATA=json.rows;
+    var s=json.summary;
+    var d=json.refreshed_at?json.refreshed_at.slice(0,10):'live';
+    document.getElementById('refresh-date').textContent=d;
+    document.getElementById('footer-date').textContent=d;
+    document.getElementById('kpi-total').textContent=fmt(s.total);
+    document.getElementById('kpi-not-anywhere').textContent=fmt(s.notAnywhere);
+    document.getElementById('kpi-missing-amazon').textContent=fmt(s.missingAmazon);
+    document.getElementById('kpi-all3').textContent=fmt(s.allThree);
+    document.getElementById('kpi-missing-ebay').textContent=fmt(s.missingEbay);
+    document.getElementById('kpi-missing-shopify').textContent=fmt(s.missingShopify);
+    document.getElementById('pill-all').textContent='All ('+fmt(s.total)+')';
+    document.getElementById('pill-none').textContent='Not Listed Anywhere ('+fmt(s.notAnywhere)+')';
+    document.getElementById('pill-no-amz').textContent='Missing Amazon ('+fmt(s.missingAmazon)+')';
+    document.getElementById('pill-no-ebay').textContent='Missing eBay ('+fmt(s.missingEbay)+')';
+    document.getElementById('pill-no-shop').textContent='Missing Shopify ('+fmt(s.missingShopify)+')';
+    document.getElementById('pill-all3').textContent='Listed All 3 ('+fmt(s.allThree)+')';
+    applyFilters();
+    updateLogBadge();
+    log_render();
+  }catch(e){}
+}, 120000);
+
 </script>
 
 </body>
