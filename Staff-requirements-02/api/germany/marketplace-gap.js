@@ -1,33 +1,21 @@
 // Germany Marketplace Gap — DE In-Stock SKUs
 // Returns all SKUs with Germany warehouse stock > 0, with listing flags for
 // Amazon DE, eBay DE, and Shopify DE.
-// Three-way SKU matching: exact | store-suffix strip (-IDE, -IFR, -DE, etc.) | bundle prefix
-// Cache: no-store (data changes daily; avoids stale CDN edge responses)
+// Matching: suffix stripped in SQL (no JS encoding issues) + bundle prefix expansion in JS
+// Cache: no-store
 
 const { Client } = require('pg');
 
-// Known store-specific suffixes appended to Germany/international listing SKUs
-const STORE_SUFFIXES = ['-IDE', '-IFR', '-DE', '-UK'];
-
-// Strip any known store suffix from a listing SKU and return the base
-function stripStoreSuffix(sku) {
-  for (const suffix of STORE_SUFFIXES) {
-    if (sku.endsWith(suffix)) return sku.slice(0, -suffix.length);
+// Expand a (already-suffix-stripped) listing SKU into all bundle-prefix variants
+// e.g. "A+B+C" → Set{"A+B+C","A+B","A"}
+function expandPrefixes(baseSku) {
+  const set = new Set();
+  set.add(baseSku);
+  const parts = baseSku.split('+');
+  for (let i = 1; i < parts.length; i++) {
+    set.add(parts.slice(0, i).join('+'));
   }
-  return sku;
-}
-
-// Generate all base SKU variants from a listing SKU
-// e.g. "LSLT360BC+RPR44WH-IDE" → ["LSLT360BC+RPR44WH","LSLT360BC"]
-function getBaseSkus(listingSku) {
-  const bases = new Set();
-  const s = stripStoreSuffix(listingSku);
-  bases.add(s);
-  const parts = s.split('+');
-  for (let i = 1; i <= parts.length; i++) {
-    bases.add(parts.slice(0, i).join('+'));
-  }
-  return bases;
+  return set;
 }
 
 module.exports = async function handler(req, res) {
@@ -47,7 +35,7 @@ module.exports = async function handler(req, res) {
   try {
     await client.connect();
 
-    // ── Step 1: All DE in-stock SKUs with stock quantity ─────────────────────
+    // ── Step 1: All DE in-stock SKUs ─────────────────────────────────────────
     const { rows: stockRows } = await client.query(`
       SELECT p.sku, SUM(licsl.stock)::int AS de_stock
       FROM inventory.products p
@@ -63,29 +51,35 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true, refreshed_at: new Date().toISOString(), rows: [] });
     }
 
-    // ── Step 2: All DE listing SKUs per channel (raw — no join) ──────────────
+    // ── Step 2: Fetch listing SKUs — strip store suffixes IN SQL ─────────────
+    // REGEXP_REPLACE removes trailing -IDE / -IFR / -DE / -UK at the DB level
+    // so the JS side receives clean base SKUs with no encoding surprises
+    const SUFFIX_REGEX = '-(IDE|IFR|DE|UK)$';
+
     const [amzRes, ebayRes, shopRes] = await Promise.all([
       client.query(`
-        SELECT DISTINCT sku FROM listings.amazon_listings
-        WHERE site = 'Germany' AND sku IS NOT NULL AND sku != ''
-      `),
+        SELECT DISTINCT TRIM(REGEXP_REPLACE(sku, $1, '')) AS sku
+        FROM listings.amazon_listings
+        WHERE site = 'Germany' AND sku IS NOT NULL AND TRIM(sku) != ''
+      `, [SUFFIX_REGEX]),
       client.query(`
-        SELECT DISTINCT sku FROM listings.ebay_listings
-        WHERE site = 'Germany' AND all_list = 1 AND sku IS NOT NULL AND sku != ''
-      `),
+        SELECT DISTINCT TRIM(REGEXP_REPLACE(sku, $1, '')) AS sku
+        FROM listings.ebay_listings
+        WHERE site = 'Germany' AND all_list = 1 AND sku IS NOT NULL AND TRIM(sku) != ''
+      `, [SUFFIX_REGEX]),
       client.query(`
-        SELECT DISTINCT sku FROM listings.shopify_listings
-        WHERE site = 'Germany' AND all_list = 1 AND sku IS NOT NULL AND sku != ''
-      `),
+        SELECT DISTINCT TRIM(REGEXP_REPLACE(sku, $1, '')) AS sku
+        FROM listings.shopify_listings
+        WHERE site = 'Germany' AND all_list = 1 AND sku IS NOT NULL AND TRIM(sku) != ''
+      `, [SUFFIX_REGEX]),
     ]);
 
-    // ── Step 3: Build reverse maps: base_sku → listed (JS matching) ──────────
-    // For each listing SKU, expand all base variants and mark them as listed
+    // ── Step 3: Build listed sets with bundle-prefix expansion ───────────────
     function buildListedSet(rows) {
       const listed = new Set();
       for (const row of rows) {
-        for (const base of getBaseSkus(row.sku)) {
-          listed.add(base);
+        for (const prefix of expandPrefixes(row.sku)) {
+          listed.add(prefix);
         }
       }
       return listed;
