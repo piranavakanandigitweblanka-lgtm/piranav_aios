@@ -369,6 +369,11 @@ var searchTerm='';
 
 
 
+// Returns effective listing state: DB value OR locally logged (pending confirmation)
+function _effA(r){var _log=log_load();return r.a===1||_log.some(function(e){return e.sku===r.s&&e.channel==='Amazon DE';});}
+function _effE(r){var _log=log_load();return r.e===1||_log.some(function(e){return e.sku===r.s&&e.channel==='eBay DE';});}
+function _effSh(r){var _log=log_load();return r.sh===1||_log.some(function(e){return e.sku===r.s&&e.channel==='Shopify DE';});}
+
 function applyFilters(){
 
   filtered=DATA.filter(function(r){
@@ -377,15 +382,15 @@ function applyFilters(){
 
     var matchFilter=true;
 
-    if(activeFilter==='none') matchFilter=r.a===0&&r.e===0&&r.sh===0;
+    if(activeFilter==='none') matchFilter=!_effA(r)&&!_effE(r)&&!_effSh(r);
 
-    else if(activeFilter==='no-amz') matchFilter=r.a===0;
+    else if(activeFilter==='no-amz') matchFilter=!_effA(r);
 
-    else if(activeFilter==='no-ebay') matchFilter=r.e===0;
+    else if(activeFilter==='no-ebay') matchFilter=!_effE(r);
 
-    else if(activeFilter==='no-shop') matchFilter=r.sh===0;
+    else if(activeFilter==='no-shop') matchFilter=!_effSh(r);
 
-    else if(activeFilter==='all3') matchFilter=r.a===1&&r.e===1&&r.sh===1;
+    else if(activeFilter==='all3') matchFilter=_effA(r)&&_effE(r)&&_effSh(r);
 
     return matchSearch&&matchFilter;
 
@@ -503,7 +508,9 @@ function render(){
 
   var rows=slice.map(function(r){
 
-    var miss=3-(r.a+r.e+r.sh);
+    // Use effective state (DB + locally logged) for missing count and display
+    var ea=_effA(r)?1:0, ee=_effE(r)?1:0, es=_effSh(r)?1:0;
+    var miss=3-(ea+ee+es);
 
     var missClass=miss===0?'miss-0':miss===1?'miss-1':miss===2?'miss-2':'miss-3';
 
@@ -515,10 +522,11 @@ function render(){
 
     var _log=log_load();
     function _isl(sku,ch){return _log.some(function(e){return e.sku===sku&&e.channel===ch;});}
-    function _cell(sku,ch,listed){
-      if(listed) return '<span class="badge-yes">&#10003; Listed</span>';
+    function _cell(sku,ch,dbListed){
+      if(dbListed) return '<span class="badge-yes">&#10003; Listed</span>';
       var lggd=_isl(sku,ch);
-      return '<span class="badge-no">&#10007; No</span><button class="mark-btn'+(lggd?' done':'')+'" onclick="markAdded('+JSON.stringify(sku)+','+JSON.stringify(ch)+')">'+(lggd?'&#10003; Added':'+ Add')+'</button>';
+      if(lggd) return '<span class="badge-pend">&#9679; Pending</span><button class="mark-btn done" disabled>&#10003; Added</button>';
+      return '<span class="badge-no">&#10007; No</span><button class="mark-btn" onclick="markAdded('+JSON.stringify(sku)+','+JSON.stringify(ch)+')">+ Add</button>';
     }
     var _anyL=_isl(r.s,'Amazon DE')||_isl(r.s,'eBay DE')||_isl(r.s,'Shopify DE');
 
@@ -546,7 +554,7 @@ function render(){
 
 
 
-  document.getElementById('tbody').innerHTML=rows||'<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--muted)">No results</td></tr>';
+  document.getElementById('tbody').innerHTML=rows||'<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted)">No results</td></tr>';
 
   document.getElementById('pager-info').textContent='Showing '+(total===0?0:start+1)+'–'+end+' of '+total.toLocaleString()+' SKUs';
 
@@ -565,12 +573,54 @@ loadLive();
 
 function fmt(n){return Number(n).toLocaleString();}
 
+// Recalculates KPI/pill counts using effective state (DB + logged additions)
+function calcEffSummary(){
+  var notAnywhere=0,missingAmazon=0,missingEbay=0,missingShopify=0,allThree=0;
+  DATA.forEach(function(r){
+    var ea=_effA(r),ee=_effE(r),es=_effSh(r);
+    if(!ea&&!ee&&!es) notAnywhere++;
+    if(!ea) missingAmazon++;
+    if(!ee) missingEbay++;
+    if(!es) missingShopify++;
+    if(ea&&ee&&es) allThree++;
+  });
+  return{total:DATA.length,notAnywhere:notAnywhere,missingAmazon:missingAmazon,missingEbay:missingEbay,missingShopify:missingShopify,allThree:allThree};
+}
+
+function updateDashboard(s,d){
+  // Use effective summary (accounts for locally logged additions)
+  var es=calcEffSummary();
+
+  document.getElementById('stat-total').textContent=fmt(s.total);
+  document.getElementById('stat-not-anywhere').textContent=fmt(es.notAnywhere);
+  document.getElementById('stat-all3').textContent=fmt(es.allThree);
+
+  document.getElementById('lede-txt').textContent=fmt(s.total)+' SKUs with Germany warehouse stock — showing which are missing Amazon DE, eBay DE or Shopify DE listings';
+
+  document.getElementById('kpi-total').textContent=fmt(s.total);
+  document.getElementById('kpi-not-anywhere').textContent=fmt(es.notAnywhere);
+  document.getElementById('kpi-missing-amazon').textContent=fmt(es.missingAmazon);
+  document.getElementById('kpi-all3').textContent=fmt(es.allThree);
+  document.getElementById('kpi-missing-ebay').textContent=fmt(es.missingEbay);
+  document.getElementById('kpi-missing-shopify').textContent=fmt(es.missingShopify);
+
+  document.getElementById('pill-all').textContent='All ('+fmt(s.total)+')';
+  document.getElementById('pill-none').textContent='Not Listed Anywhere ('+fmt(es.notAnywhere)+')';
+  document.getElementById('pill-no-amz').textContent='Missing Amazon ('+fmt(es.missingAmazon)+')';
+  document.getElementById('pill-no-ebay').textContent='Missing eBay ('+fmt(es.missingEbay)+')';
+  document.getElementById('pill-no-shop').textContent='Missing Shopify ('+fmt(es.missingShopify)+')';
+  document.getElementById('pill-all3').textContent='Listed All 3 ('+fmt(es.allThree)+')';
+
+  document.getElementById('refresh-date').textContent=d;
+  document.getElementById('footer-date').textContent=d;
+}
+
 async function loadLive(){
   var tbody=document.getElementById('tbody');
-  tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">&#9203; Loading live data&hellip;</td></tr>';
+  tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--muted)">&#9203; Loading live data&hellip;</td></tr>';
 
   try{
-    var res=await fetch('../../api/germany/marketplace-gap');
+    var res=await fetch('../../api/germany/marketplace-gap',{cache:'no-store'});
     if(!res.ok) throw new Error('HTTP '+res.status);
     var json=await res.json();
     if(!json.ok) throw new Error(json.error||'API error');
@@ -579,40 +629,13 @@ async function loadLive(){
     var s=json.summary;
     var d=json.refreshed_at?json.refreshed_at.slice(0,10):'live';
 
-    // Update masthead stats
-    document.getElementById('stat-total').textContent=fmt(s.total);
-    document.getElementById('stat-not-anywhere').textContent=fmt(s.notAnywhere);
-    document.getElementById('stat-all3').textContent=fmt(s.allThree);
-
-    // Update lede
-    document.getElementById('lede-txt').textContent=fmt(s.total)+' SKUs with Germany warehouse stock — showing which are missing Amazon DE, eBay DE or Shopify DE listings';
-
-    // Update KPIs
-    document.getElementById('kpi-total').textContent=fmt(s.total);
-    document.getElementById('kpi-not-anywhere').textContent=fmt(s.notAnywhere);
-    document.getElementById('kpi-missing-amazon').textContent=fmt(s.missingAmazon);
-    document.getElementById('kpi-all3').textContent=fmt(s.allThree);
-    document.getElementById('kpi-missing-ebay').textContent=fmt(s.missingEbay);
-    document.getElementById('kpi-missing-shopify').textContent=fmt(s.missingShopify);
-
-    // Update filter pills
-    document.getElementById('pill-all').textContent='All ('+fmt(s.total)+')';
-    document.getElementById('pill-none').textContent='Not Listed Anywhere ('+fmt(s.notAnywhere)+')';
-    document.getElementById('pill-no-amz').textContent='Missing Amazon ('+fmt(s.missingAmazon)+')';
-    document.getElementById('pill-no-ebay').textContent='Missing eBay ('+fmt(s.missingEbay)+')';
-    document.getElementById('pill-no-shop').textContent='Missing Shopify ('+fmt(s.missingShopify)+')';
-    document.getElementById('pill-all3').textContent='Listed All 3 ('+fmt(s.allThree)+')';
-
-    // Update dates
-    document.getElementById('refresh-date').textContent=d;
-    document.getElementById('footer-date').textContent=d;
-
+    updateDashboard(s,d);
     applyFilters();
     updateLogBadge();
     log_render();
 
   }catch(err){
-    tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--red)">&#9888; Failed to load live data: '+err.message+'</td></tr>';
+    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--red)">&#9888; Failed to load live data: '+err.message+'</td></tr>';
   }
 }
 
@@ -631,18 +654,37 @@ var LOG_KEY='de_marketplace_added_log_v1';
 function log_load(){try{return JSON.parse(localStorage.getItem(LOG_KEY)||'[]');}catch(e){return [];}}
 function log_save(e){localStorage.setItem(LOG_KEY,JSON.stringify(e));}
 
+function refreshEffCounts(){
+  if(!DATA.length) return;
+  var es=calcEffSummary();
+  document.getElementById('stat-not-anywhere').textContent=fmt(es.notAnywhere);
+  document.getElementById('stat-all3').textContent=fmt(es.allThree);
+  document.getElementById('kpi-not-anywhere').textContent=fmt(es.notAnywhere);
+  document.getElementById('kpi-missing-amazon').textContent=fmt(es.missingAmazon);
+  document.getElementById('kpi-all3').textContent=fmt(es.allThree);
+  document.getElementById('kpi-missing-ebay').textContent=fmt(es.missingEbay);
+  document.getElementById('kpi-missing-shopify').textContent=fmt(es.missingShopify);
+  document.getElementById('pill-none').textContent='Not Listed Anywhere ('+fmt(es.notAnywhere)+')';
+  document.getElementById('pill-no-amz').textContent='Missing Amazon ('+fmt(es.missingAmazon)+')';
+  document.getElementById('pill-no-ebay').textContent='Missing eBay ('+fmt(es.missingEbay)+')';
+  document.getElementById('pill-no-shop').textContent='Missing Shopify ('+fmt(es.missingShopify)+')';
+  document.getElementById('pill-all3').textContent='Listed All 3 ('+fmt(es.allThree)+')';
+}
+
 function markAdded(sku,channel){
   var entries=log_load();
   if(entries.some(function(e){return e.sku===sku&&e.channel===channel;})) return;
   entries.unshift({sku:sku,channel:channel,addedAt:new Date().toISOString()});
   log_save(entries);
   updateLogBadge();
+  refreshEffCounts();
   applyFilters();
 }
 
 function log_remove(sku,channel){
   log_save(log_load().filter(function(e){return !(e.sku===sku&&e.channel===channel);}));
   updateLogBadge();
+  refreshEffCounts();
   log_render();
   applyFilters();
 }
@@ -651,6 +693,7 @@ function log_clearAll(){
   if(!confirm('Clear all log entries?')) return;
   localStorage.removeItem(LOG_KEY);
   updateLogBadge();
+  refreshEffCounts();
   log_render();
   applyFilters();
 }
@@ -720,30 +763,17 @@ function log_exportCSV(){
 }
 
 
-// Auto-poll every 2 minutes — silently refresh DATA and re-render log
+// Auto-poll every 2 minutes — silently refresh DATA and re-render
 setInterval(async function(){
   try{
-    var res=await fetch('../../api/germany/marketplace-gap');
+    var res=await fetch('../../api/germany/marketplace-gap',{cache:'no-store'});
     if(!res.ok) return;
     var json=await res.json();
     if(!json.ok||!json.rows) return;
     DATA=json.rows;
     var s=json.summary;
     var d=json.refreshed_at?json.refreshed_at.slice(0,10):'live';
-    document.getElementById('refresh-date').textContent=d;
-    document.getElementById('footer-date').textContent=d;
-    document.getElementById('kpi-total').textContent=fmt(s.total);
-    document.getElementById('kpi-not-anywhere').textContent=fmt(s.notAnywhere);
-    document.getElementById('kpi-missing-amazon').textContent=fmt(s.missingAmazon);
-    document.getElementById('kpi-all3').textContent=fmt(s.allThree);
-    document.getElementById('kpi-missing-ebay').textContent=fmt(s.missingEbay);
-    document.getElementById('kpi-missing-shopify').textContent=fmt(s.missingShopify);
-    document.getElementById('pill-all').textContent='All ('+fmt(s.total)+')';
-    document.getElementById('pill-none').textContent='Not Listed Anywhere ('+fmt(s.notAnywhere)+')';
-    document.getElementById('pill-no-amz').textContent='Missing Amazon ('+fmt(s.missingAmazon)+')';
-    document.getElementById('pill-no-ebay').textContent='Missing eBay ('+fmt(s.missingEbay)+')';
-    document.getElementById('pill-no-shop').textContent='Missing Shopify ('+fmt(s.missingShopify)+')';
-    document.getElementById('pill-all3').textContent='Listed All 3 ('+fmt(s.allThree)+')';
+    updateDashboard(s,d);
     applyFilters();
     updateLogBadge();
     log_render();
