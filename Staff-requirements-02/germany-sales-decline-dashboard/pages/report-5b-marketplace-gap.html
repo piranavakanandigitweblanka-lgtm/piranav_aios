@@ -763,7 +763,7 @@ function log_exportCSV(){
 }
 
 
-// Auto-poll every 2 minutes — silently refresh DATA and re-render
+// Auto-poll every 30 seconds — silently refresh DATA and re-render
 setInterval(async function(){
   try{
     var res=await fetch('../../api/germany/marketplace-gap',{cache:'no-store'});
@@ -778,7 +778,7 @@ setInterval(async function(){
     updateLogBadge();
     log_render();
   }catch(e){}
-}, 120000);
+}, 30000);
 
 </script>
 
