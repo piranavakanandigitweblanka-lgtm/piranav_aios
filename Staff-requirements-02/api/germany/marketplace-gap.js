@@ -1,17 +1,27 @@
 // Germany Marketplace Gap — DE In-Stock SKUs
 // Returns all SKUs with Germany warehouse stock > 0, with listing flags for
 // Amazon DE, eBay DE, and Shopify DE.
-// Three-way SKU matching: exact | -IDE suffix | +suffix bundle prefix
-// Cache: 6 hours (data changes slowly — nightly stock sync)
+// Three-way SKU matching: exact | store-suffix strip (-IDE, -IFR, -DE, etc.) | bundle prefix
+// Cache: no-store (data changes daily; avoids stale CDN edge responses)
 
 const { Client } = require('pg');
 
+// Known store-specific suffixes appended to Germany/international listing SKUs
+const STORE_SUFFIXES = ['-IDE', '-IFR', '-DE', '-UK'];
+
+// Strip any known store suffix from a listing SKU and return the base
+function stripStoreSuffix(sku) {
+  for (const suffix of STORE_SUFFIXES) {
+    if (sku.endsWith(suffix)) return sku.slice(0, -suffix.length);
+  }
+  return sku;
+}
+
 // Generate all base SKU variants from a listing SKU
-// e.g. "LSLT360BC+RPR44WH-IDE" → ["LSLT360BC+RPR44WH-IDE","LSLT360BC+RPR44WH","LSLT360BC"]
+// e.g. "LSLT360BC+RPR44WH-IDE" → ["LSLT360BC+RPR44WH","LSLT360BC"]
 function getBaseSkus(listingSku) {
   const bases = new Set();
-  let s = listingSku;
-  if (s.endsWith('-IDE')) s = s.slice(0, -4);
+  const s = stripStoreSuffix(listingSku);
   bases.add(s);
   const parts = s.split('+');
   for (let i = 1; i <= parts.length; i++) {
@@ -22,8 +32,7 @@ function getBaseSkus(listingSku) {
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  // Cache 6 hours at CDN edge; stale-while-revalidate keeps it snappy
-  res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=30');
+  res.setHeader('Cache-Control', 'no-store');
 
   const connStr = process.env.DATABASE_URL;
   if (!connStr) return res.status(500).json({ ok: false, error: 'DATABASE_URL not configured' });
