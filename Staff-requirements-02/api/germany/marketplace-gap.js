@@ -52,8 +52,6 @@ module.exports = async function handler(req, res) {
     }
 
     // ── Step 2: Fetch listing SKUs — strip store suffixes IN SQL ─────────────
-    // REGEXP_REPLACE removes trailing -IDE / -IFR / -DE / -UK at the DB level
-    // so the JS side receives clean base SKUs with no encoding surprises
     const SUFFIX_REGEX = '-(IDE|IFR|DE|UK)$';
 
     const [amzRes, ebayRes, shopRes] = await Promise.all([
@@ -105,6 +103,34 @@ module.exports = async function handler(req, res) {
     const missingEbay    = rows.filter(r => r.e === 0).length;
     const missingShopify = rows.filter(r => r.sh === 0).length;
     const allThree       = rows.filter(r => r.a === 1 && r.e === 1 && r.sh === 1).length;
+
+    // Debug mode: ?debug=sku to inspect matching for a specific SKU
+    if (req.query && req.query.debug) {
+      const debugSku = req.query.debug;
+      const shopRaw = await client.query(
+        `SELECT sku, TRIM(REGEXP_REPLACE(sku, $1, '')) AS base_sku
+         FROM listings.shopify_listings
+         WHERE site = 'Germany' AND all_list = 1
+           AND (sku = $2 OR sku = $2 || '-IDE' OR TRIM(REGEXP_REPLACE(sku, $1, '')) = $2)
+         LIMIT 10`, [SUFFIX_REGEX, debugSku]
+      );
+      const invRaw = await client.query(
+        `SELECT p.sku, SUM(licsl.stock)::int as stock
+         FROM inventory.products p
+         JOIN inventory.local_inventory_current_stock_location_wise licsl ON licsl.inventory_id = p.id
+         WHERE licsl.warehouse_location = 'Germany' AND p.sku = $1
+         GROUP BY p.sku`, [debugSku]
+      );
+      return res.status(200).json({
+        ok: true, debug: true,
+        target_sku: debugSku,
+        shopify_de_raw_rows: shopRaw.rows,
+        inventory_row: invRaw.rows[0] || null,
+        shopify_listed_count: shopRes.rows.length,
+        shopify_sample: shopRes.rows.slice(0, 5),
+        in_shopListed: shopListed.has(debugSku),
+      });
+    }
 
     return res.status(200).json({
       ok: true,
