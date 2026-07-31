@@ -357,10 +357,10 @@ async function loadExec() {
   try {
     const [csvRes, gscRes, posRes, adsRes, dqRes] = await Promise.all([
       fetch('/data/seo-master-dataset.csv'),
-      fetch('/api/seo/executive?type=gsc-monthly'),
-      fetch('/api/seo/executive?type=position-dist'),
-      fetch('/api/seo/executive?type=ads-monthly'),
-      fetch('/api/seo/executive?type=data-quality'),
+      fetch('/api/seo?module=exec&type=gsc-monthly'),
+      fetch('/api/seo?module=exec&type=position-dist'),
+      fetch('/api/seo?module=exec&type=ads-monthly'),
+      fetch('/api/seo?module=exec&type=data-quality'),
     ]);
 
     const csvText = await csvRes.text();
@@ -788,8 +788,8 @@ async function loadProducts() {
 
   try {
     const [pagesRes, listingsRes] = await Promise.all([
-      fetch('/api/seo/products?type=pages'),
-      fetch('/api/seo/products?type=listings'),
+      fetch('/api/seo?module=products&type=pages'),
+      fetch('/api/seo?module=products&type=listings'),
     ]);
     const pagesJson    = await pagesRes.json();
     const listingsJson = await listingsRes.json();
@@ -949,7 +949,7 @@ function loadKeywords(subType) {
   const el = document.getElementById('kw-tab-body');
   if (el) el.innerHTML = '<div class="loading"><div class="spinner"></div><br>Fetching ' + kwActive + ' keywords&hellip;</div>';
 
-  fetch('/api/seo/keywords?type=' + kwActive)
+  fetch('/api/seo?module=keywords&type=' + kwActive)
     .then(r => r.json())
     .then(json => {
       if (!json.ok) throw new Error(json.error || 'API error');
@@ -1186,7 +1186,7 @@ function loadLanding(subType) {
   const body = document.getElementById('landing-tab-body');
   if (body) body.innerHTML = '<div class="loading"><div class="spinner"></div><br>Fetching ' + landingActive + '&hellip;</div>';
 
-  fetch('/api/seo/landing-pages?type=' + landingActive)
+  fetch('/api/seo?module=landing&type=' + landingActive)
     .then(r => r.json())
     .then(json => {
       if (!json.ok) throw new Error(json.error || 'API error');
