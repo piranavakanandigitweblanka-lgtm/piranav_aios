@@ -166,6 +166,26 @@ select.fsel:focus{border-color:var(--accent);}
 .opp-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#3b82f6,#8b5cf6);}
 .opp-num{font-size:11px;font-weight:700;color:var(--ink);}
 
+/* Sub-tab nav (within a panel) */
+.sub-nav{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap;}
+.sub-btn{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted);transition:all .15s;}
+.sub-btn:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent);}
+.sub-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.sub-btn .sub-badge{display:inline-block;margin-left:6px;font-size:10px;background:rgba(255,255,255,.25);border-radius:4px;padding:0 5px;}
+
+/* Action type tags */
+.act-tag{display:inline-block;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;white-space:nowrap;}
+.act-quickwin {background:#dcfce7;color:#14532d;}
+.act-ctr      {background:#dbeafe;color:#1e3a8a;}
+.act-rescue   {background:#fef9c3;color:#713f12;}
+.act-content  {background:#ffedd5;color:#c2410c;}
+.act-highvol  {background:#f5f3ff;color:#6d28d9;}
+.act-monitor  {background:#f1f5f9;color:#64748b;}
+
+/* Position change cell */
+.pos-up  {color:var(--good);font-weight:700;}
+.pos-dn  {color:var(--red);font-weight:700;}
+
 /* Product name cell */
 .prod-name{font-weight:600;color:var(--navy);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;}
 .prod-handle{font-size:10.5px;color:var(--muted);display:block;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -235,8 +255,14 @@ footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:cente
       <div class="loading"><div class="spinner"></div><br>Loading product intelligence&hellip;</div>
     </div>
   </div>
+  <!-- ── Tab 3: Keyword Intelligence ───────────────────────── -->
   <div id="tab-keywords" class="tab-panel">
-    <div class="placeholder"><div class="ph-icon">&#128269;</div><h2>Keyword Intelligence</h2><p>Phase 3 &mdash; 36-month keyword rank history, position bucket trends, top-3 / top-10 keyword deep-dive from SEMrush + GSC.</p></div>
+    <div class="alert">
+      <strong>&#9888; GSC Data Note:</strong> All keyword data from PostgreSQL GSC pipeline (sub_source=104). 61,228 distinct queries from 20 Mar – 28 Jul 2026. Click counts ≈ 50% of true totals due to device-level thresholding.
+    </div>
+    <div id="kw-content">
+      <div class="loading"><div class="spinner"></div><br>Loading keyword intelligence&hellip;</div>
+    </div>
   </div>
   <div id="tab-landing" class="tab-panel">
     <div class="placeholder"><div class="ph-icon">&#128203;</div><h2>Landing Page Intelligence</h2><p>Phase 4 &mdash; Top organic landing pages by clicks and impressions, CTR opportunity scoring, page-level position tracking.</p></div>
@@ -259,6 +285,7 @@ function switchTab(id, btn) {
   document.getElementById('tab-' + id).classList.add('active');
   btn.classList.add('active');
   if (id === 'products') loadProducts();
+  if (id === 'keywords') loadKeywords('top');
 }
 
 /* ── CSV parser ────────────────────────────────────────────── */
@@ -882,6 +909,244 @@ function renderProdTable(rows) {
   html += '</tbody></table>';
   const el = document.getElementById('prod-table-scroll');
   if (el) el.innerHTML = html;
+}
+
+/* ── Keyword Intelligence ──────────────────────────────────── */
+let kwLoaded  = { top: false, opportunity: false, rising: false, declining: false };
+let kwData    = { top: [], opportunity: [], rising: [], declining: [] };
+let kwActive  = 'top';
+let kwAllRows = [];
+
+function loadKeywords(subType) {
+  kwActive = subType || 'top';
+  if (!document.getElementById('kw-content')) return;
+
+  /* First call: render shell with sub-nav */
+  if (!document.getElementById('kw-sub-nav')) {
+    document.getElementById('kw-content').innerHTML = kwShellHtml();
+  }
+  setKwSubTab(kwActive);
+
+  if (kwLoaded[kwActive]) { renderKwTab(kwActive); return; }
+
+  const el = document.getElementById('kw-tab-body');
+  if (el) el.innerHTML = '<div class="loading"><div class="spinner"></div><br>Fetching ' + kwActive + ' keywords&hellip;</div>';
+
+  fetch('/api/seo/keywords?type=' + kwActive)
+    .then(r => r.json())
+    .then(json => {
+      if (!json.ok) throw new Error(json.error || 'API error');
+      kwData[kwActive]   = json.rows || [];
+      kwLoaded[kwActive] = true;
+      renderKwTab(kwActive);
+    })
+    .catch(e => {
+      const el2 = document.getElementById('kw-tab-body');
+      if (el2) el2.innerHTML = `<div class="alert"><strong>Error:</strong> ${e.message}</div>`;
+    });
+}
+
+function kwShellHtml() {
+  return `
+    <div class="sub-nav" id="kw-sub-nav">
+      <button class="sub-btn active" id="kw-btn-top"       onclick="loadKeywords('top')">Top Keywords</button>
+      <button class="sub-btn"        id="kw-btn-opportunity" onclick="loadKeywords('opportunity')">Opportunities</button>
+      <button class="sub-btn"        id="kw-btn-rising"     onclick="loadKeywords('rising')">&#8593; Rising</button>
+      <button class="sub-btn"        id="kw-btn-declining"  onclick="loadKeywords('declining')">&#8595; Declining</button>
+    </div>
+    <div class="controls" id="kw-controls">
+      <input id="kw-search" class="srch" type="text" placeholder="Search keyword&hellip;" oninput="filterKwTable()">
+      <select id="kw-sort" class="fsel" onchange="filterKwTable()">
+        <option value="default">Sort: Default</option>
+        <option value="clicks">Sort: Clicks ↓</option>
+        <option value="impressions">Sort: Impressions ↓</option>
+        <option value="position">Sort: Position ↑</option>
+        <option value="score">Sort: Opp Score ↓</option>
+      </select>
+      <button class="exp-btn" onclick="exportKwCSV()">&#11015; Export CSV</button>
+    </div>
+    <div class="tbox">
+      <div class="tbar"><strong id="kw-count">—</strong><span id="kw-meta"></span></div>
+      <div class="scroll" id="kw-tab-body"></div>
+    </div>
+    <div class="section-title">Data Quality</div>
+    <div class="dq-grid">
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot live"></div><div class="dq-name">GSC Query Table <span class="badge badge-live">Live</span></div></div><div class="dq-cov">20 Mar – 28 Jul 2026 (131 days)</div><div class="dq-note">61,228 distinct queries. Sub_source=104, search_type='web'. Privacy thresholding removes rows with very low counts.</div></div>
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot live"></div><div class="dq-name">Rising/Declining <span class="badge badge-live">Live</span></div></div><div class="dq-cov">Last 30 days vs prior 30 days</div><div class="dq-note">Position change calculated from avg(position) in each 30-day window. Minimum 10 impressions per period required.</div></div>
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot limited"></div><div class="dq-name">Landing Pages <span class="badge badge-limited">Limited</span></div></div><div class="dq-cov">query_page table (privacy-thresholded)</div><div class="dq-note">Top landing page per keyword. Many keywords return no page match due to GSC privacy thresholding.</div></div>
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot na"></div><div class="dq-name">Historical Positions <span class="badge badge-na">Unavailable</span></div></div><div class="dq-cov">Pre-Mar 2026 position data not in pipeline</div><div class="dq-note">SEMrush position data (36 months) is available at site level but not keyword level. Keyword-level history starts Mar 2026.</div></div>
+    </div>`;
+}
+
+function setKwSubTab(sub) {
+  ['top','opportunity','rising','declining'].forEach(s => {
+    const btn = document.getElementById('kw-btn-' + s);
+    if (btn) btn.classList.toggle('active', s === sub);
+  });
+}
+
+function filterKwTable() {
+  if (!kwLoaded[kwActive]) return;
+  const q    = (document.getElementById('kw-search') ? document.getElementById('kw-search').value : '').toLowerCase();
+  const sort = document.getElementById('kw-sort') ? document.getElementById('kw-sort').value : 'default';
+  let rows   = kwData[kwActive].filter(r => !q || r.query.toLowerCase().includes(q));
+
+  if (sort !== 'default') {
+    rows = [...rows].sort((a, b) => {
+      if (sort === 'clicks')      return (b.clicks || b.cur_clicks || 0) - (a.clicks || a.cur_clicks || 0);
+      if (sort === 'impressions') return (b.impressions || b.cur_imp || 0) - (a.impressions || a.cur_imp || 0);
+      if (sort === 'position')    return (a.avg_position || a.cur_pos || 999) - (b.avg_position || b.cur_pos || 999);
+      if (sort === 'score')       return (b.opp_score || 0) - (a.opp_score || 0);
+      return 0;
+    });
+  }
+  renderKwRows(kwActive, rows);
+}
+
+function renderKwTab(sub) {
+  setKwSubTab(sub);
+  const metaEl  = document.getElementById('kw-meta');
+  const countEl = document.getElementById('kw-count');
+  const rows    = kwData[sub];
+
+  if (sub === 'top') {
+    if (metaEl)  metaEl.textContent  = 'Top 500 by clicks • Mar–Jul 2026 • GSC pipeline';
+  } else if (sub === 'opportunity') {
+    if (metaEl)  metaEl.textContent  = 'Position 4–20 • ≥50 impressions • ranked by opportunity score';
+  } else if (sub === 'rising') {
+    if (metaEl)  metaEl.textContent  = 'Last 30 days vs prior 30 days • position improving';
+  } else {
+    if (metaEl)  metaEl.textContent  = 'Last 30 days vs prior 30 days • position worsening';
+  }
+  if (countEl) countEl.textContent = fNum(rows.length) + ' keywords';
+  renderKwRows(sub, rows);
+}
+
+function actionTagHtml(action) {
+  const map = {
+    'Quick Win — Top 3 Push':   'act-quickwin',
+    'CTR Boost — Title/Meta':   'act-ctr',
+    'Page 2 Rescue':            'act-rescue',
+    'Content Depth Needed':     'act-content',
+    'High Volume Priority':     'act-highvol',
+    'Monitor':                  'act-monitor',
+  };
+  const cls = map[action] || 'act-monitor';
+  return `<span class="act-tag ${cls}">${action}</span>`;
+}
+
+function renderKwRows(sub, rows) {
+  const countEl = document.getElementById('kw-count');
+  if (countEl) countEl.textContent = fNum(rows.length) + ' keywords';
+
+  const show = rows.slice(0, 500);
+  let html = '';
+
+  if (sub === 'top') {
+    html = `<table>
+      <thead><tr>
+        <th style="width:36px">#</th>
+        <th style="min-width:200px">Keyword</th>
+        <th class="num">Position</th>
+        <th class="num">Clicks</th>
+        <th class="num">Impressions</th>
+        <th class="num">CTR %</th>
+        <th style="min-width:180px">Top Landing Page</th>
+      </tr></thead><tbody>`;
+    show.forEach((r, i) => {
+      const page = r.top_page ? r.top_page.replace('https://ledsone.co.uk','') : '—';
+      html += `<tr>
+        <td style="color:var(--muted);font-size:11px">${i+1}</td>
+        <td><strong>${r.query}</strong></td>
+        <td class="num">${posBadge(r.avg_position)}</td>
+        <td class="num">${fNum(r.clicks)}</td>
+        <td class="num">${fNum(r.impressions)}</td>
+        <td class="num">${r.ctr_pct ? r.ctr_pct.toFixed(2)+'%' : '—'}</td>
+        <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)" title="${r.top_page||''}">${page}</td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+
+  } else if (sub === 'opportunity') {
+    html = `<table>
+      <thead><tr>
+        <th style="width:36px">#</th>
+        <th style="min-width:200px">Keyword</th>
+        <th class="num">Position</th>
+        <th class="num">Impressions</th>
+        <th class="num">Clicks</th>
+        <th class="num">CTR %</th>
+        <th class="num" style="min-width:80px">Opp Score</th>
+        <th style="min-width:140px">Action</th>
+      </tr></thead><tbody>`;
+    show.forEach((r, i) => {
+      html += `<tr>
+        <td style="color:var(--muted);font-size:11px">${i+1}</td>
+        <td><strong>${r.query}</strong></td>
+        <td class="num">${posBadge(r.avg_position)}</td>
+        <td class="num">${fNum(r.impressions)}</td>
+        <td class="num">${fNum(r.clicks)}</td>
+        <td class="num">${r.ctr_pct ? r.ctr_pct.toFixed(2)+'%' : '—'}</td>
+        <td class="num"><div class="opp-wrap">${oppBar(r.opp_score)}</div></td>
+        <td>${actionTagHtml(r.action)}</td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+
+  } else {
+    /* rising or declining */
+    const isRising = (sub === 'rising');
+    html = `<table>
+      <thead><tr>
+        <th style="width:36px">#</th>
+        <th style="min-width:200px">Keyword</th>
+        <th class="num">Current Pos</th>
+        <th class="num">Prev Pos</th>
+        <th class="num">Change</th>
+        <th class="num">Current Clicks</th>
+        <th class="num">Current Impressions</th>
+      </tr></thead><tbody>`;
+    show.forEach((r, i) => {
+      const chg     = parseFloat(r.pos_change) || 0;
+      const cls     = chg > 0 ? 'pos-up' : 'pos-dn';
+      const arrow   = chg > 0 ? '&#8593;' : '&#8595;';
+      const display = isRising ? `+${chg.toFixed(1)}` : `${chg.toFixed(1)}`;
+      html += `<tr>
+        <td style="color:var(--muted);font-size:11px">${i+1}</td>
+        <td><strong>${r.query}</strong></td>
+        <td class="num">${posBadge(r.cur_pos)}</td>
+        <td class="num"><span style="color:var(--muted)">${r.prv_pos}</span></td>
+        <td class="num"><span class="${cls}">${arrow} ${Math.abs(chg).toFixed(1)}</span></td>
+        <td class="num">${fNum(r.cur_clicks)}</td>
+        <td class="num">${fNum(r.cur_imp)}</td>
+      </tr>`;
+    });
+    if (rows.length > 500) {
+      html += `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:12px;font-size:11.5px">Showing 500 of ${fNum(rows.length)} rows</td></tr>`;
+    }
+    html += '</tbody></table>';
+  }
+
+  const el = document.getElementById('kw-tab-body');
+  if (el) el.innerHTML = html;
+}
+
+function exportKwCSV() {
+  const rows = kwData[kwActive] || [];
+  let csv = '';
+  if (kwActive === 'top') {
+    csv = 'query,clicks,impressions,ctr_pct,avg_position,top_page\n' +
+      rows.map(r => `"${r.query}",${r.clicks},${r.impressions},${r.ctr_pct.toFixed(3)},${r.avg_position},"${r.top_page||''}"`).join('\n');
+  } else if (kwActive === 'opportunity') {
+    csv = 'query,clicks,impressions,ctr_pct,avg_position,opp_score,action\n' +
+      rows.map(r => `"${r.query}",${r.clicks},${r.impressions},${r.ctr_pct.toFixed(3)},${r.avg_position},${r.opp_score},"${r.action}"`).join('\n');
+  } else {
+    csv = 'query,cur_pos,prv_pos,pos_change,cur_clicks,cur_imp\n' +
+      rows.map(r => `"${r.query}",${r.cur_pos},${r.prv_pos},${r.pos_change},${r.cur_clicks},${r.cur_imp}`).join('\n');
+  }
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `seo-keywords-${kwActive}.csv`; a.click();
 }
 
 function exportProdCSV() {
