@@ -130,6 +130,46 @@ tbody tr:hover{background:#f8fafc;}
 /* Info note */
 .info-note{background:#f0f9ff;border:1px solid #bae6fd;border-radius:9px;padding:10px 14px;font-size:11.5px;color:#0c4a6e;margin-bottom:14px;line-height:1.6;}
 
+/* Controls */
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;}
+.srch{border:1px solid var(--line);border-radius:8px;padding:7px 12px;font-size:12.5px;color:var(--ink);background:var(--card);width:220px;outline:none;}
+.srch:focus{border-color:var(--accent);}
+select.fsel{border:1px solid var(--line);border-radius:8px;padding:7px 11px;font-size:12.5px;color:var(--ink);background:var(--card);outline:none;cursor:pointer;}
+select.fsel:focus{border-color:var(--accent);}
+.exp-btn{border:none;border-radius:8px;padding:7px 14px;font-size:11.5px;font-weight:700;cursor:pointer;background:#059669;color:#fff;margin-left:auto;}
+.exp-btn:hover{opacity:.85;}
+
+/* Stats bar */
+.stats-bar{display:flex;flex-wrap:wrap;gap:0;background:var(--card);border:1px solid var(--line);border-radius:13px;overflow:hidden;margin-bottom:14px;}
+.sb-item{flex:1;min-width:110px;padding:13px 17px;border-right:1px solid var(--line);}
+.sb-item:last-child{border-right:none;}
+.sb-item .sb-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);}
+.sb-item .sb-val{font-size:19px;font-weight:700;color:var(--navy);margin-top:3px;}
+.sb-item .sb-sub{font-size:10.5px;color:var(--muted);margin-top:2px;}
+
+/* Position badges */
+.pos-badge{display:inline-block;border-radius:5px;padding:2px 8px;font-size:11px;font-weight:700;white-space:nowrap;}
+.pos-1-3  {background:#dcfce7;color:#14532d;}
+.pos-4-10 {background:#dbeafe;color:#1e3a8a;}
+.pos-11-20{background:#fef9c3;color:#713f12;}
+.pos-21p  {background:#f3f4f6;color:#6b7280;}
+
+/* Priority badges */
+.pri-critical{background:#fee2e2;color:#991b1b;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;}
+.pri-high    {background:#ffedd5;color:#c2410c;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;}
+.pri-medium  {background:#fef9c3;color:#854d0e;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;}
+.pri-low     {background:#f1f5f9;color:#64748b;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;}
+
+/* Opportunity score */
+.opp-wrap{width:56px;display:inline-block;vertical-align:middle;}
+.opp-bar{height:5px;border-radius:3px;background:var(--line);margin-top:3px;}
+.opp-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#3b82f6,#8b5cf6);}
+.opp-num{font-size:11px;font-weight:700;color:var(--ink);}
+
+/* Product name cell */
+.prod-name{font-weight:600;color:var(--navy);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;}
+.prod-handle{font-size:10.5px;color:var(--muted);display:block;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
 footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:center;}
 @media(max-width:900px){
   .chart-row{grid-template-columns:1fr;}
@@ -186,9 +226,14 @@ footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:cente
     </div>
   </div>
 
-  <!-- ── Stub tabs ───────────────────────────────────────────── -->
+  <!-- ── Tab 2: Product Intelligence ────────────────────────── -->
   <div id="tab-products" class="tab-panel">
-    <div class="placeholder"><div class="ph-icon">&#128230;</div><h2>Product Intelligence</h2><p>Phase 2 &mdash; Keyword performance by product category, top-converting organic product pages, inventory-linked visibility scoring.</p></div>
+    <div class="alert">
+      <strong>&#9888; GSC Data Note:</strong> Click counts are from the PostgreSQL GSC pipeline (~50% of true GSC console totals). Top keyword attribution from the query_page table is privacy-thresholded — many product pages may show no matched keyword.
+    </div>
+    <div id="prod-content">
+      <div class="loading"><div class="spinner"></div><br>Loading product intelligence&hellip;</div>
+    </div>
   </div>
   <div id="tab-keywords" class="tab-panel">
     <div class="placeholder"><div class="ph-icon">&#128269;</div><h2>Keyword Intelligence</h2><p>Phase 3 &mdash; 36-month keyword rank history, position bucket trends, top-3 / top-10 keyword deep-dive from SEMrush + GSC.</p></div>
@@ -203,7 +248,7 @@ footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:cente
     <div class="placeholder"><div class="ph-icon">&#9881;</div><h2>Technical SEO</h2><p>Phase 6 &mdash; Index coverage trends, crawl budget indicators, Core Web Vitals signals, structured data health.</p></div>
   </div>
 
-  <footer class="site">AIOS SEO Intelligence Dashboard V1 &bull; ledsone.co.uk &bull; Built 2026-07-29 &bull; Phase 1 Executive Overview</footer>
+  <footer class="site">AIOS SEO Intelligence Dashboard V1 &bull; ledsone.co.uk &bull; Phase 1 Executive Overview + Phase 2 Product Intelligence</footer>
 </div>
 
 <script>
@@ -213,6 +258,7 @@ function switchTab(id, btn) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
   btn.classList.add('active');
+  if (id === 'products') loadProducts();
 }
 
 /* ── CSV parser ────────────────────────────────────────────── */
@@ -646,6 +692,209 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc) {
 
 /* Run exec tab on page load */
 loadExec();
+
+/* ── Product Intelligence ──────────────────────────────────── */
+let prodLoaded = false;
+let prodAllRows = [];
+let prodListingsCount = 0;
+
+function calcOppScore(pos, imp, ctr) {
+  let score = 0;
+  if      (pos <= 3)  score += 0;
+  else if (pos <= 10) score += 40;
+  else if (pos <= 20) score += 70;
+  else if (pos <= 50) score += 50;
+  else                score += 20;
+  score += Math.min(imp / 100, 30);
+  score -= Math.min(ctr * 10, 20);
+  return Math.max(0, Math.min(100, Math.round(score)));
+}
+
+function posBadge(pos) {
+  if (!pos || pos === 0) return '<span class="pos-badge pos-21p">—</span>';
+  if (pos <= 3)  return `<span class="pos-badge pos-1-3">${pos}</span>`;
+  if (pos <= 10) return `<span class="pos-badge pos-4-10">${pos}</span>`;
+  if (pos <= 20) return `<span class="pos-badge pos-11-20">${pos}</span>`;
+  return `<span class="pos-badge pos-21p">${pos}</span>`;
+}
+
+function priBadge(score) {
+  if (score >= 80) return `<span class="pri-critical">Critical</span>`;
+  if (score >= 60) return `<span class="pri-high">High</span>`;
+  if (score >= 40) return `<span class="pri-medium">Medium</span>`;
+  return `<span class="pri-low">Low</span>`;
+}
+
+function oppBar(score) {
+  return `<span class="opp-num">${score}</span><div class="opp-bar"><div class="opp-fill" style="width:${score}%"></div></div>`;
+}
+
+function extractHandle(url) {
+  const m = url.match(/\/products\/([^?#]+)/);
+  return m ? m[1] : url;
+}
+
+function cleanTitle(title) {
+  return title ? title.replace(/~\d+$/, '').trim() : '';
+}
+
+async function loadProducts() {
+  if (prodLoaded) return;
+  prodLoaded = true;
+
+  try {
+    const [pagesRes, listingsRes] = await Promise.all([
+      fetch('/api/seo/products?type=pages'),
+      fetch('/api/seo/products?type=listings'),
+    ]);
+    const pagesJson    = await pagesRes.json();
+    const listingsJson = await listingsRes.json();
+
+    if (!pagesJson.ok) throw new Error(pagesJson.error || 'pages API error');
+
+    const listingsMap = {};
+    if (listingsJson.ok) {
+      prodListingsCount = listingsJson.count || 0;
+      listingsJson.rows.forEach(r => { listingsMap[r.handle] = cleanTitle(r.title); });
+    }
+
+    prodAllRows = (pagesJson.rows || []).map(r => {
+      const handle = extractHandle(r.page);
+      const score  = calcOppScore(r.avg_position, r.impressions, r.ctr_pct);
+      return { ...r, handle, title: listingsMap[handle] || '', score };
+    });
+
+    renderProducts(prodAllRows, pagesJson.from, pagesJson.to, pagesJson.total);
+  } catch (e) {
+    document.getElementById('prod-content').innerHTML =
+      `<div class="alert"><strong>Load error:</strong> ${e.message}</div>`;
+  }
+}
+
+function filterProducts() {
+  const q = (document.getElementById('prod-search') ? document.getElementById('prod-search').value : '').toLowerCase();
+  const sort = document.getElementById('prod-sort') ? document.getElementById('prod-sort').value : 'clicks';
+  let rows = prodAllRows.filter(r =>
+    !q || r.title.toLowerCase().includes(q) || r.handle.toLowerCase().includes(q) || (r.top_query||'').toLowerCase().includes(q)
+  );
+  rows = rows.sort((a, b) => {
+    if (sort === 'clicks')    return b.clicks - a.clicks;
+    if (sort === 'impressions') return b.impressions - a.impressions;
+    if (sort === 'position')  return (a.avg_position || 999) - (b.avg_position || 999);
+    if (sort === 'score')     return b.score - a.score;
+    return b.clicks - a.clicks;
+  });
+  renderProdTable(rows);
+}
+
+function renderProducts(rows, from, to, total) {
+  const totalClicks      = rows.reduce((s, r) => s + r.clicks, 0);
+  const totalImpressions = rows.reduce((s, r) => s + r.impressions, 0);
+  const avgPos           = rows.length ? (rows.reduce((s, r) => s + r.avg_position, 0) / rows.length).toFixed(1) : '—';
+  const withKw           = rows.filter(r => r.top_query).length;
+  const criticalCount    = rows.filter(r => r.score >= 80).length;
+  const highCount        = rows.filter(r => r.score >= 60 && r.score < 80).length;
+
+  document.getElementById('prod-content').innerHTML = `
+    <div class="stats-bar">
+      <div class="sb-item"><div class="sb-lbl">Product Pages</div><div class="sb-val">${fNum(total)}</div><div class="sb-sub">with GSC data</div></div>
+      <div class="sb-item"><div class="sb-lbl">Total Clicks (DB)</div><div class="sb-val">${fNum(totalClicks)}</div><div class="sb-sub">≈50% of actual</div></div>
+      <div class="sb-item"><div class="sb-lbl">Impressions</div><div class="sb-val">${totalImpressions >= 1000000 ? (totalImpressions/1000000).toFixed(1)+'M' : fNum(totalImpressions)}</div><div class="sb-sub">GSC pipeline</div></div>
+      <div class="sb-item"><div class="sb-lbl">Avg Position</div><div class="sb-val">${avgPos}</div><div class="sb-sub">across all products</div></div>
+      <div class="sb-item"><div class="sb-lbl">Keyword Matched</div><div class="sb-val">${fNum(withKw)}</div><div class="sb-sub">pages with top KW</div></div>
+      <div class="sb-item"><div class="sb-lbl">Opportunities</div><div class="sb-val">${criticalCount + highCount}</div><div class="sb-sub"><span class="pri-critical">${criticalCount} Critical</span> <span class="pri-high">${highCount} High</span></div></div>
+    </div>
+
+    <div class="controls">
+      <input id="prod-search" class="srch" type="text" placeholder="Search product or keyword&hellip;" oninput="filterProducts()">
+      <select id="prod-sort" class="fsel" onchange="filterProducts()">
+        <option value="clicks">Sort: Clicks ↓</option>
+        <option value="impressions">Sort: Impressions ↓</option>
+        <option value="position">Sort: Position ↑</option>
+        <option value="score">Sort: Opp Score ↓</option>
+      </select>
+      <button class="exp-btn" onclick="exportProdCSV()">&#11015; Export CSV</button>
+    </div>
+
+    <div class="info-note">
+      Data range: ${from} to ${to} &bull; GSC page table (sub_source=104, search_type='web') &bull; ${fNum(total)} product URLs &bull; ${fNum(withKw)} matched to top keyword (query_page, privacy-thresholded) &bull; ${fNum(prodListingsCount)} Shopify listings loaded for title matching
+    </div>
+
+    <div class="tbox" id="prod-table-wrap">
+      <div class="tbar"><strong id="prod-count">${fNum(rows.length)} products</strong><span>Click any column header to sort</span></div>
+      <div class="scroll" id="prod-table-scroll"></div>
+    </div>
+
+    <div class="section-title">Data Quality</div>
+    <div class="dq-grid">
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot live"></div><div class="dq-name">GSC Page Data <span class="badge badge-live">Live</span></div></div><div class="dq-cov">Mar 2026 – present</div><div class="dq-note">11,448 distinct product URLs. Clicks ≈ 50% of true GSC totals.</div></div>
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot live"></div><div class="dq-name">Shopify Listings <span class="badge badge-live">Live</span></div></div><div class="dq-cov">5,217 active product handles</div><div class="dq-note">Title matching by handle extraction from URL. ~40% match rate expected.</div></div>
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot limited"></div><div class="dq-name">Top Keywords <span class="badge badge-limited">Limited</span></div></div><div class="dq-cov">query_page table (privacy-thresholded)</div><div class="dq-note">Many product pages show no keyword due to GSC privacy thresholding on low-traffic pages.</div></div>
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot na"></div><div class="dq-name">Organic Revenue <span class="badge badge-na">Unavailable</span></div></div><div class="dq-cov">GA4 not available</div><div class="dq-note">Only 2-month aggregate GA4 data. Product-level organic revenue not available.</div></div>
+    </div>
+  `;
+
+  renderProdTable(rows);
+}
+
+function renderProdTable(rows) {
+  const show = rows.slice(0, 500);
+  const countEl = document.getElementById('prod-count');
+  if (countEl) countEl.textContent = fNum(rows.length) + ' products';
+
+  let html = `<table>
+    <thead><tr>
+      <th style="min-width:40px">#</th>
+      <th style="min-width:260px">Product</th>
+      <th class="num">Position</th>
+      <th class="num">Clicks (DB)</th>
+      <th class="num">Impressions</th>
+      <th class="num">CTR %</th>
+      <th style="min-width:160px">Top Keyword</th>
+      <th class="num" style="min-width:80px">Opp Score</th>
+      <th>Priority</th>
+    </tr></thead>
+    <tbody>`;
+
+  show.forEach((r, i) => {
+    const handle = r.handle;
+    const displayName = r.title || handle.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()).slice(0,60);
+    html += `<tr>
+      <td style="color:var(--muted);font-size:11px">${i+1}</td>
+      <td>
+        <span class="prod-name" title="${r.title || handle}">${displayName}</span>
+        <span class="prod-handle">${handle.length > 50 ? handle.slice(0,50)+'…' : handle}</span>
+      </td>
+      <td class="num">${posBadge(r.avg_position)}</td>
+      <td class="num">${fNum(r.clicks)}</td>
+      <td class="num">${fNum(r.impressions)}</td>
+      <td class="num">${r.ctr_pct ? r.ctr_pct.toFixed(2)+'%' : '—'}</td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.top_query ? `<span title="${r.top_query}">${r.top_query}</span>` : '<span style="color:var(--muted);font-style:italic">—</span>'}</td>
+      <td class="num"><div class="opp-wrap">${oppBar(r.score)}</div></td>
+      <td>${priBadge(r.score)}</td>
+    </tr>`;
+  });
+
+  if (rows.length > 500) {
+    html += `<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:12px;font-size:11.5px">Showing 500 of ${fNum(rows.length)} rows — use search to narrow results</td></tr>`;
+  }
+
+  html += '</tbody></table>';
+  const el = document.getElementById('prod-table-scroll');
+  if (el) el.innerHTML = html;
+}
+
+function exportProdCSV() {
+  const headers = 'page,title,handle,clicks,impressions,ctr_pct,avg_position,top_query,opp_score,priority';
+  const rows = prodAllRows.map(r => {
+    const pri = r.score >= 80 ? 'Critical' : r.score >= 60 ? 'High' : r.score >= 40 ? 'Medium' : 'Low';
+    return [r.page, `"${(r.title||'').replace(/"/g,'""')}"`, r.handle, r.clicks, r.impressions,
+            r.ctr_pct.toFixed(3), r.avg_position, `"${(r.top_query||'').replace(/"/g,'""')}"`, r.score, pri].join(',');
+  });
+  const blob = new Blob([headers + '\n' + rows.join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'seo-product-intelligence.csv'; a.click();
+}
 </script>
 </body>
 </html>
