@@ -251,6 +251,43 @@ footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:cente
   .masthead{padding:16px 14px;}
   .kpi .val{font-size:18px;}
 }
+/* ── Onboarding Help Panels ─────────────────────────────────── */
+.help-panel{background:var(--card);border:1.5px solid #c7d6f0;border-radius:14px;margin-bottom:20px;overflow:hidden;}
+.help-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;padding:13px 20px;background:linear-gradient(135deg,#f0f5ff 0%,#e8f0fe 100%);border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:var(--navy);text-align:left;gap:12px;}
+.help-toggle:hover{background:linear-gradient(135deg,#e4edff 0%,#dce8ff 100%);}
+.help-toggle .ht-left{display:flex;align-items:center;gap:8px;}
+.help-toggle .ht-chev{font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;}
+.help-body{padding:20px 20px 12px;display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:800px){.help-body{grid-template-columns:1fr;}}
+.help-section{margin-bottom:18px;}
+.help-section:last-child{margin-bottom:0;}
+.help-section-hd{font-size:9.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--navy-2);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px;}
+.help-intro{font-size:12.5px;line-height:1.7;color:var(--ink);}
+.help-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+.help-meta-card{background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:9px 11px;}
+.help-meta-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:3px;}
+.help-meta-val{font-size:11.5px;color:var(--ink);line-height:1.5;}
+.help-table{width:100%;border-collapse:collapse;font-size:12px;}
+.help-table th{text-align:left;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:5px 8px;border-bottom:2px solid var(--line);background:#f8fafc;}
+.help-table td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5;color:var(--ink);}
+.help-table tr:last-child td{border-bottom:none;}
+.help-table td:first-child{font-weight:600;color:var(--navy);white-space:nowrap;}
+.help-steps{display:flex;flex-direction:column;gap:4px;}
+.help-step{display:flex;align-items:flex-start;gap:8px;padding:6px 0;}
+.help-step-num{width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;margin-top:1px;}
+.help-step-txt{font-size:12px;line-height:1.5;color:var(--ink);}
+.help-step-arrow{color:var(--muted);font-size:11px;padding:1px 0 1px 30px;}
+.demo-label{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9.5px;font-weight:700;background:#fef3c7;color:#92400e;letter-spacing:.4px;margin-bottom:8px;}
+.help-actions{display:flex;flex-direction:column;gap:6px;}
+.help-action-card{border:1px solid var(--line);border-radius:7px;padding:8px 11px;font-size:12px;line-height:1.5;}
+.help-action-card.ha-red{border-left:3px solid var(--red);}
+.help-action-card.ha-amber{border-left:3px solid #f59e0b;}
+.help-action-card.ha-green{border-left:3px solid var(--good);}
+.help-action-card .hac-if{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:2px;}
+.help-action-card .hac-do{font-weight:600;color:var(--navy);}
+.help-tips{display:flex;flex-direction:column;gap:5px;}
+.help-tip{display:flex;align-items:flex-start;gap:7px;font-size:12px;padding:6px 9px;background:#f0fdf4;border-radius:6px;line-height:1.5;color:var(--ink);}
+.help-tip .ti{color:var(--good);font-weight:700;flex:none;font-size:13px;}
 </style>
 </head>
 <body>
@@ -288,6 +325,7 @@ footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:cente
 
   <!-- ── Tab 1: Executive Overview ─────────────────────────────── -->
   <div id="tab-exec" class="tab-panel active">
+    <div id="help-exec"></div>
     <div class="alert">
       <strong>&#9888; GSC Data Note:</strong> The PostgreSQL pipeline stores approximately 50% of Google Search Console click totals (device-level thresholding in the overview table). Jul 2026 pipeline: 3,854 clicks. Use GSC figures here for trend direction only, not absolute benchmarks.
     </div>
@@ -299,6 +337,7 @@ footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:cente
 
   <!-- ── Tab 2: Product Intelligence ────────────────────────── -->
   <div id="tab-products" class="tab-panel">
+    <div id="help-products"></div>
     <div class="alert">
       <strong>&#9888; GSC Data Note:</strong> Click counts are from the PostgreSQL GSC pipeline (~50% of true GSC console totals). Top keyword attribution from the query_page table is privacy-thresholded — many product pages may show no matched keyword.
     </div>
@@ -388,6 +427,8 @@ const charts = {};
 /* ── Main executive loader ─────────────────────────────────── */
 let execLoaded = false;
 async function loadExec() {
+  var _hp = document.getElementById('help-exec');
+  if (_hp && !_hp.dataset.built) { _hp.innerHTML = helpPanelHtml('exec'); _hp.dataset.built='1'; initHelp('exec'); }
   if (execLoaded) return;
   execLoaded = true;
 
@@ -820,6 +861,8 @@ function cleanTitle(title) {
 }
 
 async function loadProducts() {
+  var _hp = document.getElementById('help-products');
+  if (_hp && !_hp.dataset.built) { _hp.innerHTML = helpPanelHtml('products'); _hp.dataset.built='1'; initHelp('products'); }
   if (prodLoaded) return;
   prodLoaded = true;
 
@@ -978,6 +1021,7 @@ function loadKeywords(subType) {
   /* First call: render shell with sub-nav */
   if (!document.getElementById('kw-sub-nav')) {
     document.getElementById('kw-content').innerHTML = kwShellHtml();
+    initHelp('keywords');
   }
   setKwSubTab(kwActive);
 
@@ -1001,7 +1045,7 @@ function loadKeywords(subType) {
 }
 
 function kwShellHtml() {
-  return `
+  return helpPanelHtml('keywords') + `
     <div class="sub-nav" id="kw-sub-nav">
       <button class="sub-btn active" id="kw-btn-top"       onclick="loadKeywords('top')">Top Keywords</button>
       <button class="sub-btn"        id="kw-btn-opportunity" onclick="loadKeywords('opportunity')">Opportunities</button>
@@ -1215,6 +1259,7 @@ function loadLanding(subType) {
 
   if (!document.getElementById('landing-sub-nav')) {
     wrap.innerHTML = landingShellHtml();
+    initHelp('landing');
   }
   setLandingSubTab(landingActive);
 
@@ -1239,7 +1284,7 @@ function loadLanding(subType) {
 }
 
 function landingShellHtml() {
-  return `
+  return helpPanelHtml('landing') + `
     <div class="sub-nav" id="landing-sub-nav">
       <button class="sub-btn active" id="landing-btn-pages"     onclick="loadLanding('pages')">All Pages</button>
       <button class="sub-btn"        id="landing-btn-by-type"   onclick="loadLanding('by-type')">By Page Type</button>
@@ -1478,7 +1523,7 @@ function renderActionsShell(summary) {
       <div class="ac-num">${summary[c.key]||0}</div>
       <div class="ac-lbl">${c.icon} ${c.label}</div></div>`).join('');
 
-  document.getElementById('actions-content').innerHTML = `
+  document.getElementById('actions-content').innerHTML = helpPanelHtml('actions') + `
     <div class="action-summary">${cards}</div>
     <div class="controls">
       <input id="act-search" class="srch" type="text" placeholder="Search keyword&hellip;" oninput="filterActions()">
@@ -1510,6 +1555,7 @@ function renderActionsShell(summary) {
       <div class="dq-card"><div class="dq-head"><div class="dq-dot limited"></div><div class="dq-name">CTR Benchmark <span class="badge badge-limited">Estimated</span></div></div><div class="dq-cov">Industry average CTR curves (not site-specific)</div><div class="dq-note">Benchmarks: pos 1–3 ≈ 15%, 4–7 ≈ 5%, 8–10 ≈ 2%. Site-specific CTR benchmarks are unavailable without full GA4 integration.</div></div>
       <div class="dq-card"><div class="dq-head"><div class="dq-dot na"></div><div class="dq-name">Revenue Impact <span class="badge badge-na">Unavailable</span></div></div><div class="dq-cov">Shopify organic revenue not in pipeline</div><div class="dq-note">Actions are ranked by SEO signal strength only. Revenue-weighted prioritisation requires GA4 session → Shopify order join — not available in current pipeline.</div></div>
     </div>`;
+  initHelp('actions');
 }
 
 function setActCategory(cat) {
@@ -1622,6 +1668,7 @@ function loadTechnical(subType) {
 
   if (!document.getElementById('tech-sub-nav')) {
     wrap.innerHTML = techShellHtml();
+    initHelp('technical');
   }
   setTechSubTab(techActive);
 
@@ -1645,7 +1692,7 @@ function loadTechnical(subType) {
 }
 
 function techShellHtml() {
-  return `
+  return helpPanelHtml('technical') + `
     <div class="sub-nav" id="tech-sub-nav">
       <button class="sub-btn active" id="tech-btn-coverage"        onclick="loadTechnical('coverage')">Index Coverage</button>
       <button class="sub-btn"        id="tech-btn-cannibalization"  onclick="loadTechnical('cannibalization')">Cannibalization</button>
@@ -1838,6 +1885,230 @@ function exportTechCSV() {
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = name + '.csv'; a.click();
 }
+
+/* ── Onboarding Help Panels ── */
+function toggleHelp(id) {
+  var body = document.getElementById('help-body-' + id);
+  var icon = document.getElementById('help-icon-' + id);
+  if (!body) return;
+  var open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : '';
+  if (icon) icon.textContent = open ? '▸' : '▾';
+  try { localStorage.setItem('help-' + id, open ? '0' : '1'); } catch(e){}
+}
+
+function initHelp(id) {
+  var stored = '1';
+  try { stored = localStorage.getItem('help-' + id) || '1'; } catch(e){}
+  var body = document.getElementById('help-body-' + id);
+  var icon = document.getElementById('help-icon-' + id);
+  if (!body) return;
+  if (stored === '0') {
+    body.style.display = 'none';
+    if (icon) icon.textContent = '▸';
+  }
+}
+
+function helpPanelHtml(id) {
+  var cfg = HELP_CFG[id];
+  if (!cfg) return '';
+  var metricsHtml = '';
+  if (cfg.metrics && cfg.metrics.length) {
+    metricsHtml = '<div class="help-section"><div class="help-section-title">Key Metrics</div><table class="help-table"><thead><tr><th>Metric</th><th>What It Means</th><th>Source</th></tr></thead><tbody>' +
+      cfg.metrics.map(function(m){ return '<tr><td><strong>' + m.name + '</strong></td><td>' + m.desc + '</td><td>' + m.source + '</td></tr>'; }).join('') +
+      '</tbody></table></div>';
+  }
+  var stepsHtml = '';
+  if (cfg.steps && cfg.steps.length) {
+    stepsHtml = '<div class="help-section"><div class="help-section-title">How To Take Action</div><ol class="help-steps">' +
+      cfg.steps.map(function(s){ return '<li class="help-step">' + s + '</li>'; }).join('') +
+      '</ol></div>';
+  }
+  var demoHtml = '';
+  if (cfg.demo) {
+    demoHtml = '<div class="help-section help-demo"><div class="help-section-title">Sample Report <span style="font-size:10px;background:#fffbe6;color:#92640a;border:1px solid #f0d060;border-radius:4px;padding:1px 6px;margin-left:6px;">EXAMPLE — not live data</span></div>' +
+      '<div class="help-demo-body">' + cfg.demo + '</div></div>';
+  }
+  var tipsHtml = '';
+  if (cfg.tips && cfg.tips.length) {
+    tipsHtml = '<div class="help-section"><div class="help-section-title">Tips</div><ul class="help-tips">' +
+      cfg.tips.map(function(t){ return '<li class="help-tip">' + t + '</li>'; }).join('') +
+      '</ul></div>';
+  }
+  return '<div class="help-panel"><button class="help-toggle" onclick="toggleHelp(\'' + id + '\')" aria-expanded="true">' +
+    '<span>&#9432; About This Tab — ' + cfg.title + '</span><span id="help-icon-' + id + '">▾</span>' +
+    '</button><div class="help-body" id="help-body-' + id + '">' +
+    '<div class="help-section"><div class="help-section-title">Purpose</div><p>' + cfg.purpose + '</p>' +
+    '<div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px">' +
+    '<div><strong style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Data Sources</strong><p style="font-size:12px;margin-top:4px">' + cfg.sources + '</p></div>' +
+    '<div><strong style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Updated</strong><p style="font-size:12px;margin-top:4px">' + cfg.freq + '</p></div>' +
+    '</div></div>' +
+    metricsHtml + demoHtml + stepsHtml + tipsHtml +
+    '</div></div>';
+}
+
+var HELP_CFG = {
+  exec: {
+    title: 'Executive Summary',
+    purpose: 'High-level view of organic search health for ledsone.co.uk. Combines Google Search Console impressions & clicks, Google Ads spend, and SEMrush 37-month trend data to give a single-screen performance snapshot.',
+    sources: 'GSC (PostgreSQL pipeline, sub_source=104) · Google Ads (account 4503486236, GBP) · SEMrush master CSV (37 months)',
+    freq: 'GSC & Ads: live from DB · SEMrush: last import date',
+    metrics: [
+      { name: 'Clicks', desc: 'Organic clicks from Google Search Console. Pipeline captures ~50% of true GSC totals.', source: 'GSC / PostgreSQL' },
+      { name: 'Impressions', desc: 'Times ledsone.co.uk appeared in Google search results.', source: 'GSC / PostgreSQL' },
+      { name: 'CTR', desc: 'Click-through rate = clicks ÷ impressions.', source: 'GSC / PostgreSQL' },
+      { name: 'Avg Position', desc: 'Mean ranking position across all queries. Lower = better.', source: 'GSC / PostgreSQL' },
+      { name: 'Ad Spend', desc: 'Google Ads cost in GBP. Already in GBP — no conversion applied.', source: 'Google Ads / PostgreSQL' },
+      { name: 'SEMrush Organic Traffic', desc: '37-month estimated organic traffic trend from SEMrush. Label: SEMrush Estimate.', source: 'SEMrush CSV' }
+    ],
+    demo: '<table style="width:100%;font-size:12px;border-collapse:collapse"><thead><tr style="background:#f0f5ff"><th style="padding:5px 8px;text-align:left">Month</th><th style="padding:5px 8px;text-align:right">Clicks*</th><th style="padding:5px 8px;text-align:right">Impressions</th><th style="padding:5px 8px;text-align:right">CTR</th><th style="padding:5px 8px;text-align:right">Avg Pos</th></tr></thead><tbody><tr><td style="padding:5px 8px">Jun 2026</td><td style="padding:5px 8px;text-align:right">4,217</td><td style="padding:5px 8px;text-align:right">143,560</td><td style="padding:5px 8px;text-align:right">2.9%</td><td style="padding:5px 8px;text-align:right">18.4</td></tr><tr style="background:#f8fafc"><td style="padding:5px 8px">May 2026</td><td style="padding:5px 8px;text-align:right">4,172</td><td style="padding:5px 8px;text-align:right">138,200</td><td style="padding:5px 8px;text-align:right">3.0%</td><td style="padding:5px 8px;text-align:right">18.7</td></tr></tbody></table><p style="font-size:11px;color:var(--muted);margin-top:6px">*GSC pipeline clicks ≈ 50% of true GSC totals. Trend direction is reliable; absolute click volume is not.</p>',
+    steps: [
+      'Check month-on-month impression trend — rising impressions with flat clicks = CTR problem.',
+      'Compare SEMrush organic traffic trend with GSC impressions to validate direction.',
+      'If Ad Spend is rising but organic impressions are flat, investigate keyword cannibalisation in Tab 6.',
+      'Use position distribution chart to see if rankings are clustering in "close to page 1" (pos 4–10) — highest opportunity zone.'
+    ],
+    tips: [
+      'GSC data in this pipeline is ~50% of true totals — use it for trend analysis, not absolute benchmarking.',
+      'SEMrush traffic estimates and GSC data use different methodologies — divergence is normal.',
+      'Ad Spend and organic CTR often move inversely — organic improvements can reduce CPC dependency.'
+    ]
+  },
+  products: {
+    title: 'Product Intelligence',
+    purpose: 'SEO performance at the product page level. Shows which product URLs are receiving organic traffic, their ranking positions, opportunity scores, and whether they match a Shopify listing.',
+    sources: 'GSC page-level data (PostgreSQL) · Shopify listings (PostgreSQL ledsone schema)',
+    freq: 'Live from DB on tab open',
+    metrics: [
+      { name: 'Clicks', desc: 'Organic clicks to this product URL. Pipeline ~50% of true GSC.', source: 'GSC' },
+      { name: 'Impressions', desc: 'Times this product URL appeared in search results.', source: 'GSC' },
+      { name: 'Avg Position', desc: 'Mean Google ranking position for all queries landing on this URL.', source: 'GSC' },
+      { name: 'Top Query', desc: 'Highest-impression keyword for this page.', source: 'GSC' },
+      { name: 'Opp Score', desc: 'Opportunity score 0–100: combines position bracket + impression volume – CTR penalty. Higher = more SEO uplift available.', source: 'Calculated' },
+      { name: 'Priority', desc: 'Critical (≥80) / High (≥60) / Medium (≥40) / Low based on opportunity score.', source: 'Calculated' }
+    ],
+    demo: '<table style="width:100%;font-size:12px;border-collapse:collapse"><thead><tr style="background:#f0f5ff"><th style="padding:5px 8px;text-align:left">URL</th><th style="padding:5px 8px;text-align:right">Clicks</th><th style="padding:5px 8px;text-align:right">Avg Pos</th><th style="padding:5px 8px;text-align:right">Opp</th><th style="padding:5px 8px;text-align:left">Priority</th></tr></thead><tbody><tr><td style="padding:5px 8px">/products/led-strip-light-rgb</td><td style="padding:5px 8px;text-align:right">312</td><td style="padding:5px 8px;text-align:right">6.2</td><td style="padding:5px 8px;text-align:right">74</td><td style="padding:5px 8px"><span style="background:#fff3cd;color:#856404;padding:1px 6px;border-radius:3px;font-size:11px">High</span></td></tr><tr style="background:#f8fafc"><td style="padding:5px 8px">/products/led-driver-12v</td><td style="padding:5px 8px;text-align:right">189</td><td style="padding:5px 8px;text-align:right">11.3</td><td style="padding:5px 8px;text-align:right">61</td><td style="padding:5px 8px"><span style="background:#fff3cd;color:#856404;padding:1px 6px;border-radius:3px;font-size:11px">High</span></td></tr></tbody></table>',
+    steps: [
+      'Sort by Opportunity Score descending — these are your highest-leverage product pages.',
+      'Filter to "Critical" priority and open each page to audit the title, H1, and meta description.',
+      'Check if the Top Query matches the product title — if not, consider updating the title to include the query.',
+      'Pages with high impressions but low CTR (below 2%) need meta description or title rewrites.',
+      'Export to CSV and share with the SEO team as a weekly action list.'
+    ],
+    tips: [
+      'Pages ranking 4–10 have the best ROI for optimisation — a small push can move them to page 1.',
+      'If a product has no GSC data, it may be de-indexed or too new — check Google Search Console directly.',
+      'Opp Score above 70 = strong signal to prioritise; below 30 = low-hanging fruit already captured or page needs more content.'
+    ]
+  },
+  keywords: {
+    title: 'Keyword Intelligence',
+    purpose: 'Keyword-level GSC data for ledsone.co.uk. Four sub-tabs cover the full keyword portfolio: top performers, untapped opportunities, rising movers, and declining alerts.',
+    sources: 'GSC query-level data (PostgreSQL, sub_source=104) · Last 90 days rolling',
+    freq: 'Live from DB on tab open',
+    metrics: [
+      { name: 'Query', desc: 'The exact search term users typed into Google.', source: 'GSC' },
+      { name: 'Clicks', desc: 'Organic clicks from this query. Pipeline ~50% of true GSC.', source: 'GSC' },
+      { name: 'Impressions', desc: 'Times ledsone.co.uk appeared for this query.', source: 'GSC' },
+      { name: 'CTR', desc: 'Click-through rate for this query. Benchmark: pos 1–3 ≈ 15%, 4–7 ≈ 5%, 8–10 ≈ 2%.', source: 'GSC' },
+      { name: 'Avg Position', desc: 'Mean ranking position for this query over the period.', source: 'GSC' },
+      { name: 'Opp Score', desc: 'Opportunity Score (Opportunities tab only): higher = more SEO uplift available at current position.', source: 'Calculated' }
+    ],
+    demo: '<table style="width:100%;font-size:12px;border-collapse:collapse"><thead><tr style="background:#f0f5ff"><th style="padding:5px 8px;text-align:left">Query</th><th style="padding:5px 8px;text-align:right">Impr</th><th style="padding:5px 8px;text-align:right">CTR</th><th style="padding:5px 8px;text-align:right">Pos</th><th style="padding:5px 8px;text-align:right">Opp</th></tr></thead><tbody><tr><td style="padding:5px 8px">led strip lights uk</td><td style="padding:5px 8px;text-align:right">8,420</td><td style="padding:5px 8px;text-align:right">1.8%</td><td style="padding:5px 8px;text-align:right">7.4</td><td style="padding:5px 8px;text-align:right">82</td></tr><tr style="background:#f8fafc"><td style="padding:5px 8px">12v led driver</td><td style="padding:5px 8px;text-align:right">3,100</td><td style="padding:5px 8px;text-align:right">2.4%</td><td style="padding:5px 8px;text-align:right">5.1</td><td style="padding:5px 8px;text-align:right">68</td></tr></tbody></table>',
+    steps: [
+      'Start in Opportunities tab — filter by Opp Score ≥ 60 for immediate action list.',
+      'Check Rising tab weekly — fast movers may be worth a targeted content push to accelerate.',
+      'Declining tab alerts need investigation: algorithm update, competitor, or thin content?',
+      'For each opportunity keyword, check which page ranks (Tab 4) and whether on-page content matches search intent.',
+      'Group related keywords by page and create a keyword map — one primary + 3–5 secondary per page.'
+    ],
+    tips: [
+      'Queries with ≥1,000 impressions and CTR below 2% are almost always a title/meta issue.',
+      'Rising keywords are early signals — act before competitors notice.',
+      'Declining keywords with stable impressions but dropping position = a competitor just improved their page.'
+    ]
+  },
+  landing: {
+    title: 'Landing Pages',
+    purpose: 'Page-level organic performance showing which landing pages drive the most GSC traffic. Three views: All Pages, breakdown By Page Type (product/collection/content), and Month-on-Month trend.',
+    sources: 'GSC page-level data (PostgreSQL) · URL pattern classification (JS)',
+    freq: 'Live from DB on tab open',
+    metrics: [
+      { name: 'Page URL', desc: 'The landing page URL receiving organic traffic.', source: 'GSC' },
+      { name: 'Page Type', desc: 'Classified as: product / collection / content / home / search / other based on URL pattern.', source: 'Calculated' },
+      { name: 'Clicks', desc: 'Total organic clicks to this page. Pipeline ~50% of true GSC.', source: 'GSC' },
+      { name: 'Impressions', desc: 'Total impressions for this page across all queries.', source: 'GSC' },
+      { name: 'Avg Position', desc: 'Mean ranking position across all queries landing on this page.', source: 'GSC' },
+      { name: 'MoM Change', desc: 'Month-on-month click change % (Month-on-Month sub-tab).', source: 'GSC' }
+    ],
+    demo: '<table style="width:100%;font-size:12px;border-collapse:collapse"><thead><tr style="background:#f0f5ff"><th style="padding:5px 8px;text-align:left">Page</th><th style="padding:5px 8px;text-align:left">Type</th><th style="padding:5px 8px;text-align:right">Clicks</th><th style="padding:5px 8px;text-align:right">Impressions</th><th style="padding:5px 8px;text-align:right">Pos</th></tr></thead><tbody><tr><td style="padding:5px 8px">/collections/led-strip-lights</td><td style="padding:5px 8px">collection</td><td style="padding:5px 8px;text-align:right">1,840</td><td style="padding:5px 8px;text-align:right">62,300</td><td style="padding:5px 8px;text-align:right">4.1</td></tr><tr style="background:#f8fafc"><td style="padding:5px 8px">/products/rgb-led-controller</td><td style="padding:5px 8px">product</td><td style="padding:5px 8px;text-align:right">743</td><td style="padding:5px 8px;text-align:right">24,100</td><td style="padding:5px 8px;text-align:right">6.8</td></tr></tbody></table>',
+    steps: [
+      'Use "By Page Type" to understand if traffic is concentrated on product or collection pages.',
+      'Collection pages with high impressions and low CTR need richer category descriptions.',
+      'Month-on-Month tab: investigate pages with >20% click drop — check for ranking changes or crawl issues.',
+      'Pages with zero clicks but high impressions are ranking but not converting — rewrite meta title/description.',
+      'Cross-reference top landing pages with Tab 2 (Products) to check if top collection pages have matching product coverage.'
+    ],
+    tips: [
+      'Collection/category pages typically outperform product pages for broad head terms — invest in them.',
+      'A sudden MoM drop on a page = investigate: de-indexation, competitor movement, or content change.',
+      'Homepage impressions are almost always branded — exclude from opportunity analysis.'
+    ]
+  },
+  actions: {
+    title: 'Action Centre',
+    purpose: 'Prioritised list of SEO actions derived from live keyword data. Five categories: Quick Wins (pos 4–10, low CTR), CTR Fixes (below CTR benchmark), Page 2 Rescue (pos 11–20), Content Gaps (high impressions, no ranking page), and Declining Alerts.',
+    sources: 'GSC query + page data (PostgreSQL) · Opportunity score formula',
+    freq: 'Live from DB on tab open',
+    metrics: [
+      { name: 'Priority', desc: 'P1 Critical / P2 High / P3 Medium / P4 Low based on opportunity score.', source: 'Calculated' },
+      { name: 'Category', desc: 'Quick Win / CTR Fix / Page 2 Rescue / Content Gap / Declining Alert.', source: 'Calculated' },
+      { name: 'Keyword', desc: 'The target query driving this action.', source: 'GSC' },
+      { name: 'Current Position', desc: 'Mean ranking position for this keyword.', source: 'GSC' },
+      { name: 'Impressions', desc: 'Impression volume — proxy for traffic potential. Pipeline ~50% of true GSC.', source: 'GSC' },
+      { name: 'Suggested Action', desc: 'Recommended on-page or content change to capture the opportunity.', source: 'Rule-based' }
+    ],
+    demo: '<div style="display:grid;gap:8px"><div style="border:1px solid #e3e7ee;border-radius:8px;padding:10px 14px;font-size:12px"><span style="background:#fee2e2;color:#991b1b;padding:1px 7px;border-radius:3px;font-size:11px;font-weight:700">P1 Critical</span> <span style="background:#dbeafe;color:#1e40af;padding:1px 7px;border-radius:3px;font-size:11px;margin-left:4px">Quick Win</span><div style="margin-top:6px"><strong>led strip lights uk</strong> · Pos 7.4 · 8,420 impr · Opp 82</div><div style="margin-top:4px;color:var(--muted)">Rewrite meta title to include "UK" + add structured data for product page.</div></div><div style="border:1px solid #e3e7ee;border-radius:8px;padding:10px 14px;font-size:12px"><span style="background:#fef9c3;color:#92640a;padding:1px 7px;border-radius:3px;font-size:11px;font-weight:700">P2 High</span> <span style="background:#dcfce7;color:#166534;padding:1px 7px;border-radius:3px;font-size:11px;margin-left:4px">CTR Fix</span><div style="margin-top:6px"><strong>12v led power supply</strong> · Pos 5.1 · 3,100 impr · CTR 2.4% (benchmark 5%)</div><div style="margin-top:4px;color:var(--muted)">Add emotion/benefit word to meta title; test emoji in SERP title.</div></div></div>',
+    steps: [
+      'Start with P1 Critical actions — these have the highest opportunity score and lowest effort threshold.',
+      'Group Quick Wins by page: if 3+ keywords point to the same URL, that page needs a content audit.',
+      'CTR Fixes: compare current meta title against competitors in SERPs for the same query.',
+      'Page 2 Rescue: build 2–3 internal links from high-authority pages to push these URLs to page 1.',
+      'Declining Alerts: check if a competitor published new content — consider refreshing or expanding the matching page.',
+      'Use the Export CSV button to create a weekly sprint board in Notion or Trello.'
+    ],
+    tips: [
+      'P1 Quick Wins often take <2 hours to implement (title rewrite) but can move positions within 4–8 weeks.',
+      'Batch CTR fixes by page — do all meta rewrites for one page in one sitting.',
+      'Revenue impact is unlabelled here (pipeline gap) — prioritise by impression volume as a proxy for potential.'
+    ]
+  },
+  technical: {
+    title: 'Technical SEO',
+    purpose: 'Three technical health checks: Index Coverage (product URLs in GSC vs Shopify), Cannibalization (multiple pages competing for the same keyword), and Zero-Click Pages (ranking pages with no clicks).',
+    sources: 'GSC page data (PostgreSQL) · Shopify listings (PostgreSQL ledsone schema) · URL pattern classification',
+    freq: 'Live from DB on tab open',
+    metrics: [
+      { name: 'Coverage Ratio', desc: 'Product URLs in GSC ÷ Shopify product count. >100% = URL variants/locale paths counted. Expected to be >100%.', source: 'GSC + Shopify' },
+      { name: 'Cannibalisation Score', desc: 'Number of pages competing for the same keyword. Higher = more dilution risk.', source: 'GSC' },
+      { name: 'Zero-Click Rate', desc: '% of ranking pages with 0 clicks in the period. High rate = thin content or SERP feature displacing clicks.', source: 'GSC' },
+      { name: 'Impressions (Zero-Click)', desc: 'Impressions on pages with 0 clicks — these pages are visible but not attracting users.', source: 'GSC' }
+    ],
+    demo: '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:12px"><div style="border:1px solid #e3e7ee;border-radius:8px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:700;color:var(--navy)">592%</div><div style="color:var(--muted);margin-top:4px">Coverage Ratio</div><div style="font-size:11px;color:var(--muted);margin-top:4px">Expected >100% due to URL variants</div></div><div style="border:1px solid #e3e7ee;border-radius:8px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:700;color:#92640a">47</div><div style="color:var(--muted);margin-top:4px">Cannibalised Keywords</div><div style="font-size:11px;color:var(--muted);margin-top:4px">2+ pages competing</div></div><div style="border:1px solid #e3e7ee;border-radius:8px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:700;color:#991b1b">68%</div><div style="color:var(--muted);margin-top:4px">Zero-Click Rate</div><div style="font-size:11px;color:var(--muted);margin-top:4px">Of all ranking pages</div></div></div>',
+    steps: [
+      'Index Coverage: if ratio is low (<50%), check robots.txt and sitemap for excluded product URLs.',
+      'Cannibalization: for each competing keyword, pick a canonical page and 301 redirect or consolidate the others.',
+      'Zero-Click: pages with ≥500 impressions and 0 clicks need meta title/description rewrites as a priority.',
+      'Zero-Click pages may rank for featured snippets or knowledge panels — check SERP manually before assuming a problem.',
+      'Use Cannibalization data to build a keyword map — assign one primary URL per intent cluster.'
+    ],
+    tips: [
+      'Coverage ratio >100% is expected and not a bug — it counts URL variants, locale paths, and faceted pages.',
+      'Cannibalisation is most damaging for head terms (high impressions) — tail terms can coexist on similar pages.',
+      'Zero-Click is rising industry-wide due to AI Overviews — focus on clicks, not just impressions, as the primary KPI.'
+    ]
+  }
+};
 
 function exportProdCSV() {
   const headers = 'page,title,handle,clicks,impressions,ctr_pct,avg_position,top_query,opp_score,priority';
