@@ -823,8 +823,7 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc) {
   });
 }
 
-/* Run exec tab on page load */
-loadExec();
+/* loadExec() called after HELP_CFG is defined — see below */
 
 /* ── Product Intelligence ──────────────────────────────────── */
 let prodLoaded = false;
@@ -2120,6 +2119,9 @@ var HELP_CFG = {
     ]
   }
 };
+
+/* Run exec tab on page load — must be after HELP_CFG is defined */
+loadExec();
 
 function exportProdCSV() {
   const headers = 'page,title,handle,clicks,impressions,ctr_pct,avg_position,top_query,opp_score,priority';
