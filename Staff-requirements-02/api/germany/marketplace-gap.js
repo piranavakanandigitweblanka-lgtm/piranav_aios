@@ -41,7 +41,7 @@ module.exports = async function handler(req, res) {
        AND el.sku IS NOT NULL AND TRIM(el.sku) != ''
       LEFT JOIN listings.shopify_listings sl
         ON ${STRIP.replace(/sku/g, 'sl.sku')} = p.sku
-       AND sl.site = 'Germany' AND sl.all_list = 1
+       AND sl.site = 'Germany'
        AND sl.sku IS NOT NULL AND TRIM(sl.sku) != ''
       GROUP BY p.sku
       ORDER BY SUM(licsl.stock) DESC
