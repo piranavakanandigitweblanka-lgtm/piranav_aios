@@ -393,6 +393,152 @@ async function handleLpMoM(client, res) {
 
 /* ─── MAIN HANDLER ──────────────────────────────────────────── */
 
+/* ─── ACTIONS ───────────────────────────────────────────────── */
+
+async function handleActionPriorities(client, res, from, to) {
+  // Two parallel queries: opportunity keywords + declining movers
+  const latest = await getLatestDate(client);
+  const curTo   = addDays(latest, 0);
+  const curFrom = addDays(latest, -29);
+  const prvTo   = addDays(latest, -30);
+  const prvFrom = addDays(latest, -59);
+
+  const [oppRes, decRes, ctrRes] = await Promise.all([
+    // Opportunity keywords: pos 4-20, >= 50 impressions
+    client.query(`
+      SELECT query,
+        SUM(clicks)::int                                                AS clicks,
+        SUM(impressions)::int                                           AS impressions,
+        ROUND((SUM(clicks)::numeric/NULLIF(SUM(impressions),0))*100,3) AS ctr_pct,
+        ROUND(AVG(position)::numeric,1)                                 AS avg_position
+      FROM google_search_console.query
+      WHERE sub_source=$1 AND search_type='web' AND date BETWEEN $2 AND $3
+      GROUP BY query
+      HAVING AVG(position) BETWEEN 4 AND 20 AND SUM(impressions) >= 100
+      ORDER BY SUM(impressions) DESC LIMIT 80
+    `, [GSC_SUB_SOURCE, from, to]),
+
+    // Declining movers: largest position drops
+    client.query(`
+      WITH current_period AS (
+        SELECT query,
+          ROUND(AVG(position)::numeric,1) AS cur_pos,
+          SUM(clicks)::int AS cur_clicks, SUM(impressions)::int AS cur_imp
+        FROM google_search_console.query
+        WHERE sub_source=$1 AND search_type='web' AND date BETWEEN $2 AND $3
+        GROUP BY query HAVING SUM(impressions)>=20
+      ), prior_period AS (
+        SELECT query,
+          ROUND(AVG(position)::numeric,1) AS prv_pos,
+          SUM(clicks)::int AS prv_clicks
+        FROM google_search_console.query
+        WHERE sub_source=$1 AND search_type='web' AND date BETWEEN $4 AND $5
+        GROUP BY query HAVING SUM(impressions)>=20
+      )
+      SELECT c.query, c.cur_pos, p.prv_pos,
+        ROUND((p.prv_pos-c.cur_pos)::numeric,1) AS pos_change,
+        c.cur_clicks, c.cur_imp, p.prv_clicks
+      FROM current_period c JOIN prior_period p ON p.query=c.query
+      WHERE (p.prv_pos-c.cur_pos) < -2
+      ORDER BY (p.prv_pos-c.cur_pos) ASC LIMIT 30
+    `, [GSC_SUB_SOURCE, curFrom, curTo, prvFrom, prvTo]),
+
+    // CTR underperformers: high impressions, CTR well below position benchmark
+    client.query(`
+      SELECT query,
+        SUM(clicks)::int                                                AS clicks,
+        SUM(impressions)::int                                           AS impressions,
+        ROUND((SUM(clicks)::numeric/NULLIF(SUM(impressions),0))*100,3) AS ctr_pct,
+        ROUND(AVG(position)::numeric,1)                                 AS avg_position
+      FROM google_search_console.query
+      WHERE sub_source=$1 AND search_type='web' AND date BETWEEN $2 AND $3
+      GROUP BY query
+      HAVING AVG(position) BETWEEN 1 AND 10
+        AND SUM(impressions) >= 200
+        AND (SUM(clicks)::numeric/NULLIF(SUM(impressions),0)) < 0.03
+      ORDER BY SUM(impressions) DESC LIMIT 30
+    `, [GSC_SUB_SOURCE, from, to]),
+  ]);
+
+  const actions = [];
+
+  // Score and label opportunity keywords
+  for (const r of oppRes.rows) {
+    const pos=parseFloat(r.avg_position)||0, imp=parseInt(r.impressions)||0, ctr=parseFloat(r.ctr_pct)||0;
+    let score=0;
+    if      (pos<=7)  score=90;
+    else if (pos<=10) score=75;
+    else if (pos<=15) score=60;
+    else              score=45;
+    score += Math.min(imp/200, 10);
+    score = Math.min(100, Math.round(score));
+
+    let category, action_label, why;
+    if (pos<=7 && imp>=200) {
+      category='quick-win'; action_label='Push to Top 3';
+      why=`Ranking #${pos} with ${imp} impressions — a 1-3 position improvement could 3× clicks.`;
+    } else if (pos<=10) {
+      category='ctr-boost'; action_label='Optimise Title/Meta';
+      why=`On page 1 at #${pos} but CTR is ${ctr.toFixed(1)}% — meta description and title relevance review needed.`;
+    } else if (pos<=15) {
+      category='rescue'; action_label='Page 2 Rescue';
+      why=`Stuck on page 2 at #${pos} with ${imp} impressions — content depth or internal links likely limiting.`;
+    } else {
+      category='content'; action_label='Build Content Authority';
+      why=`Position ${pos} with ${imp} impressions — page authority and topical depth need strengthening.`;
+    }
+    actions.push({ id: `opp-${r.query}`, category, priority_score: score, query: r.query,
+      cur_pos: pos, impressions: imp, clicks: parseInt(r.clicks)||0, ctr_pct: ctr,
+      action_label, why, pos_change: null });
+  }
+
+  // Declining alerts
+  for (const r of decRes.rows) {
+    const drop = Math.abs(parseFloat(r.pos_change)||0);
+    const score = Math.min(100, Math.round(55 + drop * 1.2));
+    actions.push({ id: `dec-${r.query}`, category: 'decline', priority_score: score,
+      query: r.query, cur_pos: parseFloat(r.cur_pos)||0, impressions: parseInt(r.cur_imp)||0,
+      clicks: parseInt(r.cur_clicks)||0, ctr_pct: null,
+      action_label: 'Investigate Drop',
+      why: `Position fell ${drop} places (was #${r.prv_pos}, now #${r.cur_pos}) in last 30 days.`,
+      pos_change: parseFloat(r.pos_change)||0 });
+  }
+
+  // CTR underperformers
+  for (const r of ctrRes.rows) {
+    const pos=parseFloat(r.avg_position)||0, imp=parseInt(r.impressions)||0, ctr=parseFloat(r.ctr_pct)||0;
+    // Benchmark CTR for pos 1-3 is ~15-30%, 4-7 ~5-10%, 8-10 ~2-4%
+    const bench = pos<=3 ? 15 : pos<=7 ? 5 : 2;
+    const gap   = Math.max(0, bench - ctr);
+    const score = Math.min(100, Math.round(50 + gap * 2 + Math.min(imp/500, 15)));
+    // Avoid duplicates already captured by opportunity
+    if (!actions.find(a => a.query === r.query)) {
+      actions.push({ id: `ctr-${r.query}`, category: 'ctr-boost', priority_score: score,
+        query: r.query, cur_pos: pos, impressions: imp, clicks: parseInt(r.clicks)||0,
+        ctr_pct: ctr, action_label: 'Fix CTR — Title/Meta',
+        why: `Ranking #${pos} with ${imp} impressions but only ${ctr.toFixed(1)}% CTR (benchmark ~${bench}%).`,
+        pos_change: null });
+    }
+  }
+
+  // Sort by priority_score DESC, assign P-level
+  actions.sort((a,b) => b.priority_score - a.priority_score);
+  const ranked = actions.map((a,i) => ({
+    ...a,
+    rank: i+1,
+    priority: a.priority_score >= 85 ? 'P1' : a.priority_score >= 70 ? 'P2' : a.priority_score >= 55 ? 'P3' : 'P4',
+  }));
+
+  const summary = { quick_win:0, ctr_boost:0, rescue:0, content:0, decline:0 };
+  ranked.forEach(a => { if (summary[a.category.replace('-','_')] !== undefined) summary[a.category.replace('-','_')]++; });
+
+  return res.status(200).json({
+    ok:true, type:'priorities', from, to,
+    date_range_movers: { cur_period:{from:curFrom,to:curTo}, prv_period:{from:prvFrom,to:prvTo} },
+    summary, total:ranked.length, rows:ranked,
+  });
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=60');
@@ -439,8 +585,13 @@ module.exports = async function handler(req, res) {
           case 'top-pages': return await handleLpMoM(client, res);
           default: return res.status(400).json({ ok:false, error:`landing: unknown type "${type}"` });
         }
+      case 'actions':
+        switch (type) {
+          case 'priorities': return await handleActionPriorities(client, res, from, to);
+          default: return res.status(400).json({ ok:false, error:`actions: unknown type "${type}"` });
+        }
       default:
-        return res.status(400).json({ ok:false, error:`Unknown module "${module_}". Valid: exec, products, keywords, landing` });
+        return res.status(400).json({ ok:false, error:`Unknown module "${module_}". Valid: exec, products, keywords, landing, actions` });
     }
   } catch (err) {
     return errResponse(res, err);

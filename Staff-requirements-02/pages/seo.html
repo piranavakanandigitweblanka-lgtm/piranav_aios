@@ -201,6 +201,26 @@ select.fsel:focus{border-color:var(--accent);}
 .mom-chg.up    {color:var(--good);}
 .mom-chg.dn    {color:var(--red);}
 .mom-chg.flat  {color:var(--muted);}
+/* Phase 5 — Action Centre */
+.action-summary {display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px;}
+.ac-card        {background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;border-left:4px solid transparent;}
+.ac-card.quick-win  {border-left-color:#10b981;}
+.ac-card.ctr-boost  {border-left-color:#f59e0b;}
+.ac-card.rescue     {border-left-color:#6366f1;}
+.ac-card.content    {border-left-color:#0ea5e9;}
+.ac-card.decline    {border-left-color:#ef4444;}
+.ac-num  {font-size:28px;font-weight:800;color:var(--navy);}
+.ac-lbl  {font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-top:2px;}
+.p1-badge {display:inline-block;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:700;background:#fee2e2;color:#991b1b;}
+.p2-badge {display:inline-block;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:700;background:#fef3c7;color:#92400e;}
+.p3-badge {display:inline-block;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:700;background:#ede9fe;color:#5b21b6;}
+.p4-badge {display:inline-block;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:700;background:#f1f5f9;color:#475569;}
+.cat-quickwin  {display:inline-block;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:600;background:#d1fae5;color:#065f46;}
+.cat-ctrboost  {display:inline-block;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:600;background:#fef3c7;color:#92400e;}
+.cat-rescue    {display:inline-block;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:600;background:#ede9fe;color:#5b21b6;}
+.cat-content   {display:inline-block;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:600;background:#dbeafe;color:#1e40af;}
+.cat-decline   {display:inline-block;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:600;background:#fee2e2;color:#991b1b;}
+.why-text      {font-size:11.5px;color:var(--muted);max-width:340px;}
 
 /* Product name cell */
 .prod-name{font-weight:600;color:var(--navy);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;}
@@ -247,7 +267,7 @@ footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:cente
     <button class="nav-btn" onclick="switchTab('products',this)">Product Intelligence<span class="nl">Phase 2 — Pending</span></button>
     <button class="nav-btn" onclick="switchTab('keywords',this)">Keyword Intelligence<span class="nl">Phase 3 — Pending</span></button>
     <button class="nav-btn" onclick="switchTab('landing',this)">Landing Pages<span class="nl">Phase 4 — Live</span></button>
-    <button class="nav-btn" onclick="switchTab('actions',this)">Action Centre<span class="nl">Phase 5 — Pending</span></button>
+    <button class="nav-btn" onclick="switchTab('actions',this)">Action Centre<span class="nl">Phase 5 — Live</span></button>
     <button class="nav-btn" onclick="switchTab('technical',this)">Technical SEO<span class="nl">Phase 6 — Pending</span></button>
   </div>
 
@@ -284,7 +304,7 @@ footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:cente
     <div id="landing-content"><div class="loading"><div class="spinner"></div><br>Loading landing pages&hellip;</div></div>
   </div>
   <div id="tab-actions" class="tab-panel">
-    <div class="placeholder"><div class="ph-icon">&#9889;</div><h2>Action Centre</h2><p>Phase 5 &mdash; Prioritised SEO actions derived from data: quick wins, opportunity pages, content gaps, cannibalization alerts.</p></div>
+    <div id="actions-content"><div class="loading"><div class="spinner"></div><br>Building action list&hellip;</div></div>
   </div>
   <div id="tab-technical" class="tab-panel">
     <div class="placeholder"><div class="ph-icon">&#9881;</div><h2>Technical SEO</h2><p>Phase 6 &mdash; Index coverage trends, crawl budget indicators, Core Web Vitals signals, structured data health.</p></div>
@@ -303,6 +323,7 @@ function switchTab(id, btn) {
   if (id === 'products') loadProducts();
   if (id === 'keywords') loadKeywords('top');
   if (id === 'landing')  loadLanding('pages');
+  if (id === 'actions')  loadActions();
 }
 
 /* ── CSV parser ────────────────────────────────────────────── */
@@ -1402,6 +1423,175 @@ function exportLandingCSV() {
   const blob = new Blob([csv], { type: 'text/csv' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = `seo-landing-${landingActive}.csv`; a.click();
+}
+
+/* ── Action Centre ──────────────────────────────────────────── */
+let actLoaded   = false;
+let actAllRows  = [];
+let actFiltered = [];
+
+async function loadActions() {
+  if (actLoaded) { renderActionsTab(); return; }
+  const wrap = document.getElementById('actions-content');
+  if (!wrap) return;
+  wrap.innerHTML = '<div class="loading"><div class="spinner"></div><br>Building action list&hellip;</div>';
+
+  fetch('/api/seo?module=actions&type=priorities')
+    .then(r => r.json())
+    .then(json => {
+      if (!json.ok) throw new Error(json.error || 'API error');
+      actAllRows = json.rows || [];
+      actLoaded  = true;
+      renderActionsShell(json.summary || {});
+      filterActions();
+    })
+    .catch(e => {
+      const w = document.getElementById('actions-content');
+      if (w) w.innerHTML = `<div class="alert"><strong>Error:</strong> ${e.message}</div>`;
+    });
+}
+
+function renderActionsShell(summary) {
+  const cards = [
+    { key:'quick_win',  cls:'quick-win',  label:'Quick Wins',      icon:'&#9889;' },
+    { key:'ctr_boost',  cls:'ctr-boost',  label:'CTR Fixes',       icon:'&#128270;' },
+    { key:'rescue',     cls:'rescue',     label:'Page 2 Rescue',   icon:'&#128640;' },
+    { key:'content',    cls:'content',    label:'Content Gaps',    icon:'&#128203;' },
+    { key:'decline',    cls:'decline',    label:'Declining Alerts',icon:'&#9660;' },
+  ].map(c => `<div class="ac-card ${c.cls}" onclick="setActCategory('${c.key.replace('_','-')}')">
+      <div class="ac-num">${summary[c.key]||0}</div>
+      <div class="ac-lbl">${c.icon} ${c.label}</div></div>`).join('');
+
+  document.getElementById('actions-content').innerHTML = `
+    <div class="action-summary">${cards}</div>
+    <div class="controls">
+      <input id="act-search" class="srch" type="text" placeholder="Search keyword&hellip;" oninput="filterActions()">
+      <select id="act-cat" class="fsel" onchange="filterActions()">
+        <option value="">All categories</option>
+        <option value="quick-win">Quick Win</option>
+        <option value="ctr-boost">CTR Boost</option>
+        <option value="rescue">Page 2 Rescue</option>
+        <option value="content">Content Gap</option>
+        <option value="decline">Declining Alert</option>
+      </select>
+      <select id="act-pri" class="fsel" onchange="filterActions()">
+        <option value="">All priorities</option>
+        <option value="P1">P1 — Critical</option>
+        <option value="P2">P2 — High</option>
+        <option value="P3">P3 — Medium</option>
+        <option value="P4">P4 — Low</option>
+      </select>
+      <button class="exp-btn" onclick="exportActCSV()">&#11015; Export CSV</button>
+    </div>
+    <div class="tbox">
+      <div class="tbar"><strong id="act-count">—</strong><span id="act-meta" style="margin-left:10px;font-size:12px;color:var(--muted)">Ranked by priority score — GSC pipeline data (clicks ≈ 50% of true totals)</span></div>
+      <div class="scroll" id="act-body"></div>
+    </div>
+    <div class="section-title">Data Quality</div>
+    <div class="dq-grid">
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot live"></div><div class="dq-name">Opportunity Keywords <span class="badge badge-live">Live</span></div></div><div class="dq-cov">Mar–Jul 2026 • pos 4–20 • ≥100 impressions</div><div class="dq-note">Quick wins, CTR boosts, and content gap actions are derived from GSC query data. Priority score combines position bracket, impression volume, and CTR gap.</div></div>
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot live"></div><div class="dq-name">Declining Alerts <span class="badge badge-live">Live</span></div></div><div class="dq-cov">Last 30 days vs prior 30 days</div><div class="dq-note">Keywords with position drop &gt; 2 places and ≥20 impressions in both periods. Minimum data threshold reduces noise from single-day fluctuations.</div></div>
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot limited"></div><div class="dq-name">CTR Benchmark <span class="badge badge-limited">Estimated</span></div></div><div class="dq-cov">Industry average CTR curves (not site-specific)</div><div class="dq-note">Benchmarks: pos 1–3 ≈ 15%, 4–7 ≈ 5%, 8–10 ≈ 2%. Site-specific CTR benchmarks are unavailable without full GA4 integration.</div></div>
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot na"></div><div class="dq-name">Revenue Impact <span class="badge badge-na">Unavailable</span></div></div><div class="dq-cov">Shopify organic revenue not in pipeline</div><div class="dq-note">Actions are ranked by SEO signal strength only. Revenue-weighted prioritisation requires GA4 session → Shopify order join — not available in current pipeline.</div></div>
+    </div>`;
+}
+
+function setActCategory(cat) {
+  const sel = document.getElementById('act-cat');
+  if (sel) { sel.value = cat; filterActions(); }
+}
+
+function filterActions() {
+  if (!actLoaded) return;
+  const q   = (document.getElementById('act-search') ? document.getElementById('act-search').value : '').toLowerCase();
+  const cat = document.getElementById('act-cat')  ? document.getElementById('act-cat').value  : '';
+  const pri = document.getElementById('act-pri')  ? document.getElementById('act-pri').value  : '';
+
+  actFiltered = actAllRows.filter(r => {
+    const matchQ   = !q   || r.query.toLowerCase().includes(q);
+    const matchCat = !cat || r.category === cat;
+    const matchPri = !pri || r.priority === pri;
+    return matchQ && matchCat && matchPri;
+  });
+
+  const countEl = document.getElementById('act-count');
+  if (countEl) countEl.textContent = fNum(actFiltered.length) + ' actions';
+  renderActTable(actFiltered.slice(0, 200));
+}
+
+function renderActionsTab() {
+  filterActions();
+}
+
+function catBadge(cat) {
+  const map = {
+    'quick-win': ['cat-quickwin','&#9889; Quick Win'],
+    'ctr-boost': ['cat-ctrboost','&#128270; CTR Boost'],
+    'rescue':    ['cat-rescue',  '&#128640; Page 2 Rescue'],
+    'content':   ['cat-content', '&#128203; Content Gap'],
+    'decline':   ['cat-decline', '&#9660; Declining'],
+  };
+  const [cls, lbl] = map[cat] || ['p4-badge', cat];
+  return `<span class="${cls}">${lbl}</span>`;
+}
+
+function priBadge5(pri) {
+  const cls = { P1:'p1-badge', P2:'p2-badge', P3:'p3-badge', P4:'p4-badge' }[pri] || 'p4-badge';
+  return `<span class="${cls}">${pri}</span>`;
+}
+
+function renderActTable(rows) {
+  if (!rows.length) {
+    const b = document.getElementById('act-body');
+    if (b) b.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted)">No actions match the current filters.</div>';
+    return;
+  }
+  let html = `<table>
+    <thead><tr>
+      <th style="width:36px">#</th>
+      <th style="width:60px">Priority</th>
+      <th style="width:110px">Category</th>
+      <th style="min-width:180px">Keyword</th>
+      <th class="num">Position</th>
+      <th class="num">Impressions</th>
+      <th class="num">Clicks</th>
+      <th class="num">Score</th>
+      <th class="num">Action</th>
+      <th style="min-width:200px">Why</th>
+    </tr></thead><tbody>`;
+  rows.forEach(r => {
+    const chg = r.pos_change !== null
+      ? `<span class="${r.pos_change < 0 ? 'pos-dn' : 'pos-up'}">${r.pos_change > 0 ? '+' : ''}${r.pos_change}</span>`
+      : '';
+    html += `<tr>
+      <td style="color:var(--muted);font-size:11px">${r.rank}</td>
+      <td>${priBadge5(r.priority)}</td>
+      <td>${catBadge(r.category)}</td>
+      <td><strong>${r.query}</strong>${chg ? ' ' + chg : ''}</td>
+      <td class="num">${posBadge(r.cur_pos)}</td>
+      <td class="num">${fNum(r.impressions)}</td>
+      <td class="num">${fNum(r.clicks)}</td>
+      <td class="num"><div class="opp-wrap">${oppBar(r.priority_score)}</div></td>
+      <td class="num" style="white-space:nowrap;font-size:11.5px;font-weight:600">${r.action_label}</td>
+      <td class="why-text">${r.why}</td>
+    </tr>`;
+  });
+  if (actFiltered.length > 200) {
+    html += `<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:12px;font-size:11.5px">Showing 200 of ${fNum(actFiltered.length)} actions</td></tr>`;
+  }
+  html += '</tbody></table>';
+  const b = document.getElementById('act-body');
+  if (b) b.innerHTML = html;
+}
+
+function exportActCSV() {
+  const rows = actFiltered.length ? actFiltered : actAllRows;
+  const csv = 'rank,priority,category,query,cur_pos,impressions,clicks,ctr_pct,priority_score,action_label,pos_change,why\n' +
+    rows.map(r => [r.rank, r.priority, r.category, `"${r.query}"`, r.cur_pos, r.impressions,
+      r.clicks, r.ctr_pct ?? '', r.priority_score, `"${r.action_label}"`, r.pos_change ?? '', `"${r.why}"`].join(',')).join('\n');
+  const blob = new Blob([csv], { type:'text/csv' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'seo-action-centre.csv'; a.click();
 }
 
 function exportProdCSV() {
