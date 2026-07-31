@@ -6,8 +6,8 @@
 
 ## URLs
 - **Production**: https://staff-requirements-02.vercel.app
-- **Latest Deploy**: https://staff-requirements-02-gvz09l936.vercel.app
-- **Inspect**: https://vercel.com/digitalmarketing69140951-sys-projects/staff-requirements-02/DZ5TZKAoYdLemxUbsRTaj8W9ViDj
+- **Latest Deploy**: https://staff-requirements-02-qqpotl5oj.vercel.app
+- **Inspect**: https://vercel.com/digitalmarketing69140951-sys-projects/staff-requirements-02/89UMaQrbg7mjWJMj6xqXXjPrz9ai
 
 ## Members Included
 - Hetheesha

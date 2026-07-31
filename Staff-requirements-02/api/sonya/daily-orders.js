@@ -10,7 +10,7 @@ const { Client } = require('pg');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=60');
+  res.setHeader('Cache-Control', 'no-store');
 
   const connStr = process.env.DATABASE_URL;
   if (!connStr) return res.status(500).json({ ok: false, error: 'DATABASE_URL not configured' });
@@ -139,7 +139,7 @@ module.exports = async function handler(req, res) {
         sku:               r.sku,
         sub_source:        r.sub_source || '—',
         source_id:         Number(r.source_id),
-        qty:               Number(r.qty),
+        qty:               r.qty !== null ? Number(r.qty) : null,
         sold_price:        r.sold_price !== null ? Number(r.sold_price) : null,
         image:             r.image || null,
         title:             r.title || '—',

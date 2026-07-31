@@ -1,22 +1,7 @@
-// Germany Marketplace Gap — DE In-Stock SKUs
-// Returns all SKUs with Germany warehouse stock > 0, with listing flags for
-// Amazon DE, eBay DE, and Shopify DE.
-// Matching: suffix stripped in SQL (no JS encoding issues) + bundle prefix expansion in JS
-// Cache: no-store
-
 const { Client } = require('pg');
 
-// Expand a (already-suffix-stripped) listing SKU into all bundle-prefix variants
-// e.g. "A+B+C" → Set{"A+B+C","A+B","A"}
-function expandPrefixes(baseSku) {
-  const set = new Set();
-  set.add(baseSku);
-  const parts = baseSku.split('+');
-  for (let i = 1; i < parts.length; i++) {
-    set.add(parts.slice(0, i).join('+'));
-  }
-  return set;
-}
+// Strip store-specific suffixes from listing SKUs
+const STRIP = `TRIM(REGEXP_REPLACE(sku, '-(IDE|IFR|DE|UK)$', ''))`;
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -26,110 +11,53 @@ module.exports = async function handler(req, res) {
   if (!connStr) return res.status(500).json({ ok: false, error: 'DATABASE_URL not configured' });
 
   const client = new Client({
-    connectionString: connStr,
-    ssl: false,
-    connectionTimeoutMillis: 15000,
-    statement_timeout: 55000,
+    connectionString: connStr, ssl: false,
+    connectionTimeoutMillis: 15000, statement_timeout: 55000,
   });
 
   try {
     await client.connect();
 
-    // ── Step 1: All DE in-stock SKUs ─────────────────────────────────────────
-    const { rows: stockRows } = await client.query(`
-      SELECT p.sku, SUM(licsl.stock)::int AS de_stock
+    // Single query: stock + all 3 channel listings matched in SQL
+    const { rows } = await client.query(`
+      SELECT
+        p.sku                                                          AS s,
+        SUM(licsl.stock)::int                                          AS st,
+        MAX(CASE WHEN al.sku  IS NOT NULL THEN 1 ELSE 0 END)::int     AS a,
+        MAX(CASE WHEN el.sku  IS NOT NULL THEN 1 ELSE 0 END)::int     AS e,
+        MAX(CASE WHEN sl.sku  IS NOT NULL THEN 1 ELSE 0 END)::int     AS sh
       FROM inventory.products p
       JOIN inventory.local_inventory_current_stock_location_wise licsl
         ON licsl.inventory_id = p.id
-      WHERE licsl.warehouse_location = 'Germany'
-        AND licsl.stock > 0
+       AND licsl.warehouse_location = 'Germany'
+       AND licsl.stock > 0
+      LEFT JOIN listings.amazon_listings al
+        ON ${STRIP.replace(/sku/g, 'al.sku')} = p.sku
+       AND al.site = 'Germany'
+       AND al.sku IS NOT NULL AND TRIM(al.sku) != ''
+      LEFT JOIN listings.ebay_listings el
+        ON ${STRIP.replace(/sku/g, 'el.sku')} = p.sku
+       AND el.site = 'Germany' AND el.all_list = 1
+       AND el.sku IS NOT NULL AND TRIM(el.sku) != ''
+      LEFT JOIN listings.shopify_listings sl
+        ON ${STRIP.replace(/sku/g, 'sl.sku')} = p.sku
+       AND sl.site = 'Germany' AND sl.all_list = 1
+       AND sl.sku IS NOT NULL AND TRIM(sl.sku) != ''
       GROUP BY p.sku
       ORDER BY SUM(licsl.stock) DESC
     `);
 
-    if (!stockRows.length) {
-      return res.status(200).json({ ok: true, refreshed_at: new Date().toISOString(), rows: [] });
-    }
-
-    // ── Step 2: Fetch listing SKUs — strip store suffixes IN SQL ─────────────
-    const SUFFIX_REGEX = '-(IDE|IFR|DE|UK)$';
-
-    const [amzRes, ebayRes, shopRes] = await Promise.all([
-      client.query(`
-        SELECT DISTINCT TRIM(REGEXP_REPLACE(sku, $1, '')) AS sku
-        FROM listings.amazon_listings
-        WHERE site = 'Germany' AND sku IS NOT NULL AND TRIM(sku) != ''
-      `, [SUFFIX_REGEX]),
-      client.query(`
-        SELECT DISTINCT TRIM(REGEXP_REPLACE(sku, $1, '')) AS sku
-        FROM listings.ebay_listings
-        WHERE site = 'Germany' AND all_list = 1 AND sku IS NOT NULL AND TRIM(sku) != ''
-      `, [SUFFIX_REGEX]),
-      client.query(`
-        SELECT DISTINCT TRIM(REGEXP_REPLACE(sku, $1, '')) AS sku
-        FROM listings.shopify_listings
-        WHERE site = 'Germany' AND all_list = 1 AND sku IS NOT NULL AND TRIM(sku) != ''
-      `, [SUFFIX_REGEX]),
-    ]);
-
-    // ── Step 3: Build listed sets with bundle-prefix expansion ───────────────
-    function buildListedSet(rows) {
-      const listed = new Set();
-      for (const row of rows) {
-        for (const prefix of expandPrefixes(row.sku)) {
-          listed.add(prefix);
-        }
-      }
-      return listed;
-    }
-
-    const amzListed  = buildListedSet(amzRes.rows);
-    const ebayListed = buildListedSet(ebayRes.rows);
-    const shopListed = buildListedSet(shopRes.rows);
-
-    // ── Step 4: Build output rows ─────────────────────────────────────────────
-    const rows = stockRows.map(r => ({
-      s:  r.sku,
-      st: r.de_stock,
-      a:  amzListed.has(r.sku)  ? 1 : 0,
-      e:  ebayListed.has(r.sku) ? 1 : 0,
-      sh: shopListed.has(r.sku) ? 1 : 0,
-    }));
-
-    // ── Step 5: Summary counts ────────────────────────────────────────────────
     const total          = rows.length;
-    const notAnywhere    = rows.filter(r => r.a === 0 && r.e === 0 && r.sh === 0).length;
-    const missingAmazon  = rows.filter(r => r.a === 0).length;
-    const missingEbay    = rows.filter(r => r.e === 0).length;
-    const missingShopify = rows.filter(r => r.sh === 0).length;
-    const allThree       = rows.filter(r => r.a === 1 && r.e === 1 && r.sh === 1).length;
+    const notAnywhere    = rows.filter(r => !r.a && !r.e && !r.sh).length;
+    const missingAmazon  = rows.filter(r => !r.a).length;
+    const missingEbay    = rows.filter(r => !r.e).length;
+    const missingShopify = rows.filter(r => !r.sh).length;
+    const allThree       = rows.filter(r => r.a && r.e && r.sh).length;
 
-    // Debug mode: ?debug=sku to inspect matching for a specific SKU
-    if (req.query && req.query.debug) {
-      const debugSku = req.query.debug;
-      const shopRaw = await client.query(
-        `SELECT sku, TRIM(REGEXP_REPLACE(sku, $1, '')) AS base_sku
-         FROM listings.shopify_listings
-         WHERE site = 'Germany' AND all_list = 1
-           AND (sku = $2 OR sku = $2 || '-IDE' OR TRIM(REGEXP_REPLACE(sku, $1, '')) = $2)
-         LIMIT 10`, [SUFFIX_REGEX, debugSku]
-      );
-      const invRaw = await client.query(
-        `SELECT p.sku, SUM(licsl.stock)::int as stock
-         FROM inventory.products p
-         JOIN inventory.local_inventory_current_stock_location_wise licsl ON licsl.inventory_id = p.id
-         WHERE licsl.warehouse_location = 'Germany' AND p.sku = $1
-         GROUP BY p.sku`, [debugSku]
-      );
-      return res.status(200).json({
-        ok: true, debug: true,
-        target_sku: debugSku,
-        shopify_de_raw_rows: shopRaw.rows,
-        inventory_row: invRaw.rows[0] || null,
-        shopify_listed_count: shopRes.rows.length,
-        shopify_sample: shopRes.rows.slice(0, 5),
-        in_shopListed: shopListed.has(debugSku),
-      });
+    if (req.query.debug) {
+      const dsku = req.query.debug;
+      const drow = rows.find(r => r.s === dsku);
+      return res.status(200).json({ ok: true, debug_sku: dsku, result: drow || null });
     }
 
     return res.status(200).json({
