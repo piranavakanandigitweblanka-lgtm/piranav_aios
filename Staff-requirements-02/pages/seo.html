@@ -185,6 +185,22 @@ select.fsel:focus{border-color:var(--accent);}
 /* Position change cell */
 .pos-up  {color:var(--good);font-weight:700;}
 .pos-dn  {color:var(--red);font-weight:700;}
+/* Phase 4 — Landing Pages */
+.pt-badge {display:inline-block;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+.pt-home       {background:#dbeafe;color:#1e40af;}
+.pt-product    {background:#d1fae5;color:#065f46;}
+.pt-collection {background:#ede9fe;color:#5b21b6;}
+.pt-content    {background:#fef3c7;color:#92400e;}
+.pt-search     {background:#fee2e2;color:#991b1b;}
+.pt-other      {background:#f1f5f9;color:#475569;}
+.by-type-grid  {display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:24px;}
+.by-type-card  {background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;}
+.by-type-label {font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.by-type-clicks{font-size:22px;font-weight:800;color:var(--navy);}
+.by-type-meta  {font-size:11.5px;color:var(--muted);margin-top:2px;}
+.mom-chg.up    {color:var(--good);}
+.mom-chg.dn    {color:var(--red);}
+.mom-chg.flat  {color:var(--muted);}
 
 /* Product name cell */
 .prod-name{font-weight:600;color:var(--navy);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;}
@@ -230,7 +246,7 @@ footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:cente
     <button class="nav-btn active" onclick="switchTab('exec',this)">Executive Overview<span class="nl">Phase 1 — Live</span></button>
     <button class="nav-btn" onclick="switchTab('products',this)">Product Intelligence<span class="nl">Phase 2 — Pending</span></button>
     <button class="nav-btn" onclick="switchTab('keywords',this)">Keyword Intelligence<span class="nl">Phase 3 — Pending</span></button>
-    <button class="nav-btn" onclick="switchTab('landing',this)">Landing Pages<span class="nl">Phase 4 — Pending</span></button>
+    <button class="nav-btn" onclick="switchTab('landing',this)">Landing Pages<span class="nl">Phase 4 — Live</span></button>
     <button class="nav-btn" onclick="switchTab('actions',this)">Action Centre<span class="nl">Phase 5 — Pending</span></button>
     <button class="nav-btn" onclick="switchTab('technical',this)">Technical SEO<span class="nl">Phase 6 — Pending</span></button>
   </div>
@@ -265,7 +281,7 @@ footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:cente
     </div>
   </div>
   <div id="tab-landing" class="tab-panel">
-    <div class="placeholder"><div class="ph-icon">&#128203;</div><h2>Landing Page Intelligence</h2><p>Phase 4 &mdash; Top organic landing pages by clicks and impressions, CTR opportunity scoring, page-level position tracking.</p></div>
+    <div id="landing-content"><div class="loading"><div class="spinner"></div><br>Loading landing pages&hellip;</div></div>
   </div>
   <div id="tab-actions" class="tab-panel">
     <div class="placeholder"><div class="ph-icon">&#9889;</div><h2>Action Centre</h2><p>Phase 5 &mdash; Prioritised SEO actions derived from data: quick wins, opportunity pages, content gaps, cannibalization alerts.</p></div>
@@ -286,6 +302,7 @@ function switchTab(id, btn) {
   btn.classList.add('active');
   if (id === 'products') loadProducts();
   if (id === 'keywords') loadKeywords('top');
+  if (id === 'landing')  loadLanding('pages');
 }
 
 /* ── CSV parser ────────────────────────────────────────────── */
@@ -1147,6 +1164,244 @@ function exportKwCSV() {
   const blob = new Blob([csv], { type: 'text/csv' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = `seo-keywords-${kwActive}.csv`; a.click();
+}
+
+/* ── Landing Page Intelligence ─────────────────────────────── */
+let landingLoaded  = { pages: false, 'by-type': false, 'top-pages': false };
+let landingData    = { pages: [], 'by-type': [], 'top-pages': [], meta: {} };
+let landingActive  = 'pages';
+
+function loadLanding(subType) {
+  landingActive = subType || 'pages';
+  const wrap = document.getElementById('landing-content');
+  if (!wrap) return;
+
+  if (!document.getElementById('landing-sub-nav')) {
+    wrap.innerHTML = landingShellHtml();
+  }
+  setLandingSubTab(landingActive);
+
+  if (landingLoaded[landingActive]) { renderLandingTab(landingActive); return; }
+
+  const body = document.getElementById('landing-tab-body');
+  if (body) body.innerHTML = '<div class="loading"><div class="spinner"></div><br>Fetching ' + landingActive + '&hellip;</div>';
+
+  fetch('/api/seo/landing-pages?type=' + landingActive)
+    .then(r => r.json())
+    .then(json => {
+      if (!json.ok) throw new Error(json.error || 'API error');
+      landingData[landingActive]   = json.rows || [];
+      if (json.cur_period) landingData.meta[landingActive] = json;
+      landingLoaded[landingActive] = true;
+      renderLandingTab(landingActive);
+    })
+    .catch(e => {
+      const el = document.getElementById('landing-tab-body');
+      if (el) el.innerHTML = `<div class="alert"><strong>Error:</strong> ${e.message}</div>`;
+    });
+}
+
+function landingShellHtml() {
+  return `
+    <div class="sub-nav" id="landing-sub-nav">
+      <button class="sub-btn active" id="landing-btn-pages"     onclick="loadLanding('pages')">All Pages</button>
+      <button class="sub-btn"        id="landing-btn-by-type"   onclick="loadLanding('by-type')">By Page Type</button>
+      <button class="sub-btn"        id="landing-btn-top-pages" onclick="loadLanding('top-pages')">Month-on-Month</button>
+    </div>
+    <div class="controls" id="landing-controls-pages">
+      <input id="landing-search" class="srch" type="text" placeholder="Search URL or type&hellip;" oninput="filterLandingTable()">
+      <select id="landing-type-filter" class="fsel" onchange="filterLandingTable()">
+        <option value="">All types</option>
+        <option value="product">Product</option>
+        <option value="collection">Collection</option>
+        <option value="home">Home</option>
+        <option value="content">Content</option>
+        <option value="search">Search</option>
+        <option value="other">Other</option>
+      </select>
+      <select id="landing-sort" class="fsel" onchange="filterLandingTable()">
+        <option value="clicks">Sort: Clicks ↓</option>
+        <option value="impressions">Sort: Impressions ↓</option>
+        <option value="position">Sort: Position ↑</option>
+        <option value="ctr">Sort: CTR ↓</option>
+      </select>
+      <button class="exp-btn" onclick="exportLandingCSV()">&#11015; Export CSV</button>
+    </div>
+    <div class="tbox">
+      <div class="tbar"><strong id="landing-count">—</strong><span id="landing-meta" style="margin-left:10px;font-size:12px;color:var(--muted)"></span></div>
+      <div class="scroll" id="landing-tab-body"></div>
+    </div>
+    <div class="section-title">Data Quality</div>
+    <div class="dq-grid">
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot live"></div><div class="dq-name">GSC Page Table <span class="badge badge-live">Live</span></div></div><div class="dq-cov">20 Mar – 28 Jul 2026</div><div class="dq-note">Aggregated by landing page URL. sub_source=104, search_type='web'. Clicks ≈ 50% of Google Search Console totals (device-level thresholding in pipeline).</div></div>
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot live"></div><div class="dq-name">Page Classification <span class="badge badge-live">Live</span></div></div><div class="dq-cov">URL-pattern based</div><div class="dq-note">product=/products/, collection=/collections/, content=/blogs/ or /pages/, home=/, search=/search. Applied in API handler — no DB lookup required.</div></div>
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot limited"></div><div class="dq-name">MoM Comparison <span class="badge badge-limited">Limited</span></div></div><div class="dq-cov">Current vs prior calendar month</div><div class="dq-note">Jul 2026 is partial (days elapsed). Prior month = Jun 2026 (full). Position change reflects avg(position) per month — not a rank-change metric.</div></div>
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot na"></div><div class="dq-name">Revenue per Page <span class="badge badge-na">Unavailable</span></div></div><div class="dq-cov">Shopify GA4 session→revenue join not in pipeline</div><div class="dq-note">Landing-page-level revenue attribution requires GA4 session data joined to Shopify orders. Not available in current pipeline. Placeholder pending Phase 6.</div></div>
+    </div>`;
+}
+
+function setLandingSubTab(sub) {
+  ['pages','by-type','top-pages'].forEach(s => {
+    const btn = document.getElementById('landing-btn-' + s);
+    if (btn) btn.classList.toggle('active', s === sub);
+  });
+  const ctrl = document.getElementById('landing-controls-pages');
+  if (ctrl) ctrl.style.display = (sub === 'pages') ? 'flex' : 'none';
+}
+
+function ptBadge(type) {
+  const labels = { home:'Home', product:'Product', collection:'Collection', content:'Content', search:'Search', other:'Other' };
+  return `<span class="pt-badge pt-${type}">${labels[type]||type}</span>`;
+}
+
+function momChg(cur, prv, reverse) {
+  if (prv === null || prv === undefined || cur === null) return '<span class="mom-chg flat">—</span>';
+  const delta = cur - prv;
+  if (Math.abs(delta) < 0.05) return '<span class="mom-chg flat">0</span>';
+  const good = reverse ? delta < 0 : delta > 0;
+  const cls  = good ? 'up' : 'dn';
+  const sign = delta > 0 ? '+' : '';
+  return `<span class="mom-chg ${cls}">${sign}${delta % 1 === 0 ? delta : delta.toFixed(1)}</span>`;
+}
+
+function filterLandingTable() {
+  if (!landingLoaded['pages']) return;
+  const q    = (document.getElementById('landing-search').value || '').toLowerCase();
+  const tf   = document.getElementById('landing-type-filter').value;
+  const sort = document.getElementById('landing-sort').value;
+
+  let rows = landingData['pages'].filter(r => {
+    const matchQ  = !q  || r.page.toLowerCase().includes(q) || r.page_type.includes(q);
+    const matchTf = !tf || r.page_type === tf;
+    return matchQ && matchTf;
+  });
+
+  rows = [...rows].sort((a, b) => {
+    if (sort === 'impressions') return b.impressions - a.impressions;
+    if (sort === 'position')    return a.avg_position - b.avg_position;
+    if (sort === 'ctr')         return b.ctr_pct - a.ctr_pct;
+    return b.clicks - a.clicks; // default: clicks
+  });
+
+  const countEl = document.getElementById('landing-count');
+  if (countEl) countEl.textContent = fNum(rows.length) + ' pages';
+  renderLandingRows('pages', rows.slice(0, 500));
+}
+
+function renderLandingTab(sub) {
+  setLandingSubTab(sub);
+  const rows    = landingData[sub];
+  const countEl = document.getElementById('landing-count');
+  const metaEl  = document.getElementById('landing-meta');
+
+  if (sub === 'pages') {
+    if (countEl) countEl.textContent = fNum(rows.length) + ' pages';
+    if (metaEl)  metaEl.textContent  = 'Top 500 by clicks • Mar–Jul 2026 • GSC pipeline (clicks ≈ 50% of true totals)';
+    renderLandingRows('pages', rows.slice(0, 500));
+
+  } else if (sub === 'by-type') {
+    if (countEl) countEl.textContent = rows.length + ' page types';
+    if (metaEl)  metaEl.textContent  = 'All pages Mar–Jul 2026 grouped by URL pattern';
+    let html = '<div class="by-type-grid">';
+    rows.forEach(r => {
+      html += `<div class="by-type-card">
+        <div class="by-type-label">${ptBadge(r.page_type)}</div>
+        <div class="by-type-clicks">${fNum(r.clicks)}</div>
+        <div class="by-type-meta">clicks &nbsp;|&nbsp; ${fNum(r.impressions)} imp &nbsp;|&nbsp; pos ${r.avg_position} &nbsp;|&nbsp; ${fNum(r.page_count)} pages &nbsp;|&nbsp; ${r.ctr_pct.toFixed(2)}% CTR</div>
+      </div>`;
+    });
+    html += '</div>';
+    const body = document.getElementById('landing-tab-body');
+    if (body) body.innerHTML = html;
+
+  } else {
+    // top-pages MoM
+    const meta = landingData.meta['top-pages'] || {};
+    if (countEl) countEl.textContent = fNum(rows.length) + ' top pages';
+    if (metaEl)  metaEl.textContent  = (meta.cur_period ? `Current: ${meta.cur_period.from} – ${meta.cur_period.to}` : '') +
+      (meta.prv_period ? `  |  Prior: ${meta.prv_period.from} – ${meta.prv_period.to}` : '');
+    renderLandingRows('top-pages', rows);
+  }
+}
+
+function renderLandingRows(sub, rows) {
+  let html = '';
+  if (sub === 'pages') {
+    html = `<table>
+      <thead><tr>
+        <th style="width:36px">#</th>
+        <th style="min-width:240px">Page</th>
+        <th style="width:90px">Type</th>
+        <th class="num">Clicks</th>
+        <th class="num">Impressions</th>
+        <th class="num">CTR %</th>
+        <th class="num">Position</th>
+        <th class="num">Days</th>
+      </tr></thead><tbody>`;
+    rows.forEach((r, i) => {
+      const slug = r.page.replace('https://ledsone.co.uk','') || '/';
+      html += `<tr>
+        <td style="color:var(--muted);font-size:11px">${i+1}</td>
+        <td style="font-size:11.5px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.page}">${slug}</td>
+        <td>${ptBadge(r.page_type)}</td>
+        <td class="num">${fNum(r.clicks)}</td>
+        <td class="num">${fNum(r.impressions)}</td>
+        <td class="num">${r.ctr_pct.toFixed(2)}%</td>
+        <td class="num">${posBadge(r.avg_position)}</td>
+        <td class="num" style="color:var(--muted)">${r.days_with_data}</td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+
+  } else {
+    // top-pages MoM
+    html = `<table>
+      <thead><tr>
+        <th style="width:36px">#</th>
+        <th style="min-width:200px">Page</th>
+        <th style="width:90px">Type</th>
+        <th class="num">Cur Clicks</th>
+        <th class="num">MoM</th>
+        <th class="num">Cur Pos</th>
+        <th class="num">Pos Δ</th>
+        <th class="num">Cur Imp</th>
+      </tr></thead><tbody>`;
+    rows.forEach((r, i) => {
+      const slug = r.page.replace('https://ledsone.co.uk','') || '/';
+      html += `<tr>
+        <td style="color:var(--muted);font-size:11px">${i+1}</td>
+        <td style="font-size:11.5px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.page}">${slug}</td>
+        <td>${ptBadge(r.page_type)}</td>
+        <td class="num"><strong>${fNum(r.cur_clicks)}</strong></td>
+        <td class="num">${momChg(r.cur_clicks, r.prv_clicks, false)}</td>
+        <td class="num">${posBadge(r.cur_position)}</td>
+        <td class="num">${momChg(r.cur_position, r.prv_position, true)}</td>
+        <td class="num">${fNum(r.cur_impressions)}</td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+  }
+
+  const body = document.getElementById('landing-tab-body');
+  if (body) body.innerHTML = html;
+}
+
+function exportLandingCSV() {
+  const rows = landingData[landingActive] || [];
+  let csv = '';
+  if (landingActive === 'pages') {
+    csv = 'page,page_type,clicks,impressions,ctr_pct,avg_position,days_with_data\n' +
+      rows.map(r => `"${r.page}",${r.page_type},${r.clicks},${r.impressions},${r.ctr_pct},${r.avg_position},${r.days_with_data}`).join('\n');
+  } else if (landingActive === 'by-type') {
+    csv = 'page_type,clicks,impressions,ctr_pct,avg_position,page_count\n' +
+      rows.map(r => `${r.page_type},${r.clicks},${r.impressions},${r.ctr_pct},${r.avg_position},${r.page_count}`).join('\n');
+  } else {
+    csv = 'page,page_type,cur_clicks,prv_clicks,cur_impressions,prv_impressions,cur_position,prv_position\n' +
+      rows.map(r => `"${r.page}",${r.page_type},${r.cur_clicks},${r.prv_clicks??''},${r.cur_impressions},${r.prv_impressions??''},${r.cur_position},${r.prv_position??''}`).join('\n');
+  }
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `seo-landing-${landingActive}.csv`; a.click();
 }
 
 function exportProdCSV() {
