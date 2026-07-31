@@ -539,6 +539,142 @@ async function handleActionPriorities(client, res, from, to) {
   });
 }
 
+/* ─── TECHNICAL SEO ─────────────────────────────────────────── */
+
+async function handleTechCoverage(client, res, from, to) {
+  const [coverRes, shopifyRes, freshRes] = await Promise.all([
+    // Page-type coverage breakdown
+    client.query(`
+      SELECT
+        COUNT(DISTINCT page)                                                                       AS total_indexed,
+        COUNT(DISTINCT CASE WHEN page ILIKE '%/products/%'    THEN page END)                      AS products,
+        COUNT(DISTINCT CASE WHEN page ILIKE '%/collections/%' THEN page END)                      AS collections,
+        COUNT(DISTINCT CASE WHEN page NOT ILIKE '%/products/%'
+                             AND page NOT ILIKE '%/collections/%'
+                             AND page NOT ILIKE '%ledsone.co.uk/$'
+                             AND page NOT ILIKE '%ledsone.co.uk'   THEN page END)                  AS other,
+        MIN(date) AS earliest, MAX(date) AS latest
+      FROM google_search_console.page
+      WHERE sub_source=$1 AND search_type='web' AND date BETWEEN $2 AND $3
+    `, [GSC_SUB_SOURCE, from, to]),
+
+    // Shopify product count for coverage ratio
+    client.query(`
+      SELECT COUNT(*) AS total_products
+      FROM listings.shopify_listings
+      WHERE sub_source=$1 AND is_parent=1
+    `, [GSC_SUB_SOURCE]),
+
+    // Pages by days_with_data bucket (freshness proxy)
+    client.query(`
+      SELECT
+        CASE
+          WHEN days_cnt <= 7   THEN 'new_7d'
+          WHEN days_cnt <= 30  THEN 'active_30d'
+          WHEN days_cnt <= 60  THEN 'active_60d'
+          ELSE                      'established'
+        END AS freshness_bucket,
+        COUNT(*) AS page_count
+      FROM (
+        SELECT page, COUNT(DISTINCT date) AS days_cnt
+        FROM google_search_console.page
+        WHERE sub_source=$1 AND search_type='web' AND date BETWEEN $2 AND $3
+        GROUP BY page
+      ) sub
+      GROUP BY freshness_bucket
+    `, [GSC_SUB_SOURCE, from, to]),
+  ]);
+
+  const cov = coverRes.rows[0];
+  const totalProducts  = parseInt(shopifyRes.rows[0].total_products) || 0;
+  const indexedProducts= parseInt(cov.products) || 0;
+  const coverageRatio  = totalProducts > 0 ? parseFloat(((indexedProducts/totalProducts)*100).toFixed(1)) : 0;
+
+  const freshness = {};
+  freshRes.rows.forEach(r => { freshness[r.freshness_bucket] = parseInt(r.page_count)||0; });
+
+  return res.status(200).json({
+    ok: true, type: 'coverage', from, to,
+    stats: {
+      total_indexed:      parseInt(cov.total_indexed)||0,
+      indexed_products:   indexedProducts,
+      indexed_collections:parseInt(cov.collections)||0,
+      indexed_other:      parseInt(cov.other)||0,
+      total_shopify_products: totalProducts,
+      product_coverage_pct:   coverageRatio,
+      earliest: cov.earliest,
+      latest:   cov.latest,
+    },
+    freshness,
+  });
+}
+
+async function handleTechCannib(client, res, from, to) {
+  // Keywords where 2+ distinct pages appear in query_page — limited to clicked rows
+  const { rows: raw } = await client.query(`
+    WITH page_kw AS (
+      SELECT query, page, SUM(clicks)::int AS clicks
+      FROM google_search_console.query_page
+      WHERE sub_source=$1 AND search_type='web' AND date BETWEEN $2 AND $3
+      GROUP BY query, page
+      HAVING SUM(clicks) >= 1
+    ),
+    multi_page AS (
+      SELECT query, COUNT(DISTINCT page)::int AS competing_pages, SUM(clicks)::int AS total_clicks
+      FROM page_kw
+      GROUP BY query
+      HAVING COUNT(DISTINCT page) >= 2
+      ORDER BY SUM(clicks) DESC
+      LIMIT 60
+    )
+    SELECT mp.query, mp.competing_pages, mp.total_clicks,
+           pk.page, pk.clicks AS page_clicks
+    FROM multi_page mp
+    JOIN page_kw pk ON pk.query = mp.query
+    ORDER BY mp.total_clicks DESC, mp.query, pk.clicks DESC
+  `, [GSC_SUB_SOURCE, from, to]);
+
+  // Group by keyword
+  const grouped = {};
+  for (const r of raw) {
+    if (!grouped[r.query]) {
+      grouped[r.query] = { query:r.query, competing_pages:parseInt(r.competing_pages), total_clicks:parseInt(r.total_clicks), pages:[] };
+    }
+    grouped[r.query].pages.push({ page:r.page, clicks:parseInt(r.page_clicks)||0 });
+  }
+  const rows = Object.values(grouped);
+
+  return res.status(200).json({ ok:true, type:'cannibalization', from, to, total:rows.length, rows });
+}
+
+async function handleTechZeroClick(client, res, from, to) {
+  const { rows } = await client.query(`
+    SELECT
+      page,
+      SUM(clicks)::int                                                    AS clicks,
+      SUM(impressions)::int                                               AS impressions,
+      ROUND(AVG(position)::numeric,1)                                     AS avg_position,
+      COUNT(DISTINCT date)::int                                           AS days_with_data
+    FROM google_search_console.page
+    WHERE sub_source=$1 AND search_type='web' AND date BETWEEN $2 AND $3
+    GROUP BY page
+    HAVING SUM(clicks) = 0 AND SUM(impressions) >= 20
+    ORDER BY SUM(impressions) DESC
+    LIMIT 300
+  `, [GSC_SUB_SOURCE, from, to]);
+
+  return res.status(200).json({
+    ok: true, type:'zero-click', from, to, total:rows.length,
+    rows: rows.map(r => ({
+      page:           r.page,
+      page_type:      classifyPage(r.page),
+      impressions:    parseInt(r.impressions)||0,
+      avg_position:   parseFloat(r.avg_position)||0,
+      days_with_data: parseInt(r.days_with_data)||0,
+    })),
+  });
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=60');
@@ -590,8 +726,15 @@ module.exports = async function handler(req, res) {
           case 'priorities': return await handleActionPriorities(client, res, from, to);
           default: return res.status(400).json({ ok:false, error:`actions: unknown type "${type}"` });
         }
+      case 'technical':
+        switch (type) {
+          case 'coverage':         return await handleTechCoverage(client, res, from, to);
+          case 'cannibalization':  return await handleTechCannib(client, res, from, to);
+          case 'zero-click':       return await handleTechZeroClick(client, res, from, to);
+          default: return res.status(400).json({ ok:false, error:`technical: unknown type "${type}"` });
+        }
       default:
-        return res.status(400).json({ ok:false, error:`Unknown module "${module_}". Valid: exec, products, keywords, landing, actions` });
+        return res.status(400).json({ ok:false, error:`Unknown module "${module_}". Valid: exec, products, keywords, landing, actions, technical` });
     }
   } catch (err) {
     return errResponse(res, err);

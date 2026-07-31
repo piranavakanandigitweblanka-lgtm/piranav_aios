@@ -221,6 +221,21 @@ select.fsel:focus{border-color:var(--accent);}
 .cat-content   {display:inline-block;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:600;background:#dbeafe;color:#1e40af;}
 .cat-decline   {display:inline-block;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:600;background:#fee2e2;color:#991b1b;}
 .why-text      {font-size:11.5px;color:var(--muted);max-width:340px;}
+/* Phase 6 — Technical SEO */
+.tech-kpi-grid  {display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px;}
+.tech-kpi       {background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;}
+.tech-kpi-num   {font-size:26px;font-weight:800;color:var(--navy);}
+.tech-kpi-sub   {font-size:11.5px;color:var(--muted);margin-top:3px;}
+.tech-kpi-lbl   {font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.coverage-bar-wrap{height:8px;background:var(--line);border-radius:4px;margin:8px 0 4px;}
+.coverage-bar   {height:8px;background:var(--good);border-radius:4px;}
+.cannib-pages   {font-size:11px;color:var(--muted);padding:2px 0;}
+.cannib-winner  {font-weight:700;color:var(--navy);}
+.freshness-row  {display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.fresh-chip     {padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;}
+.fresh-new      {background:#fef3c7;color:#92400e;}
+.fresh-active   {background:#d1fae5;color:#065f46;}
+.fresh-estab    {background:#dbeafe;color:#1e40af;}
 
 /* Product name cell */
 .prod-name{font-weight:600;color:var(--navy);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;}
@@ -268,7 +283,7 @@ footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:cente
     <button class="nav-btn" onclick="switchTab('keywords',this)">Keyword Intelligence<span class="nl">Phase 3 — Pending</span></button>
     <button class="nav-btn" onclick="switchTab('landing',this)">Landing Pages<span class="nl">Phase 4 — Live</span></button>
     <button class="nav-btn" onclick="switchTab('actions',this)">Action Centre<span class="nl">Phase 5 — Live</span></button>
-    <button class="nav-btn" onclick="switchTab('technical',this)">Technical SEO<span class="nl">Phase 6 — Pending</span></button>
+    <button class="nav-btn" onclick="switchTab('technical',this)">Technical SEO<span class="nl">Phase 6 — Live</span></button>
   </div>
 
   <!-- ── Tab 1: Executive Overview ─────────────────────────────── -->
@@ -307,7 +322,7 @@ footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:cente
     <div id="actions-content"><div class="loading"><div class="spinner"></div><br>Building action list&hellip;</div></div>
   </div>
   <div id="tab-technical" class="tab-panel">
-    <div class="placeholder"><div class="ph-icon">&#9881;</div><h2>Technical SEO</h2><p>Phase 6 &mdash; Index coverage trends, crawl budget indicators, Core Web Vitals signals, structured data health.</p></div>
+    <div id="technical-content"><div class="loading"><div class="spinner"></div><br>Loading technical signals&hellip;</div></div>
   </div>
 
   <footer class="site">AIOS SEO Intelligence Dashboard V1 &bull; ledsone.co.uk &bull; Phase 1 Executive Overview + Phase 2 Product Intelligence</footer>
@@ -323,7 +338,8 @@ function switchTab(id, btn) {
   if (id === 'products') loadProducts();
   if (id === 'keywords') loadKeywords('top');
   if (id === 'landing')  loadLanding('pages');
-  if (id === 'actions')  loadActions();
+  if (id === 'actions')   loadActions();
+  if (id === 'technical') loadTechnical('coverage');
 }
 
 /* ── CSV parser ────────────────────────────────────────────── */
@@ -1592,6 +1608,235 @@ function exportActCSV() {
   const blob = new Blob([csv], { type:'text/csv' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = 'seo-action-centre.csv'; a.click();
+}
+
+/* ── Technical SEO ──────────────────────────────────────────── */
+let techLoaded  = { coverage:false, cannibalization:false, 'zero-click':false };
+let techData    = { coverage:null, cannibalization:[], 'zero-click':[] };
+let techActive  = 'coverage';
+
+function loadTechnical(subType) {
+  techActive = subType || 'coverage';
+  const wrap = document.getElementById('technical-content');
+  if (!wrap) return;
+
+  if (!document.getElementById('tech-sub-nav')) {
+    wrap.innerHTML = techShellHtml();
+  }
+  setTechSubTab(techActive);
+
+  if (techLoaded[techActive]) { renderTechTab(techActive); return; }
+
+  const body = document.getElementById('tech-tab-body');
+  if (body) body.innerHTML = '<div class="loading"><div class="spinner"></div><br>Fetching ' + techActive + '&hellip;</div>';
+
+  fetch('/api/seo?module=technical&type=' + techActive)
+    .then(r => r.json())
+    .then(json => {
+      if (!json.ok) throw new Error(json.error || 'API error');
+      techData[techActive]   = techActive === 'coverage' ? json : (json.rows || []);
+      techLoaded[techActive] = true;
+      renderTechTab(techActive);
+    })
+    .catch(e => {
+      const el = document.getElementById('tech-tab-body');
+      if (el) el.innerHTML = `<div class="alert"><strong>Error:</strong> ${e.message}</div>`;
+    });
+}
+
+function techShellHtml() {
+  return `
+    <div class="sub-nav" id="tech-sub-nav">
+      <button class="sub-btn active" id="tech-btn-coverage"        onclick="loadTechnical('coverage')">Index Coverage</button>
+      <button class="sub-btn"        id="tech-btn-cannibalization"  onclick="loadTechnical('cannibalization')">Cannibalization</button>
+      <button class="sub-btn"        id="tech-btn-zero-click"       onclick="loadTechnical('zero-click')">Zero-Click Pages</button>
+    </div>
+    <div class="controls" id="tech-controls" style="display:none">
+      <input id="tech-search" class="srch" type="text" placeholder="Search&hellip;" oninput="filterTechTable()">
+      <select id="tech-type-filter" class="fsel" onchange="filterTechTable()">
+        <option value="">All types</option>
+        <option value="product">Product</option>
+        <option value="collection">Collection</option>
+        <option value="content">Content</option>
+        <option value="home">Home</option>
+        <option value="other">Other</option>
+      </select>
+      <button class="exp-btn" onclick="exportTechCSV()">&#11015; Export CSV</button>
+    </div>
+    <div class="tbox">
+      <div class="tbar"><strong id="tech-count">—</strong><span id="tech-meta" style="margin-left:10px;font-size:12px;color:var(--muted)"></span></div>
+      <div class="scroll" id="tech-tab-body"></div>
+    </div>
+    <div class="section-title">Data Quality</div>
+    <div class="dq-grid">
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot live"></div><div class="dq-name">GSC Page Table <span class="badge badge-live">Live</span></div></div><div class="dq-cov">Mar–Jul 2026</div><div class="dq-note">Index coverage derived from distinct URLs appearing in GSC page table. Pages below GSC's privacy thresholds will be missing — true indexed count is higher.</div></div>
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot live"></div><div class="dq-name">Shopify Listings <span class="badge badge-live">Live</span></div></div><div class="dq-cov">listings.shopify_listings (is_parent=1)</div><div class="dq-note">Product coverage % = GSC-visible product URLs ÷ total Shopify parent products. Variant pages and draft products excluded.</div></div>
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot limited"></div><div class="dq-name">Cannibalization <span class="badge badge-limited">Proxy Signal</span></div></div><div class="dq-cov">query_page table — requires ≥1 click per page</div><div class="dq-note">Cannibalization detected when 2+ pages receive clicks for the same keyword. GSC privacy thresholding means low-traffic cannibalization may not appear.</div></div>
+      <div class="dq-card"><div class="dq-head"><div class="dq-dot na"></div><div class="dq-name">Core Web Vitals / Crawl Errors <span class="badge badge-na">Unavailable</span></div></div><div class="dq-cov">Not in current pipeline</div><div class="dq-note">CWV data requires GSC CrUX integration or GA4 Web Vitals reporting. Crawl errors require GSC Coverage API or a dedicated crawler. Not available in DB.</div></div>
+    </div>`;
+}
+
+function setTechSubTab(sub) {
+  ['coverage','cannibalization','zero-click'].forEach(s => {
+    const btn = document.getElementById('tech-btn-' + s);
+    if (btn) btn.classList.toggle('active', s === sub);
+  });
+  const ctrl = document.getElementById('tech-controls');
+  if (ctrl) ctrl.style.display = (sub !== 'coverage') ? 'flex' : 'none';
+}
+
+function renderTechTab(sub) {
+  setTechSubTab(sub);
+  const countEl = document.getElementById('tech-count');
+  const metaEl  = document.getElementById('tech-meta');
+  const body    = document.getElementById('tech-tab-body');
+  if (!body) return;
+
+  if (sub === 'coverage') {
+    // techData.coverage holds the full json response
+    const json = techData['coverage'];
+    const s = json.stats || {};
+    const f = json.freshness || {};
+    if (countEl) countEl.textContent = fNum(s.total_indexed) + ' pages indexed (GSC-visible)';
+    if (metaEl)  metaEl.textContent  = s.earliest ? `${s.earliest} – ${s.latest}` : '';
+
+    const coverPct = s.product_coverage_pct || 0;
+    const barW     = Math.min(100, coverPct);
+
+    body.innerHTML = `
+      <div class="tech-kpi-grid">
+        <div class="tech-kpi"><div class="tech-kpi-lbl">Total GSC Pages</div><div class="tech-kpi-num">${fNum(s.total_indexed)}</div><div class="tech-kpi-sub">Distinct URLs with ≥1 impression</div></div>
+        <div class="tech-kpi"><div class="tech-kpi-lbl">Product Pages</div><div class="tech-kpi-num">${fNum(s.indexed_products)}</div><div class="tech-kpi-sub">of ${fNum(s.total_shopify_products)} Shopify products</div>
+          <div class="coverage-bar-wrap"><div class="coverage-bar" style="width:${barW}%"></div></div>
+          <div style="font-size:11px;color:var(--muted)">${coverPct}% indexed in GSC</div></div>
+        <div class="tech-kpi"><div class="tech-kpi-lbl">Collection Pages</div><div class="tech-kpi-num">${fNum(s.indexed_collections)}</div><div class="tech-kpi-sub">Category pages appearing in GSC</div></div>
+        <div class="tech-kpi"><div class="tech-kpi-lbl">Other Pages</div><div class="tech-kpi-num">${fNum(s.indexed_other)}</div><div class="tech-kpi-sub">Blog, content, search pages</div></div>
+      </div>
+      <div class="section-title" style="margin-top:4px">Page Freshness (days appearing in GSC)</div>
+      <div class="freshness-row">
+        <span class="fresh-chip fresh-new">&#127381; New (&le;7 days): ${fNum(f.new_7d||0)}</span>
+        <span class="fresh-chip fresh-active">&#9989; Active 8–30d: ${fNum(f.active_30d||0)}</span>
+        <span class="fresh-chip fresh-active">&#128197; Active 31–60d: ${fNum(f.active_60d||0)}</span>
+        <span class="fresh-chip fresh-estab">&#127942; Established (&gt;60d): ${fNum(f.established||0)}</span>
+      </div>
+      <div class="section-title">Coverage Note</div>
+      <div class="alert" style="margin-top:0">
+        <strong>GSC privacy thresholding:</strong> Pages with very low impressions are excluded from the pipeline.
+        True indexed count is higher than shown. Product coverage ${coverPct}% reflects GSC-visible pages only —
+        ${fNum(s.total_shopify_products - s.indexed_products)} products appear in Shopify but have no GSC signal in this date range
+        (may be new, low-traffic, or below threshold).
+      </div>`;
+
+  } else if (sub === 'cannibalization') {
+    const rows = techData['cannibalization'];
+    if (countEl) countEl.textContent = fNum(rows.length) + ' cannibalised keywords';
+    if (metaEl)  metaEl.textContent  = '2+ pages receiving clicks for same keyword • Mar–Jul 2026';
+
+    if (!rows.length) { body.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted)">No cannibalization detected with current thresholds (≥1 click per page, 2+ pages).</div>'; return; }
+
+    const q   = document.getElementById('tech-search') ? document.getElementById('tech-search').value.toLowerCase() : '';
+    const show = q ? rows.filter(r => r.query.toLowerCase().includes(q)) : rows;
+
+    let html = `<table><thead><tr>
+      <th style="width:36px">#</th>
+      <th style="min-width:180px">Keyword</th>
+      <th class="num">Competing Pages</th>
+      <th class="num">Total Clicks</th>
+      <th style="min-width:300px">Competing URLs</th>
+    </tr></thead><tbody>`;
+    show.slice(0,200).forEach((r,i) => {
+      const pageList = r.pages.map((p,pi) => {
+        const slug = p.page.replace('https://ledsone.co.uk','') || '/';
+        const cls  = pi===0 ? 'cannib-winner' : '';
+        return `<div class="${cls}" style="font-size:11px" title="${p.page}">${slug} <span style="color:var(--muted)">(${p.clicks} clicks)</span></div>`;
+      }).join('');
+      html += `<tr>
+        <td style="color:var(--muted);font-size:11px">${i+1}</td>
+        <td><strong>${r.query}</strong></td>
+        <td class="num">${r.competing_pages}</td>
+        <td class="num">${fNum(r.total_clicks)}</td>
+        <td>${pageList}</td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+    body.innerHTML = html;
+
+  } else {
+    // zero-click
+    const rows = techData['zero-click'];
+    if (countEl) countEl.textContent = fNum(rows.length) + ' zero-click pages';
+    if (metaEl)  metaEl.textContent  = 'Pages with ≥20 impressions but 0 clicks • Mar–Jul 2026';
+    renderZeroClickTable(rows);
+  }
+}
+
+function filterTechTable() {
+  if (techActive === 'coverage') return;
+  if (techActive === 'cannibalization') { renderTechTab('cannibalization'); return; }
+
+  const q  = (document.getElementById('tech-search') ? document.getElementById('tech-search').value : '').toLowerCase();
+  const tf = document.getElementById('tech-type-filter') ? document.getElementById('tech-type-filter').value : '';
+  let rows = techData['zero-click'] || [];
+  if (q)  rows = rows.filter(r => r.page.toLowerCase().includes(q));
+  if (tf) rows = rows.filter(r => r.page_type === tf);
+  const countEl = document.getElementById('tech-count');
+  if (countEl) countEl.textContent = fNum(rows.length) + ' zero-click pages';
+  renderZeroClickTable(rows.slice(0,300));
+}
+
+function renderZeroClickTable(rows) {
+  const body = document.getElementById('tech-tab-body');
+  if (!body) return;
+  if (!rows.length) { body.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted)">No pages match the current filters.</div>'; return; }
+
+  let html = `<table><thead><tr>
+    <th style="width:36px">#</th>
+    <th style="min-width:220px">Page</th>
+    <th style="width:100px">Type</th>
+    <th class="num">Impressions</th>
+    <th class="num">Position</th>
+    <th class="num">Days Seen</th>
+    <th style="min-width:160px">Recommended Fix</th>
+  </tr></thead><tbody>`;
+  rows.forEach((r,i) => {
+    const slug = r.page.replace('https://ledsone.co.uk','') || '/';
+    let fix = 'Review meta title/description';
+    if (r.avg_position > 20)      fix = 'Improve ranking first (pos ' + r.avg_position + ')';
+    else if (r.avg_position <= 10) fix = 'Rewrite title tag — high pos, 0 clicks';
+    else                           fix = 'Improve snippet relevance';
+    html += `<tr>
+      <td style="color:var(--muted);font-size:11px">${i+1}</td>
+      <td style="font-size:11.5px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.page}">${slug}</td>
+      <td>${ptBadge(r.page_type)}</td>
+      <td class="num">${fNum(r.impressions)}</td>
+      <td class="num">${posBadge(r.avg_position)}</td>
+      <td class="num" style="color:var(--muted)">${r.days_with_data}</td>
+      <td style="font-size:11.5px">${fix}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  body.innerHTML = html;
+}
+
+function exportTechCSV() {
+  let csv = '', name = 'seo-technical';
+  if (techActive === 'cannibalization') {
+    name = 'seo-cannibalization';
+    csv  = 'keyword,competing_pages,total_clicks,pages\n' +
+      (techData['cannibalization']||[]).map(r =>
+        `"${r.query}",${r.competing_pages},${r.total_clicks},"${r.pages.map(p=>p.page+'('+p.clicks+')').join('; ')}"`
+      ).join('\n');
+  } else if (techActive === 'zero-click') {
+    name = 'seo-zero-click';
+    csv  = 'page,page_type,impressions,avg_position,days_with_data\n' +
+      (techData['zero-click']||[]).map(r =>
+        `"${r.page}",${r.page_type},${r.impressions},${r.avg_position},${r.days_with_data}`
+      ).join('\n');
+  }
+  if (!csv) return;
+  const blob = new Blob([csv], { type:'text/csv' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = name + '.csv'; a.click();
 }
 
 function exportProdCSV() {
