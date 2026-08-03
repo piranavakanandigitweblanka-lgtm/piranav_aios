@@ -590,13 +590,12 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows) {
     const prevGscR = prev ? (gscByMonth[prev.month] || {}) : {};
     const prevAdsR = prev ? (adsByMonth[prev.month] || {}) : {};
 
-    const flags = row.data_flags || '';
-    const hasSe  = flags.includes('SE');
-    const hasGsc = flags.includes('GSC');
-    const hasAds = flags.includes('ADS');
+    const hasSe  = !!row.semrush_rank;
+    const hasGsc = !!(gsc.clicks);
+    const hasAds = !!(ads.cost_gbp);
 
     momRows += `<tr>
-      <td><strong>${fMonth(row.month)}</strong><br><span style="font-size:10px;color:var(--muted)">${row.quarter}</span></td>
+      <td><strong>${fMonth(row.month)}</strong><br><span style="font-size:10px;color:var(--muted)">${row.quarter || ''}</span></td>
       <td class="num">${hasSe ? fNum(row.semrush_rank) : '<span style="color:var(--muted)">—</span>'}</td>
       <td class="num">${prev && hasSe ? deltaHtml(row.semrush_rank, prev.semrush_rank, true) : '<span class="delta-cell na">—</span>'}</td>
       <td class="num">${hasSe ? fNum(row.semrush_organic_keywords) : '<span style="color:var(--muted)">—</span>'}</td>
@@ -605,8 +604,8 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows) {
       <td class="num">${prev && hasSe ? deltaHtml(row.semrush_traffic_est, prev.semrush_traffic_est) : '<span class="delta-cell na">—</span>'}</td>
       <td class="num">${hasGsc ? fNum(gsc.clicks) : '<span style="color:var(--muted)">—</span>'}</td>
       <td class="num">${hasGsc && gsc.avg_position ? gsc.avg_position : '<span style="color:var(--muted)">—</span>'}</td>
-      <td class="num">${hasAds ? fGBP(ads.cost_gbp || row.ads_cost_gbp) : '<span style="color:var(--muted)">—</span>'}</td>
-      <td class="num">${hasAds ? (parseFloat(ads.roas || row.ads_roas) || 0).toFixed(2)+'x' : '<span style="color:var(--muted)">—</span>'}</td>
+      <td class="num">${hasAds ? fGBP(ads.cost_gbp) : '<span style="color:var(--muted)">—</span>'}</td>
+      <td class="num">${hasAds ? (parseFloat(ads.roas) || 0).toFixed(2)+'x' : '<span style="color:var(--muted)">—</span>'}</td>
     </tr>`;
   });
 
