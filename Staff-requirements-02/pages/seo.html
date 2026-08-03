@@ -656,8 +656,74 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blC
       ${dqCard('Products / Search Terms','csv','csv','Static CSV','Sep 2024 – Jul 2026 (product campaigns)','Ads product performance and search term data from master dataset CSV.')}
     </div>`;
 
+  /* ── SEO Alerts ─────────────────────────────────────────── */
+  const alerts = [];
+
+  // Backlinks — 86% drop
+  if (blRows.length >= 2) {
+    const peak = blRows[0]; // Aug 2024 (oldest = peak)
+    const cur  = blRows[blRows.length - 1];
+    const blDrop = Math.round((1 - cur.total_backlinks / peak.total_backlinks) * 100);
+    const rdDrop = Math.round((1 - cur.referring_domains / peak.referring_domains) * 100);
+    if (blDrop >= 50) alerts.push({ sev: 'critical', icon: '🔴', title: `Backlinks down ${blDrop}%`, body: `Total backlinks dropped from ${parseInt(peak.total_backlinks).toLocaleString()} (Aug 2024) to ${parseInt(cur.total_backlinks).toLocaleString()} (Jul 2026). Referring domains fell ${rdDrop}% (${parseInt(peak.referring_domains).toLocaleString()} → ${parseInt(cur.referring_domains).toLocaleString()}). Likely cause: link rot, penalty, or de-indexation. Investigate immediately.` });
+  }
+
+  // SEMrush rank — worsening trend over last 6 months
+  if (seRows.length >= 6) {
+    const r6 = seRows[seRows.length - 6];
+    const r1 = seRows[seRows.length - 1];
+    const rankChange = parseInt(r1.semrush_rank) - parseInt(r6.semrush_rank);
+    if (rankChange > 50000) alerts.push({ sev: 'critical', icon: '🔴', title: `Domain rank fell ${rankChange.toLocaleString()} places in 6 months`, body: `Rank was ${parseInt(r6.semrush_rank).toLocaleString()} in ${fMonth(r6.month)} and is now ${parseInt(r1.semrush_rank).toLocaleString()} in ${fMonth(r1.month)}. A falling rank with simultaneous backlink loss suggests link authority loss as the root cause.` });
+    else if (rankChange > 10000) alerts.push({ sev: 'warning', icon: '🟡', title: `Domain rank declining — down ${rankChange.toLocaleString()} places`, body: `Rank moved from ${parseInt(r6.semrush_rank).toLocaleString()} to ${parseInt(r1.semrush_rank).toLocaleString()} over 6 months. Monitor closely.` });
+  }
+
+  // Traffic estimate — significant MoM decline
+  if (seRows.length >= 2) {
+    const tCur  = parseInt(seRows[seRows.length - 1].semrush_traffic_est) || 0;
+    const tPrev = parseInt(seRows[seRows.length - 2].semrush_traffic_est) || 0;
+    if (tPrev > 0) {
+      const tDrop = Math.round((1 - tCur / tPrev) * 100);
+      if (tDrop >= 20) alerts.push({ sev: 'warning', icon: '🟡', title: `Traffic estimate down ${tDrop}% MoM`, body: `Estimated organic traffic dropped from ${tPrev.toLocaleString()} to ${tCur.toLocaleString()} month-on-month. Cross-check with GSC clicks for confirmation.` });
+    }
+    // Also check 6-month traffic decline
+    if (seRows.length >= 6) {
+      const t6   = parseInt(seRows[seRows.length - 6].semrush_traffic_est) || 0;
+      const drop6 = t6 > 0 ? Math.round((1 - tCur / t6) * 100) : 0;
+      if (drop6 >= 50) alerts.push({ sev: 'critical', icon: '🔴', title: `Organic traffic down ${drop6}% over 6 months`, body: `Traffic estimate was ${t6.toLocaleString()} in ${fMonth(seRows[seRows.length-6].month)}, now ${tCur.toLocaleString()}. A 6-month decline of this magnitude requires urgent investigation.` });
+    }
+  }
+
+  // Keyword count decline
+  if (seRows.length >= 6) {
+    const kCur  = parseInt(seRows[seRows.length - 1].semrush_organic_keywords) || 0;
+    const k6    = parseInt(seRows[seRows.length - 6].semrush_organic_keywords) || 0;
+    if (k6 > 0) {
+      const kDrop = Math.round((1 - kCur / k6) * 100);
+      if (kDrop >= 30) alerts.push({ sev: 'warning', icon: '🟡', title: `Ranking keywords down ${kDrop}% in 6 months`, body: `Organic keywords dropped from ${k6.toLocaleString()} to ${kCur.toLocaleString()}. Site is losing visibility across keyword sets.` });
+    }
+  }
+
+  // Positive alert: ROAS good
+  if (latestAds && parseFloat(latestAds.roas) >= 3) {
+    alerts.push({ sev: 'good', icon: '🟢', title: `Google Ads ROAS healthy at ${parseFloat(latestAds.roas).toFixed(2)}x`, body: `Paid channel performing well. With organic declining, paid spend may need to increase to compensate for lost organic traffic.` });
+  }
+
+  const sevOrder = { critical: 0, warning: 1, good: 2 };
+  alerts.sort((a, b) => sevOrder[a.sev] - sevOrder[b.sev]);
+
+  const alertsHtml = alerts.length ? `
+    <div class="section-title" style="color:#dc2626">⚠ SEO Alerts</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px">
+      ${alerts.map(a => `
+        <div style="border-left:4px solid ${a.sev==='critical'?'#dc2626':a.sev==='warning'?'#d97706':'#16a34a'};background:${a.sev==='critical'?'#fef2f2':a.sev==='warning'?'#fffbeb':'#f0fdf4'};border-radius:0 8px 8px 0;padding:12px 16px">
+          <div style="font-weight:700;font-size:14px;color:${a.sev==='critical'?'#991b1b':a.sev==='warning'?'#92400e':'#166534'};margin-bottom:4px">${a.icon} ${a.title}</div>
+          <div style="font-size:13px;color:#475569;line-height:1.5">${a.body}</div>
+        </div>`).join('')}
+    </div>` : '';
+
   /* ── Inject HTML ────────────────────────────────────────── */
   document.getElementById('exec-content').innerHTML = `
+    ${alertsHtml}
     ${kpiHtml}
 
     <div class="section-title">37-Month Organic Traffic Trend</div>
