@@ -433,34 +433,46 @@ async function loadExec() {
   execLoaded = true;
 
   try {
-    const [csvRes, gscRes, posRes, adsRes, dqRes] = await Promise.all([
-      fetch('/data/seo-master-dataset.csv'),
+    const [seRes, compRes, gscRes, posRes, adsRes, dqRes] = await Promise.all([
+      fetch('/api/seo?module=semrush&type=history'),
+      fetch('/api/seo?module=semrush&type=competitors'),
       fetch('/api/seo?module=exec&type=gsc-monthly'),
       fetch('/api/seo?module=exec&type=position-dist'),
       fetch('/api/seo?module=exec&type=ads-monthly'),
       fetch('/api/seo?module=exec&type=data-quality'),
     ]);
 
-    const csvText = await csvRes.text();
-    const gscJson = await gscRes.json();
-    const posJson = await posRes.json();
-    const adsJson = await adsRes.json();
-    const dqJson  = await dqRes.json();
+    const seJson   = await seRes.json();
+    const compJson = await compRes.json();
+    const gscJson  = await gscRes.json();
+    const posJson  = await posRes.json();
+    const adsJson  = await adsRes.json();
+    const dqJson   = await dqRes.json();
 
-    const csv    = parseCSV(csvText);
-    const gscRows = gscJson.ok ? gscJson.rows : [];
-    const posRows = posJson.ok ? posJson.rows : [];
-    const adsRows = adsJson.ok ? adsJson.rows : [];
-    const dqSrc   = dqJson.ok ? dqJson.sources : {};
+    const csv      = seJson.ok ? seJson.rows.map(r => ({
+      month: r.month ? r.month.slice(0,7) : '',
+      semrush_rank: r.rank, semrush_organic_keywords: r.organic_keywords,
+      semrush_kw_top3: r.kw_top3, semrush_kw_top4_10: r.kw_top4_10,
+      semrush_kw_top11_20: r.kw_top11_20, semrush_kw_top21_100: r.kw_top21_100,
+      semrush_traffic_est: r.traffic_est, semrush_traffic_cost_gbp: r.traffic_cost_gbp,
+      semrush_paid_keywords: r.paid_keywords, semrush_paid_traffic: r.paid_traffic,
+      data_flags: 'SE'
+    })) : [];
+    const compRows = compJson.ok ? compJson.rows : [];
+    const gscRows  = gscJson.ok ? gscJson.rows : [];
+    const posRows  = posJson.ok ? posJson.rows : [];
+    const adsRows  = adsJson.ok ? adsJson.rows : [];
+    const dqSrc    = dqJson.ok ? dqJson.sources : {};
 
-    renderExec(csv, gscRows, posRows, adsRows, dqSrc);
+    renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows);
   } catch (e) {
     document.getElementById('exec-content').innerHTML =
       `<div class="alert"><strong>Load error:</strong> ${e.message}</div>`;
   }
 }
 
-function renderExec(csv, gscRows, posRows, adsRows, dqSrc) {
+function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows) {
+  compRows = compRows || [];
   /* latest values for header */
   const latestGsc = gscRows.length ? gscRows[gscRows.length - 1] : null;
   const latestAds = adsRows.length ? adsRows[adsRows.length - 1] : null;
@@ -626,7 +638,7 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc) {
     <div class="chart-row">
       <div class="chart-card">
         <h3>SEMrush Estimated Organic Traffic + GSC Clicks Overlay</h3>
-        <div class="ch-sub">SEMrush: Jul 2023 – Jun 2026 (static CSV) &bull; GSC: Mar – Jul 2026 (PostgreSQL pipeline, ~50% of true clicks)</div>
+        <div class="ch-sub">SEMrush: Jul 2023 – present (Neon DB, refreshed daily) &bull; GSC: Mar – Jul 2026 (PostgreSQL pipeline, ~50% of true clicks)</div>
         <div class="chart-wrap"><canvas id="chart-trend"></canvas></div>
       </div>
       <div class="chart-card">
@@ -643,9 +655,16 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc) {
       <div class="chart-wrap" style="height:200px"><canvas id="chart-ads"></canvas></div>
     </div>
 
+    <div class="section-title">Competitor Traffic Comparison</div>
+    <div class="chart-card" style="margin-bottom:14px">
+      <h3>ledsone.co.uk vs Top 5 Competitors — Estimated Organic Traffic</h3>
+      <div class="ch-sub">SEMrush monthly history &bull; Neon DB &bull; refreshed weekly by scheduled agent</div>
+      <div class="chart-wrap" style="height:280px"><canvas id="chart-competitors"></canvas></div>
+    </div>
+
     <div class="section-title">Month-on-Month Comparison — Last 6 Months</div>
     <div class="info-note">
-      SEMrush columns: from master dataset CSV (static, last export Jun 2026). GSC columns: live from PostgreSQL pipeline (&#9888; ~50% of true clicks). Ads columns: live from PostgreSQL.
+      SEMrush columns: Neon DB (daily refresh). GSC columns: live from PostgreSQL pipeline (&#9888; ~50% of true clicks). Ads columns: live from PostgreSQL.
     </div>
     <div class="tbox">
       <div class="tbar"><strong>MoM Performance Table</strong><span>6 months &bull; All available sources</span></div>
@@ -821,6 +840,59 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc) {
       }
     }
   });
+
+  /* Competitor traffic chart */
+  if (compRows.length) {
+    const domains = ['ledsone.co.uk','lightingcompany.co.uk','ledhut.co.uk','industville.co.uk','thevintagelightbulbcompany.com','lampspares.co.uk'];
+    const compColors = ['#1f5eff','#0a7d4f','#d97706','#b91c1c','#7c3aed','#0891b2'];
+    const compLabels = ['ledsone.co.uk','lightingcompany','ledhut','industville','vintagelightbulb','lampspares'];
+
+    /* build month labels from ledsone history */
+    const allMonths = csv.map(r => r.month).filter(Boolean);
+
+    /* group competitor rows by domain */
+    const byDomain = {};
+    compRows.forEach(r => {
+      const d = r.domain;
+      if (!byDomain[d]) byDomain[d] = {};
+      const m = r.month ? r.month.slice(0,7) : '';
+      byDomain[d][m] = parseInt(r.traffic_est) || null;
+    });
+
+    /* ledsone from csv */
+    byDomain['ledsone.co.uk'] = {};
+    csv.forEach(r => { byDomain['ledsone.co.uk'][r.month] = r.semrush_traffic_est ? parseInt(r.semrush_traffic_est) : null; });
+
+    const compDatasets = domains.map((d, i) => ({
+      label: compLabels[i],
+      data: allMonths.map(m => byDomain[d] ? (byDomain[d][m] || null) : null),
+      borderColor: compColors[i],
+      backgroundColor: 'transparent',
+      borderWidth: d === 'ledsone.co.uk' ? 3 : 1.5,
+      borderDash: d === 'ledsone.co.uk' ? [] : [],
+      tension: 0.3,
+      pointRadius: d === 'ledsone.co.uk' ? 3 : 2,
+      pointHoverRadius: 5,
+    }));
+
+    charts.competitors = new Chart(document.getElementById('chart-competitors'), {
+      type: 'line',
+      data: { labels: allMonths.map(m => { const d = new Date(m+'-01'); return d.toLocaleDateString('en-GB',{month:'short',year:'2-digit'}); }), datasets: compDatasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { labels: { font: commonFont, boxWidth: 12 } },
+          tooltip: { bodyFont: commonFont, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw ? ctx.raw.toLocaleString() : '—'}` } }
+        },
+        scales: {
+          x: { ticks: { font: commonFont, maxTicksLimit: 12 }, grid: { color: '#f0f3f8' } },
+          y: { ticks: { font: commonFont, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'K' : v }, grid: { color: '#f0f3f8' }, title: { display: true, text: 'Est. Organic Traffic', font: commonFont } }
+        }
+      }
+    });
+  }
 }
 
 /* loadExec() called after HELP_CFG is defined — see below */

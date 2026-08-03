@@ -733,8 +733,11 @@ module.exports = async function handler(req, res) {
           case 'zero-click':       return await handleTechZeroClick(client, res, from, to);
           default: return res.status(400).json({ ok:false, error:`technical: unknown type "${type}"` });
         }
+      case 'semrush':
+        await client.end();
+        return await handleSemrush(type, res);
       default:
-        return res.status(400).json({ ok:false, error:`Unknown module "${module_}". Valid: exec, products, keywords, landing, actions, technical` });
+        return res.status(400).json({ ok:false, error:`Unknown module "${module_}". Valid: exec, products, keywords, landing, actions, technical, semrush` });
     }
   } catch (err) {
     return errResponse(res, err);
@@ -742,3 +745,48 @@ module.exports = async function handler(req, res) {
     try { await client.end(); } catch (_) {}
   }
 };
+
+/* ─── SEMRUSH (Neon DB) ────────────────────────────────────── */
+
+async function handleSemrush(type, res) {
+  const NEON_URL = process.env.NEON_DATABASE_URL;
+  if (!NEON_URL) return res.status(500).json({ ok:false, cause:'no_neon_url', error:'NEON_DATABASE_URL not set' });
+  const nc = makeClient(NEON_URL);
+  try {
+    await nc.connect();
+    if (type === 'history') {
+      const { rows } = await nc.query(`
+        SELECT month, rank, organic_keywords, kw_top3, kw_top4_10, kw_top11_20,
+               kw_top21_100, traffic_est, traffic_cost_gbp, paid_keywords, paid_traffic
+        FROM semrush_history ORDER BY month ASC`);
+      return res.json({ ok:true, rows });
+    }
+    if (type === 'competitors') {
+      const { rows } = await nc.query(`
+        SELECT domain, month, rank, organic_keywords, traffic_est, traffic_cost_gbp
+        FROM semrush_competitor_history
+        WHERE domain IN ('lightingcompany.co.uk','ledhut.co.uk','industville.co.uk','thevintagelightbulbcompany.com','lampspares.co.uk')
+        ORDER BY domain, month ASC`);
+      return res.json({ ok:true, rows });
+    }
+    if (type === 'backlinks') {
+      const { rows } = await nc.query(`
+        SELECT snapshot_date, authority_score, total_backlinks, referring_domains, referring_ips, follow_links, nofollow_links
+        FROM semrush_backlinks ORDER BY snapshot_date ASC`);
+      return res.json({ ok:true, rows });
+    }
+    if (type === 'keywords') {
+      const { rows } = await nc.query(`
+        SELECT keyword, position, prev_position, volume, cpc, url, traffic, snapshot_date
+        FROM semrush_keywords
+        WHERE snapshot_date = (SELECT MAX(snapshot_date) FROM semrush_keywords)
+        ORDER BY traffic DESC LIMIT 100`);
+      return res.json({ ok:true, rows });
+    }
+    return res.status(400).json({ ok:false, error:`semrush: unknown type "${type}"` });
+  } catch (err) {
+    return errResponse(res, err);
+  } finally {
+    try { await nc.end(); } catch (_) {}
+  }
+}
