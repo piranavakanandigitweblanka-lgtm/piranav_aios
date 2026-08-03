@@ -323,6 +323,24 @@ footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:cente
     <button class="nav-btn" onclick="switchTab('technical',this)">Technical SEO<span class="nl">Phase 6 — Live</span></button>
   </div>
 
+  <!-- ── Date Range Filter Bar ──────────────────────────────────── -->
+  <div id="date-range-bar" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px 16px;margin-bottom:16px;font-size:12px;">
+    <span style="font-weight:700;color:#0c1a30;white-space:nowrap">&#128197; Date Range</span>
+    <div style="display:flex;gap:4px;flex-wrap:wrap">
+      <button class="dr-btn" data-range="30d"  onclick="setDateRange('30d')"  style="border:1px solid #e2e8f0;background:#f8fafc;border-radius:7px;padding:4px 11px;font-size:11px;font-weight:600;cursor:pointer;color:#475569">30d</button>
+      <button class="dr-btn active" data-range="90d"  onclick="setDateRange('90d')"  style="border:1px solid #1f5eff;background:#1f5eff;border-radius:7px;padding:4px 11px;font-size:11px;font-weight:600;cursor:pointer;color:#fff">90d</button>
+      <button class="dr-btn" data-range="6m"   onclick="setDateRange('6m')"   style="border:1px solid #e2e8f0;background:#f8fafc;border-radius:7px;padding:4px 11px;font-size:11px;font-weight:600;cursor:pointer;color:#475569">6m</button>
+      <button class="dr-btn" data-range="1y"   onclick="setDateRange('1y')"   style="border:1px solid #e2e8f0;background:#f8fafc;border-radius:7px;padding:4px 11px;font-size:11px;font-weight:600;cursor:pointer;color:#475569">1y</button>
+      <button class="dr-btn" data-range="all"  onclick="setDateRange('all')"  style="border:1px solid #e2e8f0;background:#f8fafc;border-radius:7px;padding:4px 11px;font-size:11px;font-weight:600;cursor:pointer;color:#475569">All</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;margin-left:4px">
+      <input type="date" id="dr-from" style="border:1px solid #e2e8f0;border-radius:7px;padding:3px 8px;font-size:11px;color:#1e293b;background:#f8fafc" onchange="setCustomRange()">
+      <span style="color:#94a3b8">→</span>
+      <input type="date" id="dr-to"   style="border:1px solid #e2e8f0;border-radius:7px;padding:3px 8px;font-size:11px;color:#1e293b;background:#f8fafc" onchange="setCustomRange()">
+    </div>
+    <span style="color:#94a3b8;font-size:11px;margin-left:4px" id="dr-note">Applies to: Products, Keywords, Landing, Actions, Technical</span>
+  </div>
+
   <!-- ── Tab 1: Executive Overview ─────────────────────────────── -->
   <div id="tab-exec" class="tab-panel active">
     <div id="help-exec"></div>
@@ -379,6 +397,71 @@ function switchTab(id, btn) {
   if (id === 'landing')  loadLanding('pages');
   if (id === 'actions')   loadActions();
   if (id === 'technical') loadTechnical('coverage');
+}
+
+/* ── Date range filter ─────────────────────────────────────── */
+(function initDateRange() {
+  const today = new Date();
+  const fmt = d => d.toISOString().slice(0,10);
+  window.gTo   = fmt(today);
+  window.gFrom = fmt(new Date(today - 90*86400000)); // default 90d
+  const fi = document.getElementById('dr-from');
+  const ti = document.getElementById('dr-to');
+  if (fi) fi.value = window.gFrom;
+  if (ti) ti.value = window.gTo;
+})();
+
+function dateParams() { return '&from=' + window.gFrom + '&to=' + window.gTo; }
+
+function _resetLoadedFlags() {
+  kwLoaded.top = kwLoaded.opportunity = false;
+  kwData.top   = kwData.opportunity   = [];
+  landingLoaded.pages = landingLoaded['by-type'] = false;
+  landingData.pages   = landingData['by-type']   = [];
+  prodLoaded = false; prodAllRows = [];
+  actLoaded  = false; actAllRows  = []; actFiltered = [];
+  techLoaded.coverage = techLoaded.cannibalization = techLoaded['zero-click'] = false;
+  techData = { coverage:null, cannibalization:[], 'zero-click':[] };
+}
+
+function _activeDrBtn(range) {
+  document.querySelectorAll('.dr-btn').forEach(b => {
+    const active = b.dataset.range === range;
+    b.style.background     = active ? '#1f5eff' : '#f8fafc';
+    b.style.color          = active ? '#fff'    : '#475569';
+    b.style.borderColor    = active ? '#1f5eff' : '#e2e8f0';
+  });
+}
+
+function setDateRange(preset) {
+  const today = new Date();
+  const fmt = d => d.toISOString().slice(0,10);
+  window.gTo = fmt(today);
+  if      (preset === '30d') window.gFrom = fmt(new Date(today - 30*86400000));
+  else if (preset === '90d') window.gFrom = fmt(new Date(today - 90*86400000));
+  else if (preset === '6m')  window.gFrom = fmt(new Date(today.getFullYear(), today.getMonth()-6, today.getDate()));
+  else if (preset === '1y')  window.gFrom = fmt(new Date(today.getFullYear()-1, today.getMonth(), today.getDate()));
+  else                       window.gFrom = '2023-01-01';
+  const fi = document.getElementById('dr-from');
+  const ti = document.getElementById('dr-to');
+  if (fi) fi.value = window.gFrom;
+  if (ti) ti.value = window.gTo;
+  _activeDrBtn(preset);
+  _resetLoadedFlags();
+  const activeBtn = document.querySelector('.nav-btn.active');
+  if (activeBtn) activeBtn.click();
+}
+
+function setCustomRange() {
+  const fi = document.getElementById('dr-from');
+  const ti = document.getElementById('dr-to');
+  if (!fi || !ti || !fi.value || !ti.value) return;
+  window.gFrom = fi.value;
+  window.gTo   = ti.value;
+  _activeDrBtn('custom');
+  _resetLoadedFlags();
+  const activeBtn = document.querySelector('.nav-btn.active');
+  if (activeBtn) activeBtn.click();
 }
 
 /* ── CSV parser ────────────────────────────────────────────── */
@@ -1100,7 +1183,7 @@ async function loadProducts() {
 
   try {
     const [pagesRes, listingsRes] = await Promise.all([
-      fetch('/api/seo?module=products&type=pages'),
+      fetch('/api/seo?module=products&type=pages' + dateParams()),
       fetch('/api/seo?module=products&type=listings'),
     ]);
     const pagesJson    = await pagesRes.json();
@@ -1278,7 +1361,8 @@ function loadKeywords(subType) {
     return;
   }
 
-  fetch('/api/seo?module=keywords&type=' + kwActive)
+  const kwDateParam = (kwActive === 'top' || kwActive === 'opportunity') ? dateParams() : '';
+  fetch('/api/seo?module=keywords&type=' + kwActive + kwDateParam)
     .then(r => r.json())
     .then(json => {
       if (!json.ok) throw new Error(json.error || 'API error');
@@ -1600,7 +1684,8 @@ function loadLanding(subType) {
     return;
   }
 
-  fetch('/api/seo?module=landing&type=' + landingActive)
+  const lpDateParam = (landingActive === 'pages' || landingActive === 'by-type') ? dateParams() : '';
+  fetch('/api/seo?module=landing&type=' + landingActive + lpDateParam)
     .then(r => r.json())
     .then(json => {
       if (!json.ok) throw new Error(json.error || 'API error');
@@ -1901,7 +1986,7 @@ async function loadActions() {
   if (!wrap) return;
   wrap.innerHTML = '<div class="loading"><div class="spinner"></div><br>Building action list&hellip;</div>';
 
-  fetch('/api/seo?module=actions&type=priorities')
+  fetch('/api/seo?module=actions&type=priorities' + dateParams())
     .then(r => r.json())
     .then(json => {
       if (!json.ok) throw new Error(json.error || 'API error');
@@ -2081,7 +2166,7 @@ function loadTechnical(subType) {
   const body = document.getElementById('tech-tab-body');
   if (body) body.innerHTML = '<div class="loading"><div class="spinner"></div><br>Fetching ' + techActive + '&hellip;</div>';
 
-  fetch('/api/seo?module=technical&type=' + techActive)
+  fetch('/api/seo?module=technical&type=' + techActive + dateParams())
     .then(r => r.json())
     .then(json => {
       if (!json.ok) throw new Error(json.error || 'API error');
