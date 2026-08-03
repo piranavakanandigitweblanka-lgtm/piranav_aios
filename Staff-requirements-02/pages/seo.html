@@ -253,6 +253,60 @@ footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:cente
   .masthead{padding:16px 14px;}
   .kpi .val{font-size:18px;}
 }
+/* ── GEO / AI Readiness ──────────────────────────────────────── */
+.geo-hero{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;margin-bottom:24px;}
+.geo-gauge-wrap{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px 32px;text-align:center;min-width:200px;flex:0 0 auto;}
+.geo-gauge-score{font-size:60px;font-weight:800;line-height:1;margin:8px 0 4px;}
+.geo-gauge-score.score-red{color:#b91c1c;}
+.geo-gauge-score.score-amber{color:#d97706;}
+.geo-gauge-score.score-green{color:#0a7d4f;}
+.geo-gauge-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);}
+.geo-gauge-bar{height:8px;background:var(--line);border-radius:4px;margin:12px 0 4px;overflow:hidden;}
+.geo-gauge-fill{height:100%;border-radius:4px;transition:width .6s;}
+.geo-gauge-fill.score-red{background:#ef4444;}
+.geo-gauge-fill.score-amber{background:#f59e0b;}
+.geo-gauge-fill.score-green{background:#10b981;}
+.geo-gauge-sub{font-size:11px;color:var(--muted);}
+.geo-platforms{flex:1;min-width:260px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;}
+.geo-platforms h3{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--navy);margin-bottom:14px;}
+.geo-plat-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.geo-plat-name{font-size:12.5px;font-weight:600;color:var(--navy);width:160px;flex:none;}
+.geo-plat-bar-wrap{flex:1;height:7px;background:var(--line);border-radius:4px;overflow:hidden;}
+.geo-plat-bar{height:100%;border-radius:4px;}
+.geo-plat-lbl{font-size:11px;font-weight:700;width:58px;text-align:right;flex:none;}
+.geo-dims{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:22px;}
+.geo-dim{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;}
+.geo-dim-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.geo-dim-name{font-size:12px;font-weight:700;color:var(--navy);}
+.geo-dim-score{font-size:18px;font-weight:800;}
+.geo-dim-score.s-red{color:#b91c1c;}
+.geo-dim-score.s-amber{color:#d97706;}
+.geo-dim-score.s-green{color:#0a7d4f;}
+.geo-dim-bar{height:5px;background:var(--line);border-radius:3px;margin-bottom:10px;overflow:hidden;}
+.geo-dim-fill{height:100%;border-radius:3px;}
+.geo-dim-fill.s-red{background:#ef4444;}
+.geo-dim-fill.s-amber{background:#f59e0b;}
+.geo-dim-fill.s-green{background:#10b981;}
+.geo-dim-detail{font-size:11px;color:var(--muted);line-height:1.6;}
+.geo-bot-row{display:flex;align-items:center;gap:6px;font-size:11.5px;margin-bottom:3px;}
+.geo-bot-allow{color:var(--good);font-weight:700;}
+.geo-bot-disallow{color:var(--red);font-weight:700;}
+.geo-bot-unknown{color:var(--muted);font-weight:700;}
+.geo-checklist{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:22px;}
+.geo-checklist h3{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--navy);margin-bottom:14px;}
+.geo-cl-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px;}
+.geo-cl-item:last-child{border-bottom:none;}
+.geo-cl-item input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--good);}
+.geo-cl-item.done-item{color:var(--muted);text-decoration:line-through;}
+.geo-actions{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:22px;}
+.geo-act-row{display:grid;grid-template-columns:28px 1fr 80px 70px 90px;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line);font-size:12px;}
+.geo-act-row:last-child{border-bottom:none;}
+.geo-act-head{background:#f0f3f8;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);padding:9px 16px;}
+.geo-impact-h{color:var(--red);font-weight:700;}
+.geo-impact-m{color:var(--warn);font-weight:700;}
+.geo-impact-l{color:var(--muted);}
+.geo-effort-low{color:var(--good);font-weight:700;}
+.geo-effort-high{color:var(--red);font-weight:700;}
 /* ── Onboarding Help Panels ─────────────────────────────────── */
 .help-panel{background:var(--card);border:1.5px solid #c7d6f0;border-radius:14px;margin-bottom:20px;overflow:hidden;}
 .help-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;padding:13px 20px;background:linear-gradient(135deg,#f0f5ff 0%,#e8f0fe 100%);border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:var(--navy);text-align:left;gap:12px;}
@@ -323,6 +377,7 @@ footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:cente
     <button class="nav-btn" onclick="switchTab('landing',this)">Landing Pages<span class="nl">Phase 4 — Live</span></button>
     <button class="nav-btn" onclick="switchTab('actions',this)">Action Centre<span class="nl">Phase 5 — Live</span></button>
     <button class="nav-btn" onclick="switchTab('technical',this)">Technical SEO<span class="nl">Phase 6 — Live</span></button>
+    <button class="nav-btn" onclick="switchTab('geo',this)">AI Readiness<span class="nl">Phase 7 — Live</span></button>
   </div>
 
   <!-- ── Date Range Filter Bar ──────────────────────────────────── -->
@@ -384,7 +439,12 @@ footer.site{margin-top:28px;color:var(--muted);font-size:11.5px;text-align:cente
     <div id="technical-content"><div class="loading"><div class="spinner"></div><br>Loading technical signals&hellip;</div></div>
   </div>
 
-  <footer class="site">AIOS SEO Intelligence Dashboard V1 &bull; ledsone.co.uk &bull; Phase 1 Executive Overview + Phase 2 Product Intelligence</footer>
+  <!-- ── Tab 7: AI Readiness ───────────────────────────────── -->
+  <div id="tab-geo" class="tab-panel">
+    <div id="geo-content"><div class="loading"><div class="spinner"></div><br>Analysing AI readiness signals&hellip;</div></div>
+  </div>
+
+  <footer class="site">AIOS SEO Intelligence Dashboard V1 &bull; ledsone.co.uk &bull; Phase 1–7 Live</footer>
 </div>
 
 <script>
@@ -399,6 +459,7 @@ function switchTab(id, btn) {
   if (id === 'landing')  loadLanding('pages');
   if (id === 'actions')   loadActions();
   if (id === 'technical') loadTechnical('coverage');
+  if (id === 'geo')       loadGeo();
 }
 
 /* ── Date range filter ─────────────────────────────────────── */
@@ -2857,6 +2918,163 @@ var HELP_CFG = {
     ]
   }
 };
+
+/* ── GEO / AI Readiness ─────────────────────────────────────── */
+let geoLoaded = false;
+
+function loadGeo() {
+  if (geoLoaded) return;
+  geoLoaded = true;
+  fetch('/api/seo?module=geo')
+    .then(r => r.json())
+    .then(d => { if (d.ok) renderGeo(d); else document.getElementById('geo-content').innerHTML = '<div class="alert">Failed to load AI readiness data.</div>'; })
+    .catch(() => { document.getElementById('geo-content').innerHTML = '<div class="alert">Network error loading AI readiness.</div>'; });
+}
+
+function geoScoreClass(s, max) {
+  const pct = s / max;
+  return pct >= 0.7 ? 's-green' : pct >= 0.4 ? 's-amber' : 's-red';
+}
+
+function renderGeo(d) {
+  const score = d.score;
+  const sc    = score >= 60 ? 'score-green' : score >= 35 ? 'score-amber' : 'score-red';
+
+  /* platform readiness estimates based on dimensions */
+  const dimMap = {};
+  d.dimensions.forEach(dim => { dimMap[dim.key] = dim.score / dim.max; });
+
+  const platforms = [
+    { name:'Google AI Overviews', pct: Math.min(100, Math.round(((dimMap.authority||0)*0.25 + (dimMap.organic_footprint||0)*0.25 + (dimMap.structured_data||0)*0.25 + (dimMap.eeat||0)*0.25) * 100)) },
+    { name:'ChatGPT (Browse)',    pct: Math.min(100, Math.round(((dimMap.authority||0)*0.35 + (dimMap.organic_footprint||0)*0.35 + (dimMap.crawler_access||0)*0.3) * 100)) },
+    { name:'Perplexity',         pct: Math.min(100, Math.round(((dimMap.crawler_access||0)*0.3 + (dimMap.organic_footprint||0)*0.3 + (dimMap.content_format||0)*0.2 + (dimMap.authority||0)*0.2) * 100)) },
+    { name:'Gemini',             pct: Math.min(100, Math.round(((dimMap.authority||0)*0.2 + (dimMap.entity_clarity||0)*0.3 + (dimMap.structured_data||0)*0.25 + (dimMap.eeat||0)*0.25) * 100)) },
+    { name:'Claude (claude.ai)', pct: Math.min(100, Math.round(((dimMap.crawler_access||0)*0.25 + (dimMap.authority||0)*0.25 + (dimMap.content_format||0)*0.25 + (dimMap.entity_clarity||0)*0.25) * 100)) },
+  ];
+
+  function platColor(p) { return p >= 60 ? '#10b981' : p >= 35 ? '#f59e0b' : '#ef4444'; }
+  function platLbl(p)   { return p >= 60 ? 'Ready'   : p >= 35 ? 'Partial' : 'At Risk'; }
+
+  const platHTML = platforms.map(p => `
+    <div class="geo-plat-row">
+      <span class="geo-plat-name">${p.name}</span>
+      <div class="geo-plat-bar-wrap"><div class="geo-plat-bar" style="width:${p.pct}%;background:${platColor(p.pct)}"></div></div>
+      <span class="geo-plat-lbl" style="color:${platColor(p.pct)};font-weight:700">${platLbl(p.pct)}</span>
+    </div>`).join('');
+
+  /* dimension details */
+  const dimHTML = d.dimensions.map(dim => {
+    const cls = geoScoreClass(dim.score, dim.max);
+    const pct = Math.round(dim.score / dim.max * 100);
+    let detail = '';
+    const det = dim.details || {};
+
+    if (dim.key === 'crawler_access') {
+      detail = Object.entries(det.bots || {}).map(([bot, status]) =>
+        `<div class="geo-bot-row"><span class="${status==='allow'?'geo-bot-allow':status==='disallow'?'geo-bot-disallow':'geo-bot-unknown'}">${status==='allow'?'✓':status==='disallow'?'✗':'?'}</span> ${bot}</div>`
+      ).join('');
+    } else if (dim.key === 'authority') {
+      detail = `Authority Score: <strong>${det.authority_score}</strong>/100<br>Referring domains: <strong>${(det.referring_domains||0).toLocaleString()}</strong><br>Total backlinks: <strong>${(det.total_backlinks||0).toLocaleString()}</strong>`;
+    } else if (dim.key === 'entity_clarity') {
+      detail = [
+        det.has_org_schema ? '✓ Organization schema' : '✗ Organization schema missing',
+        det.has_sameas     ? '✓ sameAs links present' : '✗ sameAs links missing',
+        det.has_og_tags    ? '✓ OG tags present'      : '✗ OG tags missing',
+        det.has_wikidata   ? '✓ Wikidata entity'      : '✗ No Wikidata entity',
+      ].join('<br>');
+    } else if (dim.key === 'content_format') {
+      detail = `Organic keywords: <strong>${(det.organic_keywords||0).toLocaleString()}</strong><br>Top-3 positions: <strong>${det.top3_keywords||0}</strong><br>FAQPage schema: <strong>${det.has_faq_schema ? 'Yes ✓' : 'No ✗'}</strong>`;
+    } else if (dim.key === 'eeat') {
+      detail = [
+        det.has_agg_rating    ? '✓ Product reviews schema' : '✗ No aggregateRating schema',
+        det.has_author_schema ? '✓ Author schema present'  : '✗ No author schema on posts',
+      ].join('<br>');
+    } else if (dim.key === 'organic_footprint') {
+      detail = `${(det.organic_keywords||0).toLocaleString()} keywords<br>Top-3: ${det.top3_keywords||0} &nbsp;|&nbsp; Est. traffic: ${(det.traffic_est||0).toLocaleString()}/mo`;
+    } else if (dim.key === 'structured_data') {
+      const types = (det.schema_types || []).filter(Boolean);
+      detail = types.length ? `Types found: ${types.slice(0,4).join(', ')}` : 'No schema types detected';
+      detail += `<br>FAQPage: ${det.has_faq?'✓':'✗'} &nbsp; AggregateRating: ${det.has_agg_rating?'✓':'✗'} &nbsp; sameAs: ${det.has_sameas?'✓':'✗'}`;
+    }
+
+    return `<div class="geo-dim">
+      <div class="geo-dim-head">
+        <span class="geo-dim-name">${dim.label}</span>
+        <span class="geo-dim-score ${cls}">${dim.score}/${dim.max}</span>
+      </div>
+      <div class="geo-dim-bar"><div class="geo-dim-fill ${cls}" style="width:${pct}%"></div></div>
+      <div class="geo-dim-detail">${detail}</div>
+    </div>`;
+  }).join('');
+
+  /* checklist */
+  const clHTML = (d.checklist || []).map(item => `
+    <label class="geo-cl-item${item.done ? ' done-item' : ''}">
+      <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleGeoItem('${item.item_key}',this.checked)">
+      ${item.label}
+    </label>`).join('');
+
+  /* priority actions table */
+  const ACTIONS = [
+    { pri:1, action:'Add FAQPage schema to top 20 product pages',       impact:'HIGH', effort:'Low',  timeline:'1 week' },
+    { pri:2, action:'Add aggregateRating schema to reviewed products',   impact:'HIGH', effort:'Low',  timeline:'1 week' },
+    { pri:3, action:'Add sameAs links to Organization schema',           impact:'MED',  effort:'Low',  timeline:'2 days' },
+    { pri:4, action:'Create Wikidata entity for LEDSone',                impact:'MED',  effort:'Low',  timeline:'1 day'  },
+    { pri:5, action:'Add author/Person schema to blog posts',            impact:'MED',  effort:'Low',  timeline:'1 week' },
+    { pri:6, action:'Recover referring domain authority — target 5 UK trade links', impact:'HIGH', effort:'High', timeline:'3 months' },
+    { pri:7, action:'Expand blog to 30+ informational keyword posts',    impact:'HIGH', effort:'High', timeline:'2 months' },
+  ];
+
+  const actHTML = ACTIONS.map((a,i) => `
+    <div class="geo-act-row" style="background:${i%2===0?'#fff':'#fafbfd'}">
+      <span style="font-weight:700;color:var(--muted)">${a.pri}</span>
+      <span>${a.action}</span>
+      <span class="${a.impact==='HIGH'?'geo-impact-h':a.impact==='MED'?'geo-impact-m':'geo-impact-l'}">${a.impact}</span>
+      <span class="${a.effort==='Low'?'geo-effort-low':'geo-effort-high'}">${a.effort}</span>
+      <span style="color:var(--muted)">${a.timeline}</span>
+    </div>`).join('');
+
+  document.getElementById('geo-content').innerHTML = `
+    <div class="info-note">
+      GEO score is calculated from 7 live dimensions: AI crawler access (robots.txt live check), domain authority &amp; referring domains (SEMrush/Neon), brand entity clarity, content format, E-E-A-T signals, organic footprint, and structured data (homepage live check). Tick off checklist items to update your score.
+    </div>
+
+    <div class="geo-hero">
+      <div class="geo-gauge-wrap">
+        <div class="geo-gauge-label">GEO Score</div>
+        <div class="geo-gauge-score ${sc}">${score}</div>
+        <div class="geo-gauge-bar"><div class="geo-gauge-fill ${sc}" style="width:${score}%"></div></div>
+        <div class="geo-gauge-sub">out of 100 &bull; ${score>=60?'AI-Ready':score>=35?'Partially Ready':'Not Ready'}</div>
+      </div>
+      <div class="geo-platforms">
+        <h3>Platform-by-Platform Readiness</h3>
+        ${platHTML}
+      </div>
+    </div>
+
+    <div class="section-title">Dimension Breakdown</div>
+    <div class="geo-dims">${dimHTML}</div>
+
+    <div class="section-title">Priority Action Plan</div>
+    <div class="geo-actions">
+      <div class="geo-act-row geo-act-head" style="font-weight:700">
+        <span>#</span><span>Action</span><span>Impact</span><span>Effort</span><span>Timeline</span>
+      </div>
+      ${actHTML}
+    </div>
+
+    <div class="section-title">Manual Checklist — Mark When Done</div>
+    <div class="geo-checklist">
+      <h3>Schema &amp; Entity Fixes <span style="font-size:11px;font-weight:400;color:var(--muted)">(tick to update your GEO score)</span></h3>
+      ${clHTML}
+    </div>
+  `;
+}
+
+function toggleGeoItem(key, done) {
+  fetch(`/api/seo?module=geo&type=toggle&key=${key}&done=${done}`)
+    .then(() => { geoLoaded = false; loadGeo(); });
+}
 
 /* Run exec tab on page load — must be after HELP_CFG is defined */
 loadExec();

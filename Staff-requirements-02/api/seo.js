@@ -752,8 +752,11 @@ module.exports = async function handler(req, res) {
       case 'semrush':
         await client.end();
         return await handleSemrush(type, res);
+      case 'geo':
+        await client.end();
+        return await handleGeo(type, req.query, res);
       default:
-        return res.status(400).json({ ok:false, error:`Unknown module "${module_}". Valid: exec, products, keywords, landing, actions, technical, semrush` });
+        return res.status(400).json({ ok:false, error:`Unknown module "${module_}". Valid: exec, products, keywords, landing, actions, technical, semrush, geo` });
     }
   } catch (err) {
     return errResponse(res, err);
@@ -818,5 +821,146 @@ async function handleSemrush(type, res) {
     return errResponse(res, err);
   } finally {
     try { await nc.end(); } catch (_) {}
+  }
+}
+
+/* ─── GEO / AI READINESS ────────────────────────────────────── */
+
+async function handleGeo(type, query, res) {
+  const NEON_URL = process.env.NEON_DATABASE_URL;
+  if (!NEON_URL) return res.status(500).json({ ok:false, error:'NEON_DATABASE_URL not set' });
+  const nc = makeClient(NEON_URL);
+  try {
+    await nc.connect();
+
+    /* checklist table */
+    await nc.query(`
+      CREATE TABLE IF NOT EXISTS geo_checklist (
+        item_key VARCHAR(60) PRIMARY KEY,
+        label    TEXT NOT NULL,
+        done     BOOLEAN DEFAULT FALSE,
+        updated_at TIMESTAMP DEFAULT NOW()
+      )`);
+    await nc.query(`
+      INSERT INTO geo_checklist (item_key, label) VALUES
+        ('faqpage_schema',    'Add FAQPage schema to top 20 product pages'),
+        ('aggregate_rating',  'Add aggregateRating schema to products with reviews'),
+        ('sameas_org',        'Add sameAs array to Organization schema (social + trade directories)'),
+        ('wikidata_entity',   'Create Wikidata entity for LEDSone brand'),
+        ('author_schema',     'Add author/Person schema to blog posts'),
+        ('credentials_schema','Add trade body memberships to Organization schema (hasCredential)'),
+        ('blog_30_posts',     'Expand blog to 30+ posts targeting informational keywords'),
+        ('link_building_5',   'Earn 5 UK electrical/LED trade publication backlinks')
+      ON CONFLICT (item_key) DO NOTHING`);
+
+    /* toggle handler */
+    if (type === 'toggle') {
+      const { key, done } = query;
+      if (!key) return res.json({ ok:false, error:'key required' });
+      await nc.query(`UPDATE geo_checklist SET done=$1, updated_at=NOW() WHERE item_key=$2`, [done === 'true', key]);
+      return res.json({ ok:true });
+    }
+
+    /* pull SEMrush data */
+    const [blR, histR, kwR, clR] = await Promise.all([
+      nc.query(`SELECT authority_score, referring_domains, total_backlinks FROM semrush_backlinks ORDER BY snapshot_date DESC LIMIT 1`),
+      nc.query(`SELECT organic_keywords, kw_top3, traffic_est FROM semrush_history ORDER BY month DESC LIMIT 1`),
+      nc.query(`SELECT COUNT(*)::int AS total,
+                  COUNT(CASE WHEN position<=3  THEN 1 END)::int AS top3,
+                  COUNT(CASE WHEN position<=10 THEN 1 END)::int AS top10
+                FROM semrush_keywords
+                WHERE snapshot_date=(SELECT MAX(snapshot_date) FROM semrush_keywords)`),
+      nc.query(`SELECT item_key, label, done FROM geo_checklist ORDER BY item_key`),
+    ]);
+
+    const bl   = blR.rows[0]   || {};
+    const hist = histR.rows[0] || {};
+    const kw   = kwR.rows[0]   || {};
+    const checklist = clR.rows;
+
+    /* fetch robots.txt */
+    const AI_BOTS = ['GPTBot','ChatGPT-User','ClaudeBot','PerplexityBot','Google-Extended'];
+    let robotsBots = {};
+    try {
+      const rtxt = await fetch('https://ledsone.co.uk/robots.txt', { signal: AbortSignal.timeout(6000) }).then(r => r.text());
+      for (const agent of AI_BOTS) {
+        const re = new RegExp(`User-agent:\\s*${agent}[\\s\\S]{0,80}?(Allow|Disallow):\\s*(\\S+)`, 'i');
+        const m = rtxt.match(re);
+        if (!m) { robotsBots[agent] = 'not_mentioned'; continue; }
+        robotsBots[agent] = m[1].toLowerCase() === 'allow' ? 'allow' : 'disallow';
+      }
+    } catch(_) { AI_BOTS.forEach(b => { robotsBots[b] = 'check_failed'; }); }
+
+    /* fetch homepage schema */
+    let schemaTypes = [], hasSameAs = false, hasOgTags = false;
+    try {
+      const html = await fetch('https://ledsone.co.uk/', {
+        headers: { 'User-Agent': 'ClaudeBot/1.0' },
+        signal: AbortSignal.timeout(8000),
+      }).then(r => r.text());
+      const ldBlocks = [...html.matchAll(/<script[^>]+type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi)];
+      for (const m of ldBlocks) {
+        try {
+          const obj = JSON.parse(m[1]);
+          const types = Array.isArray(obj) ? obj.map(o => o['@type']) : [obj['@type']];
+          schemaTypes.push(...types.filter(Boolean));
+          if (JSON.stringify(obj).includes('"sameAs"')) hasSameAs = true;
+        } catch(_) {}
+      }
+      hasOgTags = /property=["']og:title["']/.test(html);
+    } catch(_) {}
+
+    /* checklist lookups */
+    const cl = (k) => checklist.find(c => c.item_key === k)?.done || false;
+
+    /* dimension scoring */
+    const authorityScore = parseInt(bl.authority_score) || 0;
+    const refDomains     = parseInt(bl.referring_domains) || 0;
+    const orgKws         = parseInt(hist.organic_keywords) || 0;
+    const top3           = parseInt(kw.top3) || 0;
+    const trafficEst     = parseInt(hist.traffic_est) || 0;
+    const allowedBots    = Object.values(robotsBots).filter(v => v === 'allow').length;
+
+    const hasFaqSchema   = schemaTypes.includes('FAQPage') || cl('faqpage_schema');
+    const hasAggRating   = schemaTypes.includes('AggregateRating') || cl('aggregate_rating');
+    const hasOrgSchema   = schemaTypes.some(t => t === 'Organization' || t === 'WebSite');
+    const hasSameAsFinal = hasSameAs || cl('sameas_org');
+
+    let dim_crawler  = Math.min(10, allowedBots * 2);
+    let dim_auth     = authorityScore >= 50 ? 9 : authorityScore >= 40 ? 7 : authorityScore >= 30 ? 4 : authorityScore >= 20 ? 2 : 1;
+    if (refDomains < 700) dim_auth = Math.max(1, dim_auth - 1);
+    let dim_entity   = 2 + (hasOrgSchema ? 2 : 0) + (hasSameAsFinal ? 2 : 0) + (cl('wikidata_entity') ? 2 : 0) + (hasOgTags ? 1 : 0);
+    dim_entity       = Math.min(10, dim_entity);
+    let dim_content  = 3 + (orgKws >= 10000 ? 2 : orgKws >= 5000 ? 1 : 0) + (top3 >= 100 ? 2 : top3 >= 50 ? 1 : 0) + (hasFaqSchema ? 2 : 0);
+    dim_content      = Math.min(10, dim_content);
+    let dim_eeat     = 2 + (hasAggRating ? 2 : 0) + (cl('author_schema') ? 2 : 0) + (cl('credentials_schema') ? 2 : 0);
+    dim_eeat         = Math.min(10, dim_eeat);
+    let dim_foot     = 2 + (orgKws >= 10000 ? 3 : orgKws >= 5000 ? 2 : 0) + (top3 >= 100 ? 2 : top3 >= 50 ? 1 : 0) + (trafficEst >= 5000 ? 2 : 0);
+    dim_foot         = Math.min(10, dim_foot);
+    let dim_schema   = 1 + (hasOrgSchema ? 1 : 0) + (hasOgTags ? 1 : 0) + (hasFaqSchema ? 3 : 0) + (hasAggRating ? 2 : 0) + (hasSameAsFinal ? 1 : 0);
+    dim_schema       = Math.min(10, dim_schema);
+
+    const totalScore = Math.round((dim_crawler + dim_auth + dim_entity + dim_content + dim_eeat + dim_foot + dim_schema) / 70 * 100);
+
+    return res.json({
+      ok: true,
+      score: totalScore,
+      dimensions: [
+        { key:'crawler_access',   label:'AI Crawler Access',    score:dim_crawler, max:10, details:{ bots:robotsBots } },
+        { key:'authority',        label:'Domain Authority',      score:dim_auth,    max:10, details:{ authority_score:authorityScore, referring_domains:refDomains, total_backlinks:parseInt(bl.total_backlinks)||0 } },
+        { key:'entity_clarity',   label:'Brand Entity Clarity',  score:dim_entity,  max:10, details:{ has_org_schema:hasOrgSchema, has_sameas:hasSameAsFinal, has_wikidata:cl('wikidata_entity'), has_og_tags:hasOgTags } },
+        { key:'content_format',   label:'Content & Format',      score:dim_content, max:10, details:{ organic_keywords:orgKws, top3_keywords:top3, has_faq_schema:hasFaqSchema } },
+        { key:'eeat',             label:'E-E-A-T Signals',       score:dim_eeat,    max:10, details:{ has_agg_rating:hasAggRating, has_author_schema:cl('author_schema') } },
+        { key:'organic_footprint',label:'Organic Footprint',     score:dim_foot,    max:10, details:{ organic_keywords:orgKws, top3_keywords:top3, traffic_est:trafficEst } },
+        { key:'structured_data',  label:'Structured Data',       score:dim_schema,  max:10, details:{ schema_types:schemaTypes, has_faq:hasFaqSchema, has_agg_rating:hasAggRating, has_sameas:hasSameAsFinal } },
+      ],
+      checklist,
+      robots: robotsBots,
+      schema_types: schemaTypes,
+    });
+  } catch (err) {
+    return errResponse(res, err);
+  } finally {
+    try { await nc.end(); } catch(_) {}
   }
 }
