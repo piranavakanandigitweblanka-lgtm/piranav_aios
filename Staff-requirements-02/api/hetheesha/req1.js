@@ -257,7 +257,7 @@ module.exports = async function handler(req, res) {
   if (type === 'ba') {
     if (!handle || !before_from || !before_to || !after_from || !after_to)
       return res.status(400).json({ ok:false, error:'handle, before_from, before_to, after_from, after_to required' });
-    const db2 = new Client({ connectionString: process.env.DATABASE_URL });
+    const db2 = new Client({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
     try {
       await db2.connect();
       const data = await handleBA(db2, handle, before_from, before_to, after_from, after_to);
@@ -269,7 +269,7 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  const db = new Client({ connectionString: process.env.DATABASE_URL });
+  const db = new Client({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
   try {
     await db.connect();
 

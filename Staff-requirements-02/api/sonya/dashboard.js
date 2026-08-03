@@ -10,7 +10,7 @@ const { Client } = require('pg');
 function makeClient(connStr, timeout) {
   return new Client({
     connectionString: connStr,
-    ssl: false,
+    ssl: { rejectUnauthorized: false },
     connectionTimeoutMillis: 15000,
     statement_timeout: timeout || 30000,
   });

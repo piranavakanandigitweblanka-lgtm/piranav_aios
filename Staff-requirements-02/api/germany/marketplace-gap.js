@@ -11,7 +11,7 @@ module.exports = async function handler(req, res) {
   if (!connStr) return res.status(500).json({ ok: false, error: 'DATABASE_URL not configured' });
 
   const client = new Client({
-    connectionString: connStr, ssl: false,
+    connectionString: connStr, ssl: { rejectUnauthorized: false },
     connectionTimeoutMillis: 15000, statement_timeout: 55000,
   });
 

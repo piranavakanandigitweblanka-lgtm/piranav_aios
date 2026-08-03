@@ -257,7 +257,7 @@ module.exports = async function handler(req, res) {
 
   const type = req.query.type || 'req1';
   const client = new Client({
-    connectionString: connStr, ssl: false,
+    connectionString: connStr, ssl: { rejectUnauthorized: false },
     connectionTimeoutMillis: 15000, statement_timeout: 55000,
   });
 

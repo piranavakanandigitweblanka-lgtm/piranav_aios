@@ -210,7 +210,7 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ ok: false, error: 'SHOPIFY_FR_TOKEN env var not set' });
   }
 
-  const db = new Client({ connectionString: process.env.DATABASE_URL });
+  const db = new Client({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
   try {
     await db.connect();
 

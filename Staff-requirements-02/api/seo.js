@@ -12,7 +12,7 @@ const GSC_SUB_SOURCE = 104;
 function makeClient(connStr) {
   return new Client({
     connectionString: connStr,
-    ssl: false,
+    ssl: { rejectUnauthorized: false },
     connectionTimeoutMillis: 15000,
     statement_timeout: 30000,
   });
