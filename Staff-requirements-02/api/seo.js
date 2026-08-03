@@ -783,10 +783,18 @@ async function handleSemrush(type, res) {
     }
     if (type === 'keywords') {
       const { rows } = await nc.query(`
-        SELECT keyword, position, prev_position, volume, cpc, url, traffic, snapshot_date
+        SELECT keyword, position, prev_position, volume, cpc, url, traffic, keyword_difficulty, intent, snapshot_date
         FROM semrush_keywords
         WHERE snapshot_date = (SELECT MAX(snapshot_date) FROM semrush_keywords)
         ORDER BY traffic DESC LIMIT 100`);
+      return res.json({ ok:true, rows });
+    }
+    if (type === 'pages') {
+      const { rows } = await nc.query(`
+        SELECT page_url, traffic, keywords_count, traffic_share, page_type, snapshot_date
+        FROM semrush_pages
+        WHERE snapshot_date = (SELECT MAX(snapshot_date) FROM semrush_pages)
+        ORDER BY traffic DESC LIMIT 50`);
       return res.json({ ok:true, rows });
     }
     return res.status(400).json({ ok:false, error:`semrush: unknown type "${type}"` });
