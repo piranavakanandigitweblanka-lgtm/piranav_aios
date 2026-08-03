@@ -250,7 +250,7 @@ async function handleReq2(client, days, fromOverride, toOverride) {
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=120');
+  res.setHeader('Cache-Control', 'no-store');
 
   const connStr = process.env.DATABASE_URL;
   if (!connStr) return res.status(500).json({ ok: false, error: 'DATABASE_URL not configured' });

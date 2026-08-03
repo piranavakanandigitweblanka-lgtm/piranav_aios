@@ -448,7 +448,7 @@ async function handleStopWasteSpend(client, req, res) {
 // ── Main handler ───────────────────────────────────────────────────────────────
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=60');
+  res.setHeader('Cache-Control', 'no-store');
 
   const type = req.query.type || '';
   const timeouts = {
