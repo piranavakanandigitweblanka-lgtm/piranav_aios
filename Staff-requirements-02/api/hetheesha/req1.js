@@ -372,7 +372,7 @@ module.exports = async function handler(req, res) {
       WHERE oii.handle = ANY($1)
         AND oii.handle IS NOT NULL AND oii.handle != ''
       GROUP BY period, oii.handle
-    `, [snapshotHandles, BEFORE_FROM, BEFORE_TO, AFTER_FROM, '2026-07-21']);
+    `, [snapshotHandles, BEFORE_FROM, BEFORE_TO, AFTER_FROM, AFTER_TO]);
 
     // Build before_after map: handle → { before: {...}, after: {...} }
     const baMap = {};
