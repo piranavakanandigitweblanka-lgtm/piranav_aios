@@ -422,6 +422,7 @@ function _resetLoadedFlags() {
   actLoaded  = false; actAllRows  = []; actFiltered = [];
   techLoaded.coverage = techLoaded.cannibalization = techLoaded['zero-click'] = false;
   techData = { coverage:null, cannibalization:[], 'zero-click':[] };
+  semrushIntentFilter = 'all'; semrushKwSearch = '';
 }
 
 function _activeDrBtn(range) {
@@ -1416,12 +1417,38 @@ function setKwSubTab(sub) {
   });
 }
 
-function renderSemrushKw() {
-  const rows = kwData.semrush;
-  const el = document.getElementById('kw-tab-body');
-  if (!el) return;
+/* SEMrush intent helpers */
+const INTENT_LABEL = { '1':'Informational', '2':'Navigational', '3':'Commercial', '4':'Transactional' };
+const INTENT_COLOR = { '1':'#0891b2',       '2':'#7c3aed',      '3':'#d97706',    '4':'#16a34a' };
+let semrushIntentFilter = 'all';
+let semrushKwSearch     = '';
 
-  const snap = rows.length ? (rows[0].snapshot_date || '').slice(0,10) : '—';
+function setSemrushIntentFilter(f) {
+  semrushIntentFilter = f;
+  const activeColor = INTENT_COLOR[f] || '#1f5eff';
+  document.querySelectorAll('.si-btn').forEach(b => {
+    const on = b.dataset.intent === f;
+    const btnColor = INTENT_COLOR[b.dataset.intent] || '#1f5eff';
+    b.style.background  = on ? btnColor : '#f8fafc';
+    b.style.color       = on ? '#fff'   : '#475569';
+    b.style.borderColor = on ? btnColor : '#e2e8f0';
+  });
+  renderSemrushKwTable();
+}
+
+function renderSemrushKwTable() {
+  const el = document.getElementById('sr-kw-table');
+  if (!el) return;
+  const all = kwData.semrush || [];
+  const q   = semrushKwSearch.toLowerCase();
+
+  const filtered = all.filter(r => {
+    const codes = String(r.intent || '').split(',').map(s => s.trim()).filter(Boolean);
+    const intentOk = semrushIntentFilter === 'all' || codes.includes(semrushIntentFilter);
+    const searchOk = !q || (r.keyword || '').toLowerCase().includes(q);
+    return intentOk && searchOk;
+  });
+
   const posBadge = pos => {
     if (pos <= 3)  return `<span style="background:#16a34a;color:#fff;padding:1px 6px;border-radius:10px;font-size:11px">#${pos}</span>`;
     if (pos <= 10) return `<span style="background:#1f5eff;color:#fff;padding:1px 6px;border-radius:10px;font-size:11px">#${pos}</span>`;
@@ -1441,42 +1468,93 @@ function renderSemrushKw() {
     const c = v < 30 ? '#16a34a' : v < 60 ? '#d97706' : '#dc2626';
     return `<span style="color:${c};font-weight:600">${v.toFixed(0)}</span>`;
   };
+  const intentBadges = intent => {
+    if (!intent) return '<span style="color:#94a3b8;font-size:11px">—</span>';
+    return String(intent).split(',').map(c => c.trim()).filter(Boolean).map(c =>
+      `<span style="background:${INTENT_COLOR[c]||'#94a3b8'};color:#fff;padding:1px 6px;border-radius:8px;font-size:10px;white-space:nowrap">${INTENT_LABEL[c]||'?'}</span>`
+    ).join(' ');
+  };
 
-  let html = `
-    <div style="padding:8px 0 6px;font-size:12px;color:#64748b">SEMrush organic rankings snapshot — ${snap} — Top 100 by estimated traffic</div>
-    <table style="width:100%;border-collapse:collapse;font-size:13px">
-      <thead><tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0">
-        <th style="text-align:left;padding:8px 10px">Keyword</th>
-        <th style="text-align:center;padding:8px 6px">Position</th>
-        <th style="text-align:right;padding:8px 6px">Volume</th>
-        <th style="text-align:right;padding:8px 6px">Traffic</th>
-        <th style="text-align:right;padding:8px 6px">CPC</th>
-        <th style="text-align:center;padding:8px 6px">KD</th>
-        <th style="text-align:left;padding:8px 6px">URL</th>
-      </tr></thead><tbody>`;
+  let html = `<table style="width:100%;border-collapse:collapse;font-size:13px">
+    <thead><tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0">
+      <th style="text-align:left;padding:8px 10px">Keyword</th>
+      <th style="text-align:center;padding:8px 6px">Intent</th>
+      <th style="text-align:center;padding:8px 6px">Position</th>
+      <th style="text-align:right;padding:8px 6px">Volume</th>
+      <th style="text-align:right;padding:8px 6px">Traffic</th>
+      <th style="text-align:right;padding:8px 6px">CPC</th>
+      <th style="text-align:center;padding:8px 6px">KD</th>
+      <th style="text-align:left;padding:8px 6px">URL</th>
+    </tr></thead><tbody>`;
 
-  rows.forEach((r, i) => {
-    const urlShort = (r.url || '').replace('https://ledsone.co.uk','');
-    html += `<tr style="border-bottom:1px solid #f1f5f9;${i%2===1?'background:#fafbfc':''}">
-      <td style="padding:7px 10px;font-weight:500">${r.keyword}</td>
-      <td style="text-align:center;padding:7px 6px">${posBadge(r.position)}${posDelta(r.position, r.prev_position)}</td>
-      <td style="text-align:right;padding:7px 6px;color:#475569">${r.volume ? parseInt(r.volume).toLocaleString() : '—'}</td>
-      <td style="text-align:right;padding:7px 6px;font-weight:600">${r.traffic ? parseInt(r.traffic).toLocaleString() : '—'}</td>
-      <td style="text-align:right;padding:7px 6px;color:#475569">${r.cpc ? '£'+parseFloat(r.cpc).toFixed(2) : '—'}</td>
-      <td style="text-align:center;padding:7px 6px">${kdBadge(r.keyword_difficulty)}</td>
-      <td style="padding:7px 6px;font-size:11px;color:#64748b;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-        <a href="https://ledsone.co.uk${urlShort}" target="_blank" style="color:#1f5eff;text-decoration:none">${urlShort || '/'}</a>
-      </td>
-    </tr>`;
-  });
-
+  if (filtered.length === 0) {
+    html += `<tr><td colspan="8" style="padding:24px;text-align:center;color:#94a3b8">No keywords match this filter.</td></tr>`;
+  } else {
+    filtered.forEach((r, i) => {
+      const urlShort = (r.url || '').replace('https://ledsone.co.uk','');
+      html += `<tr style="border-bottom:1px solid #f1f5f9;${i%2===1?'background:#fafbfc':''}">
+        <td style="padding:7px 10px;font-weight:500">${r.keyword}</td>
+        <td style="text-align:center;padding:7px 6px">${intentBadges(r.intent)}</td>
+        <td style="text-align:center;padding:7px 6px">${posBadge(r.position)}${posDelta(r.position, r.prev_position)}</td>
+        <td style="text-align:right;padding:7px 6px;color:#475569">${r.volume ? parseInt(r.volume).toLocaleString() : '—'}</td>
+        <td style="text-align:right;padding:7px 6px;font-weight:600">${r.traffic ? parseInt(r.traffic).toLocaleString() : '—'}</td>
+        <td style="text-align:right;padding:7px 6px;color:#475569">${r.cpc ? '£'+parseFloat(r.cpc).toFixed(2) : '—'}</td>
+        <td style="text-align:center;padding:7px 6px">${kdBadge(r.keyword_difficulty)}</td>
+        <td style="padding:7px 6px;font-size:11px;color:#64748b;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          <a href="https://ledsone.co.uk${urlShort}" target="_blank" style="color:#1f5eff;text-decoration:none">${urlShort || '/'}</a>
+        </td>
+      </tr>`;
+    });
+  }
   html += '</tbody></table>';
+  el.innerHTML = html;
 
   const countEl = document.getElementById('kw-count');
-  const metaEl  = document.getElementById('kw-meta');
-  if (countEl) countEl.textContent = rows.length + ' SEMrush keywords';
-  if (metaEl)  metaEl.textContent  = 'Source: SEMrush · Neon DB · snapshot ' + snap;
-  el.innerHTML = html;
+  if (countEl) countEl.textContent = filtered.length + ' of ' + all.length + ' SEMrush keywords';
+}
+
+function renderSemrushKw() {
+  const rows = kwData.semrush;
+  const el = document.getElementById('kw-tab-body');
+  if (!el) return;
+
+  const snap = rows.length ? (rows[0].snapshot_date || '').slice(0,10) : '—';
+
+  /* count per intent */
+  const counts = { all: rows.length, '1':0, '2':0, '3':0, '4':0 };
+  rows.forEach(r => {
+    String(r.intent||'').split(',').map(s=>s.trim()).filter(Boolean).forEach(c => { if (counts[c]!==undefined) counts[c]++; });
+  });
+
+  const intentBtn = (code, label) => {
+    const on   = semrushIntentFilter === code;
+    const bg   = on ? (INTENT_COLOR[code]||'#1f5eff') : '#f8fafc';
+    const col  = on ? '#fff' : '#475569';
+    const brd  = on ? (INTENT_COLOR[code]||'#1f5eff') : '#e2e8f0';
+    return `<button class="si-btn" data-intent="${code}" onclick="setSemrushIntentFilter('${code}')"
+      style="border:1px solid ${brd};background:${bg};color:${col};border-radius:7px;padding:4px 11px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">
+      ${label} <span style="opacity:.75">(${counts[code]||0})</span></button>`;
+  };
+
+  el.innerHTML = `
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:12px">
+      <span style="font-size:11px;font-weight:700;color:#475569">Intent:</span>
+      ${intentBtn('all','All')}
+      ${intentBtn('1','Informational')}
+      ${intentBtn('2','Navigational')}
+      ${intentBtn('3','Commercial')}
+      ${intentBtn('4','Transactional')}
+      <input type="text" placeholder="Search keywords…" value="${semrushKwSearch}"
+        oninput="semrushKwSearch=this.value;renderSemrushKwTable()"
+        style="margin-left:auto;border:1px solid #e2e8f0;border-radius:7px;padding:4px 10px;font-size:12px;color:#1e293b;background:#f8fafc;min-width:180px">
+    </div>
+    <div style="font-size:11px;color:#64748b;margin-bottom:8px">SEMrush organic rankings — snapshot ${snap}</div>
+    <div id="sr-kw-table"></div>`;
+
+  const metaEl = document.getElementById('kw-meta');
+  if (metaEl) metaEl.textContent = 'Source: SEMrush · Neon DB · snapshot ' + snap;
+
+  renderSemrushKwTable();
 }
 
 function filterKwTable() {
