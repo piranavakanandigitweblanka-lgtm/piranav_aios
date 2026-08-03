@@ -243,6 +243,68 @@ async function handleBA(db, handle, beforeFrom, beforeTo, afterFrom, afterTo) {
     ba_meta:{ before_from:beforeFrom, before_to:beforeTo, after_from:afterFrom, after_to:afterTo } };
 }
 
+// ─── ENSURE SNAPSHOT TABLE EXISTS ─────────────────────────────────────────
+// Schemas to try for snapshot table — in priority order
+const SNAP_SCHEMAS = ['staff', 'order_management', 'listings'];
+let SNAP_SCHEMA = null;
+
+async function ensureSnapshotTable(db) {
+  if (SNAP_SCHEMA) return; // already found a working schema this process lifetime
+  for (const schema of SNAP_SCHEMAS) {
+    try {
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS ${schema}.hetheesha_product_snapshot (
+          handle        TEXT PRIMARY KEY,
+          snapshot_date DATE NOT NULL DEFAULT CURRENT_DATE,
+          revenue       NUMERIC(10,2),
+          meta_title    TEXT,
+          meta_desc     TEXT,
+          faq_status    TEXT,
+          alt_count     INTEGER,
+          impressions   INTEGER,
+          ctr           NUMERIC(6,2)
+        )
+      `);
+      SNAP_SCHEMA = schema;
+      return;
+    } catch(e) {
+      // try next schema
+    }
+  }
+  console.warn('[hetheesha/req1] Could not create snapshot table in any schema');
+}
+
+// ─── LOAD DB SNAPSHOTS ────────────────────────────────────────────────────
+async function loadDbSnapshots(db) {
+  if (!SNAP_SCHEMA) return {};
+  const { rows } = await db.query(`
+    SELECT handle, snapshot_date::text, revenue, meta_title, meta_desc,
+           faq_status, alt_count, impressions, ctr
+    FROM ${SNAP_SCHEMA}.hetheesha_product_snapshot
+  `);
+  const map = {};
+  rows.forEach(r => { map[r.handle] = r; });
+  return map;
+}
+
+// ─── UPSERT NEW SNAPSHOTS FOR FIRST-SEEN PRODUCTS ─────────────────────────
+async function upsertNewSnapshots(db, handles, revenueMap, shopifyMap, gscMap, existingSnaps) {
+  const newHandles = handles.filter(h => !existingSnaps[h]);
+  if (!newHandles.length) return;
+  for (const h of newHandles) {
+    const sh  = shopifyMap[h] || {};
+    const gsc = gscMap[h]    || {};
+    const rev = revenueMap[h];
+    await db.query(`
+      INSERT INTO ${SNAP_SCHEMA}.hetheesha_product_snapshot
+        (handle, snapshot_date, revenue, meta_title, meta_desc, faq_status, alt_count, impressions, ctr)
+      VALUES ($1, CURRENT_DATE, $2, $3, $4, $5, $6, $7, $8)
+      ON CONFLICT (handle) DO NOTHING
+    `, [h, rev?.rev ?? null, sh.meta_title ?? null, sh.meta_desc ?? null,
+        sh.faq ?? null, sh.alt_missing ?? null, gsc.imp ?? null, gsc.ctr ?? null]);
+  }
+}
+
 // ─── MAIN HANDLER ─────────────────────────────────────────────────────────
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -393,12 +455,30 @@ module.exports = async function handler(req, res) {
       baMap[r.handle][r.period].sales = parseFloat(r.sales) || 0;
     });
 
+    // 3a. Ensure DB snapshot table exists + load existing snapshots
+    await ensureSnapshotTable(db);
+    const dbSnapshots = await loadDbSnapshots(db);
+
     await db.end();
 
     // 3. Shopify live data — fetch current top 50 + ALL snapshot handles
     // so Fix Tracker detects fixes even if a product dropped out of the rolling top 50
     const allHandles = [...new Set([...handles, ...snapshotHandles])];
     const shopifyMap = await fetchAllShopify(allHandles);
+
+    // 3b. Write DB snapshots for any new top-50 product not yet recorded
+    const db2 = new Client({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+    try {
+      await db2.connect();
+      await upsertNewSnapshots(db2, handles, revenueMap, shopifyMap, gscMap, dbSnapshots);
+      // reload after upsert so new entries are included
+      const freshSnaps = await loadDbSnapshots(db2);
+      Object.assign(dbSnapshots, freshSnaps);
+      await db2.end();
+    } catch(e) {
+      await db2.end().catch(()=>{});
+      console.warn('[hetheesha/req1] snapshot upsert failed:', e.message);
+    }
 
     // 4. Merge main rows
     const rows = handles.map(h => {
@@ -423,27 +503,34 @@ module.exports = async function handler(req, res) {
     // mark snapshot-sourced items so frontend can show correct "Missing Since"
     tracker.forEach(i => { i.in_snapshot = true; });
 
-    // 5b. Also include live top-50 handles NOT in the Jul 06 snapshot
-    //     so products that entered the top-50 after the baseline still show as Pending
+    // 5b. Products NOT in the Jul 06 hardcoded snapshot — use DB snapshot as their baseline
     const snapshotHandleSet = new Set(snapshotHandles);
     const FIELDS_DEF = [
-      { key: 'meta_title',  label: 'Meta Title',  isMissing: v => !v },
-      { key: 'meta_desc',   label: 'Meta Desc',   isMissing: v => !v },
-      { key: 'faq',         label: 'FAQ Schema',  isMissing: v => v === 'Missing' || !v },
-      { key: 'alt_missing', label: 'Alt Text',    isMissing: v => v > 0 },
+      { key: 'meta_title',  snapKey: 'meta_title', label: 'Meta Title',  isMissing: v => !v },
+      { key: 'meta_desc',   snapKey: 'meta_desc',  label: 'Meta Desc',   isMissing: v => !v },
+      { key: 'faq',         snapKey: 'faq_status', label: 'FAQ Schema',  isMissing: v => v === 'Missing' || !v },
+      { key: 'alt_missing', snapKey: 'alt_count',  label: 'Alt Text',    isMissing: v => v > 0 },
     ];
     handles.forEach(h => {
-      if (snapshotHandleSet.has(h)) return; // already covered by snapshot
-      const sh   = shopifyMap[h];
+      if (snapshotHandleSet.has(h)) return; // already covered by Jul 06 hardcoded snapshot
+      const sh      = shopifyMap[h];
       if (!sh) return;
-      const rank = revenueMap[h]?.rank ?? 99;
+      const rank    = revenueMap[h]?.rank ?? 99;
+      const dbSnap  = dbSnapshots[h]; // auto-captured baseline from DB
       FIELDS_DEF.forEach(f => {
-        if (f.isMissing(sh[f.key])) {
+        const snapVal    = dbSnap ? dbSnap[f.snapKey] : null;
+        const liveVal    = sh[f.key];
+        const wasMissing = snapVal !== null ? f.isMissing(snapVal) : f.isMissing(liveVal);
+        const nowFixed   = !f.isMissing(liveVal);
+        const nowMissing = f.isMissing(liveVal);
+        if (wasMissing || nowMissing) {
           tracker.push({
             rank, handle: h, field: f.label, field_key: f.key,
-            before: null, after: sh[f.key],
-            was_missing: true, now_fixed: false, new_issue: false, live_value: sh[f.key],
-            in_snapshot: false,  // not in Jul 06 baseline
+            before: snapVal, after: liveVal,
+            was_missing: wasMissing, now_fixed: wasMissing && nowFixed,
+            new_issue: !wasMissing && nowMissing, live_value: liveVal,
+            in_snapshot: false,
+            snapshot_date: dbSnap?.snapshot_date ?? null,
           });
         }
       });
@@ -458,13 +545,14 @@ module.exports = async function handler(req, res) {
       period       : `${new Date(Date.now()-30*864e5).toISOString().slice(0,10)} to ${new Date().toISOString().slice(0,10)} (rolling 30d)`,
       rows,
       snapshot     : SNAPSHOT,
+      db_snapshots : dbSnapshots,
       tracker,
       before_after : baMap,
       ba_meta      : {
-        before_from : BEFORE_FROM,
-        before_to   : BEFORE_TO,
-        after_from  : AFTER_FROM,
-        after_to    : AFTER_TO,
+        before_from  : BEFORE_FROM,
+        before_to    : BEFORE_TO,
+        after_from   : AFTER_FROM,
+        after_to     : AFTER_TO,
         snapshot_date: SNAPSHOT_DATE,
       },
     });
