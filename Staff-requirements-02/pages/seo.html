@@ -433,13 +433,15 @@ async function loadExec() {
   execLoaded = true;
 
   try {
-    const [seRes, compRes, gscRes, posRes, adsRes, dqRes] = await Promise.all([
+    const [seRes, compRes, gscRes, posRes, adsRes, dqRes, blRes, blSnap] = await Promise.all([
       fetch('/api/seo?module=semrush&type=history'),
       fetch('/api/seo?module=semrush&type=competitors'),
       fetch('/api/seo?module=exec&type=gsc-monthly'),
       fetch('/api/seo?module=exec&type=position-dist'),
       fetch('/api/seo?module=exec&type=ads-monthly'),
       fetch('/api/seo?module=exec&type=data-quality'),
+      fetch('/api/seo?module=semrush&type=backlinks-history'),
+      fetch('/api/seo?module=semrush&type=backlinks'),
     ]);
 
     const seJson   = await seRes.json();
@@ -448,6 +450,8 @@ async function loadExec() {
     const posJson  = await posRes.json();
     const adsJson  = await adsRes.json();
     const dqJson   = await dqRes.json();
+    const blJson   = await blRes.json();
+    const blSnapJson = await blSnap.json();
 
     const csv      = seJson.ok ? seJson.rows.map(r => ({
       month: r.month ? r.month.slice(0,7) : '',
@@ -463,16 +467,19 @@ async function loadExec() {
     const posRows  = posJson.ok ? posJson.rows : [];
     const adsRows  = adsJson.ok ? adsJson.rows : [];
     const dqSrc    = dqJson.ok ? dqJson.sources : {};
+    const blRows   = blJson.ok ? blJson.rows : [];
+    const blCurrent = blSnapJson.ok && blSnapJson.rows.length ? blSnapJson.rows[blSnapJson.rows.length - 1] : null;
 
-    renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows);
+    renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blCurrent);
   } catch (e) {
     document.getElementById('exec-content').innerHTML =
       `<div class="alert"><strong>Load error:</strong> ${e.message}</div>`;
   }
 }
 
-function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows) {
+function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blCurrent) {
   compRows = compRows || [];
+  blRows   = blRows   || [];
   /* latest values for header */
   const latestGsc = gscRows.length ? gscRows[gscRows.length - 1] : null;
   const latestAds = adsRows.length ? adsRows[adsRows.length - 1] : null;
@@ -543,6 +550,26 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows) {
         <div class="val">${latestAds ? parseFloat(latestAds.roas).toFixed(2) + 'x' : '—'}</div>
         ${prevAds && latestAds ? `<div class="delta ${parseFloat(latestAds.roas) >= parseFloat(prevAds.roas) ? 'up' : 'down'}">${deltaHtml(latestAds.roas, prevAds.roas).replace('class="delta-cell','class="').replace('</span>','')} vs ${fMonth(prevAds.month ? prevAds.month.slice(0,7) : '')}</div>` : ''}
         <div class="note">Revenue / Ad Spend</div>
+      </div>
+      <div class="kpi">
+        <div class="src">SEMrush</div>
+        <div class="lbl">Authority Score</div>
+        <div class="val">${blCurrent ? blCurrent.authority_score : '—'}</div>
+        <div class="note">Domain authority (0–100)</div>
+      </div>
+      <div class="kpi warn">
+        <div class="src">SEMrush</div>
+        <div class="lbl">Referring Domains</div>
+        <div class="val">${blCurrent ? fNum(blCurrent.referring_domains) : '—'}</div>
+        ${blRows.length >= 2 ? `<div class="delta down">&#9660; from ${fNum(blRows[0].referring_domains)} (Aug 2024)</div>` : ''}
+        <div class="note">&#9888; 77% drop since Aug 2024</div>
+      </div>
+      <div class="kpi warn">
+        <div class="src">SEMrush</div>
+        <div class="lbl">Total Backlinks</div>
+        <div class="val">${blCurrent ? fNum(blCurrent.total_backlinks) : '—'}</div>
+        ${blRows.length >= 2 ? `<div class="delta down">&#9660; from ${fNum(blRows[0].total_backlinks)} (Aug 2024)</div>` : ''}
+        <div class="note">&#9888; 86% drop since Aug 2024</div>
       </div>
     </div>`;
 
@@ -659,6 +686,13 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows) {
       <h3>ledsone.co.uk vs Top 5 Competitors — Estimated Organic Traffic</h3>
       <div class="ch-sub">SEMrush monthly history &bull; Neon DB &bull; refreshed weekly by scheduled agent</div>
       <div class="chart-wrap" style="height:280px"><canvas id="chart-competitors"></canvas></div>
+    </div>
+
+    <div class="section-title">Backlinks Health</div>
+    <div class="chart-card" style="margin-bottom:14px">
+      <h3>Total Backlinks &amp; Referring Domains — 24-Month Trend</h3>
+      <div class="ch-sub">SEMrush &bull; Neon DB &bull; Aug 2024 – Jul 2026 &bull; ⚠ 86% backlink drop detected</div>
+      <div class="chart-wrap" style="height:260px"><canvas id="chart-backlinks"></canvas></div>
     </div>
 
     <div class="section-title">Month-on-Month Comparison — Last 6 Months</div>
@@ -888,6 +922,57 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows) {
         scales: {
           x: { ticks: { font: commonFont, maxTicksLimit: 12 }, grid: { color: '#f0f3f8' } },
           y: { ticks: { font: commonFont, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'K' : v }, grid: { color: '#f0f3f8' }, title: { display: true, text: 'Est. Organic Traffic', font: commonFont } }
+        }
+      }
+    });
+  }
+
+  /* Backlinks trend chart */
+  if (blRows.length) {
+    const blLabels = blRows.map(r => {
+      const d = new Date(r.snapshot_date);
+      return d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' });
+    });
+    charts.backlinks = new Chart(document.getElementById('chart-backlinks'), {
+      type: 'line',
+      data: {
+        labels: blLabels,
+        datasets: [
+          {
+            label: 'Total Backlinks',
+            data: blRows.map(r => parseInt(r.total_backlinks) || null),
+            borderColor: '#1f5eff',
+            backgroundColor: 'rgba(31,94,255,0.08)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            yAxisID: 'y',
+          },
+          {
+            label: 'Referring Domains',
+            data: blRows.map(r => parseInt(r.referring_domains) || null),
+            borderColor: '#b91c1c',
+            backgroundColor: 'transparent',
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            yAxisID: 'y2',
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { labels: { font: commonFont, boxWidth: 12 } },
+          tooltip: { bodyFont: commonFont, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw ? ctx.raw.toLocaleString() : '—'}` } }
+        },
+        scales: {
+          x: { ticks: { font: commonFont, maxTicksLimit: 12 }, grid: { color: '#f0f3f8' } },
+          y:  { ticks: { font: commonFont, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'K' : v }, grid: { color: '#f0f3f8' }, title: { display: true, text: 'Total Backlinks', font: commonFont } },
+          y2: { position: 'right', ticks: { font: commonFont }, grid: { drawOnChartArea: false }, title: { display: true, text: 'Referring Domains', font: commonFont } }
         }
       }
     });

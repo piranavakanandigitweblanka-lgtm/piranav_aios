@@ -775,6 +775,12 @@ async function handleSemrush(type, res) {
         FROM semrush_backlinks ORDER BY snapshot_date ASC`);
       return res.json({ ok:true, rows });
     }
+    if (type === 'backlinks-history') {
+      const { rows } = await nc.query(`
+        SELECT snapshot_date, total_backlinks, referring_domains
+        FROM semrush_backlinks_history ORDER BY snapshot_date ASC`);
+      return res.json({ ok:true, rows });
+    }
     if (type === 'keywords') {
       const { rows } = await nc.query(`
         SELECT keyword, position, prev_position, volume, cpc, url, traffic, snapshot_date
