@@ -208,7 +208,8 @@ select.fsel:focus{border-color:var(--accent);}
 .ac-card.ctr-boost  {border-left-color:#f59e0b;}
 .ac-card.rescue     {border-left-color:#6366f1;}
 .ac-card.content    {border-left-color:#0ea5e9;}
-.ac-card.decline    {border-left-color:#ef4444;}
+.ac-card.decline         {border-left-color:#ef4444;}
+.ac-card.cannibalization {border-left-color:#ea580c;}
 .ac-num  {font-size:28px;font-weight:800;color:var(--navy);}
 .ac-lbl  {font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-top:2px;}
 .p1-badge {display:inline-block;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:700;background:#fee2e2;color:#991b1b;}
@@ -220,6 +221,7 @@ select.fsel:focus{border-color:var(--accent);}
 .cat-rescue    {display:inline-block;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:600;background:#ede9fe;color:#5b21b6;}
 .cat-content   {display:inline-block;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:600;background:#dbeafe;color:#1e40af;}
 .cat-decline   {display:inline-block;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:600;background:#fee2e2;color:#991b1b;}
+.cat-cann      {display:inline-block;padding:2px 7px;border-radius:10px;font-size:10.5px;font-weight:600;background:#fff7ed;color:#9a3412;}
 .why-text      {font-size:11.5px;color:var(--muted);max-width:340px;}
 /* Phase 6 — Technical SEO */
 .tech-kpi-grid  {display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px;}
@@ -844,6 +846,11 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blC
       <div class="ch-sub">SEMrush &bull; Neon DB &bull; Aug 2024 – Jul 2026 &bull; ⚠ 86% backlink drop detected</div>
       <div class="chart-wrap" style="height:260px"><canvas id="chart-backlinks"></canvas></div>
     </div>
+    <div class="chart-card" style="margin-bottom:14px">
+      <h3>Referring Domains — Monthly Net Change</h3>
+      <div class="ch-sub">Green = domains gained &bull; Red = domains lost &bull; Net month-on-month change &bull; SEMrush &bull; Neon DB</div>
+      <div class="chart-wrap" style="height:200px"><canvas id="chart-bl-change"></canvas></div>
+    </div>
 
     <div class="section-title">Month-on-Month Comparison — Last 6 Months</div>
     <div class="info-note">
@@ -1072,6 +1079,36 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blC
         scales: {
           x: { ticks: { font: commonFont, maxTicksLimit: 12 }, grid: { color: '#f0f3f8' } },
           y: { ticks: { font: commonFont, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'K' : v }, grid: { color: '#f0f3f8' }, title: { display: true, text: 'Est. Organic Traffic', font: commonFont } }
+        }
+      }
+    });
+  }
+
+  /* Referring domains net-change bar chart */
+  if (blRows.length >= 2) {
+    const chLabels  = blRows.slice(1).map(r => new Date(r.snapshot_date).toLocaleDateString('en-GB',{month:'short',year:'2-digit'}));
+    const chDeltas  = blRows.slice(1).map((r,i) => parseInt(r.referring_domains) - parseInt(blRows[i].referring_domains));
+    charts.blChange = new Chart(document.getElementById('chart-bl-change'), {
+      type: 'bar',
+      data: {
+        labels: chLabels,
+        datasets: [{
+          label: 'Net Domain Change',
+          data: chDeltas,
+          backgroundColor: chDeltas.map(v => v >= 0 ? 'rgba(22,163,74,0.75)' : 'rgba(220,38,38,0.75)'),
+          borderColor:     chDeltas.map(v => v >= 0 ? '#16a34a' : '#dc2626'),
+          borderWidth: 1,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { bodyFont: commonFont, callbacks: { label: ctx => ` ${ctx.raw >= 0 ? '+' : ''}${ctx.raw} domains` } }
+        },
+        scales: {
+          x: { ticks: { font: commonFont, maxTicksLimit: 12 }, grid: { color: '#f0f3f8' } },
+          y: { ticks: { font: commonFont }, grid: { color: '#f0f3f8' }, title: { display: true, text: 'Net Domain Change', font: commonFont } }
         }
       }
     });
@@ -1827,6 +1864,59 @@ function setLandingSubTab(sub) {
   if (ctrl) ctrl.style.display = (sub === 'pages') ? 'flex' : 'none';
 }
 
+function toggleSrPageKws(btn, pageUrl) {
+  const tr      = btn.closest('tr');
+  const existing = tr.nextElementSibling;
+  if (existing && existing.classList.contains('sr-kw-expand')) {
+    existing.remove(); btn.textContent = '▶ KWs'; return;
+  }
+  const expandTr = document.createElement('tr');
+  expandTr.className = 'sr-kw-expand';
+  expandTr.innerHTML = `<td colspan="7" style="padding:12px 18px;background:#f0f4ff;font-size:12px;color:#475569">Loading keywords…</td>`;
+  tr.after(expandTr);
+  btn.textContent = '▼ KWs';
+
+  const showKws = () => {
+    const kws = (kwData.semrush||[]).filter(k => (k.url||'') === pageUrl);
+    if (!kws.length) {
+      expandTr.innerHTML = `<td colspan="7" style="padding:12px 18px;background:#f0f4ff;font-size:12px;color:#94a3b8">No SEMrush keyword rankings found for this URL.</td>`;
+      return;
+    }
+    const kdCol = kd => kd < 30 ? '#16a34a' : kd < 60 ? '#d97706' : '#dc2626';
+    const iBadge = c => `<span style="background:${INTENT_COLOR[c]||'#94a3b8'};color:#fff;padding:1px 5px;border-radius:6px;font-size:10px">${INTENT_LABEL[c]||'?'}</span>`;
+    let html = `<td colspan="7" style="padding:10px 18px;background:#f0f4ff">
+      <div style="font-size:11px;font-weight:700;color:#3730a3;margin-bottom:6px">${kws.length} keyword${kws.length>1?'s':''} ranking for this page</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="border-bottom:1px solid #c7d2fe;color:#475569">
+          <th style="text-align:left;padding:3px 8px">Keyword</th>
+          <th style="text-align:center;padding:3px 8px">Pos</th>
+          <th style="text-align:right;padding:3px 8px">Volume</th>
+          <th style="text-align:right;padding:3px 8px">Traffic</th>
+          <th style="text-align:center;padding:3px 8px">KD</th>
+          <th style="text-align:center;padding:3px 8px">Intent</th>
+        </tr></thead><tbody>`;
+    kws.sort((a,b) => (parseInt(b.traffic)||0)-(parseInt(a.traffic)||0)).forEach(k => {
+      const kd = parseFloat(k.keyword_difficulty||0);
+      const intents = String(k.intent||'').split(',').map(s=>s.trim()).filter(Boolean);
+      html += `<tr style="border-bottom:1px solid #e0e7ff">
+        <td style="padding:3px 8px;font-weight:500">${k.keyword}</td>
+        <td style="text-align:center;padding:3px 8px">#${k.position}</td>
+        <td style="text-align:right;padding:3px 8px;color:#64748b">${k.volume?parseInt(k.volume).toLocaleString():'—'}</td>
+        <td style="text-align:right;padding:3px 8px;font-weight:600">${k.traffic?parseInt(k.traffic).toLocaleString():'—'}</td>
+        <td style="text-align:center;padding:3px 8px;color:${kdCol(kd)};font-weight:600">${kd?kd.toFixed(0):'—'}</td>
+        <td style="text-align:center;padding:3px 8px">${intents.map(iBadge).join(' ')||'—'}</td>
+      </tr>`;
+    });
+    html += '</tbody></table></td>';
+    expandTr.innerHTML = html;
+  };
+
+  if (kwLoaded.semrush) { showKws(); return; }
+  fetch('/api/seo?module=semrush&type=keywords')
+    .then(r=>r.json()).then(json=>{ kwData.semrush=json.rows||[]; kwLoaded.semrush=true; showKws(); })
+    .catch(()=>{ expandTr.innerHTML=`<td colspan="7" style="padding:12px 18px;background:#f0f4ff;color:#dc2626;font-size:12px">Failed to load keywords.</td>`; });
+}
+
 function renderSemrushPages() {
   const rows = landingData['semrush-pages'];
   const body = document.getElementById('landing-tab-body');
@@ -1873,19 +1963,23 @@ function renderSemrushPages() {
         <th style="text-align:right;padding:8px 6px">Traffic</th>
         <th style="text-align:right;padding:8px 6px">Keywords</th>
         <th style="padding:8px 10px">Traffic Share</th>
+        <th style="padding:8px 6px"></th>
       </tr></thead><tbody>`;
 
   rows.forEach((r, i) => {
     const path = (r.page_url || '').replace('https://ledsone.co.uk', '') || '/';
     html += `<tr style="border-bottom:1px solid #f1f5f9;${i%2===1?'background:#fafbfc':''}">
       <td style="padding:7px 10px;color:#94a3b8;font-size:12px">${i+1}</td>
-      <td style="padding:7px 10px;max-width:320px">
+      <td style="padding:7px 10px;max-width:280px">
         <a href="${r.page_url}" target="_blank" style="color:#1f5eff;text-decoration:none;font-size:12px;word-break:break-word">${path}</a>
       </td>
       <td style="text-align:center;padding:7px 6px">${typeBadge(r.page_type||'other')}</td>
       <td style="text-align:right;padding:7px 6px;font-weight:600">${parseInt(r.traffic||0).toLocaleString()}</td>
       <td style="text-align:right;padding:7px 6px;color:#475569">${parseInt(r.keywords_count||0).toLocaleString()}</td>
       <td style="padding:7px 10px">${bar(r.traffic_share||0)}</td>
+      <td style="padding:7px 6px">
+        <button onclick="toggleSrPageKws(this,'${r.page_url}')" style="border:1px solid #c7d2fe;background:#eef2ff;color:#3730a3;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;white-space:nowrap">▶ KWs</button>
+      </td>
     </tr>`;
   });
 
@@ -1973,31 +2067,86 @@ function renderLandingTab(sub) {
   }
 }
 
+const lpTrendCache = {};
+
+function toggleLpTrend(btn, pageUrl) {
+  const tr = btn.closest('tr');
+  const existing = tr.nextElementSibling;
+  if (existing && existing.classList.contains('lp-trend-expand')) {
+    existing.remove(); btn.textContent = '▶ Trend'; return;
+  }
+  const expandTr = document.createElement('tr');
+  expandTr.className = 'lp-trend-expand';
+  expandTr.innerHTML = `<td colspan="9" style="padding:12px 18px;background:#f0fdf4;font-size:12px;color:#475569">Loading trend…</td>`;
+  tr.after(expandTr);
+  btn.textContent = '▼ Trend';
+
+  const showTrend = data => {
+    if (!data || !data.length) {
+      expandTr.innerHTML = `<td colspan="9" style="padding:12px 18px;background:#f0fdf4;font-size:12px;color:#94a3b8">No monthly data for this page.</td>`;
+      return;
+    }
+    const maxClicks = Math.max(...data.map(r=>r.clicks||0), 1);
+    let html = `<td colspan="9" style="padding:10px 18px;background:#f0fdf4">
+      <div style="font-size:11px;font-weight:700;color:#166534;margin-bottom:6px">GSC monthly trend for this page</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="border-bottom:1px solid #bbf7d0;color:#475569">
+          <th style="text-align:left;padding:3px 8px">Month</th>
+          <th style="text-align:right;padding:3px 8px">Clicks</th>
+          <th style="text-align:right;padding:3px 8px">Impressions</th>
+          <th style="text-align:right;padding:3px 8px">Avg Pos</th>
+          <th style="padding:3px 8px;min-width:120px">Trend</th>
+        </tr></thead><tbody>`;
+    data.forEach(r => {
+      const barW = Math.max(2, Math.round((r.clicks / maxClicks) * 120));
+      html += `<tr style="border-bottom:1px solid #dcfce7">
+        <td style="padding:3px 8px">${new Date(r.month).toLocaleDateString('en-GB',{month:'short',year:'2-digit'})}</td>
+        <td style="text-align:right;padding:3px 8px;font-weight:600">${(r.clicks||0).toLocaleString()}</td>
+        <td style="text-align:right;padding:3px 8px;color:#64748b">${(r.impressions||0).toLocaleString()}</td>
+        <td style="text-align:right;padding:3px 8px;color:#64748b">${r.avg_position||'—'}</td>
+        <td style="padding:3px 8px"><div style="width:${barW}px;height:8px;background:#16a34a;border-radius:3px"></div></td>
+      </tr>`;
+    });
+    html += '</tbody></table></td>';
+    expandTr.innerHTML = html;
+  };
+
+  if (lpTrendCache[pageUrl]) { showTrend(lpTrendCache[pageUrl]); return; }
+  fetch('/api/seo?module=landing&type=page-trend&page=' + encodeURIComponent(pageUrl))
+    .then(r=>r.json())
+    .then(json=>{ lpTrendCache[pageUrl]=json.rows||[]; showTrend(lpTrendCache[pageUrl]); })
+    .catch(()=>{ expandTr.innerHTML=`<td colspan="9" style="padding:12px 18px;background:#f0fdf4;color:#dc2626;font-size:12px">Failed to load trend.</td>`; });
+}
+
 function renderLandingRows(sub, rows) {
   let html = '';
   if (sub === 'pages') {
     html = `<table>
       <thead><tr>
         <th style="width:36px">#</th>
-        <th style="min-width:240px">Page</th>
+        <th style="min-width:220px">Page</th>
         <th style="width:90px">Type</th>
         <th class="num">Clicks</th>
         <th class="num">Impressions</th>
         <th class="num">CTR %</th>
         <th class="num">Position</th>
         <th class="num">Days</th>
+        <th style="width:70px"></th>
       </tr></thead><tbody>`;
     rows.forEach((r, i) => {
       const slug = r.page.replace('https://ledsone.co.uk','') || '/';
       html += `<tr>
         <td style="color:var(--muted);font-size:11px">${i+1}</td>
-        <td style="font-size:11.5px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.page}">${slug}</td>
+        <td style="font-size:11.5px;max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.page}">${slug}</td>
         <td>${ptBadge(r.page_type)}</td>
         <td class="num">${fNum(r.clicks)}</td>
         <td class="num">${fNum(r.impressions)}</td>
         <td class="num">${r.ctr_pct.toFixed(2)}%</td>
         <td class="num">${posBadge(r.avg_position)}</td>
         <td class="num" style="color:var(--muted)">${r.days_with_data}</td>
+        <td style="padding:4px 6px">
+          <button onclick="toggleLpTrend(this,'${r.page.replace(/'/g,"\\'")}'" style="border:1px solid #bbf7d0;background:#f0fdf4;color:#166534;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;white-space:nowrap">▶ Trend</button>
+        </td>
       </tr>`;
     });
     html += '</tbody></table>';
@@ -2064,28 +2213,58 @@ async function loadActions() {
   if (!wrap) return;
   wrap.innerHTML = '<div class="loading"><div class="spinner"></div><br>Building action list&hellip;</div>';
 
-  fetch('/api/seo?module=actions&type=priorities' + dateParams())
-    .then(r => r.json())
-    .then(json => {
-      if (!json.ok) throw new Error(json.error || 'API error');
-      actAllRows = json.rows || [];
-      actLoaded  = true;
-      renderActionsShell(json.summary || {});
-      filterActions();
-    })
-    .catch(e => {
-      const w = document.getElementById('actions-content');
-      if (w) w.innerHTML = `<div class="alert"><strong>Error:</strong> ${e.message}</div>`;
+  Promise.all([
+    fetch('/api/seo?module=actions&type=priorities' + dateParams()).then(r=>r.json()),
+    fetch('/api/seo?module=technical&type=cannibalization' + dateParams()).then(r=>r.json()).catch(()=>({ok:false,rows:[]})),
+  ]).then(([priJson, cannJson]) => {
+    if (!priJson.ok) throw new Error(priJson.error || 'API error');
+    actAllRows = priJson.rows || [];
+
+    /* merge cannibalization items */
+    const cannRows = (cannJson.ok ? cannJson.rows || [] : []).filter(r => (r.total_clicks||0) >= 5);
+    cannRows.slice(0, 25).forEach(r => {
+      const score = Math.min(100, Math.round(60 + Math.min((r.total_clicks||0) / 3, 30)));
+      actAllRows.push({
+        id: `cann-${r.query}`,
+        category: 'cannibalization',
+        priority_score: score,
+        query: r.query,
+        cur_pos: null,
+        impressions: null,
+        clicks: r.total_clicks || 0,
+        ctr_pct: null,
+        action_label: 'Fix Cannibalization',
+        why: `${r.competing_pages} pages compete for "${r.query}" (${(r.total_clicks||0).toLocaleString()} clicks split). Pick one canonical page and consolidate or add rel=canonical.`,
+        pos_change: null,
+      });
     });
+
+    /* re-sort and re-rank all */
+    actAllRows.sort((a, b) => b.priority_score - a.priority_score);
+    actAllRows.forEach((a, i) => {
+      a.rank     = i + 1;
+      a.priority = a.priority_score >= 85 ? 'P1' : a.priority_score >= 70 ? 'P2' : a.priority_score >= 55 ? 'P3' : 'P4';
+    });
+
+    const summary = priJson.summary || {};
+    summary.cannibalization = cannRows.length;
+    actLoaded = true;
+    renderActionsShell(summary);
+    filterActions();
+  }).catch(e => {
+    const w = document.getElementById('actions-content');
+    if (w) w.innerHTML = `<div class="alert"><strong>Error:</strong> ${e.message}</div>`;
+  });
 }
 
 function renderActionsShell(summary) {
   const cards = [
-    { key:'quick_win',  cls:'quick-win',  label:'Quick Wins',      icon:'&#9889;' },
-    { key:'ctr_boost',  cls:'ctr-boost',  label:'CTR Fixes',       icon:'&#128270;' },
-    { key:'rescue',     cls:'rescue',     label:'Page 2 Rescue',   icon:'&#128640;' },
-    { key:'content',    cls:'content',    label:'Content Gaps',    icon:'&#128203;' },
-    { key:'decline',    cls:'decline',    label:'Declining Alerts',icon:'&#9660;' },
+    { key:'quick_win',      cls:'quick-win',      label:'Quick Wins',        icon:'&#9889;' },
+    { key:'ctr_boost',      cls:'ctr-boost',      label:'CTR Fixes',         icon:'&#128270;' },
+    { key:'rescue',         cls:'rescue',         label:'Page 2 Rescue',     icon:'&#128640;' },
+    { key:'content',        cls:'content',        label:'Content Gaps',      icon:'&#128203;' },
+    { key:'decline',        cls:'decline',        label:'Declining Alerts',  icon:'&#9660;' },
+    { key:'cannibalization',cls:'cannibalization', label:'Cannibalization',   icon:'&#9876;' },
   ].map(c => `<div class="ac-card ${c.cls}" onclick="setActCategory('${c.key.replace('_','-')}')">
       <div class="ac-num">${summary[c.key]||0}</div>
       <div class="ac-lbl">${c.icon} ${c.label}</div></div>`).join('');
@@ -2101,6 +2280,7 @@ function renderActionsShell(summary) {
         <option value="rescue">Page 2 Rescue</option>
         <option value="content">Content Gap</option>
         <option value="decline">Declining Alert</option>
+        <option value="cannibalization">Cannibalization</option>
       </select>
       <select id="act-pri" class="fsel" onchange="filterActions()">
         <option value="">All priorities</option>
@@ -2154,11 +2334,12 @@ function renderActionsTab() {
 
 function catBadge(cat) {
   const map = {
-    'quick-win': ['cat-quickwin','&#9889; Quick Win'],
-    'ctr-boost': ['cat-ctrboost','&#128270; CTR Boost'],
-    'rescue':    ['cat-rescue',  '&#128640; Page 2 Rescue'],
-    'content':   ['cat-content', '&#128203; Content Gap'],
-    'decline':   ['cat-decline', '&#9660; Declining'],
+    'quick-win':      ['cat-quickwin','&#9889; Quick Win'],
+    'ctr-boost':      ['cat-ctrboost','&#128270; CTR Boost'],
+    'rescue':         ['cat-rescue',  '&#128640; Page 2 Rescue'],
+    'content':        ['cat-content', '&#128203; Content Gap'],
+    'decline':        ['cat-decline', '&#9660; Declining'],
+    'cannibalization':['cat-cann',    '&#9876; Cannibalization'],
   };
   const [cls, lbl] = map[cat] || ['p4-badge', cat];
   return `<span class="${cls}">${lbl}</span>`;

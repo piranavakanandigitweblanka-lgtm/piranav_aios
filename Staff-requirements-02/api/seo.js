@@ -541,6 +541,21 @@ async function handleActionPriorities(client, res, from, to) {
 
 /* ─── TECHNICAL SEO ─────────────────────────────────────────── */
 
+async function handleLpPageTrend(client, res, page) {
+  if (!page) return res.status(400).json({ ok:false, error:'page param required' });
+  const { rows } = await client.query(`
+    SELECT DATE_TRUNC('month', date)::date AS month,
+           SUM(clicks)::int                AS clicks,
+           SUM(impressions)::int           AS impressions,
+           ROUND(AVG(position)::numeric,1) AS avg_position
+    FROM google_search_console.page
+    WHERE sub_source=$1 AND search_type='web' AND page=$2
+    GROUP BY DATE_TRUNC('month', date)
+    ORDER BY month ASC
+  `, [GSC_SUB_SOURCE, page]);
+  return res.status(200).json({ ok:true, page, rows });
+}
+
 async function handleTechCoverage(client, res, from, to) {
   const [coverRes, shopifyRes, freshRes] = await Promise.all([
     // Page-type coverage breakdown
@@ -716,9 +731,10 @@ module.exports = async function handler(req, res) {
         }
       case 'landing':
         switch (type) {
-          case 'pages':     return await handleLpPages(client, res, from, to);
-          case 'by-type':   return await handleLpByType(client, res, from, to);
-          case 'top-pages': return await handleLpMoM(client, res);
+          case 'pages':      return await handleLpPages(client, res, from, to);
+          case 'by-type':    return await handleLpByType(client, res, from, to);
+          case 'top-pages':  return await handleLpMoM(client, res);
+          case 'page-trend': return await handleLpPageTrend(client, res, req.query.page);
           default: return res.status(400).json({ ok:false, error:`landing: unknown type "${type}"` });
         }
       case 'actions':
