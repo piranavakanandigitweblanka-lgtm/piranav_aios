@@ -1133,7 +1133,7 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blC
 
     charts.competitors = new Chart(document.getElementById('chart-competitors'), {
       type: 'line',
-      data: { labels: allMonths.map(m => { const d = new Date(m+'-01'); return d.toLocaleDateString('en-GB',{month:'short',year:'2-digit'}); }), datasets: compDatasets },
+      data: { labels: allMonths.map(m => { const d = new Date(m.length === 7 ? m+'-01' : m); return d.toLocaleDateString('en-GB',{month:'short',year:'2-digit'}); }), datasets: compDatasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
