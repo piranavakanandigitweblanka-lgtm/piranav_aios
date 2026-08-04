@@ -1098,21 +1098,26 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blC
     const compColors = ['#1f5eff','#0a7d4f','#d97706','#b91c1c','#7c3aed','#0891b2'];
     const compLabels = ['ledsone.co.uk','lightingcompany','ledhut','industville','vintagelightbulb','lampspares'];
 
-    /* build month labels from ledsone history */
-    const allMonths = csv.map(r => r.month).filter(Boolean);
-
-    /* group competitor rows by domain */
+    /* group competitor rows by domain — index by YYYY-MM-DD */
     const byDomain = {};
     compRows.forEach(r => {
       const d = r.domain;
       if (!byDomain[d]) byDomain[d] = {};
-      const m = r.month ? r.month.slice(0,7) : '';
-      byDomain[d][m] = parseInt(r.traffic_est) || null;
+      const m = r.month ? String(r.month).slice(0,10) : '';
+      if (m) byDomain[d][m] = parseInt(r.traffic_est) || null;
     });
 
-    /* ledsone from csv */
+    /* ledsone from csv — same YYYY-MM-DD format */
     byDomain['ledsone.co.uk'] = {};
-    csv.forEach(r => { byDomain['ledsone.co.uk'][r.month] = r.semrush_traffic_est ? parseInt(r.semrush_traffic_est) : null; });
+    csv.forEach(r => {
+      const m = r.month ? String(r.month).slice(0,10) : '';
+      if (m) byDomain['ledsone.co.uk'][m] = r.semrush_traffic_est ? parseInt(r.semrush_traffic_est) : null;
+    });
+
+    /* build month axis from competitor data (fuller range) merged with csv months */
+    const csvMonths  = csv.map(r => r.month ? String(r.month).slice(0,10) : '').filter(Boolean);
+    const compMonths = compRows.map(r => r.month ? String(r.month).slice(0,10) : '').filter(Boolean);
+    const allMonths  = [...new Set([...csvMonths, ...compMonths])].sort();
 
     const compDatasets = domains.map((d, i) => ({
       label: compLabels[i],
