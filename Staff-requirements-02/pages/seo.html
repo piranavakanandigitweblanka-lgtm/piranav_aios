@@ -477,8 +477,8 @@ function switchTab(id, btn) {
 function dateParams() { return '&from=' + window.gFrom + '&to=' + window.gTo; }
 
 function _resetLoadedFlags() {
-  kwLoaded.top = kwLoaded.opportunity = false;
-  kwData.top   = kwData.opportunity   = [];
+  kwLoaded.top = kwLoaded.opportunity = kwLoaded.gap = false;
+  kwData.top   = kwData.opportunity   = kwData.gap  = [];
   landingLoaded.pages = landingLoaded['by-type'] = false;
   landingData.pages   = landingData['by-type']   = [];
   prodLoaded = false; prodAllRows = [];
@@ -1423,8 +1423,8 @@ function renderProdTable(rows) {
 }
 
 /* ── Keyword Intelligence ──────────────────────────────────── */
-let kwLoaded  = { top: false, opportunity: false, rising: false, declining: false, semrush: false };
-let kwData    = { top: [], opportunity: [], rising: [], declining: [], semrush: [] };
+let kwLoaded  = { top: false, opportunity: false, rising: false, declining: false, semrush: false, gap: false };
+let kwData    = { top: [], opportunity: [], rising: [], declining: [], semrush: [], gap: [] };
 let kwActive  = 'top';
 let kwAllRows = [];
 
@@ -1439,10 +1439,31 @@ function loadKeywords(subType) {
   }
   setKwSubTab(kwActive);
 
-  if (kwLoaded[kwActive]) { kwActive === 'semrush' ? renderSemrushKw() : renderKwTab(kwActive); return; }
+  if (kwLoaded[kwActive]) {
+    if (kwActive === 'semrush') renderSemrushKw();
+    else if (kwActive === 'gap') renderKwGap();
+    else renderKwTab(kwActive);
+    return;
+  }
 
   const el = document.getElementById('kw-tab-body');
   if (el) el.innerHTML = '<div class="loading"><div class="spinner"></div><br>Fetching ' + kwActive + ' keywords&hellip;</div>';
+
+  if (kwActive === 'gap') {
+    fetch('/api/seo?module=semrush&type=keyword-gap&competitor=ledhut.co.uk')
+      .then(r => r.json())
+      .then(json => {
+        if (!json.ok) throw new Error(json.error || 'API error');
+        kwData.gap   = json.rows || [];
+        kwLoaded.gap = true;
+        renderKwGap();
+      })
+      .catch(e => {
+        const el2 = document.getElementById('kw-tab-body');
+        if (el2) el2.innerHTML = `<div class="alert"><strong>Error:</strong> ${e.message}</div>`;
+      });
+    return;
+  }
 
   if (kwActive === 'semrush') {
     fetch('/api/seo?module=semrush&type=keywords')
@@ -1483,6 +1504,7 @@ function kwShellHtml() {
       <button class="sub-btn"        id="kw-btn-rising"     onclick="loadKeywords('rising')">&#8593; Rising</button>
       <button class="sub-btn"        id="kw-btn-declining"  onclick="loadKeywords('declining')">&#8595; Declining</button>
       <button class="sub-btn"        id="kw-btn-semrush"    onclick="loadKeywords('semrush')" style="border-left:2px solid #1f5eff">SEMrush Rankings</button>
+      <button class="sub-btn"        id="kw-btn-gap"        onclick="loadKeywords('gap')" style="border-left:2px solid #d97706;background:#fffbeb;color:#92400e">&#128275; Keyword Gap</button>
     </div>
     <div class="controls" id="kw-controls">
       <input id="kw-search" class="srch" type="text" placeholder="Search keyword&hellip;" oninput="filterKwTable()">
@@ -1509,7 +1531,7 @@ function kwShellHtml() {
 }
 
 function setKwSubTab(sub) {
-  ['top','opportunity','rising','declining','semrush'].forEach(s => {
+  ['top','opportunity','rising','declining','semrush','gap'].forEach(s => {
     const btn = document.getElementById('kw-btn-' + s);
     if (btn) btn.classList.toggle('active', s === sub);
   });
@@ -1653,6 +1675,106 @@ function renderSemrushKw() {
   if (metaEl) metaEl.textContent = 'Source: SEMrush · Neon DB · snapshot ' + snap;
 
   renderSemrushKwTable();
+}
+
+function renderKwGap() {
+  const rows = kwData.gap;
+  const el   = document.getElementById('kw-tab-body');
+  if (!el) return;
+
+  const snap = rows.length ? (rows[0].snapshot_date || '').slice(0,10) : '—';
+
+  const INTENT_LBL = { '0':'Navigational','1':'Informational','2':'Navigational','3':'Commercial','4':'Transactional' };
+  const INTENT_COL = { '0':'#7c3aed','1':'#0891b2','2':'#7c3aed','3':'#d97706','4':'#16a34a' };
+
+  function intentBadges(intent) {
+    if (!intent) return '<span style="color:#94a3b8;font-size:10px">—</span>';
+    return String(intent).split(',').map(c => c.trim()).filter(Boolean).map(c =>
+      `<span style="display:inline-block;background:${INTENT_COL[c]||'#64748b'}22;color:${INTENT_COL[c]||'#64748b'};border-radius:4px;padding:1px 6px;font-size:9.5px;font-weight:700;margin-right:2px">${INTENT_LBL[c]||c}</span>`
+    ).join('');
+  }
+
+  function kdBadge(kd) {
+    const v = parseFloat(kd) || 0;
+    const bg = v >= 60 ? '#fee2e2' : v >= 40 ? '#fef3c7' : '#d1fae5';
+    const co = v >= 60 ? '#991b1b' : v >= 40 ? '#92400e' : '#065f46';
+    return `<span style="background:${bg};color:${co};border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700">${v}</span>`;
+  }
+
+  /* summary stats */
+  const totalVolume   = rows.reduce((s, r) => s + (parseInt(r.volume) || 0), 0);
+  const totalTraffic  = rows.reduce((s, r) => s + (parseInt(r.competitor_traffic) || 0), 0);
+  const easyCount     = rows.filter(r => parseFloat(r.keyword_difficulty) < 30).length;
+
+  const tableRows = rows.map((r, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td style="font-weight:600;color:var(--navy);max-width:220px">${r.keyword}</td>
+      <td class="num">${(parseInt(r.volume)||0).toLocaleString()}</td>
+      <td class="num">${kdBadge(r.keyword_difficulty)}</td>
+      <td class="num">${intentBadges(r.intent)}</td>
+      <td class="num"><span style="font-weight:700;color:#d97706">#${r.competitor_position}</span></td>
+      <td class="num">${(parseInt(r.competitor_traffic)||0).toLocaleString()}</td>
+      <td class="num">${r.ledsone_position ? `<span style="color:var(--muted)">#${r.ledsone_position}</span>` : '<span style="background:#fee2e2;color:#991b1b;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:700">Not ranking</span>'}</td>
+      <td class="num">
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="width:48px;height:5px;background:var(--line);border-radius:3px;overflow:hidden">
+            <div style="height:100%;background:#d97706;border-radius:3px;width:${Math.min(100, Math.round((parseInt(r.opportunity_score)||0) / 5000 * 100))}%"></div>
+          </div>
+          <span style="font-size:10.5px;font-weight:700;color:#d97706">${(parseInt(r.opportunity_score)||0).toLocaleString()}</span>
+        </div>
+      </td>
+    </tr>`).join('');
+
+  el.innerHTML = `
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+      <div style="background:#fff;border:1px solid #e2e8f0;border-left:3px solid #d97706;border-radius:10px;padding:12px 18px;min-width:150px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#94a3b8;letter-spacing:.8px">Gap Keywords</div>
+        <div style="font-size:24px;font-weight:800;color:#0c1a30;margin-top:3px">${rows.length}</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:2px">vs ledhut.co.uk</div>
+      </div>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-left:3px solid #d97706;border-radius:10px;padding:12px 18px;min-width:150px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#94a3b8;letter-spacing:.8px">Combined Volume</div>
+        <div style="font-size:24px;font-weight:800;color:#0c1a30;margin-top:3px">${(totalVolume/1000).toFixed(0)}K</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:2px">monthly searches</div>
+      </div>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-left:3px solid #d97706;border-radius:10px;padding:12px 18px;min-width:150px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#94a3b8;letter-spacing:.8px">Competitor Traffic</div>
+        <div style="font-size:24px;font-weight:800;color:#0c1a30;margin-top:3px">${(totalTraffic/1000).toFixed(1)}K</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:2px">ledhut gets, you don't</div>
+      </div>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-left:3px solid #16a34a;border-radius:10px;padding:12px 18px;min-width:150px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#94a3b8;letter-spacing:.8px">Easy Wins (KD&lt;30)</div>
+        <div style="font-size:24px;font-weight:800;color:#0a7d4f;margin-top:3px">${easyCount}</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:2px">low difficulty gaps</div>
+      </div>
+    </div>
+    <div class="info-note" style="margin-bottom:12px">
+      Keywords where <strong>ledhut.co.uk</strong> ranks in the top 10 that <strong>ledsone.co.uk</strong> does not rank for (or ranks below position 20). Sorted by opportunity score (volume × position weight). Snapshot: ${snap}.
+    </div>
+    <div class="tbox">
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Keyword</th>
+              <th class="num">Volume</th>
+              <th class="num">KD</th>
+              <th class="num">Intent</th>
+              <th class="num">ledhut Pos</th>
+              <th class="num">ledhut Traffic</th>
+              <th class="num">ledsone Pos</th>
+              <th class="num">Opp Score</th>
+            </tr>
+          </thead>
+          <tbody>${tableRows}</tbody>
+        </table>
+      </div>
+    </div>`;
+
+  const metaEl = document.getElementById('kw-meta');
+  if (metaEl) metaEl.textContent = 'Source: SEMrush · Neon DB · vs ledhut.co.uk · snapshot ' + snap;
 }
 
 function filterKwTable() {

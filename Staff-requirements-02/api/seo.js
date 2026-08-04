@@ -751,7 +751,7 @@ module.exports = async function handler(req, res) {
         }
       case 'semrush':
         await client.end();
-        return await handleSemrush(type, res);
+        return await handleSemrush(type, res, req);
       case 'geo':
         await client.end();
         return await handleGeo(type, req.query, res);
@@ -767,7 +767,7 @@ module.exports = async function handler(req, res) {
 
 /* ─── SEMRUSH (Neon DB) ────────────────────────────────────── */
 
-async function handleSemrush(type, res) {
+async function handleSemrush(type, res, req) {
   const NEON_URL = process.env.NEON_DATABASE_URL;
   if (!NEON_URL) return res.status(500).json({ ok:false, cause:'no_neon_url', error:'NEON_DATABASE_URL not set' });
   const nc = makeClient(NEON_URL);
@@ -815,6 +815,18 @@ async function handleSemrush(type, res) {
         WHERE snapshot_date = (SELECT MAX(snapshot_date) FROM semrush_pages)
         ORDER BY traffic DESC LIMIT 50`);
       return res.json({ ok:true, rows });
+    }
+    if (type === 'keyword-gap') {
+      const competitor = req.query.competitor || 'ledhut.co.uk';
+      const { rows } = await nc.query(`
+        SELECT keyword, competitor_domain, competitor_position, volume,
+               competitor_traffic, competitor_url, keyword_difficulty, intent,
+               ledsone_position, opportunity_score, snapshot_date
+        FROM semrush_keyword_gap
+        WHERE competitor_domain = $1
+        ORDER BY opportunity_score DESC, volume DESC
+        LIMIT 100`, [competitor]);
+      return res.json({ ok:true, rows, competitor });
     }
     return res.status(400).json({ ok:false, error:`semrush: unknown type "${type}"` });
   } catch (err) {
