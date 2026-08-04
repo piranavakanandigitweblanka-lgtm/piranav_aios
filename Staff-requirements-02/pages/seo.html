@@ -1129,6 +1129,7 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blC
       tension: 0.3,
       pointRadius: d === 'ledsone.co.uk' ? 3 : 2,
       pointHoverRadius: 5,
+      spanGaps: true,
     }));
 
     charts.competitors = new Chart(document.getElementById('chart-competitors'), {
