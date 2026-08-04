@@ -569,6 +569,16 @@ function fMonth(iso) {
   return d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
 }
 
+/* Returns "Last updated: DD MMM YYYY · Next update: DD MMM YYYY (Mon)" */
+function semrushRefreshBadge(snapshotDateIso) {
+  const fmt = d => d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+  const lastStr = snapshotDateIso ? fmt(new Date(snapshotDateIso)) : '—';
+  const now = new Date();
+  const daysUntilMon = (8 - now.getUTCDay()) % 7 || 7; // next Monday UTC
+  const nextMon = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + daysUntilMon));
+  return `Last updated: <strong>${lastStr}</strong> &nbsp;·&nbsp; Next update: <strong>${fmt(nextMon)}</strong> (Mon 03:00 UTC)`;
+}
+
 /* ── Chart instances (for destroy on reload) ──────────────── */
 const charts = {};
 
@@ -898,7 +908,7 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blC
     <div class="section-title">Competitor Traffic Comparison</div>
     <div class="chart-card" style="margin-bottom:14px">
       <h3>ledsone.co.uk vs Top 5 Competitors — Estimated Organic Traffic</h3>
-      <div class="ch-sub">SEMrush monthly history &bull; Neon DB &bull; refreshed weekly by scheduled agent</div>
+      <div class="ch-sub" id="comp-chart-sub">SEMrush monthly history &bull; Neon DB &bull; refreshed weekly by scheduled agent</div>
       <div class="chart-wrap" style="height:280px"><canvas id="chart-competitors"></canvas></div>
     </div>
 
@@ -1095,6 +1105,9 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blC
 
   /* Competitor traffic chart */
   if (compRows.length) {
+    const compSnap = compRows[0].month ? String(compRows[0].month).slice(0,10) : null;
+    const compSubEl = document.getElementById('comp-chart-sub');
+    if (compSubEl) compSubEl.innerHTML = 'SEMrush monthly history &bull; Neon DB &bull; ' + semrushRefreshBadge(compSnap);
     const domains = ['ledsone.co.uk','lightingcompany.co.uk','ledhut.co.uk','industville.co.uk','thevintagelightbulbcompany.com','lampspares.co.uk'];
     const compColors = ['#1f5eff','#0a7d4f','#d97706','#b91c1c','#7c3aed','#0891b2'];
     const compLabels = ['ledsone.co.uk','lightingcompany','ledhut','industville','vintagelightbulb','lampspares'];
@@ -1692,11 +1705,11 @@ function renderSemrushKw() {
         oninput="semrushKwSearch=this.value;renderSemrushKwTable()"
         style="margin-left:auto;border:1px solid #e2e8f0;border-radius:7px;padding:4px 10px;font-size:12px;color:#1e293b;background:#f8fafc;min-width:180px">
     </div>
-    <div style="font-size:11px;color:#64748b;margin-bottom:8px">SEMrush organic rankings — snapshot ${snap}</div>
+    <div style="font-size:11px;color:#64748b;margin-bottom:8px">SEMrush organic rankings &nbsp;·&nbsp; ${semrushRefreshBadge(snap)}</div>
     <div id="sr-kw-table"></div>`;
 
   const metaEl = document.getElementById('kw-meta');
-  if (metaEl) metaEl.textContent = 'Source: SEMrush · Neon DB · snapshot ' + snap;
+  if (metaEl) metaEl.innerHTML = 'SEMrush · Neon DB &nbsp;·&nbsp; ' + semrushRefreshBadge(snap);
 
   renderSemrushKwTable();
 }
@@ -1777,7 +1790,7 @@ function renderKwGap() {
       Keywords where <strong>ledhut.co.uk</strong> ranks in the top 10 that <strong>ledsone.co.uk</strong> does not rank for (or ranks below position 20). Sorted by opportunity score (volume × position weight). Snapshot: ${snap}.
     </div>
     <div class="tbox">
-      <div class="tbar"><strong>${rows.length} gap keywords</strong><span style="color:var(--muted);font-size:11px">vs ledhut.co.uk · SEMrush · snapshot ${snap}</span></div>
+      <div class="tbar"><strong>${rows.length} gap keywords</strong><span style="color:var(--muted);font-size:11px">vs ledhut.co.uk · ${semrushRefreshBadge(snap)}</span></div>
       <div class="scroll">
         <table>
           <thead>
@@ -2159,7 +2172,7 @@ function renderSemrushPages() {
   }).join('');
 
   let html = `
-    <div style="font-size:12px;color:#64748b;padding:6px 0 10px">SEMrush organic traffic by page — snapshot ${snap} — Top 50 pages</div>
+    <div style="font-size:12px;color:#64748b;padding:6px 0 10px">SEMrush organic traffic by page — Top 50 pages &nbsp;·&nbsp; ${semrushRefreshBadge(snap)}</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">${typeSummary}</div>
     <table style="width:100%;border-collapse:collapse;font-size:13px">
       <thead><tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0">
@@ -2194,7 +2207,7 @@ function renderSemrushPages() {
   const countEl = document.getElementById('landing-count');
   const metaEl  = document.getElementById('landing-meta');
   if (countEl) countEl.textContent = rows.length + ' pages';
-  if (metaEl)  metaEl.textContent  = 'Source: SEMrush · Neon DB · snapshot ' + snap;
+  if (metaEl)  metaEl.innerHTML  = 'SEMrush · Neon DB &nbsp;·&nbsp; ' + semrushRefreshBadge(snap);
   body.innerHTML = html;
 }
 
