@@ -2351,7 +2351,7 @@ function renderLandingRows(sub, rows) {
         <td class="num">${posBadge(r.avg_position)}</td>
         <td class="num" style="color:var(--muted)">${r.days_with_data}</td>
         <td style="padding:4px 6px">
-          <button onclick="toggleLpTrend(this,'${r.page.replace(/'/g,"\\'")}'" style="border:1px solid #bbf7d0;background:#f0fdf4;color:#166534;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;white-space:nowrap">▶ Trend</button>
+          <button onclick="toggleLpTrend(this,'${r.page.replace(/'/g,"\\'")}')" style="border:1px solid #bbf7d0;background:#f0fdf4;color:#166534;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;white-space:nowrap">▶ Trend</button>
         </td>
       </tr>`;
     });
