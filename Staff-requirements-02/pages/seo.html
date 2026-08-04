@@ -2343,7 +2343,7 @@ function renderLandingRows(sub, rows) {
       const slug = r.page.replace('https://ledsone.co.uk','') || '/';
       html += `<tr>
         <td style="color:var(--muted);font-size:11px">${i+1}</td>
-        <td style="font-size:11.5px;max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.page}">${slug}</td>
+        <td style="font-size:11.5px;max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.page}"><a href="${r.page}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">${slug}</a></td>
         <td>${ptBadge(r.page_type)}</td>
         <td class="num">${fNum(r.clicks)}</td>
         <td class="num">${fNum(r.impressions)}</td>
@@ -2374,7 +2374,7 @@ function renderLandingRows(sub, rows) {
       const slug = r.page.replace('https://ledsone.co.uk','') || '/';
       html += `<tr>
         <td style="color:var(--muted);font-size:11px">${i+1}</td>
-        <td style="font-size:11.5px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.page}">${slug}</td>
+        <td style="font-size:11.5px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.page}"><a href="${r.page}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">${slug}</a></td>
         <td>${ptBadge(r.page_type)}</td>
         <td class="num"><strong>${fNum(r.cur_clicks)}</strong></td>
         <td class="num">${momChg(r.cur_clicks, r.prv_clicks, false)}</td>
@@ -2807,7 +2807,7 @@ function renderZeroClickTable(rows) {
     else                           fix = 'Improve snippet relevance';
     html += `<tr>
       <td style="color:var(--muted);font-size:11px">${i+1}</td>
-      <td style="font-size:11.5px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.page}">${slug}</td>
+      <td style="font-size:11.5px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.page}"><a href="${r.page}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">${slug}</a></td>
       <td>${ptBadge(r.page_type)}</td>
       <td class="num">${fNum(r.impressions)}</td>
       <td class="num">${posBadge(r.avg_position)}</td>
