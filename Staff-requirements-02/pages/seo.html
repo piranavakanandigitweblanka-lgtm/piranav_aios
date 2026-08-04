@@ -589,6 +589,7 @@ async function loadExec() {
   if (_hp && !_hp.dataset.built) { _hp.innerHTML = helpPanelHtml('exec'); _hp.dataset.built='1'; initHelp('exec'); }
   if (execLoaded) return;
   execLoaded = true;
+  loadLostDomains();
 
   try {
     const [seRes, compRes, gscRes, posRes, adsRes, dqRes, blRes, blSnap] = await Promise.all([
@@ -924,6 +925,12 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blC
       <div class="chart-wrap" style="height:200px"><canvas id="chart-bl-change"></canvas></div>
     </div>
 
+    <div class="chart-card" style="margin-bottom:14px" id="lost-domains-card">
+      <h3>Lost &amp; Gained Referring Domains — Week-on-Week</h3>
+      <div class="ch-sub" id="lost-domains-sub">SEMrush &bull; Neon DB &bull; loading…</div>
+      <div id="lost-domains-body" style="margin-top:12px"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
     <div class="section-title">Month-on-Month Comparison — Last 6 Months</div>
     <div class="info-note">
       SEMrush columns: Neon DB (daily refresh). GSC columns: live from PostgreSQL pipeline (&#9888; ~50% of true clicks). Ads columns: live from PostgreSQL.
@@ -1245,6 +1252,130 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blC
       }
     });
   }
+}
+
+/* ── Lost & Gained Domains ─────────────────────────────────── */
+function loadLostDomains() {
+  fetch('/api/seo?module=semrush&type=lost-domains')
+    .then(r => r.json())
+    .then(d => renderLostDomains(d))
+    .catch(() => {
+      const el = document.getElementById('lost-domains-body');
+      if (el) el.innerHTML = '<div style="color:var(--red);font-size:12px;padding:8px">Failed to load domain data.</div>';
+    });
+}
+
+function renderLostDomains(d) {
+  const sub  = document.getElementById('lost-domains-sub');
+  const body = document.getElementById('lost-domains-body');
+  if (!body) return;
+
+  const fmtDate = iso => iso ? new Date(iso).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '—';
+
+  if (!d.ok || !d.latest) {
+    body.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:8px">No referring domain data yet — agent will populate this on its next run (Monday 03:00 UTC).</div>';
+    return;
+  }
+
+  if (sub) sub.innerHTML = `SEMrush · Neon DB · ${semrushRefreshBadge(d.latest)}`;
+
+  const lost   = d.lost   || [];
+  const gained = d.gained || [];
+  const current = d.current || [];
+
+  const asBadge = as => {
+    const v = parseInt(as)||0;
+    const bg = v>=50?'#dcfce7':v>=30?'#fef3c7':'#fee2e2';
+    const co = v>=50?'#166534':v>=30?'#92400e':'#991b1b';
+    return `<span style="background:${bg};color:${co};border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700">${v}</span>`;
+  };
+
+  // Summary cards
+  let html = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px">
+    <div style="background:var(--good-soft);border:1px solid #b7e8d0;border-radius:10px;padding:12px 15px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--good);margin-bottom:4px">Current Domains</div>
+      <div style="font-size:22px;font-weight:700;color:var(--navy)">${current.length}</div>
+      <div style="font-size:11px;color:var(--muted)">as of ${fmtDate(d.latest)}</div>
+    </div>
+    <div style="background:var(--red-soft);border:1px solid #fecaca;border-radius:10px;padding:12px 15px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--red);margin-bottom:4px">Lost This Week</div>
+      <div style="font-size:22px;font-weight:700;color:var(--red)">${d.previous ? lost.length : '—'}</div>
+      <div style="font-size:11px;color:var(--muted)">${d.previous ? 'vs '+fmtDate(d.previous) : 'Need 2 snapshots'}</div>
+    </div>
+    <div style="background:var(--accent-soft);border:1px solid #c5d6ff;border-radius:10px;padding:12px 15px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:4px">Gained This Week</div>
+      <div style="font-size:22px;font-weight:700;color:var(--accent)">${d.previous ? gained.length : '—'}</div>
+      <div style="font-size:11px;color:var(--muted)">${d.previous ? 'vs '+fmtDate(d.previous) : 'Need 2 snapshots'}</div>
+    </div>
+  </div>`;
+
+  // Gained domains
+  if (gained.length) {
+    html += `<div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--good);margin-bottom:6px">✅ Gained this week (${gained.length})</div>
+    <div style="overflow-x:auto;margin-bottom:14px"><table style="width:100%;border-collapse:collapse;font-size:12.5px">
+      <thead><tr style="background:var(--good-soft)">
+        <th style="padding:7px 10px;text-align:left;border:1px solid #b7e8d0">Domain</th>
+        <th style="padding:7px 10px;text-align:center;border:1px solid #b7e8d0;width:60px">AS</th>
+        <th style="padding:7px 10px;text-align:right;border:1px solid #b7e8d0;width:80px">Backlinks</th>
+        <th style="padding:7px 10px;text-align:right;border:1px solid #b7e8d0;width:100px">First Seen</th>
+      </tr></thead><tbody>`;
+    gained.slice(0,20).forEach(r => {
+      html += `<tr style="border-bottom:1px solid #dcfce7">
+        <td style="padding:6px 10px;border:1px solid #e0f2e9"><a href="https://${r.domain}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">${r.domain}</a></td>
+        <td style="padding:6px 10px;text-align:center;border:1px solid #e0f2e9">${asBadge(r.authority_score)}</td>
+        <td style="padding:6px 10px;text-align:right;border:1px solid #e0f2e9;color:var(--muted)">${(r.backlinks_count||0).toLocaleString()}</td>
+        <td style="padding:6px 10px;text-align:right;border:1px solid #e0f2e9;color:var(--muted)">${fmtDate(r.first_seen)}</td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+  }
+
+  // Lost domains
+  if (lost.length) {
+    html += `<div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--red);margin-bottom:6px">❌ Lost this week (${lost.length})</div>
+    <div style="overflow-x:auto;margin-bottom:14px"><table style="width:100%;border-collapse:collapse;font-size:12.5px">
+      <thead><tr style="background:var(--red-soft)">
+        <th style="padding:7px 10px;text-align:left;border:1px solid #fecaca">Domain</th>
+        <th style="padding:7px 10px;text-align:left;border:1px solid #fecaca">Action</th>
+      </tr></thead><tbody>`;
+    lost.slice(0,20).forEach(domain => {
+      html += `<tr style="border-bottom:1px solid #fee2e2">
+        <td style="padding:6px 10px;border:1px solid #fecaca"><a href="https://${domain}" target="_blank" rel="noopener" style="color:var(--red);text-decoration:none">${domain}</a></td>
+        <td style="padding:6px 10px;border:1px solid #fecaca;font-size:12px;color:var(--muted)">Check if page still exists · Contact site owner · Try to recover link</td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+  }
+
+  if (!lost.length && !gained.length && d.previous) {
+    html += '<div style="background:var(--good-soft);border:1px solid #b7e8d0;border-radius:9px;padding:10px 14px;font-size:13px;color:#065f46">✅ No domains lost or gained this week — referring domain list is stable.</div>';
+  }
+
+  // All current domains
+  html += `<details style="margin-top:4px">
+    <summary style="cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);padding:6px 0">View all ${current.length} current referring domains ▼</summary>
+    <div style="overflow-x:auto;margin-top:8px"><table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr style="background:var(--bg)">
+        <th style="padding:6px 10px;text-align:left;border:1px solid var(--line)">#</th>
+        <th style="padding:6px 10px;text-align:left;border:1px solid var(--line)">Domain</th>
+        <th style="padding:6px 10px;text-align:center;border:1px solid var(--line);width:55px">AS</th>
+        <th style="padding:6px 10px;text-align:right;border:1px solid var(--line);width:80px">Backlinks</th>
+        <th style="padding:6px 10px;text-align:right;border:1px solid var(--line);width:100px">First Seen</th>
+        <th style="padding:6px 10px;text-align:right;border:1px solid var(--line);width:100px">Last Seen</th>
+      </tr></thead><tbody>`;
+  current.forEach((r,i) => {
+    html += `<tr style="border-bottom:1px solid var(--line)${i%2===0?';background:#fafbff':''}">
+      <td style="padding:5px 10px;border:1px solid var(--line);color:var(--muted)">${i+1}</td>
+      <td style="padding:5px 10px;border:1px solid var(--line)"><a href="https://${r.domain}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">${r.domain}</a></td>
+      <td style="padding:5px 10px;text-align:center;border:1px solid var(--line)">${asBadge(r.authority_score)}</td>
+      <td style="padding:5px 10px;text-align:right;border:1px solid var(--line);color:var(--muted)">${(r.backlinks_count||0).toLocaleString()}</td>
+      <td style="padding:5px 10px;text-align:right;border:1px solid var(--line);color:var(--muted)">${fmtDate(r.first_seen)}</td>
+      <td style="padding:5px 10px;text-align:right;border:1px solid var(--line);color:var(--muted)">${fmtDate(r.last_seen)}</td>
+    </tr>`;
+  });
+  html += '</tbody></table></div></details>';
+
+  body.innerHTML = html;
 }
 
 /* loadExec() called after HELP_CFG is defined — see below */

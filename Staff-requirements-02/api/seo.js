@@ -818,6 +818,24 @@ async function handleSemrush(type, res, req) {
         FROM semrush_backlinks_history ORDER BY snapshot_date ASC`);
       return res.json({ ok:true, rows });
     }
+    if (type === 'lost-domains') {
+      // Two most recent snapshot dates
+      const { rows: snaps } = await nc.query(`
+        SELECT DISTINCT snapshot_date FROM semrush_refdomains
+        ORDER BY snapshot_date DESC LIMIT 2`);
+      if (snaps.length < 1) return res.json({ ok:true, latest: null, previous: null, lost:[], gained:[], current:[] });
+      const latest   = snaps[0].snapshot_date;
+      const previous = snaps[1] ? snaps[1].snapshot_date : null;
+      const [latestRes, prevRes] = await Promise.all([
+        nc.query(`SELECT domain, authority_score, backlinks_count, first_seen, last_seen FROM semrush_refdomains WHERE snapshot_date=$1 ORDER BY backlinks_count DESC`, [latest]),
+        previous ? nc.query(`SELECT domain FROM semrush_refdomains WHERE snapshot_date=$1`, [previous]) : Promise.resolve({ rows:[] })
+      ]);
+      const latestDomains = new Set(latestRes.rows.map(r => r.domain));
+      const prevDomains   = new Set(prevRes.rows.map(r => r.domain));
+      const lost   = previous ? prevRes.rows.filter(r => !latestDomains.has(r.domain)).map(r => r.domain) : [];
+      const gained = previous ? latestRes.rows.filter(r => !prevDomains.has(r.domain)) : [];
+      return res.json({ ok:true, latest, previous, current: latestRes.rows, lost, gained });
+    }
     if (type === 'keywords') {
       const { rows } = await nc.query(`
         SELECT keyword, position, prev_position, volume, cpc, url, traffic, keyword_difficulty, intent, snapshot_date
