@@ -556,6 +556,23 @@ async function handleLpPageTrend(client, res, page) {
   return res.status(200).json({ ok:true, page, rows });
 }
 
+async function handleKwHistory(client, res, query) {
+  if (!query) return res.status(400).json({ ok:false, error:'q param required' });
+  const { rows } = await client.query(`
+    SELECT DATE_TRUNC('month', date)::date   AS month,
+           ROUND(AVG(position)::numeric, 1)  AS avg_position,
+           SUM(clicks)::int                  AS clicks,
+           SUM(impressions)::int             AS impressions,
+           ROUND(AVG(ctr)::numeric*100, 2)   AS ctr_pct
+    FROM google_search_console.query
+    WHERE sub_source=$1 AND search_type='web' AND query=$2
+      AND date >= NOW() - INTERVAL '18 months'
+    GROUP BY DATE_TRUNC('month', date)
+    ORDER BY month ASC
+  `, [GSC_SUB_SOURCE, query]);
+  return res.status(200).json({ ok:true, query, rows });
+}
+
 async function handleTechCoverage(client, res, from, to) {
   const [coverRes, shopifyRes, freshRes] = await Promise.all([
     // Page-type coverage breakdown
@@ -727,6 +744,7 @@ module.exports = async function handler(req, res) {
           case 'opportunity': return await handleKwOpportunity(client, res, from, to);
           case 'rising':      return await handleKwMovers(client, res, 'rising');
           case 'declining':   return await handleKwMovers(client, res, 'declining');
+          case 'kw-history':  return await handleKwHistory(client, res, req.query.q);
           default: return res.status(400).json({ ok:false, error:`keywords: unknown type "${type}"` });
         }
       case 'landing':

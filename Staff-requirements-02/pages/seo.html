@@ -1880,9 +1880,11 @@ function renderKwRows(sub, rows) {
         <th class="num">Impressions</th>
         <th class="num">CTR %</th>
         <th style="min-width:180px">Top Landing Page</th>
+        <th style="width:42px"></th>
       </tr></thead><tbody>`;
     show.forEach((r, i) => {
       const page = r.top_page ? r.top_page.replace('https://ledsone.co.uk','') : '—';
+      const qSafe = r.query.replace(/'/g,"\\'");
       html += `<tr>
         <td style="color:var(--muted);font-size:11px">${i+1}</td>
         <td><strong>${r.query}</strong></td>
@@ -1891,6 +1893,7 @@ function renderKwRows(sub, rows) {
         <td class="num">${fNum(r.impressions)}</td>
         <td class="num">${r.ctr_pct ? r.ctr_pct.toFixed(2)+'%' : '—'}</td>
         <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)" title="${r.top_page||''}">${page}</td>
+        <td style="padding:4px 6px"><button onclick="toggleKwHistory(this,'${qSafe}')" title="Position history" style="border:1px solid #c5d6ff;background:#eaf0ff;color:#1f5eff;border-radius:6px;padding:2px 7px;font-size:12px;cursor:pointer">📈</button></td>
       </tr>`;
     });
     html += '</tbody></table>';
@@ -1906,8 +1909,10 @@ function renderKwRows(sub, rows) {
         <th class="num">CTR %</th>
         <th class="num" style="min-width:80px">Opp Score</th>
         <th style="min-width:140px">Action</th>
+        <th style="width:42px"></th>
       </tr></thead><tbody>`;
     show.forEach((r, i) => {
+      const qSafe = r.query.replace(/'/g,"\\'");
       html += `<tr>
         <td style="color:var(--muted);font-size:11px">${i+1}</td>
         <td><strong>${r.query}</strong></td>
@@ -1917,6 +1922,7 @@ function renderKwRows(sub, rows) {
         <td class="num">${r.ctr_pct ? r.ctr_pct.toFixed(2)+'%' : '—'}</td>
         <td class="num"><div class="opp-wrap">${oppBar(r.opp_score)}</div></td>
         <td>${actionTagHtml(r.action)}</td>
+        <td style="padding:4px 6px"><button onclick="toggleKwHistory(this,'${qSafe}')" title="Position history" style="border:1px solid #c5d6ff;background:#eaf0ff;color:#1f5eff;border-radius:6px;padding:2px 7px;font-size:12px;cursor:pointer">📈</button></td>
       </tr>`;
     });
     html += '</tbody></table>';
@@ -1933,12 +1939,14 @@ function renderKwRows(sub, rows) {
         <th class="num">Change</th>
         <th class="num">Current Clicks</th>
         <th class="num">Current Impressions</th>
+        <th style="width:42px"></th>
       </tr></thead><tbody>`;
     show.forEach((r, i) => {
       const chg     = parseFloat(r.pos_change) || 0;
       const cls     = chg > 0 ? 'pos-up' : 'pos-dn';
       const arrow   = chg > 0 ? '&#8593;' : '&#8595;';
       const display = isRising ? `+${chg.toFixed(1)}` : `${chg.toFixed(1)}`;
+      const qSafe2 = r.query.replace(/'/g,"\\'");
       html += `<tr>
         <td style="color:var(--muted);font-size:11px">${i+1}</td>
         <td><strong>${r.query}</strong></td>
@@ -1947,10 +1955,11 @@ function renderKwRows(sub, rows) {
         <td class="num"><span class="${cls}">${arrow} ${Math.abs(chg).toFixed(1)}</span></td>
         <td class="num">${fNum(r.cur_clicks)}</td>
         <td class="num">${fNum(r.cur_imp)}</td>
+        <td style="padding:4px 6px"><button onclick="toggleKwHistory(this,'${qSafe2}')" title="Position history" style="border:1px solid #c5d6ff;background:#eaf0ff;color:#1f5eff;border-radius:6px;padding:2px 7px;font-size:12px;cursor:pointer">📈</button></td>
       </tr>`;
     });
     if (rows.length > 500) {
-      html += `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:12px;font-size:11.5px">Showing 500 of ${fNum(rows.length)} rows</td></tr>`;
+      html += `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:12px;font-size:11.5px">Showing 500 of ${fNum(rows.length)} rows</td></tr>`;
     }
     html += '</tbody></table>';
   }
@@ -2287,6 +2296,88 @@ function renderLandingTab(sub) {
 }
 
 const lpTrendCache = {};
+
+/* ── Keyword position history ──────────────────────────────── */
+const kwHistoryCache = {};
+const kwHistoryCharts = {};
+
+function toggleKwHistory(btn, query) {
+  const tr = btn.closest('tr');
+  const existing = tr.nextElementSibling;
+  if (existing && existing.classList.contains('kw-hist-expand')) {
+    const cid = existing.querySelector('canvas');
+    if (cid && kwHistoryCharts[cid.id]) { kwHistoryCharts[cid.id].destroy(); delete kwHistoryCharts[cid.id]; }
+    existing.remove(); btn.textContent = '📈'; return;
+  }
+  const expandTr = document.createElement('tr');
+  expandTr.className = 'kw-hist-expand';
+  const colCount = tr.querySelectorAll('td').length;
+  expandTr.innerHTML = `<td colspan="${colCount}" style="padding:14px 20px;background:#eaf0ff;border-bottom:1px solid #c5d6ff"><div style="font-size:12px;color:#475569">Loading position history…</div></td>`;
+  tr.after(expandTr);
+  btn.textContent = '⬇';
+
+  const render = data => {
+    if (!data || !data.length) {
+      expandTr.querySelector('td').innerHTML = '<div style="font-size:12px;color:#94a3b8;padding:4px 0">No monthly history for this keyword yet.</div>';
+      return;
+    }
+    const cid = 'kwh-' + Math.random().toString(36).slice(2);
+    const labels  = data.map(r => { const d = new Date(r.month); return d.toLocaleDateString('en-GB',{month:'short',year:'2-digit'}); });
+    const pos     = data.map(r => parseFloat(r.avg_position) || null);
+    const clicks  = data.map(r => parseInt(r.clicks) || 0);
+    const maxPos  = Math.max(...pos.filter(Boolean), 30);
+    expandTr.querySelector('td').innerHTML = `
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:10px">
+        <span style="font-size:12px;font-weight:700;color:#1e3a8a">📈 Position history — <em style="font-weight:400">${query}</em></span>
+        <span style="font-size:11px;color:#64748b">${data.length} months of GSC data</span>
+        <span style="font-size:11px;color:#64748b;margin-left:auto">Lower position = higher ranking</span>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;align-items:start">
+        <div style="height:180px;position:relative"><canvas id="${cid}"></canvas></div>
+        <table style="font-size:11.5px;border-collapse:collapse;width:100%">
+          <thead><tr style="border-bottom:1px solid #c5d6ff;color:#475569">
+            <th style="padding:3px 8px;text-align:left">Month</th>
+            <th style="padding:3px 8px;text-align:right">Pos</th>
+            <th style="padding:3px 8px;text-align:right">Clicks</th>
+          </tr></thead><tbody>
+          ${data.slice().reverse().slice(0,8).map(r => `
+            <tr style="border-bottom:1px solid #e0e7ff">
+              <td style="padding:3px 8px">${new Date(r.month).toLocaleDateString('en-GB',{month:'short',year:'2-digit'})}</td>
+              <td style="padding:3px 8px;text-align:right;font-weight:600;color:${parseFloat(r.avg_position)<=3?'#166534':parseFloat(r.avg_position)<=10?'#1f5eff':'#d97706'}">${r.avg_position}</td>
+              <td style="padding:3px 8px;text-align:right;color:#64748b">${(r.clicks||0).toLocaleString()}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+    const ctx = document.getElementById(cid);
+    kwHistoryCharts[cid] = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Avg Position', data: pos, borderColor: '#1f5eff', backgroundColor: 'rgba(31,94,255,.08)', tension: 0.35, pointRadius: 3, pointHoverRadius: 5, spanGaps: true, yAxisID: 'yPos' },
+          { label: 'Clicks', data: clicks, borderColor: '#0a7d4f', backgroundColor: 'transparent', tension: 0.35, pointRadius: 2, borderDash: [4,3], spanGaps: true, yAxisID: 'yClicks' }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { labels: { font: { size: 11 }, boxWidth: 10 } }, tooltip: { bodyFont: { size: 11 } } },
+        scales: {
+          yPos: { type: 'linear', position: 'left', reverse: true, min: 1, max: Math.min(maxPos+5, 100), ticks: { font:{size:10}, stepSize: 5 }, grid: { color: '#e8edf5' }, title: { display: true, text: 'Position', font:{size:10} } },
+          yClicks: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, ticks: { font:{size:10} }, title: { display: true, text: 'Clicks', font:{size:10} } },
+          x: { ticks: { font:{size:10}, maxTicksLimit: 12 }, grid: { color: '#f0f3f8' } }
+        }
+      }
+    });
+  };
+
+  if (kwHistoryCache[query]) { render(kwHistoryCache[query]); return; }
+  fetch('/api/seo?module=keywords&type=kw-history&q=' + encodeURIComponent(query))
+    .then(r => r.json())
+    .then(json => { kwHistoryCache[query] = json.rows || []; render(kwHistoryCache[query]); })
+    .catch(() => { expandTr.querySelector('td').innerHTML = '<div style="font-size:12px;color:#dc2626">Failed to load history.</div>'; });
+}
 
 function toggleLpTrend(btn, pageUrl) {
   const tr = btn.closest('tr');
