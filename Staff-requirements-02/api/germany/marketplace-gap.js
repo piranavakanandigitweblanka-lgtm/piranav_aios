@@ -1,8 +1,5 @@
 const { Client } = require('pg');
 
-// Strip store-specific suffixes from listing SKUs
-const STRIP = `TRIM(REGEXP_REPLACE(sku, '-(IDE|IFR|DE|UK)$', ''))`;
-
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 'no-store');
@@ -11,40 +8,77 @@ module.exports = async function handler(req, res) {
   if (!connStr) return res.status(500).json({ ok: false, error: 'DATABASE_URL not configured' });
 
   const client = new Client({
-    connectionString: connStr, ssl: { rejectUnauthorized: false },
-    connectionTimeoutMillis: 15000, statement_timeout: 55000,
+    connectionString: connStr,
+    ssl: { rejectUnauthorized: false },
+    connectionTimeoutMillis: 15000,
+    statement_timeout: 55000,
   });
 
   try {
     await client.connect();
 
-    // Single query: stock + all 3 channel listings matched in SQL
     const { rows } = await client.query(`
+      WITH stock AS (
+        SELECT p.sku, SUM(licsl.stock)::int AS st
+        FROM inventory.products p
+        JOIN inventory.local_inventory_current_stock_location_wise licsl
+          ON licsl.inventory_id = p.id
+        WHERE licsl.warehouse_location = 'Germany' AND licsl.stock > 0
+        GROUP BY p.sku
+      ),
+      raw_amz AS (
+        SELECT DISTINCT
+          CASE WHEN sku LIKE '%-IDE' THEN LEFT(sku, LENGTH(sku)-4) ELSE sku END AS base
+        FROM listings.amazon_listings
+        WHERE site = 'Germany' AND sku IS NOT NULL AND sku != ''
+      ),
+      amz_coverage AS (
+        SELECT DISTINCT array_to_string(parts[1:n], '+') AS covered_sku
+        FROM (
+          SELECT base, string_to_array(base, '+') AS parts,
+                 generate_series(1, array_length(string_to_array(base, '+'), 1)) AS n
+          FROM raw_amz
+        ) x
+      ),
+      raw_ebay AS (
+        SELECT DISTINCT
+          CASE WHEN sku LIKE '%-IDE' THEN LEFT(sku, LENGTH(sku)-4) ELSE sku END AS base
+        FROM listings.ebay_listings
+        WHERE site = 'Germany' AND all_list = 1 AND sku IS NOT NULL AND sku != ''
+      ),
+      ebay_coverage AS (
+        SELECT DISTINCT array_to_string(parts[1:n], '+') AS covered_sku
+        FROM (
+          SELECT base, string_to_array(base, '+') AS parts,
+                 generate_series(1, array_length(string_to_array(base, '+'), 1)) AS n
+          FROM raw_ebay
+        ) x
+      ),
+      raw_shop AS (
+        SELECT DISTINCT
+          CASE WHEN sku LIKE '%-IDE' THEN LEFT(sku, LENGTH(sku)-4) ELSE sku END AS base
+        FROM listings.shopify_listings
+        WHERE site = 'Germany' AND all_list = 1 AND sku IS NOT NULL AND sku != ''
+      ),
+      shop_coverage AS (
+        SELECT DISTINCT array_to_string(parts[1:n], '+') AS covered_sku
+        FROM (
+          SELECT base, string_to_array(base, '+') AS parts,
+                 generate_series(1, array_length(string_to_array(base, '+'), 1)) AS n
+          FROM raw_shop
+        ) x
+      )
       SELECT
-        p.sku                                                          AS s,
-        SUM(licsl.stock)::int                                          AS st,
-        MAX(CASE WHEN al.sku  IS NOT NULL THEN 1 ELSE 0 END)::int     AS a,
-        MAX(CASE WHEN el.sku  IS NOT NULL THEN 1 ELSE 0 END)::int     AS e,
-        MAX(CASE WHEN sl.sku  IS NOT NULL THEN 1 ELSE 0 END)::int     AS sh
-      FROM inventory.products p
-      JOIN inventory.local_inventory_current_stock_location_wise licsl
-        ON licsl.inventory_id = p.id
-       AND licsl.warehouse_location = 'Germany'
-       AND licsl.stock > 0
-      LEFT JOIN listings.amazon_listings al
-        ON ${STRIP.replace(/sku/g, 'al.sku')} = p.sku
-       AND al.site = 'Germany'
-       AND al.sku IS NOT NULL AND TRIM(al.sku) != ''
-      LEFT JOIN listings.ebay_listings el
-        ON ${STRIP.replace(/sku/g, 'el.sku')} = p.sku
-       AND el.site = 'Germany' AND el.all_list = 1
-       AND el.sku IS NOT NULL AND TRIM(el.sku) != ''
-      LEFT JOIN listings.shopify_listings sl
-        ON ${STRIP.replace(/sku/g, 'sl.sku')} = p.sku
-       AND sl.site = 'Germany'
-       AND sl.sku IS NOT NULL AND TRIM(sl.sku) != ''
-      GROUP BY p.sku
-      ORDER BY SUM(licsl.stock) DESC
+        s.sku AS s, s.st,
+        MAX(CASE WHEN ac.covered_sku IS NOT NULL THEN 1 ELSE 0 END)::int AS a,
+        MAX(CASE WHEN ec.covered_sku IS NOT NULL THEN 1 ELSE 0 END)::int AS e,
+        MAX(CASE WHEN sc.covered_sku IS NOT NULL THEN 1 ELSE 0 END)::int AS sh
+      FROM stock s
+      LEFT JOIN amz_coverage  ac ON ac.covered_sku = s.sku
+      LEFT JOIN ebay_coverage ec ON ec.covered_sku = s.sku
+      LEFT JOIN shop_coverage sc ON sc.covered_sku = s.sku
+      GROUP BY s.sku, s.st
+      ORDER BY s.st DESC
     `);
 
     const total          = rows.length;
