@@ -1,4 +1,4 @@
-const { Client } = require('../node_modules/pg');
+const { neon } = require('../node_modules/@neondatabase/serverless');
 
 const CONNECTION_STRING = 'postgresql://neondb_owner:npg_aX4pf0IeqQEC@ep-soft-leaf-zavu7dmm.c-2.eu-west-2.aws.neon.tech/neondb?sslmode=require';
 
@@ -6,9 +6,9 @@ const CONNECTION_STRING = 'postgresql://neondb_owner:npg_aX4pf0IeqQEC@ep-soft-le
 const overview = {
   authority_score: 30,
   total_backlinks: 18368,
-  referring_domains: 617,
+  referring_domains: 618,
   referring_ips: 683,
-  follow_links: 16581,
+  follow_links: 16582,
   nofollow_links: 1789,
 };
 
@@ -227,17 +227,12 @@ const refdomains = [
 async function main() {
   const snapshot_date = new Date().toISOString().slice(0, 10);
 
-  const client = new Client({
-    connectionString: CONNECTION_STRING,
-    ssl: { rejectUnauthorized: false },
-  });
-
   try {
-    await client.connect();
-    console.log('Connected to Neon DB');
+    const sql = neon(CONNECTION_STRING);
+    console.log('Neon HTTP driver initialised');
 
     // a) Create tables
-    await client.query(`
+    await sql`
       CREATE TABLE IF NOT EXISTS semrush_backlinks (
         snapshot_date DATE PRIMARY KEY,
         authority_score INT,
@@ -246,9 +241,8 @@ async function main() {
         referring_ips INT,
         follow_links INT,
         nofollow_links INT
-      )
-    `);
-    await client.query(`
+      )`;
+    await sql`
       CREATE TABLE IF NOT EXISTS semrush_refdomains (
         id SERIAL,
         snapshot_date DATE NOT NULL,
@@ -258,42 +252,39 @@ async function main() {
         first_seen DATE,
         last_seen DATE,
         PRIMARY KEY (snapshot_date, domain)
-      )
-    `);
+      )`;
     console.log('Tables ensured');
 
     // b) Upsert backlinks overview
-    await client.query(`
+    await sql`
       INSERT INTO semrush_backlinks
         (snapshot_date, authority_score, total_backlinks, referring_domains, referring_ips, follow_links, nofollow_links)
-      VALUES ($1,$2,$3,$4,$5,$6,$7)
+      VALUES (
+        ${snapshot_date},
+        ${overview.authority_score},
+        ${overview.total_backlinks},
+        ${overview.referring_domains},
+        ${overview.referring_ips},
+        ${overview.follow_links},
+        ${overview.nofollow_links}
+      )
       ON CONFLICT (snapshot_date) DO UPDATE SET
-        authority_score  = EXCLUDED.authority_score,
-        total_backlinks  = EXCLUDED.total_backlinks,
-        referring_domains= EXCLUDED.referring_domains,
-        referring_ips    = EXCLUDED.referring_ips,
-        follow_links     = EXCLUDED.follow_links,
-        nofollow_links   = EXCLUDED.nofollow_links
-    `, [
-      snapshot_date,
-      overview.authority_score,
-      overview.total_backlinks,
-      overview.referring_domains,
-      overview.referring_ips,
-      overview.follow_links,
-      overview.nofollow_links,
-    ]);
+        authority_score   = EXCLUDED.authority_score,
+        total_backlinks   = EXCLUDED.total_backlinks,
+        referring_domains = EXCLUDED.referring_domains,
+        referring_ips     = EXCLUDED.referring_ips,
+        follow_links      = EXCLUDED.follow_links,
+        nofollow_links    = EXCLUDED.nofollow_links`;
     console.log('Upserted backlinks overview');
 
-    // c) Delete existing refdomains for today
-    await client.query('DELETE FROM semrush_refdomains WHERE snapshot_date = $1', [snapshot_date]);
+    // c) Delete existing refdomains for today (clean re-run)
+    await sql`DELETE FROM semrush_refdomains WHERE snapshot_date = ${snapshot_date}`;
 
     // d) Insert all referring domains
     for (const row of refdomains) {
-      await client.query(`
+      await sql`
         INSERT INTO semrush_refdomains (snapshot_date, domain, authority_score, backlinks_count, first_seen, last_seen)
-        VALUES ($1,$2,$3,$4,$5,$6)
-      `, [snapshot_date, row.domain, row.authority_score, row.backlinks_count, row.first_seen, row.last_seen]);
+        VALUES (${snapshot_date}, ${row.domain}, ${row.authority_score}, ${row.backlinks_count}, ${row.first_seen}, ${row.last_seen})`;
     }
 
     // e) Summary log
@@ -308,10 +299,8 @@ async function main() {
     console.log('refdomains inserted:', refdomains.length);
 
   } catch (err) {
-    console.error('ERROR:', err.message);
+    console.error('ERROR:', err.message || err);
     process.exit(1);
-  } finally {
-    await client.end();
   }
 }
 
