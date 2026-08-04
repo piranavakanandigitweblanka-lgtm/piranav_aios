@@ -1439,6 +1439,20 @@ function loadKeywords(subType) {
   }
   setKwSubTab(kwActive);
 
+  /* show/hide gap panel vs GSC panel */
+  const gscBox  = document.getElementById('kw-gsc-tbox');
+  const gapBox  = document.getElementById('kw-gap-panel');
+  const ctrlBox = document.getElementById('kw-controls');
+  if (kwActive === 'gap') {
+    if (gscBox)  gscBox.style.display  = 'none';
+    if (ctrlBox) ctrlBox.style.display = 'none';
+    if (gapBox)  gapBox.style.display  = 'block';
+  } else {
+    if (gscBox)  gscBox.style.display  = '';
+    if (ctrlBox) ctrlBox.style.display = '';
+    if (gapBox)  gapBox.style.display  = 'none';
+  }
+
   if (kwLoaded[kwActive]) {
     if (kwActive === 'semrush') renderSemrushKw();
     else if (kwActive === 'gap') renderKwGap();
@@ -1446,8 +1460,10 @@ function loadKeywords(subType) {
     return;
   }
 
-  const el = document.getElementById('kw-tab-body');
-  if (el) el.innerHTML = '<div class="loading"><div class="spinner"></div><br>Fetching ' + kwActive + ' keywords&hellip;</div>';
+  const el = kwActive === 'gap'
+    ? document.getElementById('kw-gap-panel')
+    : document.getElementById('kw-tab-body');
+  if (el) el.innerHTML = '<div class="loading"><div class="spinner"></div><br>Fetching keyword gap data&hellip;</div>';
 
   if (kwActive === 'gap') {
     fetch('/api/seo?module=semrush&type=keyword-gap&competitor=ledhut.co.uk')
@@ -1459,8 +1475,8 @@ function loadKeywords(subType) {
         renderKwGap();
       })
       .catch(e => {
-        const el2 = document.getElementById('kw-tab-body');
-        if (el2) el2.innerHTML = `<div class="alert"><strong>Error:</strong> ${e.message}</div>`;
+        const el2 = document.getElementById('kw-gap-panel');
+        if (el2) el2.innerHTML = `<div class="alert"><strong>Error loading keyword gap:</strong> ${e.message}</div>`;
       });
     return;
   }
@@ -1517,10 +1533,11 @@ function kwShellHtml() {
       </select>
       <button class="exp-btn" onclick="exportKwCSV()">&#11015; Export CSV</button>
     </div>
-    <div class="tbox">
+    <div class="tbox" id="kw-gsc-tbox">
       <div class="tbar"><strong id="kw-count">—</strong><span id="kw-meta"></span></div>
       <div class="scroll" id="kw-tab-body"></div>
     </div>
+    <div id="kw-gap-panel" style="display:none"></div>
     <div class="section-title">Data Quality</div>
     <div class="dq-grid">
       <div class="dq-card"><div class="dq-head"><div class="dq-dot live"></div><div class="dq-name">GSC Query Table <span class="badge badge-live">Live</span></div></div><div class="dq-cov">20 Mar – 28 Jul 2026 (131 days)</div><div class="dq-note">61,228 distinct queries. Sub_source=104, search_type='web'. Privacy thresholding removes rows with very low counts.</div></div>
@@ -1679,7 +1696,7 @@ function renderSemrushKw() {
 
 function renderKwGap() {
   const rows = kwData.gap;
-  const el   = document.getElementById('kw-tab-body');
+  const el   = document.getElementById('kw-gap-panel');
   if (!el) return;
 
   const snap = rows.length ? (rows[0].snapshot_date || '').slice(0,10) : '—';
@@ -1753,18 +1770,19 @@ function renderKwGap() {
       Keywords where <strong>ledhut.co.uk</strong> ranks in the top 10 that <strong>ledsone.co.uk</strong> does not rank for (or ranks below position 20). Sorted by opportunity score (volume × position weight). Snapshot: ${snap}.
     </div>
     <div class="tbox">
+      <div class="tbar"><strong>${rows.length} gap keywords</strong><span style="color:var(--muted);font-size:11px">vs ledhut.co.uk · SEMrush · snapshot ${snap}</span></div>
       <div class="scroll">
         <table>
           <thead>
             <tr>
               <th>#</th>
               <th>Keyword</th>
-              <th class="num">Volume</th>
+              <th class="num">Volume/mo</th>
               <th class="num">KD</th>
               <th class="num">Intent</th>
-              <th class="num">ledhut Pos</th>
+              <th class="num">ledhut Rank</th>
               <th class="num">ledhut Traffic</th>
-              <th class="num">ledsone Pos</th>
+              <th class="num">ledsone Rank</th>
               <th class="num">Opp Score</th>
             </tr>
           </thead>
@@ -1773,8 +1791,6 @@ function renderKwGap() {
       </div>
     </div>`;
 
-  const metaEl = document.getElementById('kw-meta');
-  if (metaEl) metaEl.textContent = 'Source: SEMrush · Neon DB · vs ledhut.co.uk · snapshot ' + snap;
 }
 
 function filterKwTable() {
