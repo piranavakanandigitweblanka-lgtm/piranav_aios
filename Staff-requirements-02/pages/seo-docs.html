@@ -17,44 +17,65 @@
   --purple:#9333ea;--purple-soft:#f5f3ff;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;}
+body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;}
 
 .topbar{height:5px;background:linear-gradient(90deg,var(--navy) 0%,var(--navy-2) 55%,var(--gold) 100%);}
 
 .masthead{background:var(--card);padding:22px 32px;border-bottom:1px solid var(--line);box-shadow:0 1px 4px rgba(12,26,48,.05);}
-.masthead .inner{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:18px;}
-.mark{width:44px;height:44px;background:var(--navy);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#e8d59a;flex:none;border:1.5px solid var(--gold);letter-spacing:.5px;}
+.masthead .inner{max-width:920px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:18px;}
+.mark{width:44px;height:44px;background:var(--navy);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#e8d59a;flex:none;border:1.5px solid var(--gold);}
 .kicker{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
 .masthead h1{font-size:19px;font-weight:700;color:var(--navy);}
-.masthead .lede{font-size:12px;color:var(--muted);margin-top:3px;}
-
-.back{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--muted);text-decoration:none;font-size:12px;font-weight:600;transition:all .15s;}
+.masthead .lede{font-size:12.5px;color:var(--muted);margin-top:3px;}
+.back{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--muted);text-decoration:none;font-size:12px;font-weight:600;transition:all .15s;margin-left:auto;}
 .back:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent);}
 
-.page{max-width:900px;margin:0 auto;padding:28px 32px 72px;}
+.page{max-width:920px;margin:0 auto;padding:28px 32px 72px;}
+
+/* Audience toggle */
+.audience-bar{display:flex;gap:8px;margin-bottom:24px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;align-items:center;flex-wrap:wrap;}
+.audience-bar span{font-size:12px;color:var(--muted);font-weight:600;margin-right:4px;}
+.aud-btn{padding:6px 16px;border-radius:20px;border:1px solid var(--line);background:var(--bg);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--muted);}
+.aud-btn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+.aud-hint{font-size:11.5px;color:var(--muted);margin-left:auto;}
 
 /* TOC */
-.toc-box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 26px;margin-bottom:32px;}
-.toc-box h2{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--navy);margin-bottom:14px;}
-.toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px 14px;}
+.toc-box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 24px;margin-bottom:28px;}
+.toc-box h2{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--navy);margin-bottom:12px;}
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:5px 14px;}
 .toc-item{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-size:13px;padding:5px 0;border-bottom:1px dashed var(--line);}
 .toc-item:hover{color:var(--accent);}
 .toc-num{min-width:22px;height:22px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
 
-/* Section */
-.section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px 30px;margin-bottom:22px;scroll-margin-top:80px;}
-.sec-head{display:flex;align-items:flex-start;gap:16px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--line);}
-.sec-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex:none;}
+/* Section card */
+.section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 28px;margin-bottom:20px;scroll-margin-top:80px;}
+.sec-head{display:flex;align-items:flex-start;gap:16px;margin-bottom:18px;padding-bottom:15px;border-bottom:1px solid var(--line);}
+.sec-icon{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px;flex:none;}
 .sec-meta{flex:1;}
-.sec-num{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
-.sec-title{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.sec-num{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
+.sec-title{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:3px;}
 .sec-sub{font-size:12.5px;color:var(--muted);}
+.sec-badges{margin-top:6px;display:flex;flex-wrap:wrap;gap:5px;}
+
+/* Refresh chips */
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.chip.live{background:#dcfce7;color:#166534;}
+.chip.weekly{background:var(--accent-soft);color:var(--accent);}
+.chip.daily{background:var(--purple-soft);color:var(--purple);}
+.chip.manual{background:var(--warn-soft);color:var(--warn);}
+.chip.realtime{background:#fce7f3;color:#9d174d;}
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
+
+/* Body text */
+.body-text{font-size:14px;color:#2d3748;line-height:1.8;margin-bottom:14px;}
+.body-text strong{color:var(--navy);}
+.body-text em{color:var(--muted);font-style:normal;}
 
 /* Fact grid */
-.fact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:11px;margin-bottom:18px;}
-.fact{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:13px 15px;}
+.fact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:14px 0;}
+.fact{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;}
 .fact .fl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
-.fact .fv{font-size:13px;font-weight:600;color:var(--navy);line-height:1.4;}
+.fact .fv{font-size:13px;font-weight:500;color:var(--navy);line-height:1.5;}
 .fact.accent{background:var(--accent-soft);border-color:#c5d6ff;}
 .fact.accent .fl{color:var(--accent);}
 .fact.good{background:var(--good-soft);border-color:#b7e8d0;}
@@ -64,61 +85,62 @@ body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:
 .fact.purple{background:var(--purple-soft);border-color:#ddd6fe;}
 .fact.purple .fl{color:var(--purple);}
 
-/* Body text */
-.body-text{font-size:13.5px;color:#2d3748;line-height:1.75;margin-bottom:14px;}
-.body-text strong{color:var(--navy);}
-
 /* Sub-section */
-.subsec{margin-top:18px;}
+.subsec{margin-top:20px;}
 .subsec-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--navy);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--line);}
 
-/* Column table */
-.col-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:8px;}
+/* Table */
+.col-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px;}
 .col-table th{background:var(--bg);padding:8px 12px;text-align:left;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);}
-.col-table td{padding:8px 12px;border:1px solid var(--line);vertical-align:top;line-height:1.5;}
-.col-table tr:hover td{background:var(--accent-soft);}
+.col-table td{padding:9px 12px;border:1px solid var(--line);vertical-align:top;line-height:1.55;}
+.col-table tr:hover td{background:#fafbff;}
 
-/* Tag chips */
-.chip{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10.5px;font-weight:600;margin-right:4px;}
-.chip.live{background:var(--good-soft);color:var(--good);}
-.chip.weekly{background:var(--accent-soft);color:var(--accent);}
-.chip.daily{background:var(--purple-soft);color:var(--purple);}
-.chip.manual{background:var(--warn-soft);color:var(--warn);}
-.chip.realtime{background:#fce7f3;color:#9d174d;}
+/* Info / warn notes */
+.info-note{background:var(--accent-soft);border:1px solid #c5d6ff;border-radius:9px;padding:11px 15px;font-size:13px;color:#1e3a8a;margin-top:14px;line-height:1.6;}
+.warn-note{background:var(--warn-soft);border:1px solid #fde68a;border-radius:9px;padding:11px 15px;font-size:13px;color:#78350f;margin-top:14px;line-height:1.6;}
+.good-note{background:var(--good-soft);border:1px solid #b7e8d0;border-radius:9px;padding:11px 15px;font-size:13px;color:#065f46;margin-top:14px;line-height:1.6;}
 
-/* Pipeline diagram */
-.pipeline{display:flex;flex-wrap:wrap;align-items:center;gap:0;margin:16px 0;}
-.pipe-node{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 14px;font-size:11.5px;font-weight:600;color:var(--navy);text-align:center;min-width:110px;}
-.pipe-node.source{background:var(--accent-soft);border-color:#c5d6ff;color:var(--accent);}
-.pipe-node.db{background:var(--purple-soft);border-color:#ddd6fe;color:var(--purple);}
-.pipe-node.api{background:var(--warn-soft);border-color:#fde68a;color:var(--warn);}
-.pipe-node.ui{background:var(--good-soft);border-color:#b7e8d0;color:var(--good);}
-.pipe-arrow{color:var(--muted);font-size:18px;padding:0 6px;line-height:1;}
+/* Technical details collapsible — shown only in developer mode */
+.tech-block{margin-top:16px;display:none;}
+.tech-block.visible{display:block;}
+details.tech-details{background:#0c1a30;border-radius:11px;overflow:hidden;}
+details.tech-details summary{padding:11px 16px;cursor:pointer;font-size:12px;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase;list-style:none;display:flex;align-items:center;gap:8px;user-select:none;}
+details.tech-details summary::before{content:"▶";font-size:9px;transition:transform .2s;color:#64748b;}
+details.tech-details[open] summary::before{transform:rotate(90deg);}
+details.tech-details summary:hover{color:#e8d59a;}
+.tech-body{padding:14px 18px 16px;border-top:1px solid #1e3a5f;}
+.tech-body .tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.tech-body .tbl th{color:#64748b;padding:5px 10px;text-align:left;border-bottom:1px solid #1e3a5f;font-size:10px;text-transform:uppercase;letter-spacing:1px;}
+.tech-body .tbl td{color:#cbd5e1;padding:6px 10px;border-bottom:1px solid #1e293b;vertical-align:top;line-height:1.5;}
+.tech-body .tbl td code{background:#1e3a5f;padding:1px 6px;border-radius:4px;font-size:11px;color:#7dd3fc;}
+.tech-body p{color:#94a3b8;font-size:12.5px;line-height:1.7;margin-bottom:8px;}
+.tech-body p code{background:#1e3a5f;padding:1px 6px;border-radius:4px;font-size:11px;color:#7dd3fc;}
 
-/* Refresh badge */
-.refresh-bar{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;padding:12px 16px;background:var(--bg);border-radius:10px;border:1px solid var(--line);}
-.rb-item{display:flex;align-items:center;gap:6px;font-size:12px;}
-.rb-dot{width:8px;height:8px;border-radius:50%;flex:none;}
-.rb-dot.live{background:var(--good);}
-.rb-dot.weekly{background:var(--accent);}
-.rb-dot.daily{background:var(--purple);}
-.rb-dot.manual{background:var(--warn);}
+/* Flow diagram (simplified for SEO audience) */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:16px 0;}
+.flow-node{border-radius:10px;padding:9px 14px;font-size:12.5px;font-weight:600;text-align:center;}
+.flow-node.source{background:var(--accent-soft);color:var(--accent);border:1px solid #c5d6ff;}
+.flow-node.store{background:var(--purple-soft);color:var(--purple);border:1px solid #ddd6fe;}
+.flow-node.api{background:var(--warn-soft);color:var(--warn);border:1px solid #fde68a;}
+.flow-node.ui{background:var(--good-soft);color:var(--good);border:1px solid #b7e8d0;}
+.flow-arrow{color:var(--muted);font-size:18px;padding:0 4px;}
 
-/* Agent box */
-.agent-box{background:var(--navy);border-radius:12px;padding:16px 20px;margin-top:14px;color:#e8d59a;}
-.agent-box .ab-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#94a3b8;margin-bottom:8px;}
-.agent-box .ab-name{font-size:14px;font-weight:700;color:#e8d59a;margin-bottom:6px;}
-.agent-box .ab-sched{font-size:12px;color:#cbd5e1;}
+/* Agent card */
+.agent-card{background:var(--navy);border-radius:12px;padding:15px 18px;margin-top:14px;}
+.agent-card .ac-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#64748b;margin-bottom:6px;}
+.agent-card .ac-name{font-size:14px;font-weight:700;color:#e8d59a;margin-bottom:5px;}
+.agent-card .ac-desc{font-size:12.5px;color:#94a3b8;line-height:1.6;}
 
-/* Alert */
-.info-note{background:var(--accent-soft);border:1px solid #c5d6ff;border-radius:9px;padding:10px 14px;font-size:12px;color:#1e3a8a;margin-top:14px;}
-.warn-note{background:var(--warn-soft);border:1px solid #fde68a;border-radius:9px;padding:10px 14px;font-size:12px;color:#78350f;margin-top:14px;}
+/* Refresh bar */
+.refresh-legend{display:flex;flex-wrap:wrap;gap:10px;padding:12px 16px;background:var(--bg);border-radius:10px;border:1px solid var(--line);margin:14px 0;}
+.rl-item{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink);}
+.rl-dot{width:9px;height:9px;border-radius:50%;flex:none;}
 
 @media(max-width:640px){
   .masthead,.page{padding-left:16px;padding-right:16px;}
   .sec-head{flex-direction:column;gap:10px;}
-  .pipeline{gap:4px;}
-  .pipe-arrow{display:none;}
+  .back{margin-left:0;}
+  .flow-arrow{display:none;}
 }
 </style>
 </head>
@@ -130,325 +152,373 @@ body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:
   <div class="inner">
     <div class="mark">LS</div>
     <div>
-      <div class="kicker">ledsone.co.uk</div>
-      <h1>SEO Dashboard — Data Source Guide</h1>
-      <div class="lede">Where every number comes from, how it gets here, and why it matters</div>
+      <div class="kicker">ledsone.co.uk · SEO Intelligence</div>
+      <h1>Dashboard Data Guide</h1>
+      <div class="lede">Where every number comes from, how it gets here, when it updates, and why it matters</div>
     </div>
-    <a href="/pages/seo.html" class="back" style="margin-left:auto">← Back to Dashboard</a>
+    <a href="/pages/seo.html" class="back">← Back to Dashboard</a>
   </div>
 </div>
 
 <div class="page">
 
-  <!-- ── TOC ─────────────────────────────────────────────── -->
+  <!-- Audience toggle -->
+  <div class="audience-bar">
+    <span>I am reading this as:</span>
+    <button class="aud-btn active" id="btn-seo" onclick="setAudience('seo')">📈 SEO / Marketing</button>
+    <button class="aud-btn" id="btn-dev" onclick="setAudience('dev')">💻 Developer</button>
+    <span class="aud-hint">Developer mode shows database tables, API details, and query parameters</span>
+  </div>
+
+  <!-- TOC -->
   <div class="toc-box">
-    <h2>Contents</h2>
+    <h2>What's in this guide</h2>
     <div class="toc-grid">
-      <a class="toc-item" href="#overview"><span class="toc-num">1</span>Overview &amp; Architecture</a>
+      <a class="toc-item" href="#overview"><span class="toc-num">1</span>How it all fits together</a>
       <a class="toc-item" href="#gsc"><span class="toc-num">2</span>Google Search Console</a>
       <a class="toc-item" href="#semrush"><span class="toc-num">3</span>SEMrush Organic Data</a>
       <a class="toc-item" href="#gads"><span class="toc-num">4</span>Google Ads</a>
       <a class="toc-item" href="#backlinks"><span class="toc-num">5</span>Backlinks &amp; Authority</a>
       <a class="toc-item" href="#competitors"><span class="toc-num">6</span>Competitor Traffic</a>
       <a class="toc-item" href="#kwgap"><span class="toc-num">7</span>Keyword Gap</a>
-      <a class="toc-item" href="#geo"><span class="toc-num">8</span>AI Readiness (GEO)</a>
-      <a class="toc-item" href="#agents"><span class="toc-num">9</span>Cloud Refresh Agents</a>
+      <a class="toc-item" href="#geo"><span class="toc-num">8</span>AI Readiness Score</a>
+      <a class="toc-item" href="#agents"><span class="toc-num">9</span>Automatic Data Refresh</a>
       <a class="toc-item" href="#glossary"><span class="toc-num">10</span>Glossary</a>
     </div>
   </div>
 
-  <!-- ── 1. OVERVIEW ───────────────────────────────────────── -->
+  <!-- ── 1. OVERVIEW ──────────────────────────────────────────── -->
   <div class="section" id="overview">
     <div class="sec-head">
-      <div class="sec-icon" style="background:#eaf0ff;font-size:26px;">🏗️</div>
+      <div class="sec-icon" style="background:#eaf0ff;">🏗️</div>
       <div class="sec-meta">
         <div class="sec-num">Section 1</div>
-        <div class="sec-title">Overview &amp; Architecture</div>
-        <div class="sec-sub">How all three data layers connect to build the dashboard</div>
+        <div class="sec-title">How it all fits together</div>
+        <div class="sec-sub">Three data sources, one dashboard</div>
       </div>
     </div>
 
-    <p class="body-text">The SEO dashboard pulls from <strong>three independent data layers</strong>. Each layer has a different update cadence and serves a different purpose. No single source gives the full picture — combining them is what makes the dashboard useful.</p>
+    <p class="body-text">The dashboard combines <strong>three separate data sources</strong> because no single tool gives the complete picture. Each source answers a different question:</p>
 
     <div class="fact-grid">
       <div class="fact accent">
-        <div class="fl">Layer 1 — Live PostgreSQL</div>
-        <div class="fv">Ledsone's own server. Stores Google Search Console clicks, impressions, positions and Google Ads spend/ROAS. Updated daily by a background pipeline.</div>
+        <div class="fl">Source 1 — Google (your own data)</div>
+        <div class="fv">Google Search Console and Google Ads. This is <strong>real data</strong> — actual clicks, actual spend. Only ledsone has access to this. Updated daily.</div>
       </div>
       <div class="fact purple">
-        <div class="fl">Layer 2 — Neon PostgreSQL</div>
-        <div class="fv">Cloud database (eu-west-2). Stores SEMrush snapshots: organic traffic history, keyword rankings, backlinks, competitor traffic, keyword gap. Refreshed weekly by cloud agents.</div>
+        <div class="fl">Source 2 — SEMrush (market data)</div>
+        <div class="fv">Third-party SEO tool. <strong>Estimated data</strong> — traffic models, keyword rankings, competitor snapshots. Covers the whole market, not just ledsone. Updated weekly.</div>
       </div>
       <div class="fact good">
-        <div class="fl">Layer 3 — Live Fetches</div>
-        <div class="fv">On every page load, the API fetches ledsone.co.uk's robots.txt and homepage HTML directly to score AI Readiness in real time.</div>
+        <div class="fl">Source 3 — Live website scan</div>
+        <div class="fv">The dashboard checks ledsone.co.uk's own website directly every time you open it. Used only for the AI Readiness score — detects schema markup and which AI bots are allowed.</div>
       </div>
     </div>
 
     <div class="subsec">
-      <div class="subsec-title">Data Flow</div>
-      <div class="pipeline">
-        <div class="pipe-node source">Google Search Console</div>
-        <div class="pipe-arrow">→</div>
-        <div class="pipe-node db">Ledsone PostgreSQL</div>
-        <div class="pipe-arrow">→</div>
-        <div class="pipe-node api">api/seo.js (Vercel)</div>
-        <div class="pipe-arrow">→</div>
-        <div class="pipe-node ui">seo.html (Browser)</div>
+      <div class="subsec-title">How data flows into the dashboard</div>
+      <div class="flow">
+        <div class="flow-node source">Google Search Console</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node store">Ledsone Database</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node api">Dashboard Server</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node ui">Your Browser</div>
       </div>
-      <div class="pipeline">
-        <div class="pipe-node source">SEMrush MCP</div>
-        <div class="pipe-arrow">→</div>
-        <div class="pipe-node db">Neon PostgreSQL</div>
-        <div class="pipe-arrow">→</div>
-        <div class="pipe-node api">api/seo.js (Vercel)</div>
-        <div class="pipe-arrow">→</div>
-        <div class="pipe-node ui">seo.html (Browser)</div>
+      <div class="flow">
+        <div class="flow-node source">SEMrush (weekly agent)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node store">Cloud Snapshot Store</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node api">Dashboard Server</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node ui">Your Browser</div>
       </div>
-      <div class="pipeline">
-        <div class="pipe-node source">ledsone.co.uk HTML</div>
-        <div class="pipe-arrow">→</div>
-        <div class="pipe-node api">api/seo.js (live fetch)</div>
-        <div class="pipe-arrow">→</div>
-        <div class="pipe-node ui">seo.html (Browser)</div>
+      <div class="flow">
+        <div class="flow-node source">ledsone.co.uk website</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node api">Dashboard Server (live fetch)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node ui">Your Browser</div>
       </div>
     </div>
 
-    <div class="refresh-bar">
-      <div class="rb-item"><div class="rb-dot live"></div><strong>Live</strong> — fetched fresh on every page load (AI Readiness schema detection)</div>
-      <div class="rb-item"><div class="rb-dot daily"></div><strong>Daily</strong> — GSC clicks / impressions / Ads spend (background pipeline)</div>
-      <div class="rb-item"><div class="rb-dot weekly"></div><strong>Weekly</strong> — SEMrush rankings, traffic, backlinks, keyword gap (4 cloud agents, Monday 03:00 UTC)</div>
-      <div class="rb-item"><div class="rb-dot manual"></div><strong>Manual</strong> — GEO checklist toggle items (you tick them in the dashboard)</div>
+    <div class="refresh-legend">
+      <div class="rl-item"><div class="rl-dot" style="background:#166534"></div><strong>Real-time</strong> — live website scan, recalculated on every page load</div>
+      <div class="rl-item"><div class="rl-dot" style="background:#9333ea"></div><strong>Daily</strong> — Google Search Console clicks &amp; Google Ads spend</div>
+      <div class="rl-item"><div class="rl-dot" style="background:#1f5eff"></div><strong>Weekly</strong> — SEMrush rankings, traffic, backlinks, keyword gap (every Monday)</div>
+      <div class="rl-item"><div class="rl-dot" style="background:#d97706"></div><strong>Manual</strong> — AI Readiness checklist items (you tick them when done)</div>
+    </div>
+
+    <div class="tech-block">
+      <details class="tech-details">
+        <summary>Technical details — architecture</summary>
+        <div class="tech-body">
+          <p>Two PostgreSQL instances: <code>Ledsone PostgreSQL</code> (GSC + Ads pipeline) and <code>Neon PostgreSQL</code> (SEMrush snapshots, geo_checklist). Serverless API at <code>Staff-requirements-02/api/seo.js</code> (Vercel). Module dispatch via <code>?module=</code> query param. Neon connection: <code>ep-soft-leaf-zavu7dmm.c-2.eu-west-2.aws.neon.tech</code>. Deployed on Vercel Hobby — no auto-deploy; run <code>vercel --prod</code> from <code>Staff-requirements-02/</code> after every change.</p>
+        </div>
+      </details>
     </div>
   </div>
 
-  <!-- ── 2. GSC ─────────────────────────────────────────── -->
+  <!-- ── 2. GSC ──────────────────────────────────────────────── -->
   <div class="section" id="gsc">
     <div class="sec-head">
       <div class="sec-icon" style="background:#e5f5ee;">🔍</div>
       <div class="sec-meta">
         <div class="sec-num">Section 2</div>
         <div class="sec-title">Google Search Console</div>
-        <div class="sec-sub">Your actual Google search performance — clicks, impressions, positions, pages</div>
+        <div class="sec-sub">Your actual Google search performance — the only source of real click data</div>
+        <div class="sec-badges"><span class="chip daily">Daily refresh</span><span class="chip" style="background:var(--good-soft);color:var(--good)">Real clicks — not estimates</span></div>
       </div>
     </div>
 
-    <div class="fact-grid">
-      <div class="fact accent"><div class="fl">Source</div><div class="fv">Google Search Console API → Ledsone PostgreSQL pipeline</div></div>
-      <div class="fact good"><div class="fl">Refresh</div><div class="fv"><span class="chip daily">Daily</span> Background pipeline ingests previous day's data each morning</div></div>
-      <div class="fact warn"><div class="fl">Delay</div><div class="fv">GSC data is 2–3 days behind. Today's clicks won't appear until Wednesday/Thursday.</div></div>
-      <div class="fact"><div class="fl">Coverage</div><div class="fv">All queries and pages that appeared in Google Search for ledsone.co.uk</div></div>
-    </div>
+    <p class="body-text">Google Search Console (GSC) is ledsone's own data, direct from Google. Every time someone searches Google and clicks a ledsone result, that click is recorded here. <strong>This is the only number on the dashboard that represents real traffic.</strong> Every other traffic figure (SEMrush, competitor estimates) is a model — GSC is ground truth.</p>
 
-    <p class="body-text">GSC is the <strong>only source of real click data</strong>. Every other tool (SEMrush, Ahrefs) estimates traffic. GSC shows what Google actually sent you. The dashboard uses it for keyword rankings (position per query), top landing pages, and month-on-month click/impression trends.</p>
-
-    <div class="warn-note">⚠️ GSC sampling cap: queries with very low volume are grouped under "(other)" and not shown individually. The dashboard shows ~50% of true total clicks in the keyword table because long-tail queries are aggregated by Google.</div>
+    <p class="body-text">The data arrives daily. However, Google adds a 2–3 day delay before making it available, so today's clicks won't appear until Wednesday or Thursday.</p>
 
     <div class="subsec">
       <div class="subsec-title">Where you see GSC data in the dashboard</div>
       <table class="col-table">
-        <tr><th>Dashboard Location</th><th>What it shows</th><th>GSC metric used</th></tr>
-        <tr><td>Overview KPIs — Organic Clicks</td><td>Total clicks from Google search this month</td><td>clicks (sum)</td></tr>
-        <tr><td>Overview KPIs — Avg Position</td><td>Weighted average ranking position</td><td>position (weighted avg)</td></tr>
-        <tr><td>SEMrush Rankings → Top Keywords</td><td>Query-level clicks, impressions, CTR, position</td><td>clicks, impressions, ctr, position</td></tr>
-        <tr><td>SEMrush Rankings → Rising / Declining</td><td>Queries where position improved or dropped vs last month</td><td>position delta</td></tr>
-        <tr><td>SEMrush Rankings → Top Pages</td><td>Which URLs drive the most organic clicks</td><td>clicks per page</td></tr>
-        <tr><td>Month-on-Month table</td><td>GSC clicks column in the 6-month comparison grid</td><td>clicks (monthly sum)</td></tr>
+        <tr><th>Dashboard section</th><th>What the number means</th></tr>
+        <tr><td>Overview → Organic Clicks</td><td>Total times someone clicked a ledsone result in Google this month</td></tr>
+        <tr><td>Overview → Avg Position</td><td>Average ranking position across all keywords ledsone appears for</td></tr>
+        <tr><td>Keyword Intelligence → Top Keywords</td><td>Which search queries drive the most clicks, plus position, impressions, and CTR</td></tr>
+        <tr><td>Keyword Intelligence → Rising / Declining</td><td>Queries where your ranking improved or dropped compared to last month</td></tr>
+        <tr><td>Keyword Intelligence → Top Pages</td><td>Which pages on ledsone.co.uk receive the most Google clicks</td></tr>
+        <tr><td>Month-on-Month table → GSC Clicks column</td><td>Monthly click totals for the past 6 months</td></tr>
       </table>
     </div>
 
-    <div class="info-note">💡 <strong>Why GSC and SEMrush both?</strong> GSC gives real clicks but only for queries you already rank for. SEMrush estimates all organic traffic and shows keywords you <em>should</em> be targeting. Together they give a complete view.</div>
+    <div class="warn-note">⚠️ <strong>Why the keyword table shows fewer clicks than the Overview total:</strong> Google groups very low-volume queries into a "(not provided)" bucket and doesn't show them individually. The Overview KPI counts everything; the keyword table only shows the queries Google chooses to report. This is a Google limitation — not a dashboard bug.</div>
+
+    <div class="info-note">💡 <strong>Why use GSC AND SEMrush?</strong> GSC shows what Google actually sent you — but only for keywords you already rank for. SEMrush estimates total organic potential and shows keywords you <em>should</em> be targeting. Together they give a complete picture of current performance and future opportunity.</div>
+
+    <div class="tech-block">
+      <details class="tech-details">
+        <summary>Technical details — GSC pipeline</summary>
+        <div class="tech-body">
+          <p>Data is stored in the Ledsone PostgreSQL server (same server as Google Ads). Tables used: <code>gsc_daily_stats</code> (site-level clicks/impressions/CTR/position aggregated by date), <code>gsc_query_stats</code> (per-query breakdown with page URL). The background pipeline ingests the previous day via GSC API each morning. The <code>api/seo.js</code> module <code>?module=overview</code> and <code>?module=keywords</code> query these tables directly. No caching — all queries run on request.</p>
+        </div>
+      </details>
+    </div>
   </div>
 
-  <!-- ── 3. SEMRUSH ────────────────────────────────────────── -->
+  <!-- ── 3. SEMRUSH ──────────────────────────────────────────── -->
   <div class="section" id="semrush">
     <div class="sec-head">
       <div class="sec-icon" style="background:#faf3e0;">📊</div>
       <div class="sec-meta">
         <div class="sec-num">Section 3</div>
         <div class="sec-title">SEMrush Organic Data</div>
-        <div class="sec-sub">Estimated traffic, keyword rankings, and 37-month trend history</div>
+        <div class="sec-sub">Estimated traffic trend, keyword rankings, and 37-month history</div>
+        <div class="sec-badges"><span class="chip weekly">Weekly — every Monday</span><span class="chip" style="background:var(--warn-soft);color:var(--warn)">Estimates — not real traffic</span></div>
       </div>
     </div>
 
-    <div class="fact-grid">
-      <div class="fact accent"><div class="fl">Source</div><div class="fv">SEMrush API (via MCP connector) → Neon PostgreSQL</div></div>
-      <div class="fact good"><div class="fl">Refresh</div><div class="fv"><span class="chip weekly">Weekly</span> Cloud Agent 1 runs every Monday 03:00 UTC</div></div>
-      <div class="fact purple"><div class="fl">Database</div><div class="fv">Neon PostgreSQL — tables: semrush_history, semrush_keywords</div></div>
-      <div class="fact"><div class="fl">Geography</div><div class="fv">UK database (semrush database = 'uk') — UK search results only</div></div>
-    </div>
+    <p class="body-text">SEMrush estimates how much organic traffic a website receives by looking at every keyword it ranks for and applying average click-through rates for each position. <strong>These are estimates, not real traffic numbers.</strong> The actual traffic could be 20–30% higher or lower. But because SEMrush uses the same model for every website, the estimates are consistent — which makes them useful for tracking trends and comparing against competitors.</p>
 
-    <p class="body-text">SEMrush estimates how much organic traffic ledsone.co.uk receives based on its keyword rankings and the average click-through rates for those positions. It is <strong>not real traffic</strong> — it is a model. But it is useful for tracking trends over time and comparing against competitors (who don't share their GSC data).</p>
+    <p class="body-text">A cloud agent runs every Monday morning and fetches the latest SEMrush data, storing it for the dashboard to read. This is why SEMrush data on the dashboard is typically 1–7 days old.</p>
 
     <div class="subsec">
-      <div class="subsec-title">Tables stored in Neon</div>
+      <div class="subsec-title">Where you see SEMrush organic data</div>
       <table class="col-table">
-        <tr><th>Table</th><th>What it stores</th><th>Updated by</th></tr>
-        <tr><td>semrush_history</td><td>Monthly snapshots: traffic_est, organic_keywords, authority_score — goes back to Jul 2023 (37 months)</td><td>Cloud Agent 1 (weekly)</td></tr>
-        <tr><td>semrush_keywords</td><td>Top 50 keyword rankings per snapshot: position, volume, KD, CPC, intent</td><td>Cloud Agent 1 (weekly)</td></tr>
+        <tr><th>Dashboard section</th><th>What the number means</th></tr>
+        <tr><td>Overview → SEMrush Traffic</td><td>Estimated monthly organic visitors based on current keyword rankings</td></tr>
+        <tr><td>Overview → Authority Score</td><td>SEMrush's 0–100 trust score for the ledsone domain (higher = more ranking power)</td></tr>
+        <tr><td>Overview → 37-Month Trend chart</td><td>History of estimated traffic and keyword count from July 2023 to now</td></tr>
+        <tr><td>Keyword Intelligence → SEMrush Top 50</td><td>The 50 keywords SEMrush currently shows ledsone ranking for, with search volume, difficulty, and intent</td></tr>
+        <tr><td>Month-on-Month table → SEMrush Traffic column</td><td>Monthly estimated traffic for the past 6 months</td></tr>
       </table>
     </div>
 
-    <div class="subsec">
-      <div class="subsec-title">Where you see SEMrush organic data in the dashboard</div>
-      <table class="col-table">
-        <tr><th>Dashboard Location</th><th>What it shows</th></tr>
-        <tr><td>Overview — SEMrush Traffic KPI</td><td>Latest estimated monthly organic traffic</td></tr>
-        <tr><td>Overview — Authority Score KPI</td><td>Domain authority (0–100 SEMrush scale)</td></tr>
-        <tr><td>37-Month Trend Chart</td><td>Traffic and keyword count history since Jul 2023</td></tr>
-        <tr><td>SEMrush Rankings → SEMrush Top 50</td><td>Current top-ranking keywords with volume, KD, intent, CPC</td></tr>
-        <tr><td>Month-on-Month table — SEMrush Traffic column</td><td>Monthly estimated traffic for the past 6 months</td></tr>
-      </table>
+    <div class="agent-card">
+      <div class="ac-label">Automated weekly refresh</div>
+      <div class="ac-name">Agent 1 — SEMrush Keywords &amp; Traffic History</div>
+      <div class="ac-desc">Runs every Monday at 03:00 UTC (08:30 Sri Lanka time). Fetches the latest domain overview and top 50 keyword rankings from SEMrush. Stores a new snapshot so the dashboard shows this week's data. Managed at <strong>claude.ai/code/routines</strong>.</div>
     </div>
 
-    <div class="agent-box">
-      <div class="ab-title">Cloud Agent responsible</div>
-      <div class="ab-name">Agent 1 — SEMrush Keywords &amp; History Refresh</div>
-      <div class="ab-sched">Schedule: Every Monday 03:00 UTC &nbsp;|&nbsp; Fetches: domain_overview + resource_organic (top 50 keywords) &nbsp;|&nbsp; Writes to: semrush_history + semrush_keywords in Neon</div>
+    <div class="tech-block">
+      <details class="tech-details">
+        <summary>Technical details — SEMrush tables</summary>
+        <div class="tech-body">
+          <table class="tbl">
+            <tr><th>Neon table</th><th>Columns stored</th><th>Written by</th></tr>
+            <tr><td><code>semrush_history</code></td><td>snapshot_date, traffic_est, organic_keywords, authority_score, referring_domains</td><td>Agent 1</td></tr>
+            <tr><td><code>semrush_keywords</code></td><td>snapshot_date, keyword, position, volume, keyword_difficulty, cpc, intent, url</td><td>Agent 1</td></tr>
+          </table>
+          <p style="margin-top:10px">SEMrush MCP calls: <code>domain_overview</code> (traffic + AS) and <code>execute_report</code> with report <code>resource_organic</code>, params: <code>target=ledsone.co.uk, database=uk, display_limit=50, display_sort=po_asc</code>.</p>
+        </div>
+      </details>
     </div>
   </div>
 
-  <!-- ── 4. GOOGLE ADS ──────────────────────────────────────── -->
+  <!-- ── 4. GOOGLE ADS ───────────────────────────────────────── -->
   <div class="section" id="gads">
     <div class="sec-head">
       <div class="sec-icon" style="background:#fce7f3;">💰</div>
       <div class="sec-meta">
         <div class="sec-num">Section 4</div>
         <div class="sec-title">Google Ads</div>
-        <div class="sec-sub">Monthly ad spend, ROAS, and conversion value from the UK account</div>
+        <div class="sec-sub">Monthly ad spend, return on ad spend (ROAS), and conversion value — UK account</div>
+        <div class="sec-badges"><span class="chip daily">Daily refresh</span><span class="chip" style="background:var(--good-soft);color:var(--good)">Real spend data</span></div>
       </div>
     </div>
 
-    <div class="fact-grid">
-      <div class="fact accent"><div class="fl">Source</div><div class="fv">Google Ads API → Ledsone PostgreSQL (same server as GSC)</div></div>
-      <div class="fact good"><div class="fl">Refresh</div><div class="fv"><span class="chip daily">Daily</span> Same pipeline as GSC — ingests previous day's spend</div></div>
-      <div class="fact"><div class="fl">Coverage</div><div class="fv">Feb 2020 – present. UK account only.</div></div>
-      <div class="fact warn"><div class="fl">Currency</div><div class="fv">Cost in GBP. ROAS = Conversion Value ÷ Cost (displayed as a ratio).</div></div>
-    </div>
+    <p class="body-text">The Ads data comes from ledsone's own Google Ads account — it is <strong>real spend and conversion data</strong>, not an estimate. It covers the UK account from February 2020 to present and is updated daily by the same pipeline that brings in the GSC data.</p>
 
-    <p class="body-text">The Ads overlay chart shows <strong>monthly ad spend alongside ROAS</strong> so you can see whether paid investment is paying off and how it correlates with organic trend. A high ROAS month where SEMrush traffic also rose suggests the paid activity had a halo effect on brand searches.</p>
+    <p class="body-text"><strong>ROAS (Return on Ad Spend)</strong> is the key efficiency metric. A ROAS of 4 means for every £1 spent on ads, £4 of revenue was generated. It is calculated as: Conversion Value ÷ Ad Cost.</p>
+
+    <p class="body-text">The Ads overlay chart on the dashboard lets you see whether paid investment is paying off and whether ad spend periods correlate with organic traffic movements — high spend on brand terms can lift organic click-through rates too.</p>
 
     <div class="subsec">
-      <div class="subsec-title">Where you see Ads data in the dashboard</div>
+      <div class="subsec-title">Where you see Ads data</div>
       <table class="col-table">
-        <tr><th>Dashboard Location</th><th>What it shows</th></tr>
-        <tr><td>Overview — Ad Spend KPI</td><td>Current month spend in GBP</td></tr>
-        <tr><td>Overview — ROAS KPI</td><td>Return on ad spend this month</td></tr>
-        <tr><td>Google Ads Overlay Chart</td><td>Monthly cost (bars) + ROAS (line) since Feb 2020</td></tr>
-        <tr><td>Month-on-Month table — Ads Cost / ROAS columns</td><td>6-month history of spend and efficiency</td></tr>
+        <tr><th>Dashboard section</th><th>What the number means</th></tr>
+        <tr><td>Overview → Ad Spend</td><td>Total spend so far this month (GBP)</td></tr>
+        <tr><td>Overview → ROAS</td><td>Return on ad spend this month (conversion value ÷ cost)</td></tr>
+        <tr><td>Google Ads Overlay chart</td><td>Monthly cost (bars, left axis) and ROAS (line, right axis) — Feb 2020 to present</td></tr>
+        <tr><td>Month-on-Month table → Ads Cost / ROAS columns</td><td>Six months of spend and efficiency history side by side</td></tr>
       </table>
+    </div>
+
+    <div class="tech-block">
+      <details class="tech-details">
+        <summary>Technical details — Ads pipeline</summary>
+        <div class="tech-body">
+          <p>Stored in Ledsone PostgreSQL alongside GSC. Table: <code>google_ads_monthly</code> — columns: month, cost_gbp, conversion_value, conversions, roas. The daily pipeline aggregates the previous day and upserts into the monthly rollup. API module: <code>?module=ads</code> in <code>api/seo.js</code>.</p>
+        </div>
+      </details>
     </div>
   </div>
 
-  <!-- ── 5. BACKLINKS ───────────────────────────────────────── -->
+  <!-- ── 5. BACKLINKS ────────────────────────────────────────── -->
   <div class="section" id="backlinks">
     <div class="sec-head">
       <div class="sec-icon" style="background:#f5f3ff;">🔗</div>
       <div class="sec-meta">
         <div class="sec-num">Section 5</div>
         <div class="sec-title">Backlinks &amp; Domain Authority</div>
-        <div class="sec-sub">Who links to ledsone.co.uk, authority trend, and the 86% backlink drop alert</div>
+        <div class="sec-sub">Who links to ledsone.co.uk and how the domain's authority is trending</div>
+        <div class="sec-badges"><span class="chip weekly">Weekly — every Monday</span></div>
       </div>
     </div>
 
-    <div class="fact-grid">
-      <div class="fact accent"><div class="fl">Source</div><div class="fv">SEMrush Backlinks API (via MCP) → Neon PostgreSQL</div></div>
-      <div class="fact good"><div class="fl">Refresh</div><div class="fv"><span class="chip weekly">Weekly</span> Cloud Agent 3 runs every Monday 03:00 UTC</div></div>
-      <div class="fact purple"><div class="fl">Table</div><div class="fv">semrush_backlinks in Neon — monthly snapshots of total_backlinks, referring_domains, authority_score</div></div>
-      <div class="fact"><div class="fl">Coverage</div><div class="fv">Aug 2024 – present (24-month window)</div></div>
-    </div>
+    <p class="body-text">A <strong>backlink</strong> is when another website links to ledsone.co.uk. Google treats backlinks as votes of confidence — a link from a reputable website tells Google that ledsone is a trustworthy, relevant source. The more high-quality websites that link to ledsone, the stronger the domain becomes and the easier it is to rank for competitive keywords.</p>
 
-    <p class="body-text">Backlinks are one of Google's strongest ranking signals. The number of unique <strong>referring domains</strong> matters more than total backlink count (one domain linking 100 times counts less than 100 different domains each linking once). The dashboard tracks both.</p>
+    <p class="body-text">What matters most is <strong>referring domains</strong> — the number of unique websites linking to ledsone. One website linking 50 times counts far less than 50 different websites each linking once.</p>
 
-    <p class="body-text">An <strong>86% backlink drop</strong> has been detected between peak (2024) and the most recent snapshot. This is flagged as a critical alert because sudden link loss can cause significant ranking drops 2–4 months later.</p>
+    <div class="warn-note">⚠️ <strong>Critical issue detected:</strong> An 86% drop in backlinks has been identified between the 2024 peak and the most recent snapshot. This is flagged on the dashboard because a sustained link loss of this size typically causes ranking drops within 2–4 months if not addressed.</div>
 
     <div class="subsec">
-      <div class="subsec-title">Where you see Backlink data in the dashboard</div>
+      <div class="subsec-title">Where you see backlink data</div>
       <table class="col-table">
-        <tr><th>Dashboard Location</th><th>What it shows</th></tr>
-        <tr><td>Overview — Backlinks KPI</td><td>Total backlinks in the latest snapshot</td></tr>
-        <tr><td>Overview — Referring Domains KPI</td><td>Number of unique domains linking to ledsone.co.uk</td></tr>
-        <tr><td>Backlinks Health — Total Backlinks &amp; Referring Domains Chart</td><td>24-month trend line showing the drop</td></tr>
-        <tr><td>Backlinks Health — Monthly Net Change Chart</td><td>Green/red bars showing links gained vs lost each month</td></tr>
+        <tr><th>Dashboard section</th><th>What the number means</th></tr>
+        <tr><td>Overview → Backlinks</td><td>Total number of backlinks pointing to ledsone.co.uk in the latest weekly snapshot</td></tr>
+        <tr><td>Overview → Referring Domains</td><td>Number of unique websites linking to ledsone (this is the more important number)</td></tr>
+        <tr><td>Backlinks Health → 24-Month Trend chart</td><td>How total backlinks and referring domains have changed month by month since August 2024</td></tr>
+        <tr><td>Backlinks Health → Monthly Net Change chart</td><td>Green bars = new links gained that month. Red bars = links lost. Shows the net direction.</td></tr>
       </table>
     </div>
 
-    <div class="agent-box">
-      <div class="ab-title">Cloud Agent responsible</div>
-      <div class="ab-name">Agent 3 — Backlinks &amp; Authority Snapshot</div>
-      <div class="ab-sched">Schedule: Every Monday 03:00 UTC &nbsp;|&nbsp; Fetches: backlinks_research report &nbsp;|&nbsp; Writes to: semrush_backlinks in Neon</div>
+    <div class="agent-card">
+      <div class="ac-label">Automated weekly refresh</div>
+      <div class="ac-name">Agent 3 — Backlinks &amp; Authority Snapshot</div>
+      <div class="ac-desc">Runs every Monday at 03:00 UTC. Pulls the latest backlink count, referring domain count, and authority score from SEMrush and stores a new monthly snapshot.</div>
+    </div>
+
+    <div class="tech-block">
+      <details class="tech-details">
+        <summary>Technical details — backlinks table</summary>
+        <div class="tech-body">
+          <p>Neon table: <code>semrush_backlinks</code> — columns: snapshot_date, total_backlinks, referring_domains, authority_score. SEMrush MCP call: <code>backlinks_research</code> with <code>target=ledsone.co.uk</code>. API module: <code>?module=backlinks</code>.</p>
+        </div>
+      </details>
     </div>
   </div>
 
-  <!-- ── 6. COMPETITORS ─────────────────────────────────────── -->
+  <!-- ── 6. COMPETITORS ──────────────────────────────────────── -->
   <div class="section" id="competitors">
     <div class="sec-head">
       <div class="sec-icon" style="background:#fff5f5;">⚔️</div>
       <div class="sec-meta">
         <div class="sec-num">Section 6</div>
         <div class="sec-title">Competitor Traffic Comparison</div>
-        <div class="sec-sub">ledsone.co.uk vs top 5 UK lighting competitors — estimated monthly organic traffic</div>
+        <div class="sec-sub">ledsone.co.uk versus the top 5 UK lighting competitors — monthly estimated organic traffic</div>
+        <div class="sec-badges"><span class="chip weekly">Weekly — every Monday</span><span class="chip" style="background:var(--warn-soft);color:var(--warn)">Estimates</span></div>
       </div>
     </div>
 
-    <div class="fact-grid">
-      <div class="fact accent"><div class="fl">Source</div><div class="fv">SEMrush domain_overview for each competitor → Neon PostgreSQL</div></div>
-      <div class="fact good"><div class="fl">Refresh</div><div class="fv"><span class="chip weekly">Weekly</span> Cloud Agent 2 runs every Monday 03:00 UTC</div></div>
-      <div class="fact purple"><div class="fl">Table</div><div class="fv">semrush_competitors in Neon — domain, month, traffic_est per snapshot</div></div>
-      <div class="fact"><div class="fl">Competitors tracked</div><div class="fv">lightingcompany.co.uk, ledhut.co.uk, industville.co.uk, vintagelightbulb.co.uk, lampspares.co.uk</div></div>
+    <p class="body-text">This chart answers the most important strategic question: <strong>are we growing relative to the market, or are competitors pulling ahead?</strong></p>
+
+    <p class="body-text">A rising ledsone line against flat competitor lines means you are gaining market share. A flat ledsone line against rising competitor lines means you are losing ground — even if your absolute traffic looks stable, competitors are capturing new demand that you are not. You need this context to know whether a traffic change is a ledsone issue or a market-wide shift.</p>
+
+    <p class="body-text">The five competitors tracked are: <strong>lightingcompany.co.uk, ledhut.co.uk, industville.co.uk, vintagelightbulb.co.uk, lampspares.co.uk</strong>. All figures are SEMrush estimates — consistent enough for meaningful comparison even if not perfectly accurate.</p>
+
+    <div class="agent-card">
+      <div class="ac-label">Automated weekly refresh</div>
+      <div class="ac-name">Agent 2 — Competitor Traffic Snapshots</div>
+      <div class="ac-desc">Runs every Monday at 03:00 UTC. Fetches SEMrush domain overview for all 5 competitors and stores the monthly estimated traffic for each. The chart then shows the full history side by side.</div>
     </div>
 
-    <p class="body-text">The competitor chart answers the most important strategic question: <strong>are we growing relative to the market?</strong> A rising ledsone line against flat competitors means we're gaining market share. A flat ledsone line against rising competitors means we're losing it — even if our absolute traffic looks stable.</p>
-
-    <p class="body-text">All figures are <strong>SEMrush estimates</strong>, not real traffic. They are consistent estimates — so relative comparisons are valid even if the absolute numbers are off.</p>
-
-    <div class="agent-box">
-      <div class="ab-title">Cloud Agent responsible</div>
-      <div class="ab-name">Agent 2 — Competitor Traffic Snapshots</div>
-      <div class="ab-sched">Schedule: Every Monday 03:00 UTC &nbsp;|&nbsp; Fetches: domain_overview for 5 competitors &nbsp;|&nbsp; Writes to: semrush_competitors in Neon</div>
+    <div class="tech-block">
+      <details class="tech-details">
+        <summary>Technical details — competitor table</summary>
+        <div class="tech-body">
+          <p>Neon table: <code>semrush_competitors</code> — columns: domain, month (date), traffic_est, organic_keywords, authority_score. One row per domain per snapshot date. ledsone's own line on the chart comes from <code>semrush_history</code> (same table as organic trend). API module: <code>?module=competitors</code>. Date keys normalised to <code>YYYY-MM-DD</code>; <code>spanGaps: true</code> on Chart.js datasets to connect across null months.</p>
+        </div>
+      </details>
     </div>
   </div>
 
-  <!-- ── 7. KEYWORD GAP ─────────────────────────────────────── -->
+  <!-- ── 7. KEYWORD GAP ──────────────────────────────────────── -->
   <div class="section" id="kwgap">
     <div class="sec-head">
       <div class="sec-icon" style="background:#fffbeb;">🔓</div>
       <div class="sec-meta">
         <div class="sec-num">Section 7</div>
         <div class="sec-title">Keyword Gap vs ledhut.co.uk</div>
-        <div class="sec-sub">Keywords where ledhut ranks top-10 but ledsone doesn't — your biggest content opportunities</div>
+        <div class="sec-sub">Keywords where ledhut ranks in the top 10 but ledsone does not — your most actionable content opportunities</div>
+        <div class="sec-badges"><span class="chip weekly">Weekly — every Monday</span></div>
       </div>
     </div>
 
-    <div class="fact-grid">
-      <div class="fact accent"><div class="fl">Source</div><div class="fv">SEMrush keyword gap analysis (MCP organic_research) → Neon PostgreSQL</div></div>
-      <div class="fact good"><div class="fl">Refresh</div><div class="fv"><span class="chip weekly">Weekly</span> Cloud Agent 4 runs every Monday 03:00 UTC</div></div>
-      <div class="fact purple"><div class="fl">Table</div><div class="fv">semrush_keyword_gap in Neon — keyword, competitor_position, volume, KD, intent, ledsone_position, opportunity_score</div></div>
-      <div class="fact warn"><div class="fl">Opportunity Score</div><div class="fv">volume × (10 ÷ competitor_position). Higher = bigger traffic gain if you rank where they do.</div></div>
-    </div>
+    <p class="body-text">The keyword gap is a list of search terms that <strong>ledhut.co.uk ranks in Google's top 10 for, but ledsone.co.uk does not rank at all (or ranks below position 20)</strong>. These are proven, real keywords that UK shoppers are searching for in the lighting market — ledhut is already getting traffic from them. The question is: why isn't ledsone?</p>
 
-    <p class="body-text">The keyword gap shows you <strong>exactly what to write next</strong>. Each row is a keyword that ledhut.co.uk already ranks in the top 10 for, but ledsone.co.uk does not rank at all (or ranks outside position 20). If ledhut can rank there, so can ledsone — these keywords are proven to convert in the UK lighting market.</p>
+    <p class="body-text">Each keyword on the list represents a content opportunity. If ledsone creates or improves a page targeting that keyword, it could capture the same traffic ledhut is currently getting.</p>
 
     <div class="subsec">
-      <div class="subsec-title">How Opportunity Score is calculated</div>
+      <div class="subsec-title">Understanding the Opportunity Score</div>
       <table class="col-table">
-        <tr><th>Component</th><th>Meaning</th></tr>
-        <tr><td>volume</td><td>Monthly search volume for the keyword (UK)</td></tr>
-        <tr><td>competitor_position</td><td>Where ledhut.co.uk ranks (1–10). Position 1 = 10 points weight, position 10 = 1 point.</td></tr>
-        <tr><td>Opportunity Score</td><td>volume × (10 ÷ position). A keyword with 5,000 volume where ledhut ranks #2 = 5,000 × 5 = 25,000</td></tr>
+        <tr><th>Column</th><th>What it means</th><th>How to use it</th></tr>
+        <tr><td>Volume</td><td>How many people search this term in the UK per month</td><td>Higher volume = more potential traffic</td></tr>
+        <tr><td>KD (Keyword Difficulty)</td><td>How hard it is to rank — 0 (easy) to 100 (very hard)</td><td>Under 30 = realistic target. Over 70 = long-term project.</td></tr>
+        <tr><td>Intent</td><td>Why people are searching: Transactional (ready to buy), Commercial (comparing), Informational (researching)</td><td>Transactional + Commercial = direct revenue opportunity</td></tr>
+        <tr><td>ledhut Rank</td><td>Where ledhut currently appears in Google for this keyword</td><td>Rank 1–3 = ledhut is dominant here</td></tr>
+        <tr><td>ledsone Rank</td><td>Where ledsone currently appears (shown as "Not ranking" if outside top 20)</td><td>Not ranking = no page exists or needs major improvement</td></tr>
+        <tr><td>Opportunity Score</td><td>Volume × (10 ÷ ledhut's position). Combines search demand and how competitive the keyword is.</td><td>Sort by this to find the highest-impact keywords first</td></tr>
       </table>
     </div>
 
-    <div class="info-note">💡 Sort by Opportunity Score to find the highest-impact keywords first. Filter to KD &lt; 30 for "easy win" opportunities where a new or updated page could rank within 3–6 months.</div>
+    <div class="info-note">💡 <strong>How to use this tab:</strong> Filter to KD &lt; 30 and sort by Opportunity Score. The top results are keywords where ledhut ranks near the top, there is real search volume, and the competition is low enough that a new or improved ledsone page could realistically rank within 3–6 months.</div>
 
-    <div class="agent-box">
-      <div class="ab-title">Cloud Agent responsible</div>
-      <div class="ab-name">Agent 4 — Keyword Gap Refresh (ledhut.co.uk)</div>
-      <div class="ab-sched">Schedule: Every Monday 03:00 UTC &nbsp;|&nbsp; Fetches: SEMrush organic_research for ledhut.co.uk top-100 keywords, compares against ledsone positions &nbsp;|&nbsp; Writes to: semrush_keyword_gap in Neon</div>
+    <div class="agent-card">
+      <div class="ac-label">Automated weekly refresh</div>
+      <div class="ac-name">Agent 4 — Keyword Gap Refresh (vs ledhut.co.uk)</div>
+      <div class="ac-desc">Runs every Monday at 03:00 UTC. Fetches ledhut.co.uk's top 100 organic keywords from SEMrush, then checks which of those ledsone doesn't rank for (or ranks poorly). Stores the updated gap list with opportunity scores.</div>
+    </div>
+
+    <div class="tech-block">
+      <details class="tech-details">
+        <summary>Technical details — keyword gap table</summary>
+        <div class="tech-body">
+          <p>Neon table: <code>semrush_keyword_gap</code> — columns: keyword, competitor_domain, competitor_position, volume, competitor_traffic, competitor_url, keyword_difficulty, intent, ledsone_position, opportunity_score, snapshot_date. Opportunity score formula: <code>volume × (10 / competitor_position)</code>. SEMrush MCP call: <code>organic_research</code> for competitor, cross-referenced with <code>organic_research</code> for ledsone.co.uk. API module: <code>?module=semrush&type=keyword-gap</code>.</p>
+        </div>
+      </details>
     </div>
   </div>
 
-  <!-- ── 8. GEO / AI READINESS ──────────────────────────────── -->
+  <!-- ── 8. GEO ──────────────────────────────────────────────── -->
   <div class="section" id="geo">
     <div class="sec-head">
       <div class="sec-icon" style="background:#f0fdf4;">🤖</div>
@@ -456,101 +526,113 @@ body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:
         <div class="sec-num">Section 8</div>
         <div class="sec-title">AI Readiness Score (GEO)</div>
         <div class="sec-sub">How ready ledsone.co.uk is to be cited by ChatGPT, Google AI Overviews, Gemini, Claude, and Perplexity</div>
+        <div class="sec-badges"><span class="chip realtime">Real-time on every load</span><span class="chip manual">Manual checklist items</span></div>
       </div>
     </div>
 
-    <div class="fact-grid">
-      <div class="fact accent"><div class="fl">Source — Live</div><div class="fv">Fetches ledsone.co.uk/robots.txt and homepage HTML on every page load</div></div>
-      <div class="fact purple"><div class="fl">Source — DB</div><div class="fv">semrush_history (authority), semrush_backlinks (AS), geo_checklist (manual items) from Neon</div></div>
-      <div class="fact good"><div class="fl">Refresh</div><div class="fv"><span class="chip realtime">Real-time</span> Scores recalculate on every dashboard load. No cache.</div></div>
-      <div class="fact warn"><div class="fl">Manual items</div><div class="fv"><span class="chip manual">Manual</span> 8 checklist items you toggle in the dashboard when completed</div></div>
-    </div>
+    <p class="body-text"><strong>GEO (Generative Engine Optimisation)</strong> is about being recommended by AI, not just ranked by Google. When someone asks ChatGPT "what's the best place to buy LED lights in the UK?", ChatGPT doesn't search Google — it searches its own knowledge and the web for authoritative sources to cite. The AI Readiness score measures how likely ledsone.co.uk is to be one of those citations.</p>
 
-    <p class="body-text">GEO (Generative Engine Optimisation) is the new frontier beyond traditional SEO. AI systems like ChatGPT and Google AI Overviews choose which websites to cite based on signals that are different from classic ranking factors — they look for <strong>structured data, entity clarity, E-E-A-T signals, and whether their crawlers are allowed</strong>.</p>
+    <p class="body-text">Unlike traditional SEO (which updates weekly), the AI Readiness score recalculates <strong>every time you open the dashboard</strong> by scanning ledsone.co.uk directly. This means changes you make to the website today appear in the score immediately.</p>
 
     <div class="subsec">
-      <div class="subsec-title">The 7 scored dimensions (each 0–10)</div>
+      <div class="subsec-title">The 7 dimensions — what each one measures</div>
       <table class="col-table">
-        <tr><th>Dimension</th><th>What it measures</th><th>How it's calculated</th></tr>
-        <tr><td>Crawler Access</td><td>Are AI bots allowed to crawl the site?</td><td>Live robots.txt fetch — checks GPTBot, ChatGPT-User, ClaudeBot, PerplexityBot, Google-Extended. +2 per allowed bot.</td></tr>
-        <tr><td>Authority</td><td>Does the domain have enough trust for AI to cite it?</td><td>SEMrush Authority Score from Neon. AS 70+ = 10/10, scaled down below.</td></tr>
-        <tr><td>Entity Clarity</td><td>Does AI know clearly what this business is?</td><td>Live homepage parse — checks for sameAs links (Wikipedia, Wikidata, Companies House), Organization schema.</td></tr>
-        <tr><td>Content Format</td><td>Is content structured in formats AI can extract?</td><td>Presence of FAQPage, HowTo, Article schema in ld+json. Plus blog post count (Neon checklist).</td></tr>
-        <tr><td>E-E-A-T</td><td>Does the site demonstrate expertise and trust signals?</td><td>AggregateRating schema, author schema, credentials page (checklist items).</td></tr>
-        <tr><td>Organic Footprint</td><td>Does the site appear across enough search queries?</td><td>SEMrush organic keyword count from Neon — more keywords = wider AI exposure surface.</td></tr>
-        <tr><td>Structured Data</td><td>Is there enough machine-readable markup?</td><td>Count of distinct schema types found in ld+json on homepage.</td></tr>
+        <tr><th>Dimension (0–10)</th><th>Plain English</th><th>What improves it</th></tr>
+        <tr><td>Crawler Access</td><td>Are AI bots allowed to visit the site?</td><td>Make sure ChatGPT, Claude, Perplexity, and Google AI bots are not blocked in robots.txt. Each allowed bot = +2 points.</td></tr>
+        <tr><td>Authority</td><td>Does the domain have enough credibility for AI to trust it?</td><td>Build backlinks from reputable sites. Authority Score of 70+ = full marks.</td></tr>
+        <tr><td>Entity Clarity</td><td>Can AI clearly identify what ledsone is as a business?</td><td>Add Wikipedia/Wikidata links in the website's Organization markup. Create a Wikidata entry.</td></tr>
+        <tr><td>Content Format</td><td>Is the content in formats AI can easily extract and quote?</td><td>Add FAQ markup to product pages. Publish structured blog articles with clear headings.</td></tr>
+        <tr><td>E-E-A-T</td><td>Does the site signal genuine expertise, experience, authoritativeness, and trustworthiness?</td><td>Add product reviews markup. Add author bios. Create a credentials/about page.</td></tr>
+        <tr><td>Organic Footprint</td><td>Does ledsone appear across a wide enough range of search queries?</td><td>Rank for more keywords. Target long-tail queries. The keyword gap list directly addresses this.</td></tr>
+        <tr><td>Structured Data</td><td>Is there enough machine-readable markup for AI to understand the site?</td><td>Add more Schema.org types: Product, FAQPage, BreadcrumbList, Organization, Article.</td></tr>
       </table>
     </div>
 
     <div class="subsec">
       <div class="subsec-title">The 8 manual checklist items</div>
+      <p class="body-text">Some improvements can't be detected automatically — they require you to confirm when done. Tick them in the AI Readiness tab when complete.</p>
       <table class="col-table">
-        <tr><th>Item</th><th>What to do</th><th>Why it matters</th></tr>
-        <tr><td>FAQPage Schema</td><td>Add FAQ markup to key product/category pages</td><td>AI systems extract FAQ content directly to answer user questions</td></tr>
-        <tr><td>Aggregate Rating</td><td>Add review schema to product pages</td><td>Trust signal — AI prefers citing sites with social proof</td></tr>
-        <tr><td>sameAs — Org</td><td>Add sameAs links to Wikipedia/Wikidata in Organization schema</td><td>Connects ledsone to a known entity in the knowledge graph</td></tr>
-        <tr><td>Wikidata Entity</td><td>Create a Wikidata entry for ledsone.co.uk</td><td>Wikidata is the primary knowledge graph used by AI systems</td></tr>
-        <tr><td>Author Schema</td><td>Add author markup to blog posts</td><td>E-E-A-T: real authors = real expertise</td></tr>
-        <tr><td>Credentials Page</td><td>Create a dedicated /about or /expertise page</td><td>E-E-A-T: explicit expertise signals are weighted heavily</td></tr>
-        <tr><td>Blog 30+ Posts</td><td>Publish at least 30 blog articles</td><td>Content breadth = wider AI citation surface</td></tr>
-        <tr><td>Link Building 5+</td><td>Acquire 5+ new referring domains this quarter</td><td>Counteracts the 86% backlink drop and improves authority</td></tr>
+        <tr><th>Checklist item</th><th>What to do</th><th>Why it helps your AI Readiness</th></tr>
+        <tr><td>FAQPage Schema</td><td>Add FAQ markup to key product and category pages</td><td>AI systems extract FAQ answers to respond directly to user questions, and often cite the source</td></tr>
+        <tr><td>Aggregate Rating</td><td>Add review/rating schema to product pages</td><td>Social proof is a key trust signal — AI prefers citing sources with verified reviews</td></tr>
+        <tr><td>sameAs — Organisation</td><td>Link ledsone's Organization markup to its Wikipedia, Wikidata, or Companies House page</td><td>Connects ledsone.co.uk to a known entity in the global knowledge graph that AI systems use</td></tr>
+        <tr><td>Wikidata Entity</td><td>Create a Wikidata entry for ledsone.co.uk</td><td>Wikidata is the primary knowledge base used by major AI systems to identify entities</td></tr>
+        <tr><td>Author Schema</td><td>Add author markup to blog posts and articles</td><td>Signals that real, named people with expertise wrote the content — a core E-E-A-T requirement</td></tr>
+        <tr><td>Credentials Page</td><td>Create a dedicated /about or /expertise page listing qualifications, certifications, years in business</td><td>Explicit expertise signals are weighted heavily by AI systems evaluating source credibility</td></tr>
+        <tr><td>Blog 30+ Posts</td><td>Publish at least 30 blog articles covering lighting topics</td><td>Wider content breadth means AI systems are more likely to encounter ledsone when answering lighting questions</td></tr>
+        <tr><td>Link Building 5+</td><td>Acquire 5+ new referring domains this quarter</td><td>Directly counteracts the 86% backlink drop and rebuilds the authority score that AI systems use as a trust signal</td></tr>
       </table>
     </div>
 
-    <div class="info-note">💡 The total GEO score (0–100) is the sum of all 7 dimension scores × 100/70. A score above 60 means you are reasonably well positioned to be cited by AI. Below 40 means AI systems are likely ignoring ledsone.co.uk even when it's the most relevant answer.</div>
+    <div class="good-note">✅ <strong>What the score means:</strong> Above 60 = well positioned to be cited by AI. 40–60 = partially ready, key gaps remain. Below 40 = AI systems are likely ignoring ledsone.co.uk even when it's the most relevant answer to a user's question.</div>
+
+    <div class="tech-block">
+      <details class="tech-details">
+        <summary>Technical details — GEO scoring</summary>
+        <div class="tech-body">
+          <p>Live fetch: <code>GET https://ledsone.co.uk/robots.txt</code> (AbortSignal 6s timeout) + <code>GET https://ledsone.co.uk/</code> (8s timeout). Parses: disallow rules for GPTBot, ChatGPT-User, ClaudeBot, PerplexityBot, Google-Extended. Extracts: ld+json script blocks, sameAs arrays, OG tags. DB fetch from Neon: <code>semrush_history</code> (latest AS + keyword count), <code>semrush_backlinks</code> (latest AS), <code>geo_checklist</code> (8 manual items with done boolean). API module: <code>?module=geo</code>. Toggle endpoint: <code>POST ?module=geo&type=toggle&key=X&done=Y</code>.</p>
+        </div>
+      </details>
+    </div>
   </div>
 
-  <!-- ── 9. CLOUD AGENTS ─────────────────────────────────────── -->
+  <!-- ── 9. AGENTS ───────────────────────────────────────────── -->
   <div class="section" id="agents">
     <div class="sec-head">
-      <div class="sec-icon" style="background:#0c1a30;font-size:24px;">⚡</div>
+      <div class="sec-icon" style="background:#0c1a30;color:#e8d59a;font-size:22px;">⚡</div>
       <div class="sec-meta">
         <div class="sec-num">Section 9</div>
-        <div class="sec-title">Cloud Refresh Agents</div>
-        <div class="sec-sub">4 automated agents that keep the SEMrush data in Neon up to date every Monday</div>
+        <div class="sec-title">Automatic Data Refresh</div>
+        <div class="sec-sub">4 cloud agents that keep SEMrush data up to date every Monday morning</div>
+        <div class="sec-badges"><span class="chip weekly">Every Monday 03:00 UTC</span></div>
       </div>
     </div>
 
-    <p class="body-text">Because SEMrush does not offer a real-time push API, four <strong>cloud Claude agents</strong> run every Monday at 03:00 UTC (08:30 IST). Each agent connects to SEMrush via MCP, fetches the latest data, and writes it to the Neon PostgreSQL database. The dashboard then reads from Neon.</p>
+    <p class="body-text">SEMrush doesn't push data to us automatically, so <strong>four cloud agents</strong> run every Monday at 03:00 UTC (08:30 Sri Lanka time). Each agent connects to SEMrush, fetches the latest data for its specific task, and stores a new snapshot. The dashboard then reads those snapshots.</p>
 
-    <table class="col-table">
-      <tr><th>#</th><th>Agent Name</th><th>What it fetches</th><th>Where it writes</th><th>Schedule</th></tr>
+    <p class="body-text">If an agent run fails one week, the dashboard shows the previous week's data — it does not go blank. Each dataset is timestamped so you can always see how old it is.</p>
+
+    <table class="col-table" style="margin-top:16px;">
+      <tr><th>#</th><th>Agent</th><th>What it collects each Monday</th><th>Which dashboard sections it feeds</th></tr>
       <tr>
-        <td>1</td>
-        <td>Keywords &amp; History Refresh</td>
-        <td>domain_overview (traffic, AS, keyword count) + resource_organic top 50 keywords</td>
-        <td>semrush_history, semrush_keywords (Neon)</td>
-        <td>Mon 03:00 UTC</td>
+        <td style="font-weight:700;color:var(--accent)">1</td>
+        <td>Keywords &amp; Traffic History</td>
+        <td>Latest domain traffic estimate, authority score, keyword count, and top 50 ranking keywords from SEMrush</td>
+        <td>Overview KPIs, 37-month trend chart, SEMrush Top 50 tab, Month-on-Month table</td>
       </tr>
       <tr>
-        <td>2</td>
+        <td style="font-weight:700;color:var(--accent)">2</td>
         <td>Competitor Traffic Snapshots</td>
-        <td>domain_overview for 5 competitors (lightingcompany, ledhut, industville, vintagelightbulb, lampspares)</td>
-        <td>semrush_competitors (Neon)</td>
-        <td>Mon 03:00 UTC</td>
+        <td>Traffic estimates for lightingcompany, ledhut, industville, vintagelightbulb, lampspares</td>
+        <td>Competitor Traffic Comparison chart</td>
       </tr>
       <tr>
-        <td>3</td>
-        <td>Backlinks &amp; Authority Snapshot</td>
-        <td>backlinks_research — total backlinks, referring domains, authority score</td>
-        <td>semrush_backlinks (Neon)</td>
-        <td>Mon 03:00 UTC</td>
+        <td style="font-weight:700;color:var(--accent)">3</td>
+        <td>Backlinks &amp; Authority</td>
+        <td>Total backlinks, referring domains, authority score</td>
+        <td>Backlinks Health charts, Backlinks KPIs</td>
       </tr>
       <tr>
-        <td>4</td>
-        <td>Keyword Gap Refresh</td>
-        <td>organic_research for ledhut.co.uk top 100 keywords, compares ledsone positions</td>
-        <td>semrush_keyword_gap (Neon)</td>
-        <td>Mon 03:00 UTC</td>
+        <td style="font-weight:700;color:var(--accent)">4</td>
+        <td>Keyword Gap (vs ledhut)</td>
+        <td>ledhut's top 100 ranking keywords cross-referenced with ledsone's positions</td>
+        <td>Keyword Gap sub-tab in Keyword Intelligence</td>
       </tr>
     </table>
 
-    <div class="warn-note">⚠️ If a Monday agent fails, the dashboard shows the previous week's data — it does not go blank. Each table stores the latest snapshot_date so you can always see when data was last refreshed.</div>
+    <div class="info-note">💡 <strong>To check agent status or run manually:</strong> Go to <strong>claude.ai/code/routines</strong>. You can see when each agent last ran, whether it succeeded, and trigger a manual run if you need a mid-week refresh.</div>
 
-    <p class="body-text" style="margin-top:14px;">Agents can be viewed and managed at <strong>claude.ai/code/routines</strong>. You can also trigger a manual run from there if you need a mid-week refresh.</p>
+    <div class="tech-block">
+      <details class="tech-details">
+        <summary>Technical details — agent configuration</summary>
+        <div class="tech-body">
+          <p>All 4 agents are Claude Code cloud routines (CCRs) running on the <code>claude-sonnet-4-6</code> model. Each agent checks out the <code>piranav_aios</code> GitHub repo and runs a self-contained prompt that uses the SEMrush MCP connector (<code>connector_uuid: 56a453d4-a573-4213-8e58-130c6a68c10c</code>) and writes directly to Neon via the connection string. Cron expression for all 4: <code>0 3 * * 1</code> (Monday 03:00 UTC). Agent IDs are visible at claude.ai/code/routines.</p>
+        </div>
+      </details>
+    </div>
   </div>
 
-  <!-- ── 10. GLOSSARY ───────────────────────────────────────── -->
+  <!-- ── 10. GLOSSARY ────────────────────────────────────────── -->
   <div class="section" id="glossary">
     <div class="sec-head">
       <div class="sec-icon" style="background:#eef2f7;">📖</div>
@@ -562,33 +644,55 @@ body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:
     </div>
 
     <table class="col-table">
-      <tr><th>Term</th><th>Plain English definition</th></tr>
-      <tr><td>Authority Score (AS)</td><td>SEMrush's 0–100 measure of how trusted a domain is. Higher = more ranking power. Built from backlink quality, traffic, and spam signals.</td></tr>
-      <tr><td>Clicks</td><td>How many times someone clicked a ledsone.co.uk result in Google. Source: Google Search Console (real data).</td></tr>
-      <tr><td>CTR</td><td>Click-Through Rate. Clicks ÷ Impressions × 100. A 5% CTR means 5 in every 100 people who saw the result clicked it.</td></tr>
-      <tr><td>GEO</td><td>Generative Engine Optimisation. The practice of optimising a website to be cited by AI systems (ChatGPT, Gemini, Claude, Perplexity), not just ranked in Google.</td></tr>
-      <tr><td>Impressions</td><td>How many times a ledsone.co.uk result appeared in Google search results. Source: GSC (real data).</td></tr>
-      <tr><td>Intent</td><td>Why someone searched. Commercial = comparing products. Transactional = ready to buy. Informational = researching. Navigational = looking for a specific site.</td></tr>
-      <tr><td>KD (Keyword Difficulty)</td><td>SEMrush's 0–100 score for how hard it is to rank for a keyword. Under 30 = relatively easy. Over 70 = very competitive.</td></tr>
-      <tr><td>Keyword Gap</td><td>Keywords where a competitor ranks in the top 10 but you do not rank at all or rank outside position 20.</td></tr>
-      <tr><td>ld+json</td><td>A way of embedding structured data (Schema.org) in a web page's HTML so search engines and AI systems can understand what the page is about.</td></tr>
-      <tr><td>MCP</td><td>Model Context Protocol. A standard that lets Claude agents connect to external tools (like SEMrush) and use them directly.</td></tr>
-      <tr><td>Neon DB</td><td>A cloud PostgreSQL database (hosted in eu-west-2 AWS). Stores all SEMrush snapshots and the GEO checklist.</td></tr>
-      <tr><td>Opportunity Score</td><td>volume × (10 ÷ competitor_position). Ranks keyword gap entries by potential traffic impact. Higher is better.</td></tr>
-      <tr><td>Position</td><td>Where a URL ranks in Google search results for a query. Position 1 = top result. Position 10 = bottom of page 1.</td></tr>
-      <tr><td>ROAS</td><td>Return on Ad Spend. Conversion Value ÷ Ad Cost. ROAS of 4 means you made £4 revenue for every £1 spent on ads.</td></tr>
-      <tr><td>Referring Domains</td><td>Number of unique websites that have at least one link pointing to ledsone.co.uk. More unique domains = stronger authority signal.</td></tr>
-      <tr><td>sameAs</td><td>A Schema.org property that links your Organization to its profiles on other authoritative sites (Wikipedia, Wikidata, LinkedIn). Helps AI systems identify who you are.</td></tr>
-      <tr><td>SEMrush Traffic Est.</td><td>SEMrush's estimate of how much organic traffic a domain receives per month. Based on keyword rankings × average CTR for each position. Not real traffic — a model.</td></tr>
-      <tr><td>Vercel</td><td>The hosting platform where the SEO dashboard (seo.html) and the API (api/seo.js) are deployed. Free Hobby plan — deployments must be triggered manually with <code>vercel --prod</code>.</td></tr>
+      <tr><th>Term</th><th>What it means in plain English</th></tr>
+      <tr><td><strong>Authority Score (AS)</strong></td><td>SEMrush's measure (0–100) of how trusted a domain is on the internet. Built from the quality and quantity of websites linking to it. Higher score = easier to rank in Google.</td></tr>
+      <tr><td><strong>Backlink</strong></td><td>A link from another website pointing to ledsone.co.uk. Treated by Google as a vote of confidence.</td></tr>
+      <tr><td><strong>Clicks</strong></td><td>How many times someone clicked a ledsone result in Google. From GSC — this is real data.</td></tr>
+      <tr><td><strong>CTR (Click-Through Rate)</strong></td><td>Clicks ÷ Impressions × 100. A 5% CTR means 5 out of every 100 people who saw the ledsone listing clicked it.</td></tr>
+      <tr><td><strong>GEO</strong></td><td>Generative Engine Optimisation. Making your website ready to be cited and recommended by AI systems like ChatGPT and Google AI Overviews — not just ranked by Google Search.</td></tr>
+      <tr><td><strong>Impressions</strong></td><td>How many times a ledsone result appeared on a Google results page. Someone seeing it but not clicking still counts as an impression. From GSC — real data.</td></tr>
+      <tr><td><strong>Intent</strong></td><td>The reason behind a search. <strong>Transactional</strong> = ready to buy ("buy LED bulbs"). <strong>Commercial</strong> = comparing options ("best LED strip lights UK"). <strong>Informational</strong> = learning ("how do LED lights work"). <strong>Navigational</strong> = looking for a specific brand.</td></tr>
+      <tr><td><strong>KD (Keyword Difficulty)</strong></td><td>SEMrush's score (0–100) for how hard it is to rank on page 1 of Google for a keyword. Under 30 = achievable in months. Over 70 = requires significant authority and long-term effort.</td></tr>
+      <tr><td><strong>Keyword Gap</strong></td><td>Keywords where a competitor ranks in Google's top 10 but ledsone does not rank in the top 20. Each gap keyword is a content opportunity.</td></tr>
+      <tr><td><strong>Organic Traffic</strong></td><td>Visitors who arrive at ledsone.co.uk by clicking a free (non-ad) Google search result. As opposed to paid traffic (ads) or direct traffic (typing the URL).</td></tr>
+      <tr><td><strong>Opportunity Score</strong></td><td>A number that ranks keyword gap entries by potential impact. Calculated as: search volume × (10 ÷ competitor's ranking position). Higher = better opportunity.</td></tr>
+      <tr><td><strong>Position</strong></td><td>Where a page ranks in Google results for a specific search term. Position 1 = top result. Position 10 = bottom of page 1. Position 11+ = page 2 (almost no clicks).</td></tr>
+      <tr><td><strong>Referring Domains</strong></td><td>The number of unique websites that link to ledsone.co.uk. More important than total backlink count — 50 different sites linking once is stronger than 1 site linking 50 times.</td></tr>
+      <tr><td><strong>ROAS</strong></td><td>Return on Ad Spend. Conversion Value ÷ Ad Cost. ROAS of 4 = £4 revenue generated for every £1 spent on Google Ads.</td></tr>
+      <tr><td><strong>Schema / Structured Data</strong></td><td>Special invisible code added to web pages that tells Google and AI systems exactly what a page contains — whether it's a product, an FAQ, a review, or an organisation. Makes pages easier for machines to understand.</td></tr>
+      <tr><td><strong>SEMrush Traffic Estimate</strong></td><td>SEMrush's calculation of how much organic traffic a domain receives per month, based on its keyword rankings and typical click rates for each position. An estimate — not real traffic. Useful for trends and comparisons.</td></tr>
+      <tr><td><strong>sameAs</strong></td><td>A way of telling AI systems and Google "this is also us" by linking your website's structured data to your Wikipedia page, Wikidata entry, or LinkedIn profile. Helps AI systems confidently identify who ledsone is.</td></tr>
+      <tr><td><strong>Wikidata</strong></td><td>A free, publicly editable knowledge base used by Wikipedia, Google, and AI systems like ChatGPT to store facts about people, organisations, and places. Having a Wikidata entry makes it easier for AI to reference ledsone.</td></tr>
     </table>
   </div>
 
-  <div style="text-align:center;margin-top:32px;font-size:12px;color:var(--muted);">
+  <div style="text-align:center;margin-top:32px;font-size:12.5px;color:var(--muted);">
     SEO Intelligence Dashboard — ledsone.co.uk &nbsp;·&nbsp; Built by AIOS &nbsp;·&nbsp;
-    <a href="/pages/seo.html" style="color:var(--accent);text-decoration:none;">← Back to Dashboard</a>
+    <a href="/pages/seo.html" style="color:var(--accent);text-decoration:none;font-weight:600;">← Back to Dashboard</a>
   </div>
 
 </div>
+
+<script>
+let audience = 'seo';
+
+function setAudience(mode) {
+  audience = mode;
+  document.getElementById('btn-seo').classList.toggle('active', mode === 'seo');
+  document.getElementById('btn-dev').classList.toggle('active', mode === 'dev');
+  document.querySelectorAll('.tech-block').forEach(el => {
+    el.classList.toggle('visible', mode === 'dev');
+  });
+}
+
+// Smooth scroll for TOC links
+document.querySelectorAll('.toc-item').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+</script>
 </body>
 </html>
