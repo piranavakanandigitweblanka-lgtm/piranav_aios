@@ -100,7 +100,7 @@ async function handleReq2(client, toDate, fromDate, prevFrom, prevTo) {
       AND product_item_id != ''
     GROUP BY product_item_id, campaign_id
     HAVING SUM(conversions)=0 AND SUM(cost)>5 AND SUM(clicks)>0
-    ORDER BY cost DESC LIMIT 30
+    ORDER BY cost DESC
   `, [SJ_CAMPAIGN_IDS, fromDate, toDate]);
 
   // Metadata for waste products
@@ -143,7 +143,7 @@ async function handleReq2(client, toDate, fromDate, prevFrom, prevTo) {
       AND conversions = 0
     GROUP BY search_term, campaign_id
     HAVING SUM(cost) > 2
-    ORDER BY cost DESC LIMIT 25
+    ORDER BY cost DESC
   `, [SJ_CAMPAIGN_IDS, fromDate, toDate]);
 
   const neg_kw = kwRows.map(r => ({
