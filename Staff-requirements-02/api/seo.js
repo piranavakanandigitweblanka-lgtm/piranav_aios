@@ -5,6 +5,7 @@
 // ?module=landing  &type=pages|by-type|top-pages
 
 const { Client } = require('pg');
+const https = require('https');
 
 const ADS_ACCOUNT   = 4503486236;
 const GSC_SUB_SOURCE = 104;
@@ -33,11 +34,12 @@ function errResponse(res, err) {
 async function handleGscMonthly(client, res) {
   const { rows } = await client.query(`
     SELECT
-      DATE_TRUNC('month', date)::date  AS month,
-      COUNT(DISTINCT date)::int        AS days_with_data,
-      SUM(clicks)::int                 AS clicks,
-      SUM(impressions)::int            AS impressions,
-      ROUND(AVG(position)::numeric, 2) AS avg_position
+      DATE_TRUNC('month', date)::date                                        AS month,
+      COUNT(DISTINCT date)::int                                               AS days_with_data,
+      SUM(clicks)::int                                                        AS clicks,
+      SUM(impressions)::int                                                   AS impressions,
+      ROUND((SUM(clicks)::numeric/NULLIF(SUM(impressions),0))*100, 3)        AS ctr_pct,
+      ROUND(AVG(position)::numeric, 2)                                        AS avg_position
     FROM google_search_console.overview
     WHERE sub_source = $1 AND search_type = 'web'
     GROUP BY DATE_TRUNC('month', date)
@@ -110,6 +112,58 @@ async function handleDataQuality(client, res) {
       shopify:    { status:'unavailable', note:'MCP connection failed. Organic revenue not available.' },
     },
   });
+}
+
+async function handleGscWeekly(client, res) {
+  const [ovRes, kwRes] = await Promise.all([
+    client.query(`
+      SELECT
+        DATE_TRUNC('week', date)::date                                        AS week_start,
+        SUM(clicks)::int                                                       AS clicks,
+        SUM(impressions)::int                                                  AS impressions,
+        ROUND((SUM(clicks)::numeric/NULLIF(SUM(impressions),0))*100, 3)       AS ctr_pct,
+        ROUND(AVG(position)::numeric, 2)                                       AS avg_position,
+        COUNT(DISTINCT date)::int                                              AS days_in_week
+      FROM google_search_console.overview
+      WHERE sub_source=$1 AND search_type='web'
+        AND date >= CURRENT_DATE - INTERVAL '26 weeks'
+      GROUP BY DATE_TRUNC('week', date)
+      ORDER BY week_start ASC
+    `, [GSC_SUB_SOURCE]),
+    client.query(`
+      SELECT
+        DATE_TRUNC('week', date)::date                                         AS week_start,
+        COUNT(DISTINCT CASE WHEN position <= 3  THEN query END)::int           AS kw_top3,
+        COUNT(DISTINCT CASE WHEN position <= 10 THEN query END)::int           AS kw_top10
+      FROM google_search_console.query
+      WHERE sub_source=$1 AND search_type='web'
+        AND date >= CURRENT_DATE - INTERVAL '26 weeks'
+      GROUP BY DATE_TRUNC('week', date)
+      ORDER BY week_start ASC
+    `, [GSC_SUB_SOURCE]),
+  ]);
+  const kwMap = {};
+  kwRes.rows.forEach(r => {
+    kwMap[String(r.week_start).slice(0,10)] = {
+      kw_top3:  parseInt(r.kw_top3)  || 0,
+      kw_top10: parseInt(r.kw_top10) || 0,
+    };
+  });
+  const rows = ovRes.rows.map(r => {
+    const ws = String(r.week_start).slice(0,10);
+    const kw = kwMap[ws] || { kw_top3: 0, kw_top10: 0 };
+    return {
+      week_start:   ws,
+      clicks:       parseInt(r.clicks)       || 0,
+      impressions:  parseInt(r.impressions)  || 0,
+      ctr_pct:      parseFloat(r.ctr_pct)    || 0,
+      avg_position: parseFloat(r.avg_position)|| 0,
+      kw_top3:      kw.kw_top3,
+      kw_top10:     kw.kw_top10,
+      days_in_week: parseInt(r.days_in_week) || 0,
+    };
+  });
+  return res.status(200).json({ ok: true, rows });
 }
 
 /* ─── PRODUCTS ──────────────────────────────────────────────── */
@@ -556,6 +610,23 @@ async function handleLpPageTrend(client, res, page) {
   return res.status(200).json({ ok:true, page, rows });
 }
 
+async function handleRankDist(client, res, from, to) {
+  const { rows } = await client.query(`
+    SELECT
+      DATE_TRUNC('month', date)::date                                        AS month,
+      COUNT(DISTINCT CASE WHEN position <= 3            THEN query END)::int AS pos_1_3,
+      COUNT(DISTINCT CASE WHEN position > 3  AND position <= 10 THEN query END)::int AS pos_4_10,
+      COUNT(DISTINCT CASE WHEN position > 10 AND position <= 20 THEN query END)::int AS pos_11_20,
+      COUNT(DISTINCT CASE WHEN position > 20 AND position <= 50 THEN query END)::int AS pos_21_50,
+      COUNT(DISTINCT CASE WHEN position > 50             THEN query END)::int AS pos_51_plus
+    FROM google_search_console.query
+    WHERE sub_source=$1 AND search_type='web' AND date BETWEEN $2 AND $3
+    GROUP BY DATE_TRUNC('month', date)
+    ORDER BY month ASC
+  `, [GSC_SUB_SOURCE, from, to]);
+  return res.status(200).json({ ok:true, rows });
+}
+
 async function handleKwHistory(client, res, query) {
   if (!query) return res.status(400).json({ ok:false, error:'q param required' });
   const { rows } = await client.query(`
@@ -707,6 +778,37 @@ async function handleTechZeroClick(client, res, from, to) {
   });
 }
 
+function httpsGetJson(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, (resp) => {
+      let data = '';
+      resp.on('data', chunk => { data += chunk; });
+      resp.on('end', () => {
+        try { resolve(JSON.parse(data)); }
+        catch(e) { reject(new Error(data.slice(0, 300))); }
+      });
+    }).on('error', reject);
+  });
+}
+
+async function handleCwv(res, strategy) {
+  try {
+    const key    = process.env.PSI_KEY || '';
+    const target = 'https://ledsone.co.uk';
+    const strat  = strategy === 'desktop' ? 'desktop' : 'mobile';
+    const url    = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(target)}&strategy=${strat}&category=performance${key ? '&key=' + key : ''}`;
+    const data = await httpsGetJson(url);
+    if (data.error) {
+      const msg = data.error.message || 'PSI API error';
+      const blocked = /403|blocked|access denied|firewall/i.test(msg) || msg.includes('Something went wrong');
+      return res.status(502).json({ ok:false, blocked, error: msg });
+    }
+    return res.status(200).json({ ok:true, strategy: strat, data });
+  } catch (e) {
+    return res.status(502).json({ ok:false, blocked: true, error: e.message || 'PageSpeed fetch failed' });
+  }
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=60');
@@ -727,6 +829,7 @@ module.exports = async function handler(req, res) {
       case 'exec':
         switch (type) {
           case 'gsc-monthly':   return await handleGscMonthly(client, res);
+          case 'gsc-weekly':    return await handleGscWeekly(client, res);
           case 'position-dist': return await handlePositionDist(client, res);
           case 'ads-monthly':   return await handleAdsMonthly(client, res);
           case 'data-quality':  return await handleDataQuality(client, res);
@@ -745,6 +848,7 @@ module.exports = async function handler(req, res) {
           case 'rising':      return await handleKwMovers(client, res, 'rising');
           case 'declining':   return await handleKwMovers(client, res, 'declining');
           case 'kw-history':  return await handleKwHistory(client, res, req.query.q);
+          case 'rank-dist':   return await handleRankDist(client, res, from, to);
           default: return res.status(400).json({ ok:false, error:`keywords: unknown type "${type}"` });
         }
       case 'landing':
@@ -765,6 +869,7 @@ module.exports = async function handler(req, res) {
           case 'coverage':         return await handleTechCoverage(client, res, from, to);
           case 'cannibalization':  return await handleTechCannib(client, res, from, to);
           case 'zero-click':       return await handleTechZeroClick(client, res, from, to);
+          case 'cwv':              return await handleCwv(res, req.query.strategy);
           default: return res.status(400).json({ ok:false, error:`technical: unknown type "${type}"` });
         }
       case 'semrush':
@@ -852,6 +957,15 @@ async function handleSemrush(type, res, req) {
         ORDER BY traffic DESC LIMIT 50`);
       return res.json({ ok:true, rows });
     }
+    if (type === 'gap-competitors') {
+      const { rows } = await nc.query(`
+        SELECT competitor_domain, COUNT(*) AS kw_count, MAX(snapshot_date) AS snapshot_date
+        FROM semrush_keyword_gap
+        GROUP BY competitor_domain
+        ORDER BY kw_count DESC`);
+      return res.json({ ok:true, rows });
+    }
+
     if (type === 'keyword-gap') {
       const competitor = req.query.competitor || 'ledhut.co.uk';
       const { rows } = await nc.query(`

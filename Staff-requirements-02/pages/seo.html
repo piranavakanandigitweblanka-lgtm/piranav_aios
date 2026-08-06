@@ -920,6 +920,11 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blC
      ══════════════════════════════════════════════════════════ */
   const curW  = weeklyRows.length >= 1 ? weeklyRows[weeklyRows.length - 1] : null;
   const prevW = weeklyRows.length >= 2 ? weeklyRows[weeklyRows.length - 2] : null;
+  const curWDays     = curW ? (curW.days_in_week || 0) : 0;
+  const isPartialWeek = curWDays > 0 && curWDays < 7;
+  const partialWarn  = isPartialWeek
+    ? `<span style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;border-radius:5px;padding:2px 7px;font-size:10.5px;font-weight:600;margin-left:6px">&#9888; Partial week — ${curWDays} of 7 days</span>`
+    : '';
 
   function _wowPct(cur, prv) {
     if (prv === null || prv === undefined || prv === 0) return null;
@@ -1024,7 +1029,7 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blC
   }
 
   const weeklySummaryHtml = `
-    <div class="section-title" style="margin-top:0">&#128197; SEO Weekly KPI Summary</div>
+    <div class="section-title" style="margin-top:0">&#128197; SEO Weekly KPI Summary ${partialWarn}</div>
     <div style="font-size:11px;color:var(--muted);margin-bottom:10px">
       ${curW ? `Current week: <strong>${_weekLabel(curW.week_start)}</strong> &nbsp;·&nbsp; Previous week: <strong>${prevW ? _weekLabel(prevW.week_start) : 'N/A'}</strong> &nbsp;·&nbsp; Source: GSC (PostgreSQL pipeline)` : 'Weekly data unavailable'}
       &nbsp;·&nbsp; ${_nextUpdateStr('daily')}
@@ -1069,11 +1074,12 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blC
   const _prvWRange  = prevW ? _weekRange(prevW.week_start) : 'N/A';
 
   const weeklyTableHtml = curW ? `
-    <div class="section-title">&#128200; SEO KPI Weekly Comparison</div>
+    <div class="section-title">&#128200; SEO KPI Weekly Comparison ${partialWarn}</div>
     <div style="display:flex;align-items:center;gap:18px;margin-bottom:10px;flex-wrap:wrap">
-      <div style="background:#f0f5ff;border:1px solid #c7d9ff;border-radius:8px;padding:7px 16px;font-size:12px">
+      <div style="background:#f0f5ff;border:1px solid ${isPartialWeek ? '#fed7aa' : '#c7d9ff'};border-radius:8px;padding:7px 16px;font-size:12px">
         <span style="color:#64748b;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px">Current Week</span><br>
         <strong style="font-size:15px;color:#1f5eff">${_curWRange}</strong>
+        ${isPartialWeek ? `<br><span style="font-size:10px;color:#c2410c;font-weight:600">&#9888; ${curWDays} of 7 days available — data still arriving</span>` : ''}
       </div>
       <div style="font-size:18px;color:#94a3b8">vs</div>
       <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:7px 16px;font-size:12px">
@@ -1087,7 +1093,7 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blC
         <table>
           <thead><tr>
             <th>KPI</th>
-            <th class="num">Current Week<br><span style="font-weight:400;font-size:10px;color:#94a3b8">${_curWRange}</span></th>
+            <th class="num">Current Week<br><span style="font-weight:400;font-size:10px;color:#94a3b8">${_curWRange}</span>${isPartialWeek ? `<br><span style="font-weight:600;font-size:10px;color:#c2410c">&#9888; ${curWDays}/7 days</span>` : ''}</th>
             <th class="num">Previous Week<br><span style="font-weight:400;font-size:10px;color:#94a3b8">${_prvWRange}</span></th>
             <th class="num">Difference</th>
             <th class="num">WoW %</th>
