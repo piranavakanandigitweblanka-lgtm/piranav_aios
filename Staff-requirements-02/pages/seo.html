@@ -1986,8 +1986,10 @@ function renderProdTable(rows) {
     html += `<tr>
       <td style="color:var(--muted);font-size:11px">${i+1}</td>
       <td>
-        <span class="prod-name" title="${r.title || handle}">${displayName}</span>
-        <span class="prod-handle">${handle.length > 50 ? handle.slice(0,50)+'…' : handle}</span>
+        <a href="https://www.ledsone.co.uk/products/${handle}" target="_blank" rel="noopener" title="Open on ledsone.co.uk" style="text-decoration:none;color:inherit">
+          <span class="prod-name" style="border-bottom:1px dashed #94a3b8" title="${r.title || handle}">${displayName}</span>
+          <span class="prod-handle">${handle.length > 50 ? handle.slice(0,50)+'…' : handle} &#8599;</span>
+        </a>
       </td>
       <td class="num">${posBadge(r.avg_position)}</td>
       <td class="num">${fNum(r.clicks)}</td>
