@@ -81,3 +81,9 @@ docs/
 | File | Description |
 |------|-------------|
 | `daily-work-log-2026-07-21.md` | Daily work log — 2026-07-21 |
+
+## Security
+
+| File | Description |
+|------|-------------|
+| `security-check-2026-08-06.md` | Repo security audit — confirmed safe, no secrets on GitHub |
