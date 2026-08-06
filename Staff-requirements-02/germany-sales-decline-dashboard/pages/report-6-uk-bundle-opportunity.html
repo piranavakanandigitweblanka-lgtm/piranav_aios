@@ -66,6 +66,30 @@ tr:hover td{background:#f8f9fc;}
 .csv-btn:hover{background:var(--accent);color:#fff;}
 footer.site{max-width:1440px;margin:0 auto;padding:20px 32px 36px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;}
 @media(max-width:640px){.masthead{padding:14px;}.page{padding:16px 12px 40px;}.search-wrap input{width:100%;}}
+
+/* Guide panel */
+.guide-toggle{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-soft);border:1.5px solid var(--accent);border-radius:8px;padding:6px 14px;cursor:pointer;margin-bottom:14px;transition:all .15s;float:right;}
+.guide-toggle:hover{background:var(--accent);color:#fff;}
+.guide-panel{display:none;background:var(--card);border:1.5px solid var(--accent);border-radius:12px;padding:22px 26px;margin-bottom:20px;clear:both;}
+.guide-panel.open{display:block;}
+.guide-panel h2{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.guide-section{margin-bottom:18px;}
+.guide-section h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--line);}
+.guide-section p{font-size:12.5px;color:var(--ink);line-height:1.7;margin-bottom:6px;}
+.guide-section ul{font-size:12.5px;color:var(--ink);line-height:1.8;padding-left:18px;}
+.guide-section ul li{margin-bottom:3px;}
+.guide-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:8px;}
+.guide-card{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;}
+.guide-card .gc-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;}
+.guide-card .gc-val{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.guide-card .gc-desc{font-size:11.5px;color:var(--muted);line-height:1.5;}
+.guide-chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.gc-chip{font-size:11px;font-weight:700;border-radius:4px;padding:3px 9px;}
+.gc-chip.found{background:var(--good-soft);color:var(--good);}
+.gc-chip.miss{background:var(--red-soft);color:var(--red);}
+.gc-chip.ready{background:var(--good-soft);color:var(--good);}
+.gc-chip.warn{background:var(--warn-soft);color:var(--warn);}
+.gc-chip.info{background:var(--accent-soft);color:var(--accent);}
 </style>
 </head>
 <body>
@@ -91,6 +115,104 @@ footer.site{max-width:1440px;margin:0 auto;padding:20px 32px 36px;border-top:1px
 <main class="page">
 
   <a class="back-btn" href="../index.html">&#8592; Back to Hub</a>
+  <button class="guide-toggle" onclick="toggleGuide()"><span id="guide-icon">&#9432;</span> How to Use This Report</button>
+
+  <!-- Guide Panel -->
+  <div class="guide-panel" id="guide-panel">
+    <h2>&#9432; How to Use This Report</h2>
+
+    <div class="guide-section">
+      <h3>What This Report Does</h3>
+      <p>This report compares <strong>all active UK bundle SKUs</strong> (from eBay UK, Amazon UK, Shopify UK) against <strong>Germany's current warehouse stock</strong> to find bundle opportunities — bundles that exist in the UK but are not yet listed in Germany.</p>
+      <p>A <strong>bundle SKU</strong> is any SKU containing a <code>+</code> sign, e.g. <code>CRSF100BM+SCRN70BM+PHSH1PBRYB</code>. Each part separated by <code>+</code> is a <strong>component SKU</strong>.</p>
+      <p><strong>This report does NOT calculate build quantities or recommend creating bundles.</strong> It is an opportunity identification tool only.</p>
+    </div>
+
+    <div class="guide-section">
+      <h3>Summary Cards Explained</h3>
+      <div class="guide-grid">
+        <div class="guide-card">
+          <div class="gc-label">Total UK Bundle SKUs</div>
+          <div class="gc-val">23,247</div>
+          <div class="gc-desc">All distinct bundle SKUs found across UK eBay, Amazon and Shopify listings (active only).</div>
+        </div>
+        <div class="guide-card">
+          <div class="gc-label">Already Exists in Germany</div>
+          <div class="gc-val" style="color:var(--good)">10,059</div>
+          <div class="gc-desc">These UK bundles are already listed on at least one Germany channel (eBay DE, Amazon DE or Shopify DE). No action needed.</div>
+        </div>
+        <div class="guide-card">
+          <div class="gc-label">Not in Germany</div>
+          <div class="gc-val" style="color:var(--red)">13,188</div>
+          <div class="gc-desc">UK bundles with no matching Germany listing. These are the gap — the table shows these rows.</div>
+        </div>
+        <div class="guide-card">
+          <div class="gc-label">Ready for Review</div>
+          <div class="gc-val" style="color:var(--accent)">467</div>
+          <div class="gc-desc">Not-in-Germany bundles where <strong>every component SKU</strong> already has Germany warehouse stock. These are your highest-priority opportunities.</div>
+        </div>
+        <div class="guide-card">
+          <div class="gc-label">Missing Components</div>
+          <div class="gc-val">12,721</div>
+          <div class="gc-desc">Not-in-Germany bundles where at least one component has no Germany stock. Cannot be built yet without sourcing the missing part(s).</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="guide-section">
+      <h3>Filter Pills Explained</h3>
+      <ul>
+        <li><strong>All Not in Germany</strong> — Shows all 13,188 UK bundles that do not exist in Germany. Default view.</li>
+        <li><strong>&#10003; Ready for Review</strong> — Filters to bundles where all components are in Germany stock. Start here — these 467 are actionable today.</li>
+        <li><strong>Missing Components</strong> — Filters to bundles where one or more components are missing from Germany stock. Use this to identify what stock needs to be sourced first.</li>
+        <li><strong>Search SKU</strong> — Type any part of a bundle SKU to find it instantly. Works across all filter states.</li>
+      </ul>
+    </div>
+
+    <div class="guide-section">
+      <h3>Table Columns Explained</h3>
+      <ul>
+        <li><strong>UK Bundle SKU</strong> — The full bundle SKU as listed in UK channels, e.g. <code>CRSF100BM+SCRN70BM</code>.</li>
+        <li><strong># Parts</strong> — Number of component SKUs in this bundle.</li>
+        <li><strong>Component List</strong> — Each component shown as a chip:
+          <div class="guide-chip-row">
+            <span class="gc-chip found">&#10003; CRSF100BM</span> <span style="font-size:11px;color:var(--muted)">= found in Germany stock</span>
+          </div>
+          <div class="guide-chip-row" style="margin-top:5px;">
+            <span class="gc-chip miss">&#10007; SCRN70YB</span> <span style="font-size:11px;color:var(--muted)">= NOT in Germany stock</span>
+          </div>
+        </li>
+        <li><strong>DE Bundle</strong> — Always <span style="background:var(--red-soft);color:var(--red);border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;">&#10007; No</span> in this table (only not-in-Germany bundles are shown).</li>
+        <li><strong>Found</strong> — How many components are confirmed in Germany stock out of total (e.g. <code>4 / 4</code>).</li>
+        <li><strong>Missing</strong> — Count of components with no Germany stock. Zero means Ready for Review.</li>
+        <li><strong>Opportunity Status</strong> —
+          <div class="guide-chip-row" style="margin-top:5px;">
+            <span class="gc-chip ready">&#10003; Ready for Review</span> <span style="font-size:11px;color:var(--muted)">= all components in DE stock, can proceed to listing</span>
+          </div>
+          <div class="guide-chip-row" style="margin-top:5px;">
+            <span class="gc-chip warn">Missing 2 component(s)</span> <span style="font-size:11px;color:var(--muted)">= needs stock sourcing first</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="guide-section">
+      <h3>Recommended Workflow</h3>
+      <ul>
+        <li><strong>Step 1:</strong> Click <strong>&#10003; Ready for Review</strong> filter — these 467 bundles have all stock in Germany and are your immediate opportunity.</li>
+        <li><strong>Step 2:</strong> Export CSV using the <strong>↓ Export CSV</strong> button and share with the listings team.</li>
+        <li><strong>Step 3:</strong> For the <strong>Missing Components</strong> group — check which missing SKUs appear most frequently across many bundles. Sourcing one key SKU may unlock dozens of bundles.</li>
+        <li><strong>Step 4:</strong> Search a specific SKU (e.g. <code>CRSF100BM</code>) to see all bundles containing it.</li>
+      </ul>
+    </div>
+
+    <div class="guide-section">
+      <h3>Data &amp; Refresh</h3>
+      <p>Data is pulled <strong>live from the database</strong> and auto-refreshes every <strong>5 seconds</strong>. Numbers update automatically as listings are added or stock changes. The <em>refresh date</em> in the source bar shows the last successful data pull.</p>
+      <p><strong>Important:</strong> This report shows opportunity only — it does not calculate how many units of a bundle can be built, and it does not recommend or trigger any listing creation.</p>
+    </div>
+  </div>
+  <!-- /Guide Panel -->
 
   <div class="tbar">
     <strong>Source:</strong> listings.ebay_listings (UK, all_list=1) &middot; amazon_listings (UK) &middot; shopify_listings (UK, all_list=1) &middot; inventory.local_inventory_current_stock_location_wise (Germany) &middot; <span id="refresh-date">loading&hellip;</span>
@@ -290,6 +412,13 @@ async function loadLive(){
   } catch(err){
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--red)">&#9888; Failed to load: ' + err.message + '</td></tr>';
   }
+}
+
+function toggleGuide(){
+  var panel = document.getElementById('guide-panel');
+  var icon  = document.getElementById('guide-icon');
+  var open  = panel.classList.toggle('open');
+  icon.textContent = open ? '✕' : '①';
 }
 
 loadLive();
