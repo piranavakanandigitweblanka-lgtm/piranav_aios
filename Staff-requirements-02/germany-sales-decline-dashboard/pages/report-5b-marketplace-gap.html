@@ -143,6 +143,18 @@ footer.site{max-width:1440px;margin:0 auto;padding:20px 32px 36px;border-top:1px
 .badge-conf{background:var(--good-soft);color:var(--good);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;}
 .log-controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
 .log-empty{text-align:center;padding:40px;color:var(--muted);font-size:13px;}
+
+.acc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-bottom:22px;}
+.acc-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;}
+.acc-card .acc-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px;}
+.acc-card .acc-nums{display:flex;gap:16px;align-items:flex-end;}
+.acc-card .acc-listed{font-size:20px;font-weight:700;color:var(--good);}
+.acc-card .acc-missing{font-size:20px;font-weight:700;color:var(--red);}
+.acc-card .acc-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-top:2px;}
+.acc-card .acc-bar{height:5px;border-radius:999px;background:var(--line);margin-top:10px;overflow:hidden;}
+.acc-card .acc-bar-fill{height:100%;background:var(--good);border-radius:999px;transition:width .4s;}
+.acc-tbl-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;}
+.acc-controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
 </style>
 
 </head>
@@ -194,6 +206,7 @@ footer.site{max-width:1440px;margin:0 auto;padding:20px 32px 36px;border-top:1px
   <nav class="tab-nav" role="tablist">
     <button class="tab-btn active" id="tab-btn-1" onclick="showTab(1)" role="tab">Gap Report</button>
     <button class="tab-btn" id="tab-btn-2" onclick="showTab(2)" role="tab">Listing Added Log <span class="tb-count" id="log-count-badge">(0)</span></button>
+    <button class="tab-btn" id="tab-btn-3" onclick="showTab(3)" role="tab">eBay Accounts</button>
   </nav>
 
   <div class="tab-panel active" id="tab-panel-1">
@@ -338,6 +351,52 @@ footer.site{max-width:1440px;margin:0 auto;padding:20px 32px 36px;border-top:1px
 
   </div><!-- /tab-panel-2 -->
 
+  <div class="tab-panel" id="tab-panel-3">
+
+    <div style="font-size:11.5px;color:var(--muted);margin-bottom:14px;">
+      Per-account coverage across all <strong id="acc-total-lbl">—</strong> DE in-stock SKUs. <em>Listed</em> = SKU covered by that account. <em>Missing</em> = not covered.
+    </div>
+
+    <!-- Account summary cards -->
+    <div class="acc-grid" id="acc-cards"></div>
+
+    <!-- SKU table for missing-eBay SKUs with per-account breakdown -->
+    <div class="acc-controls">
+      <div class="search-wrap"><input type="text" id="acc-search" placeholder="Search SKU..." oninput="accSearch()"></div>
+      <select id="acc-filter" onchange="accApply()" style="font-size:12px;padding:7px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);">
+        <option value="missing-ebay">Missing eBay (any account)</option>
+        <option value="all">All DE SKUs</option>
+      </select>
+      <button class="csv-btn" onclick="accExportCSV()">&#8595; Export CSV</button>
+    </div>
+
+    <div class="acc-tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>SKU</th>
+          <th>DE Stock</th>
+          <th>eBay Overall</th>
+          <th>led_sone</th>
+          <th>so_926407</th>
+          <th>electricalsone</th>
+          <th>ledsonede</th>
+          <th>huettenlampen</th>
+          <th>homin_gmbh</th>
+        </tr></thead>
+        <tbody id="acc-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="pager">
+      <div class="pager-info" id="acc-pager-info"></div>
+      <div class="pager-btns">
+        <button id="acc-btn-prev" onclick="accChangePage(-1)">← Prev</button>
+        <button id="acc-btn-next" onclick="accChangePage(1)">Next →</button>
+      </div>
+    </div>
+
+  </div><!-- /tab-panel-3 -->
+
 
 </main>
 
@@ -415,7 +474,7 @@ document.getElementById('filter-bar').addEventListener('click',function(e){
 
   if(!btn) return;
 
-  document.querySelectorAll('.fpill').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('#filter-bar .fpill').forEach(function(b){b.classList.remove('active');});
 
   btn.classList.add('active');
 
@@ -424,6 +483,7 @@ document.getElementById('filter-bar').addEventListener('click',function(e){
   applyFilters();
 
 });
+
 
 
 
@@ -587,6 +647,111 @@ function updateDashboard(s,d){
   document.getElementById('footer-date').textContent=d;
 }
 
+// eBay Accounts tab state
+var ACC_SUMMARY=[];
+var accFiltered=[];
+var accPage=0;
+var ACC_PAGE_SIZE=100;
+var accSearchTerm='';
+var accFilterMode='missing-ebay';
+
+var ACC_COLS=[
+  {key:'e1', label:'led_sone'},
+  {key:'e4', label:'so_926407'},
+  {key:'e22',label:'electricalsone'},
+  {key:'e27',label:'ledsonede'},
+  {key:'e28',label:'huettenlampen'},
+  {key:'e222',label:'homin_gmbh'},
+];
+
+function accSearch(){
+  accSearchTerm=document.getElementById('acc-search').value.toLowerCase().trim();
+  accApply();
+}
+
+function accApply(){
+  accFilterMode=document.getElementById('acc-filter').value;
+  accFiltered=DATA.filter(function(r){
+    var matchSearch=!accSearchTerm||r.s.toLowerCase().indexOf(accSearchTerm)!==-1;
+    var matchFilter=accFilterMode==='missing-ebay'?!r.e:true;
+    return matchSearch&&matchFilter;
+  });
+  accPage=0;
+  accRenderTable();
+}
+
+function accChangePage(dir){
+  accPage+=dir;
+  accRenderTable();
+}
+
+function accRenderCards(){
+  var el=document.getElementById('acc-cards');
+  if(!el||!ACC_SUMMARY.length) return;
+  var total=DATA.length||1;
+  document.getElementById('acc-total-lbl').textContent=total.toLocaleString();
+  el.innerHTML=ACC_SUMMARY.map(function(acc){
+    var pct=Math.round(acc.listed/total*100);
+    return '<div class="acc-card">'
+      +'<div class="acc-name">'+escH(acc.name)+'</div>'
+      +'<div class="acc-nums">'
+        +'<div><div class="acc-listed">'+acc.listed.toLocaleString()+'</div><div class="acc-lbl">Listed</div></div>'
+        +'<div><div class="acc-missing">'+acc.missing.toLocaleString()+'</div><div class="acc-lbl">Missing</div></div>'
+      +'</div>'
+      +'<div class="acc-bar"><div class="acc-bar-fill" style="width:'+pct+'%"></div></div>'
+      +'<div style="font-size:10px;color:var(--muted);margin-top:4px;">'+pct+'% coverage</div>'
+      +'</div>';
+  }).join('');
+}
+
+function accRenderTable(){
+  var total=accFiltered.length;
+  var maxPage=Math.max(0,Math.ceil(total/ACC_PAGE_SIZE)-1);
+  if(accPage>maxPage) accPage=maxPage;
+  if(accPage<0) accPage=0;
+  var start=accPage*ACC_PAGE_SIZE;
+  var end=Math.min(start+ACC_PAGE_SIZE,total);
+  var slice=accFiltered.slice(start,end);
+  var tbody=document.getElementById('acc-tbody');
+  if(!tbody) return;
+  if(!slice.length){
+    tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:28px;color:var(--muted)">No results</td></tr>';
+  } else {
+    tbody.innerHTML=slice.map(function(r){
+      var accCells=ACC_COLS.map(function(c){
+        return '<td>'+(r[c.key]?'<span class="badge-yes">&#10003;</span>':'<span class="badge-no">&#10007;</span>')+'</td>';
+      }).join('');
+      return '<tr>'
+        +'<td><div class="sku-txt">'+escH(r.s)+'</div></td>'
+        +'<td>'+r.st.toLocaleString()+'</td>'
+        +'<td>'+(r.e?'<span class="badge-yes">&#10003; Listed</span>':'<span class="badge-no">&#10007; No</span>')+'</td>'
+        +accCells
+        +'</tr>';
+    }).join('');
+  }
+  document.getElementById('acc-pager-info').textContent='Showing '+(total===0?0:start+1)+'–'+end+' of '+total.toLocaleString()+' SKUs';
+  document.getElementById('acc-btn-prev').disabled=accPage===0;
+  document.getElementById('acc-btn-next').disabled=accPage>=maxPage;
+}
+
+function accRender(){
+  accRenderCards();
+  accApply();
+}
+
+function accExportCSV(){
+  var headers=['SKU','DE Stock','eBay Overall','led_sone','so_926407','electricalsone','ledsonede','huettenlampen','homin_gmbh'];
+  var csvRows=accFiltered.map(function(r){
+    return [r.s,r.st,r.e?'Listed':'No',r.e1?'Listed':'No',r.e4?'Listed':'No',r.e22?'Listed':'No',r.e27?'Listed':'No',r.e28?'Listed':'No',r.e222?'Listed':'No'].join(',');
+  });
+  var csv=headers.join(',')+'\n'+csvRows.join('\n');
+  var blob=new Blob([csv],{type:'text/csv'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='de_ebay_accounts_gap_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
 async function loadLive(){
   var tbody=document.getElementById('tbody');
   tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--muted)">&#9203; Loading live data&hellip;</td></tr>';
@@ -599,6 +764,7 @@ async function loadLive(){
 
     detectTransitions(json.rows);
     DATA=json.rows;
+    ACC_SUMMARY=json.ebayAccounts||[];
     var s=json.summary;
     var d=json.refreshed_at?json.refreshed_at.slice(0,10):'live';
 
@@ -606,6 +772,7 @@ async function loadLive(){
     applyFilters();
     updateLogBadge();
     log_render();
+    accRenderCards();
 
   }catch(err){
     tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--red)">&#9888; Failed to load live data: '+err.message+'</td></tr>';
@@ -620,6 +787,7 @@ function showTab(n){
   document.getElementById('tab-panel-'+n).classList.add('active');
   document.getElementById('tab-btn-'+n).classList.add('active');
   if(n===2) log_render();
+  if(n===3) accRender();
 }
 
 // Listing Added Log
@@ -734,7 +902,7 @@ function log_exportCSV(){
 }
 
 
-// Auto-poll every 30 seconds — silently refresh DATA and re-render
+// Auto-poll every 5 seconds — silently refresh DATA and re-render
 setInterval(async function(){
   try{
     var res=await fetch('../../api/germany/marketplace-gap',{cache:'no-store'});
@@ -743,14 +911,17 @@ setInterval(async function(){
     if(!json.ok||!json.rows) return;
     detectTransitions(json.rows);
     DATA=json.rows;
+    ACC_SUMMARY=json.ebayAccounts||[];
     var s=json.summary;
     var d=json.refreshed_at?json.refreshed_at.slice(0,10):'live';
     updateDashboard(s,d);
     applyFilters();
     updateLogBadge();
     log_render();
+    // if eBay accounts tab is active, refresh it too
+    if(document.getElementById('tab-panel-3').classList.contains('active')) accRender();
   }catch(e){}
-}, 30000);
+}, 5000);
 
 </script>
 
