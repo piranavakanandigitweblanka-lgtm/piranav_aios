@@ -1,0 +1,55 @@
+{% if product.metafields.custom.faq_schema != blank %}
+  <!-- Output the schema for Google/SEO -->
+  {{ product.metafields.custom.faq_schema }}
+
+  <!-- Container where the Accordion UI will be injected -->
+  <div id="custom-faq-ui-container-{{ section.id }}"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Find all JSON-LD scripts on the page
+      const schemaScripts = document.querySelectorAll('script[type="application/ld+json"]');
+      let faqList = null;
+      
+      // Loop through to find the FAQPage schema
+      schemaScripts.forEach(function(script) {
+        try {
+          const json = JSON.parse(script.textContent);
+          if (json['@type'] === 'FAQPage' && json.mainEntity) {
+            faqList = json.mainEntity;
+          }
+        } catch (e) {
+          // Ignore invalid JSON parsing errors
+        }
+      });
+
+      // If FAQ data exists, build the HTML
+      if (faqList && faqList.length > 0) {
+        const container = document.getElementById('custom-faq-ui-container-{{ section.id }}');
+        
+        if(container) {
+          let html = '<div class="product-faq-wrapper" style="margin-top: 2rem;">';
+          html += '<h2 class="h2" style="margin-bottom: 1rem; text-align: center;">Frequently Asked Questions</h2>';
+          
+          faqList.forEach(function(item) {
+            if (item['@type'] === 'Question' && item.acceptedAnswer) {
+              html += `
+                <details style="margin-bottom: 10px; border: 1px solid #e2e2e2; border-radius: 4px; padding: 15px;">
+                  <summary style="font-weight: 600; cursor: pointer; font-size: 1.1em; list-style-position: inside;">
+                    ${item.name}
+                  </summary>
+                  <div style="padding-top: 12px; line-height: 1.5;">
+                    ${item.acceptedAnswer.text}
+                  </div>
+                </details>
+              `;
+            }
+          });
+          
+          html += '</div>';
+          container.innerHTML = html;
+        }
+      }
+    });
+  </script>
+{% endif %}

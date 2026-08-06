@@ -236,7 +236,7 @@
       >
         {{ content_for_layout }}
       </main>
-      {% unless page.handle == 'catalogue' or page.handle == 'led-sone-products-configurator' or template.suffix == 'config-pk' %}
+      {% unless page.handle == 'catalogue' or page.handle == 'led-sone-products-configurator' or template.suffix == 'config-pk' or template.suffix == 'location' %}
         {% section 'order-tracking' %}
       {% endunless %}
       {% unless page.handle == 'led-sone-products-configurator' or template.suffix == 'config-pk' %}

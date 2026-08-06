@@ -1,0 +1,167 @@
+<!-- Promo Banner — Spider & Wall Light -->
+<style>
+  .pl-banner-slide {
+    display: none;
+    padding: 12px 16px;
+    border-left: 4px solid #28a745;
+    border-radius: 4px;
+    animation: pl-fadein 0.5s ease;
+    margin: 16px 0;
+    background-color: #d4edda;
+  }
+  .pl-banner-slide.active { display: block; }
+  .pl-banner-slide p {
+    color: #155724;
+    margin: 0 0 8px 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  .pl-banner-slide mark {
+    background-color: #a8d5b5;
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: inherit;
+  }
+  .pl-lock-msg {
+    color: #155724;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.75;
+  }
+  .pl-code-reveal {
+    display: none;
+    margin-top: 4px;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .pl-code-reveal.visible { display: flex; }
+  .pl-code-label { color: #155724; font-size: 14px; font-weight: 600; }
+  .pl-code {
+    display: inline-block;
+    background-color: #155724;
+    color: #ffffff;
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.15s;
+    user-select: none;
+  }
+  .pl-code:hover { background-color: #1e7e34; transform: scale(1.04); }
+  .pl-code:active { transform: scale(0.97); }
+  .pl-code.copied { background-color: #0d6e27; }
+  .pl-toast {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0d6e27;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .pl-toast.show { opacity: 1; transform: translateY(-2px); }
+  @keyframes pl-fadein {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pl-pop {
+    0%   { transform: scale(0.8); opacity: 0; }
+    60%  { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .pl-code-reveal.pop { animation: pl-pop 0.4s ease forwards; }
+</style>
+
+<div id="pl-banner" style="display: none;">
+  <div class="pl-banner-slide active">
+    <p>
+      🎉 Achetez <mark><strong id="pl-product-label"></strong></mark> et obtenez
+      <mark><strong>10% de réduction</strong></mark> sur votre commande !
+    </p>
+    <div id="pl-lock-msg">
+      <span class="pl-lock-msg">🔒 Indiquez une quantité de 2 ou plus pour débloquer votre code de réduction.</span>
+    </div>
+    <div class="pl-code-reveal" id="pl-code-reveal">
+      <span class="pl-code-label">🔓 Votre code de réduction :</span>
+      <span class="pl-code" id="pl-code"></span>
+      <span class="pl-toast" id="pl-toast">✅ Copié !</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+var CONFIG = {
+  'lumiere-daraignee':  { label: '2 suspensions araignée', code: 'SPIDER10' },
+  'applique-murale':    { label: '2 appliques murales',    code: 'LUMIÈRE10' },
+  'lampes-suspendues':  { label: '2 lampes suspendues',    code: 'PLIGHT10' },
+  'abat-jour':          { label: '2 abat-jour',            code: 'ABAT10' }
+};
+
+  var productCollections = {{ product.collections | json }};
+
+  var matched = null;
+  productCollections.forEach(function (c) {
+    if (CONFIG[c.handle]) matched = CONFIG[c.handle];
+  });
+
+  var banner = document.getElementById('pl-banner');
+  if (!banner || !matched) return;
+
+  // Populate dynamic text & code
+  document.getElementById('pl-product-label').textContent = matched.label;
+  var codeEl = document.getElementById('pl-code');
+  codeEl.textContent = matched.code;
+
+  banner.style.display = 'block';
+
+  var lockMsg    = document.getElementById('pl-lock-msg');
+  var codeReveal = document.getElementById('pl-code-reveal');
+  var toast      = document.getElementById('pl-toast');
+
+  // Click to copy
+  codeEl.addEventListener('click', function () {
+    navigator.clipboard.writeText(matched.code).then(function () {
+      codeEl.textContent = '✅ ' + matched.code;
+      codeEl.classList.add('copied');
+      toast.classList.add('show');
+      setTimeout(function () {
+        codeEl.textContent = matched.code;
+        codeEl.classList.remove('copied');
+        toast.classList.remove('show');
+      }, 2000);
+    });
+  });
+
+  // Quantity watch
+  function checkQuantity() {
+    var qtyInput = document.querySelector('input[name="quantity"]');
+    var qty = qtyInput ? parseInt(qtyInput.value, 10) : 1;
+    if (qty >= 2) {
+      lockMsg.style.display = 'none';
+      if (!codeReveal.classList.contains('visible')) {
+        codeReveal.classList.add('visible');
+        setTimeout(function () { codeReveal.classList.add('pop'); }, 10);
+      }
+    } else {
+      lockMsg.style.display = 'block';
+      codeReveal.classList.remove('visible', 'pop');
+    }
+  }
+
+  checkQuantity();
+
+  document.addEventListener('change', function (e) {
+    if (e.target && e.target.name === 'quantity') checkQuantity();
+  });
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-quantity-plus], [data-quantity-minus], .quantity__button, [aria-label="Increase quantity"], [aria-label="Decrease quantity"]');
+    if (btn) setTimeout(checkQuantity, 100);
+  });
+})();
+</script>

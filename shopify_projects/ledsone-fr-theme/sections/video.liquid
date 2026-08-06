@@ -1,0 +1,776 @@
+{{ 'video.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  assign st = section.settings
+  assign container = st.container
+  assign t_heading = st.thumbnail_heading
+  assign t_subheading = st.thumbnail_subheading
+  assign color_scheme = st.color_scheme
+  assign t_desc = st.thumbnail_desc
+  assign t_button = st.thumbnail_button
+  assign t_link = st.thumbnail_link
+  assign button_type = st.button_type
+  assign thumbnail = st.image_thumbnail
+  assign video_url = st.video_url
+  assign video_local = st.video_local
+  assign text_position = st.text_position
+  assign text_content = st.text_content
+  assign aspect_ratio = st.aspect_ratio
+  assign custom_ratio = st.custom_ratio
+  assign video_type = st.video_type
+  assign video_height = st.video_height
+  assign video_full_screen = st.video_full_screen
+  assign desktop_height = st.desktop_height
+  assign mobile_height = st.mobile_height
+  assign enabled_animations = settings.animations_enabled
+  assign h_font_size = st.h_font_size
+  assign h_font_weight = st.h_font_weight
+  assign h_spacing = st.h_spacing
+  assign sub_font_size = st.sub_font_size
+  assign sub_font_weight = st.sub_font_weight
+  assign sub_spacing = st.sub_spacing
+  assign des_font_size = st.des_font_size
+  assign des_font_weight = st.des_font_weight
+  assign des_spacing = st.des_spacing
+
+  assign video_id = ''
+  if video_url.type == 'youtube'
+    assign video_id = video_url | replace: 'https://www.youtube.com/watch?v=', ''
+  elsif video_url.type == 'vimeo'
+    assign video_id = video_url | replace: 'https://vimeo.com/', ''
+  endif
+  assign reset_spacing = ''
+  if st.reset_spacing
+    assign reset_spacing = ' remove_spacing'
+  endif
+
+  assign spt_tablet = ''
+  if st.padding_top > 50
+    assign spt_tablet = ' spt-tablet'
+  endif
+  assign spt_mobile = ''
+  if st.padding_top > 30
+    assign spt_mobile = ' spt-mobile'
+  endif
+  assign spb_tablet = ''
+  if st.padding_bottom > 50
+    assign spb_tablet = ' spb-tablet'
+  endif
+  assign spb_mobile = ''
+  if st.padding_bottom > 30
+    assign spb_mobile = ' spb-mobile'
+  endif
+
+  assign container-box = ''
+  if st.content_box == 'content_in_container'
+    assign container-box = 'container'
+  elsif st.content_box == 'content_in_container_fluid'
+    assign container-box = 'container-fluid'
+  else
+    assign container-box = 'full-width-content'
+  endif
+-%}
+{%- capture style -%}
+  --section-padding-top: {{ st.padding_top }}px; 
+  --section-padding-bottom: {{ st.padding_bottom }}px;
+{%- endcapture -%}
+<section
+  class="bls__section bls__video {% if settings.image_style != blank and section.settings.container != "full-width" %} radius {% endif %} {{ reset_spacing }} color-{{ color_scheme }} gradient {{ spt_tablet }}{{ spb_tablet }}{{ spt_mobile }}{{ spb_mobile }}"
+  style="{{ style | strip | strip_newlines }}"
+>
+  <div class="{{ container }} section-full">
+    <div class="bls__video-content {% if enabled_animations %}scroll-trigger animate--slide-in{% endif %} overflow-hidden relative {% if video_type == 'popup' %}bls__video-popup {% endif %}">
+      {%- if video_type == 'popup' -%}
+        <div class="bls__video-thumb {% if st.image_behavior != 'none' %} animate--{{ st.image_behavior }}{% endif %}">
+          {%- if thumbnail == blank -%}
+            {%- render 'responsive-image', type: 'lifestyle', cls: 'bls__placeholder' -%}
+          {%- else -%}
+            {% render 'responsive-image', image: thumbnail, aspect_ratio: aspect_ratio, custom_ratio: custom_ratio %}
+          {%- endif -%}
+        </div>
+      {%- else -%}
+        <div class="bls__video-thumb">
+          {%- if video_local == blank -%}
+            <div class="bls__thmbnail-video fs-0">
+              {%- if thumbnail == blank -%}
+                {%- render 'responsive-image', type: 'lifestyle', cls: 'bls__placeholder' -%}
+              {%- else -%}
+                {% render 'responsive-image',
+                  image: thumbnail,
+                  aspect_ratio: aspect_ratio,
+                  custom_ratio: custom_ratio
+                %}
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+          {%- if video_local == blank -%}
+            <div
+              class="video-container {% if video_height == 'height_custom' %}custom-height{% endif %} {% if video_full_screen %}video-full-screen{% endif %}"
+              style="--video-mobile-height: {{ mobile_height }}px; --video-desktop-height: {{ desktop_height }}px"
+            >
+              <div class="video-foreground">
+                {%- if video_url.type == 'youtube' -%}
+                  <video-youtube data-id="{{ section.id }}">
+                    <iframe
+                      src="https://www.youtube.com/embed/{{ video_id }}?controls=0&autoplay=1&mute=1&playsinline=1&loop=1&playlist={{ video_id }}"
+                    ></iframe>
+                  </video-youtube>
+                {%- elsif video_url.type == 'vimeo' -%}
+                  <iframe
+                    src="https://player.vimeo.com/video/{{ video_id }}?controls=0background=1&autoplay=1&muted=1&loop=1"
+                    frameborder="0"
+                    allowfullscreen
+                  ></iframe>
+                {%- endif -%}
+              </div>
+            </div>
+          {%- else -%}
+            <div
+              class="{% if video_height == 'height_custom' %}local-video custom-height{% endif %} {% if video_full_screen %}video-full-screen{% endif %}"
+              style="--video-mobile-height: {{ mobile_height }}px; --video-desktop-height: {{ desktop_height }}px"
+            >
+              {{
+                video_local
+                | video_tag: loop: 'loop', muted: true, playsinline: true, autoplay: true, controls: true
+              }}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+      {%- if t_heading != blank or t_subheading != blank -%}
+        <div class="bls__video-info  {{ text_position }} {{ container-box }}">
+          <div class="bls__video-info-inner {{ text_content }} py-30">
+            {%- if video_type == 'popup' -%}
+              {%- if video_local == blank -%}
+                {%- if video_url.type == 'youtube' -%}
+                  <a
+                    class="btn-play {% if enabled_animations %}scroll-trigger animate--slide-in{% endif %}"
+                    data-fslightbox="youtube-videos-{{ section.id }}"
+                    href="{{ video_url }}"
+                  >
+                    <svg class="w-20 h-20" viewBox="0 0 18 18" fill="currentColor">
+                      <path d="M15.562 8.1L3.87.225c-.818-.562-1.87 0-1.87.9v15.75c0 .9 1.052 1.462 1.87.9L15.563 9.9c.584-.45.584-1.35 0-1.8z" fill="currentColor"></path>
+                    </svg>
+                  </a>
+                {%- elsif video_url.type == 'vimeo' -%}
+                  <a
+                    data-fslightbox="custom-vimeo-{{ section.id }}"
+                    data-class="block"
+                    href="#vimeo-{{ section.id }}"
+                    class="btn-play {% if enabled_animations %}scroll-trigger animate--slide-in{% endif %}"
+                  >
+                    <svg class="w-20 h-20" viewBox="0 0 18 18" fill="currentColor">
+                      <path d="M15.562 8.1L3.87.225c-.818-.562-1.87 0-1.87.9v15.75c0 .9 1.052 1.462 1.87.9L15.563 9.9c.584-.45.584-1.35 0-1.8z" fill="currentColor"></path>
+                    </svg>
+                  </a>
+                  <iframe
+                    src="https://player.vimeo.com/video/{{ video_id }}?autoplay=1"
+                    width="1920"
+                    height="1080"
+                    frameborder="0"
+                    allow="autoplay; fullscreen"
+                    allowfullscreen
+                    id="vimeo-{{ section.id }}"
+                    class="d-none"
+                  ></iframe>
+                {%- endif -%}
+              {%- else -%}
+                <a
+                  class="btn-play {% if enabled_animations %}scroll-trigger animate--slide-in{% endif %}"
+                  data-fslightbox="lightbox"
+                  href="{{ video_local.sources[1].url }}"
+                >
+                  <svg class="w-20 h-20" viewBox="0 0 18 18" fill="currentColor">
+                    <path d="M15.562 8.1L3.87.225c-.818-.562-1.87 0-1.87.9v15.75c0 .9 1.052 1.462 1.87.9L15.563 9.9c.584-.45.584-1.35 0-1.8z" fill="currentColor"></path>
+                  </svg>
+                </a>
+              {%- endif -%}
+            {%- endif -%}
+            {%- if t_subheading != blank -%}
+              <h5
+                class="bls__section-subtext heading-weight {% if enabled_animations %}scroll-trigger animate--slide-in{% endif %} {% if sub_spacing > 30 %}spacing-big{% endif %}"
+                style="{% if st.sub_font_weight != 'default' %}--sub-font-weight: {{ sub_font_weight }};{% endif %}--sub-font-size: {{ sub_font_size }}px;--sub-spacing: {{ sub_spacing }}px;"
+              >
+                {{ t_subheading }}
+              </h5>
+            {%- endif -%}
+            {%- if t_heading != blank -%}
+              <h3
+                class="bls__section-heading {% if enabled_animations %}scroll-trigger animate--slide-in{% endif %} {% if h_font_size > 40 %}size-big{% endif %} {% if h_spacing > 30 %}spacing-big{% endif %}"
+                style="{% if st.h_font_weight != 'default' %} --custom-heading-font-weight: {{ h_font_weight }};{% endif %}--heading-font-size: {{ h_font_size }}px;--heading-spacing: {{ h_spacing }}px;"
+              >
+                {{ t_heading }}
+              </h3>
+            {%- endif -%}
+            {%- if t_desc != blank -%}
+              <div
+                class="bls__section-desc {% if enabled_animations %}scroll-trigger animate--slide-in{% endif %} {% if des_spacing > 30 %}spacing-big{% endif %}"
+                style="{% if st.des_font_weight != 'default' %} --desc-font-weight: {{ des_font_weight }};{% endif %}--desc-font-size: {{ des_font_size }}px;--desc-spacing: {{ des_spacing }}px;"
+              >
+                {{ t_desc }}
+              </div>
+            {%- endif -%}
+            {%- if t_button != blank -%}
+              <div class="bls__section-link {% if enabled_animations %}scroll-trigger animate--slide-in{% endif %}">
+                <a href="{{ t_link | default: "#" }}" class="whitespace-nowrap btn-{{ button_type }}">
+                  {{ t_button }}
+                </a>
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Video",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "General"
+    },
+    {
+      "type": "select",
+      "id": "container",
+      "label": "Layout",
+      "default": "container",
+      "options": [
+        {
+          "value": "container",
+          "label": "Default"
+        },
+        {
+          "value": "container-fluid",
+          "label": "Fluid container"
+        },
+        {
+          "label": "Stretch width",
+          "value": "strecth-width"
+        },
+        {
+          "value": "full-width",
+          "label": "Full width"
+        }
+      ]
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color schema"
+    },
+    {
+      "type": "select",
+      "id": "video_type",
+      "label": "Video show as",
+      "default": "popup",
+      "options": [
+        {
+          "value": "popup",
+          "label": "Popup"
+        },
+        {
+          "value": "background",
+          "label": "Background"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Video"
+    },
+    {
+      "id": "video_url",
+      "type": "video_url",
+      "label": "Video url",
+      "accept": ["youtube", "vimeo"],
+      "default": "https://www.youtube.com/watch?v=_9VUPq3SxOc"
+    },
+    {
+      "id": "video_local",
+      "type": "video",
+      "label": "Upload local video",
+      "info": "If you upload both video url and local video, the local video will be used."
+    },
+    {
+      "type": "header",
+      "content": "Popup video setting",
+      "info": "Only works when you selected Popup in the Video show as setting and use YouTube or Vimeo videos"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_thumbnail",
+      "label": "Thumbnail image",
+      "info": "1920 x 700px recommended"
+    },
+    {
+      "type": "select",
+      "id": "image_behavior",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "ambient",
+          "label": "Ambient movement"
+        },
+        {
+          "value": "fixed",
+          "label": "Fixed background position"
+        },
+        {
+          "value": "zoom-in",
+          "label": "Zoom in on scroll"
+        }
+      ],
+      "default": "none",
+      "label": "Image behavior"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Aspect ratio",
+      "default": "1/1",
+      "options": [
+        {
+          "value": "original",
+          "label": "Original aspect ratio"
+        },
+        {
+          "value": "16/9",
+          "label": "16:9"
+        },
+        {
+          "value": "3/4",
+          "label": "3:4"
+        },
+        {
+          "value": "4/3",
+          "label": "4:3"
+        },
+        {
+          "value": "1/1",
+          "label": "1:1"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "custom_ratio",
+      "label": "Custom ratio",
+      "info": "Custom ratio only works If you select Custom in the Aspect ratio setting.",
+      "default": "21:9"
+    },
+    {
+      "type": "header",
+      "content": "Background video setting",
+      "info": "Only works when you selected Background in the Video show as setting"
+    },
+    {
+      "type": "select",
+      "id": "video_height",
+      "label": "Height",
+      "default": "height_default",
+      "options": [
+        {
+          "value": "height_default",
+          "label": "Original"
+        },
+        {
+          "value": "height_custom",
+          "label": "Custom"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "desktop_height",
+      "min": 400,
+      "max": 900,
+      "step": 5,
+      "unit": "px",
+      "label": "Desktop height",
+      "default": 650,
+      "info": "Only works when selected custom height"
+    },
+    {
+      "type": "range",
+      "id": "mobile_height",
+      "min": 200,
+      "max": 600,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile height",
+      "default": 300,
+      "info": "Only works when selected custom height"
+    },
+    {
+      "type": "checkbox",
+      "id": "video_full_screen",
+      "label": "Full screen (desktop)",
+      "default": false,
+      "info": "Only works when selected custom height"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "thumbnail_subheading",
+      "label": "Subheading",
+      "default": "SALE UP TO 50% OFF"
+    },
+    {
+      "type": "text",
+      "id": "thumbnail_heading",
+      "label": "Heading",
+      "default": "Made for Your"
+    },
+    {
+      "type": "richtext",
+      "id": "thumbnail_desc",
+      "label": "Description",
+      "default": "<p>Explore our latest considered collection for the new season.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "thumbnail_button",
+      "label": "Button label",
+      "default": "Shop now"
+    },
+    {
+      "type": "url",
+      "id": "thumbnail_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "button_type",
+      "label": "Button type",
+      "default": "primary",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "link",
+          "label": "Link"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Content setting"
+    },
+    {
+      "type": "select",
+      "id": "content_box",
+      "label": "Content box",
+      "default": "content_in_container",
+      "options": [
+        {
+          "label": "Content in container",
+          "value": "content_in_container"
+        },
+        {
+          "label": "Content in container fluid",
+          "value": "content_in_container_fluid"
+        },
+        {
+          "label": "Content full width",
+          "value": "content_in_container_fullwidth"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Content position",
+      "default": "position-cc",
+      "options": [
+        {
+          "value": "position-lt",
+          "label": "Left top"
+        },
+        {
+          "value": "position-lc",
+          "label": "Left center"
+        },
+        {
+          "value": "position-lb",
+          "label": "Left bottom"
+        },
+        {
+          "value": "position-rt",
+          "label": "Right top"
+        },
+        {
+          "value": "position-rc",
+          "label": "Right center"
+        },
+        {
+          "value": "position-rb",
+          "label": "Right bottom"
+        },
+        {
+          "value": "position-ct",
+          "label": "Center top"
+        },
+        {
+          "value": "position-cc",
+          "label": "Center center"
+        },
+        {
+          "value": "position-cb",
+          "label": "Center bottom"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_content",
+      "label": "Content alignment",
+      "default": "text-center",
+      "options": [
+        {
+          "value": "text-left",
+          "label": "Left"
+        },
+        {
+          "value": "text-center",
+          "label": "Center"
+        },
+        {
+          "value": "text-right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "paragraph",
+      "content": "== Heading =="
+    },
+    {
+      "type": "range",
+      "id": "h_font_size",
+      "min": 12,
+      "max": 110,
+      "step": 1,
+      "label": "Font size",
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "select",
+      "id": "h_font_weight",
+      "label": "Font weight",
+      "default": "default",
+      "options": [
+        {
+          "label": "Default",
+          "value": "default"
+        },
+        {
+          "label": "400",
+          "value": "400"
+        },
+        {
+          "label": "500",
+          "value": "500"
+        },
+        {
+          "label": "600",
+          "value": "600"
+        },
+        {
+          "label": "700",
+          "value": "700"
+        },
+        {
+          "label": "800",
+          "value": "800"
+        },
+        {
+          "label": "900",
+          "value": "900"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "h_spacing",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "label": "Spacing",
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "paragraph",
+      "content": "== Subheading =="
+    },
+    {
+      "type": "range",
+      "id": "sub_font_size",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "label": "Font size",
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "sub_font_weight",
+      "label": "Font weight",
+      "default": "default",
+      "options": [
+        {
+          "label": "Default",
+          "value": "default"
+        },
+        {
+          "label": "400",
+          "value": "400"
+        },
+        {
+          "label": "500",
+          "value": "500"
+        },
+        {
+          "label": "600",
+          "value": "600"
+        },
+        {
+          "label": "700",
+          "value": "700"
+        },
+        {
+          "label": "800",
+          "value": "800"
+        },
+        {
+          "label": "900",
+          "value": "900"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "sub_spacing",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "label": "Spacing",
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "paragraph",
+      "content": "== Description =="
+    },
+    {
+      "type": "range",
+      "id": "des_font_size",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "label": "Font size",
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "des_font_weight",
+      "label": "Font weight",
+      "default": "default",
+      "options": [
+        {
+          "label": "Default",
+          "value": "default"
+        },
+        {
+          "label": "400",
+          "value": "400"
+        },
+        {
+          "label": "500",
+          "value": "500"
+        },
+        {
+          "label": "600",
+          "value": "600"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "des_spacing",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "label": "Spacing",
+      "unit": "px",
+      "default": 45
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "default": 0,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "default": 0,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "reset_spacing",
+      "label": "Remove default space between sections",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video"
+    }
+  ]
+}
+{% endschema %}

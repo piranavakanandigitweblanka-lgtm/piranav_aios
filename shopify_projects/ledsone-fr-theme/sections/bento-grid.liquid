@@ -1,0 +1,501 @@
+{% comment %}
+  Bento Grid Features Section
+  Add to: sections/bento-grid.liquid
+  Usage: Add via Shopify Theme Editor > Add Section
+{% endcomment %}
+
+<section class="bento-grid-section" id="bento-grid-{{ section.id }}">
+  <div class="bento-wrapper">
+    <div class="bento-grid">
+
+      {% for block in section.blocks %}
+        {% case block.type %}
+
+          {% when 'feature_card' %}
+            <div class="bento-card bento-card--{{ block.settings.size }} bento-card--{{ block.settings.style }}"
+                 {{ block.shopify_attributes }}>
+              {% if block.settings.image %}
+                <div class="bento-card__image">
+                  <img
+                    src="{{ block.settings.image | image_url: width: 800 }}"
+                    alt="{{ block.settings.image.alt | escape }}"
+                    width="{{ block.settings.image.width }}"
+                    height="{{ block.settings.image.height }}"
+                    loading="lazy"
+                  >
+                </div>
+              {% endif %}
+              <div class="bento-card__content">
+                {% if block.settings.tag != blank %}
+                  <span class="bento-card__tag">{{ block.settings.tag }}</span>
+                {% endif %}
+                {% if block.settings.title != blank %}
+                  <h3 class="bento-card__title">{{ block.settings.title }}</h3>
+                {% endif %}
+                {% if block.settings.description != blank %}
+                  <p class="bento-card__desc">{{ block.settings.description }}</p>
+                {% endif %}
+                {% if block.settings.badge_1 != blank or block.settings.badge_2 != blank %}
+                  <div class="bento-card__badges">
+                    {% if block.settings.badge_1 != blank %}
+                      <span class="bento-badge">{{ block.settings.badge_1 }}</span>
+                    {% endif %}
+                    {% if block.settings.badge_2 != blank %}
+                      <span class="bento-badge">{{ block.settings.badge_2 }}</span>
+                    {% endif %}
+                  </div>
+                {% endif %}
+              </div>
+              {% if block.settings.link != blank %}
+                <a href="{{ block.settings.link }}" class="bento-card__link" aria-label="{{ block.settings.title }}">
+                  <span class="bento-card__arrow">&#8250;</span>
+                </a>
+              {% endif %}
+            </div>
+
+        {% endcase %}
+      {% endfor %}
+
+    </div>
+  </div>
+</section>
+
+<style>
+  #bento-grid-{{ section.id }} {
+    --bento-gap: {{ section.settings.gap }}px;
+    --bento-radius: {{ section.settings.border_radius }}px;
+    --bento-card-bg: {{ section.settings.card_bg }};
+    --bento-text-color: {{ section.settings.text_color }};
+    --bento-accent-color: {{ section.settings.accent_color }};
+    --bento-badge-bg: {{ section.settings.badge_bg }};
+    --bento-badge-text: {{ section.settings.badge_text_color }};
+    padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+    background-color: {{ section.settings.section_bg }};
+  }
+
+  .bento-wrapper {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: minmax(180px, auto);
+    gap: var(--bento-gap);
+  }
+
+  .bento-card {
+    position: relative;
+    background: var(--bento-card-bg);
+    border-radius: var(--bento-radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .bento-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+
+  /* Size variants */
+  .bento-card--small  { grid-column: span 1; grid-row: span 1; }
+  .bento-card--medium { grid-column: span 1; grid-row: span 2; }
+  .bento-card--wide   { grid-column: span 2; grid-row: span 1; }
+  .bento-card--large  { grid-column: span 2; grid-row: span 2; }
+
+  /* Style variants */
+  .bento-card--text-only .bento-card__content {
+    justify-content: center;
+    padding: 28px 24px;
+  }
+
+  .bento-card--image-bottom .bento-card__image {
+    order: 2;
+    margin-top: auto;
+  }
+
+  .bento-card--image-bg {
+    color: #fff;
+  }
+
+  .bento-card--image-bg .bento-card__image {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .bento-card--image-bg .bento-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .bento-card--image-bg .bento-card__content {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Image */
+  .bento-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .bento-card--small .bento-card__image,
+  .bento-card--wide .bento-card__image {
+    max-height: 180px;
+  }
+
+  .bento-card--medium .bento-card__image,
+  .bento-card--large .bento-card__image {
+    flex: 1;
+  }
+
+  /* Content */
+  .bento-card__content {
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: var(--bento-text-color);
+  }
+
+  .bento-card__tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--bento-accent-color);
+    margin-bottom: 2px;
+  }
+
+  .bento-card__title {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin: 0;
+    color: var(--bento-text-color);
+  }
+
+  .bento-card--text-only .bento-card__title {
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .bento-card__desc {
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
+    opacity: 0.7;
+    color: var(--bento-text-color);
+  }
+
+  /* Badges */
+  .bento-card__badges {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .bento-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bento-badge-bg);
+    color: var(--bento-badge-text);
+    border-radius: 50px;
+    padding: 6px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    width: fit-content;
+  }
+
+  /* Arrow link */
+  .bento-card__link {
+    position: absolute;
+    bottom: 14px;
+    right: 16px;
+    text-decoration: none;
+  }
+
+  .bento-card__arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.07);
+    color: var(--bento-text-color);
+    font-size: 18px;
+    transition: background 0.15s;
+  }
+
+  .bento-card__link:hover .bento-card__arrow {
+    background: rgba(0,0,0,0.13);
+  }
+
+  /* Responsive */
+  @media screen and (max-width: 960px) {
+    .bento-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .bento-card--large { grid-column: span 2; }
+    .bento-card--wide  { grid-column: span 2; }
+  }
+
+  @media screen and (max-width: 600px) {
+    .bento-grid {
+      grid-template-columns: 1fr;
+    }
+    .bento-card--small,
+    .bento-card--medium,
+    .bento-card--wide,
+    .bento-card--large {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Bento Grid",
+  "tag": "section",
+  "class": "bento-grid-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width (px)",
+      "min": 800,
+      "max": 1600,
+      "step": 20,
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Grid gap (px)",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Card border radius (px)",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent / tag color",
+      "default": "#0ea5e9"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Badge background",
+      "default": "#ccf2e4"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Badge text color",
+      "default": "#0a7a50"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature_card",
+      "name": "Feature Card",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Card size"
+        },
+        {
+          "type": "select",
+          "id": "size",
+          "label": "Size",
+          "options": [
+            { "value": "small",  "label": "Small (1×1)" },
+            { "value": "medium", "label": "Medium tall (1×2)" },
+            { "value": "wide",   "label": "Wide (2×1)" },
+            { "value": "large",  "label": "Large (2×2)" }
+          ],
+          "default": "small"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Card style",
+          "options": [
+            { "value": "default",     "label": "Default (image top)" },
+            { "value": "text-only",   "label": "Text only" },
+            { "value": "image-bottom","label": "Image bottom" },
+            { "value": "image-bg",    "label": "Full image background" }
+          ],
+          "default": "default"
+        },
+        {
+          "type": "header",
+          "content": "Content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Card image"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Tag / eyebrow text",
+          "placeholder": "e.g. New"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "placeholder": "e.g. 4K/60fps HDR True Vertical Shooting"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description (optional)"
+        },
+        {
+          "type": "text",
+          "id": "badge_1",
+          "label": "Badge 1 (optional)",
+          "placeholder": "e.g. 34-min"
+        },
+        {
+          "type": "text",
+          "id": "badge_2",
+          "label": "Badge 2 (optional)",
+          "placeholder": "e.g. 45-min"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Card link (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bento Grid",
+      "blocks": [
+        {
+          "type": "feature_card",
+          "settings": {
+            "size": "small",
+            "style": "text-only",
+            "title": "Under 249 g"
+          }
+        },
+        {
+          "type": "feature_card",
+          "settings": {
+            "size": "medium",
+            "style": "default",
+            "title": "4K/60fps HDR True Vertical Shooting"
+          }
+        },
+        {
+          "type": "feature_card",
+          "settings": {
+            "size": "small",
+            "style": "default",
+            "title": "Omnidirectional Obstacle Sensing"
+          }
+        },
+        {
+          "type": "feature_card",
+          "settings": {
+            "size": "small",
+            "style": "text-only",
+            "title": "Extended Battery Life",
+            "badge_1": "34-min",
+            "badge_2": "45-min"
+          }
+        },
+        {
+          "type": "feature_card",
+          "settings": {
+            "size": "small",
+            "style": "default",
+            "title": "20km FHD Video Transmission"
+          }
+        },
+        {
+          "type": "feature_card",
+          "settings": {
+            "size": "small",
+            "style": "image-bg",
+            "title": "ActiveTrack 360°"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,427 @@
+{{ 'product.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign st = section.settings
+  assign container = st.container
+  assign heading = st.heading
+  assign text_align = st.text_alignment
+  assign items_per_page = st.items_per_page
+  assign columns = st.columns_desktop
+  assign bg_color = st.background_color
+  assign padding_top = st.padding_top
+  assign padding_bottom = st.padding_bottom
+  assign enabled_animations = settings.animations_enabled
+  assign currency_code = cart.currency.iso_code
+
+  assign menu = nil
+  if page.metafields.custom.filter_menu != blank
+    assign menu = linklists[page.metafields.custom.filter_menu.value]
+  endif
+  if menu == nil or menu == blank
+    assign menu = linklists[st.menu]
+  endif
+
+  assign has_bg = ''
+  if bg_color != blank
+    assign has_bg = ' has-bg'
+  endif
+-%}
+
+{%- capture style -%}
+  {%- if bg_color != blank -%}--section-bg-color: {{ bg_color }};{%- endif -%}
+  --section-padding-top: {{ padding_top }}px;
+  --section-padding-bottom: {{ padding_bottom }}px;
+{%- endcapture -%}
+
+{%- if menu != blank and menu.links.size > 0 -%}
+<section
+  class="bls__section bls__menu-filter-products{{ has_bg }}"
+  style="{{ style | strip | strip_newlines }}"
+  data-section-id="{{ section.id }}"
+>
+  <div class="{{ container }}">
+
+    {%- if heading != blank -%}
+      <div class="bls__section-header {{ text_align }} {% if enabled_animations %}scroll-trigger animate--slide-in{% endif %}">
+        <h2 class="bls__section-heading mb-5">{{ heading }}</h2>
+      </div>
+    {%- endif -%}
+
+    <!-- Tab buttons -->
+    <div class="mfp-tabs" role="tablist">
+      {%- for link in menu.links -%}
+        {%- assign col_handle = link.url | split: '/collections/' | last | split: '?' | first | split: '#' | first -%}
+        <button
+          class="mfp-tab-btn{% if forloop.first %} active{% endif %}"
+          role="tab"
+          aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+          data-collection="{{ col_handle }}"
+          data-collection-url="/collections/{{ col_handle }}"
+        >
+          {{ link.title }}
+        </button>
+      {%- endfor -%}
+    </div>
+
+    <!-- Loading spinner -->
+    <div class="mfp-loading" id="mfp-loading-{{ section.id }}" hidden>
+      <span class="mfp-spinner"></span>
+    </div>
+
+    <!-- Product grid -->
+    <div
+      class="mfp-grid"
+      id="mfp-grid-{{ section.id }}"
+      style="--mfp-cols: {{ columns }}"
+    ></div>
+
+    <!-- View all -->
+    <div class="mfp-viewall-wrap text-center mt-30" id="mfp-viewall-{{ section.id }}" hidden>
+      <a class="button button--secondary mfp-viewall-link" href="#">{{ st.view_all_text | default: 'View all' }}</a>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .bls__menu-filter-products .mfp-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+  .bls__menu-filter-products .mfp-tab-btn {
+    padding: 8px 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    line-height: 1.4;
+  }
+  .bls__menu-filter-products .mfp-tab-btn:hover,
+  .bls__menu-filter-products .mfp-tab-btn.active {
+    background: #111;
+    color: #fff;
+    border-color: #111;
+  }
+  .bls__menu-filter-products .mfp-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--mfp-cols, 4), 1fr);
+    gap: 24px;
+    min-height: 80px;
+    transition: opacity 0.2s;
+  }
+  @media (max-width: 1024px) {
+    .bls__menu-filter-products .mfp-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .bls__menu-filter-products .mfp-grid { grid-template-columns: repeat(2, 1fr); }
+    .bls__menu-filter-products .mfp-tab-btn { font-size: 13px; padding: 6px 14px; }
+  }
+  @media (max-width: 480px) {
+    .bls__menu-filter-products .mfp-grid { gap: 12px; }
+  }
+  .bls__menu-filter-products .mfp-loading {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+  }
+  .bls__menu-filter-products .mfp-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid #eee;
+    border-top-color: #111;
+    border-radius: 50%;
+    animation: mfp-spin 0.7s linear infinite;
+    display: inline-block;
+  }
+  @keyframes mfp-spin { to { transform: rotate(360deg); } }
+  .bls__menu-filter-products .mfp-product-card { display: block; }
+  .bls__menu-filter-products .mfp-product-img {
+    position: relative;
+    overflow: hidden;
+  }
+  .bls__menu-filter-products .mfp-product-img img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+  .bls__menu-filter-products .mfp-product-img img:hover { transform: scale(1.04); }
+  .bls__menu-filter-products .mfp-product-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 11px;
+    padding: 3px 8px;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 2px;
+  }
+  .bls__menu-filter-products .mfp-badge-sale { background: #c00; }
+  .bls__menu-filter-products .mfp-badge-sold { background: #111; }
+  .bls__menu-filter-products .mfp-product-info { padding: 12px 4px 0; }
+  .bls__menu-filter-products .mfp-product-title {
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0 0 6px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .bls__menu-filter-products .mfp-product-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .bls__menu-filter-products .mfp-product-title a:hover { text-decoration: underline; }
+  .bls__menu-filter-products .mfp-price { font-size: 14px; font-weight: 600; }
+  .bls__menu-filter-products .mfp-price-compare {
+    font-size: 13px;
+    color: #999;
+    text-decoration: line-through;
+    margin-right: 6px;
+    font-weight: 400;
+  }
+  .bls__menu-filter-products .mfp-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 0;
+    color: #666;
+    font-size: 14px;
+  }
+  .bls__menu-filter-products .mfp-viewall-wrap { padding-top: 10px; }
+</style>
+
+<script>
+(function () {
+  var sid       = '{{ section.id }}';
+  var limit     = {{ items_per_page }};
+  var currency  = '{{ currency_code }}';
+
+  var root      = document.querySelector('[data-section-id="' + sid + '"]');
+  if (!root) return;
+
+  var grid      = root.querySelector('#mfp-grid-' + sid);
+  var loader    = root.querySelector('#mfp-loading-' + sid);
+  var vaWrap    = root.querySelector('#mfp-viewall-' + sid);
+  var vaLink    = root.querySelector('.mfp-viewall-link');
+  var tabs      = root.querySelectorAll('.mfp-tab-btn');
+  var activeHandle = null;
+
+  function formatMoney(cents) {
+    try {
+      return (cents / 100).toLocaleString('en-GB', { style: 'currency', currency: currency });
+    } catch (e) {
+      return '£' + (cents / 100).toFixed(2);
+    }
+  }
+
+  function setLoading(on) {
+    loader.hidden = !on;
+    grid.style.opacity = on ? '0.3' : '1';
+  }
+
+  function buildCard(p) {
+    var imgHtml = p.featured_image
+      ? '<img src="' + p.featured_image.replace(/\.(jpg|jpeg|png|gif|webp)/, '_400x400.$1') + '" alt="' + (p.title || '').replace(/"/g, '&quot;') + '" loading="lazy" width="400" height="400">'
+      : '<div style="width:100%;aspect-ratio:1/1;background:#f2f2f2;"></div>';
+
+    var isSale    = p.compare_at_price_min && p.compare_at_price_min > p.price_min;
+    var isSoldOut = !p.available;
+    var badge     = isSoldOut
+      ? '<span class="mfp-product-badge mfp-badge-sold">Sold Out</span>'
+      : (isSale ? '<span class="mfp-product-badge mfp-badge-sale">Sale</span>' : '');
+
+    var priceHtml = (isSale ? '<span class="mfp-price-compare">' + formatMoney(p.compare_at_price_min) + '</span>' : '')
+      + '<span class="mfp-price">' + formatMoney(p.price_min) + '</span>';
+
+    return '<div class="mfp-product-card">'
+      + '<div class="mfp-product-img">' + badge + '<a href="' + p.url + '">' + imgHtml + '</a></div>'
+      + '<div class="mfp-product-info">'
+      + '<h3 class="mfp-product-title"><a href="' + p.url + '">' + p.title + '</a></h3>'
+      + '<div class="mfp-price-wrap">' + priceHtml + '</div>'
+      + '</div>'
+      + '</div>';
+  }
+
+  function fetchProducts(handle, colUrl) {
+    if (activeHandle === handle) return;
+    activeHandle = handle;
+
+    setLoading(true);
+    grid.innerHTML = '';
+    vaWrap.hidden = true;
+
+    var endpoint = '/collections/' + encodeURIComponent(handle) + '/products.json?limit=' + limit;
+
+    fetch(endpoint, { headers: { 'Accept': 'application/json' } })
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (data) {
+        setLoading(false);
+        var products = data.products || [];
+        if (products.length === 0) {
+          grid.innerHTML = '<p class="mfp-empty">No products found in this category.</p>';
+          return;
+        }
+        grid.innerHTML = products.map(buildCard).join('');
+        if (colUrl) {
+          vaLink.href = colUrl;
+          vaWrap.hidden = false;
+        }
+      })
+      .catch(function () {
+        setLoading(false);
+        grid.innerHTML = '<p class="mfp-empty">Could not load products. Please try again.</p>';
+      });
+  }
+
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabs.forEach(function (t) {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+      fetchProducts(btn.dataset.collection, btn.dataset.collectionUrl);
+    });
+  });
+
+  // Auto-load first tab
+  var first = tabs[0];
+  if (first) fetchProducts(first.dataset.collection, first.dataset.collectionUrl);
+})();
+</script>
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Menu filter products",
+  "tag": "section",
+  "class": "section-menu-filter-products",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop by Category"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Heading alignment",
+      "default": "text-center",
+      "options": [
+        { "value": "text-left", "label": "Left" },
+        { "value": "text-center", "label": "Center" },
+        { "value": "text-right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Menu source"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Navigation menu",
+      "info": "Each top-level item must link to a collection. Used as fallback if page metafield is not set."
+    },
+    {
+      "type": "paragraph",
+      "content": "To use a different menu per page, create a page metafield: namespace = custom, key = filter_menu, type = Single line text. Enter the menu handle (e.g. location-london-menu). This overrides the navigation menu above."
+    },
+    {
+      "type": "header",
+      "content": "Products"
+    },
+    {
+      "type": "range",
+      "id": "items_per_page",
+      "label": "Products per tab",
+      "default": 8,
+      "min": 4,
+      "max": 24,
+      "step": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns (desktop)",
+      "default": 4,
+      "min": 2,
+      "max": 5,
+      "step": 1
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "View all button text",
+      "default": "View all"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "container",
+      "label": "Layout",
+      "default": "container",
+      "options": [
+        { "value": "container", "label": "Default" },
+        { "value": "container-fluid", "label": "Fluid" },
+        { "value": "full-width", "label": "Full width" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "default": 40,
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "default": 40,
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Menu filter products"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,1090 @@
+{% assign ai_gen_id = section.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-product-switch-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 15px 0;
+    box-sizing: border-box;
+  }
+
+  @media (min-width: 768px) {
+    .ai-product-switch-{{ ai_gen_id }} {
+      padding: 12px 20px;
+    }
+  }
+
+  .ai-product-switch-wrapper-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    max-width: 100%;
+    margin-bottom: 20px;
+  }
+
+  @media (min-width: 768px) {
+    .ai-product-switch-wrapper-{{ ai_gen_id }} {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      max-width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  .ai-product-switch-container-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .ai-product-switch-container-{{ ai_gen_id }} {
+      gap: 6px;
+      max-width: 100%;
+    }
+  }
+
+  .ai-main-image-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: {{ section.settings.image_border_radius }}px;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  @media (min-width: 768px) {
+    .ai-main-image-wrapper-{{ ai_gen_id }} {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  .ai-main-image-wrapper-{{ ai_gen_id }}:hover {
+    transform: scale(1.02);
+  }
+
+  .ai-main-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s ease;
+  }
+
+  .ai-main-image-{{ ai_gen_id }}.fade-out {
+    opacity: 0;
+  }
+
+  .ai-price-box-{{ ai_gen_id }} {
+    padding: 10px 14px;
+    background-color: {{ section.settings.price_bg_color }};
+    border-radius: {{ section.settings.price_border_radius }}px;
+    text-align: center;
+    border: 1px solid {{ section.settings.price_border_color }};
+  }
+
+  @media (min-width: 768px) {
+    .ai-price-box-{{ ai_gen_id }} {
+      padding: 6px 10px;
+    }
+  }
+
+  .ai-price-label-{{ ai_gen_id }} {
+    font-size: 12px;
+    color: {{ section.settings.price_label_color }};
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+  }
+
+  @media (min-width: 768px) {
+    .ai-price-label-{{ ai_gen_id }} {
+      margin-bottom: 2px;
+      font-size: 11px;
+    }
+  }
+
+  .ai-price-value-{{ ai_gen_id }} {
+    font-size: {{ section.settings.price_font_size }}px;
+    font-weight: 600;
+    color: {{ section.settings.price_color }};
+  }
+
+  .ai-sub-products-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  @media (min-width: 480px) {
+    .ai-sub-products-grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+  }
+
+  @media (min-width: 768px) {
+    .ai-sub-products-grid-{{ ai_gen_id }} {
+      gap: 8px;
+    }
+  }
+
+  .ai-sub-product-item-{{ ai_gen_id }} {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: {{ section.settings.sub_border_radius }}px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+  }
+
+  .ai-sub-product-item-{{ ai_gen_id }}:hover {
+    border-color: {{ section.settings.sub_hover_border_color }};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .ai-sub-product-item-{{ ai_gen_id }}.active {
+    border-color: {{ section.settings.sub_active_border_color }};
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .ai-sub-product-thumb-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-empty-state-{{ ai_gen_id }} {
+    grid-column: 1 / -1;
+    padding: 20px 12px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+  }
+
+  .ai-main-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+  }
+
+  .ai-main-placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+{% endstyle %}
+
+<product-image-switch-{{ ai_gen_id }}
+  class="ai-product-switch-{{ ai_gen_id }}"
+>
+  {% assign total_containers = 0 %}
+  {% for i in (1..10) %}
+    {% assign container_enabled_key = 'container_' | append: i | append: '_enabled' %}
+    {% if section.settings[container_enabled_key] %}
+      {% assign total_containers = total_containers | plus: 1 %}
+    {% endif %}
+  {% endfor %}
+
+  {% assign containers_in_row = 0 %}
+  {% assign wrapper_open = false %}
+
+  {% for container_num in (1..10) %}
+    {% assign container_enabled_key = 'container_' | append: container_num | append: '_enabled' %}
+    {% assign sub_count_key = 'container_' | append: container_num | append: '_sub_count' %}
+    
+    {% if section.settings[container_enabled_key] %}
+      {% if containers_in_row == 0 %}
+        <div class="ai-product-switch-wrapper-{{ ai_gen_id }}">
+        {% assign wrapper_open = true %}
+      {% endif %}
+
+      {% assign containers_in_row = containers_in_row | plus: 1 %}
+      
+      <div class="ai-product-switch-container-{{ ai_gen_id }}">
+        <a
+          href="#"
+          class="ai-main-image-link-{{ ai_gen_id }} ai-main-image-link-{{ ai_gen_id }}-{{ container_num }}"
+          data-container="{{ container_num }}"
+        >
+          <div class="ai-main-image-wrapper-{{ ai_gen_id }}">
+            <img
+              src="{% if section.settings.default_image %}{{ section.settings.default_image | image_url: width: 800 }}{% endif %}"
+              alt="{% if section.settings.default_image %}{{ section.settings.default_image.alt | escape }}{% else %}Product image{% endif %}"
+              class="ai-main-image-{{ ai_gen_id }} ai-main-image-{{ ai_gen_id }}-{{ container_num }}"
+              loading="lazy"
+              width="800"
+              height="800"
+              {% unless section.settings.default_image %}style="display: none;"{% endunless %}
+            >
+            {% unless section.settings.default_image %}
+              <div class="ai-main-placeholder-{{ ai_gen_id }}">
+                {{ 'product-1' | placeholder_svg_tag }}
+              </div>
+            {% endunless %}
+          </div>
+        </a>
+
+        <div class="ai-price-box-{{ ai_gen_id }}">
+          <div class="ai-price-label-{{ ai_gen_id }}">{{ section.settings.price_label }}</div>
+          <div class="ai-price-value-{{ ai_gen_id }} ai-price-value-{{ ai_gen_id }}-{{ container_num }}">
+            {{ section.settings.default_price }}
+          </div>
+        </div>
+
+        <div class="ai-sub-products-grid-{{ ai_gen_id }}">
+          {% assign has_sub_products = false %}
+          {% assign sub_product_count = section.settings[sub_count_key] %}
+          
+          {% for i in (1..sub_product_count) %}
+            {% liquid
+              assign thumb_key = 'c' | append: container_num | append: '_sub_' | append: i | append: '_thumb'
+              assign main_key = 'c' | append: container_num | append: '_sub_' | append: i | append: '_main'
+              assign price_key = 'c' | append: container_num | append: '_sub_' | append: i | append: '_price'
+              assign url_key = 'c' | append: container_num | append: '_sub_' | append: i | append: '_url'
+
+              assign thumb_img = section.settings[thumb_key]
+              assign main_img = section.settings[main_key]
+              assign price = section.settings[price_key]
+              assign url = section.settings[url_key]
+            %}
+
+            {% if thumb_img or main_img %}
+              {% assign has_sub_products = true %}
+              <div
+                class="ai-sub-product-item-{{ ai_gen_id }} {% if forloop.first %}active{% endif %}"
+                data-container="{{ container_num }}"
+                data-price="{{ price }}"
+                data-main-image-url="{% if main_img %}{{ main_img | image_url: width: 1200 }}{% endif %}"
+                data-product-url="{{ url }}"
+                role="button"
+                tabindex="0"
+                aria-label="Select product variant {{ i }}"
+              >
+                {% if thumb_img %}
+                  <img
+                    src="{{ thumb_img | image_url: width: 400 }}"
+                    alt="Product variant {{ i }}"
+                    class="ai-sub-product-thumb-{{ ai_gen_id }}"
+                    loading="lazy"
+                    width="400"
+                    height="400"
+                  >
+                {% elsif main_img %}
+                  <img
+                    src="{{ main_img | image_url: width: 400 }}"
+                    alt="Product variant {{ i }}"
+                    class="ai-sub-product-thumb-{{ ai_gen_id }}"
+                    loading="lazy"
+                    width="400"
+                    height="400"
+                  >
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+
+          {% unless has_sub_products %}
+            <div class="ai-empty-state-{{ ai_gen_id }}">
+              Add sub-products to display options
+            </div>
+          {% endunless %}
+        </div>
+      </div>
+
+      {% if containers_in_row == 2 %}
+        </div>
+        {% assign containers_in_row = 0 %}
+        {% assign wrapper_open = false %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  {% if wrapper_open %}
+    </div>
+  {% endif %}
+</product-image-switch-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class ProductImageSwitch{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.containers = {};
+      }
+
+      connectedCallback() {
+        this.initContainers();
+        this.setupEventListeners();
+        this.initializeFirstItems();
+      }
+
+      initContainers() {
+        for (let i = 1; i <= 10; i++) {
+          const mainImage = this.querySelector(`.ai-main-image-{{ ai_gen_id }}-${i}`);
+          if (mainImage) {
+            this.containers[i] = {
+              mainImage: mainImage,
+              mainLink: this.querySelector(`.ai-main-image-link-{{ ai_gen_id }}-${i}`),
+              priceValue: this.querySelector(`.ai-price-value-{{ ai_gen_id }}-${i}`),
+              subProducts: this.querySelectorAll(`.ai-sub-product-item-{{ ai_gen_id }}[data-container="${i}"]`)
+            };
+          }
+        }
+      }
+
+      setupEventListeners() {
+        Object.keys(this.containers).forEach(containerNum => {
+          const { subProducts } = this.containers[containerNum];
+          
+          subProducts.forEach(item => {
+            item.addEventListener('click', () => this.handleSubProductClick(item, containerNum));
+            item.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.handleSubProductClick(item, containerNum);
+              }
+            });
+          });
+        });
+      }
+
+      initializeFirstItems() {
+        Object.keys(this.containers).forEach(containerNum => {
+          const { subProducts, mainImage, priceValue, mainLink } = this.containers[containerNum];
+          const firstItem = subProducts[0];
+          
+          if (firstItem) {
+            const mainImageUrl = firstItem.dataset.mainImageUrl;
+            const price = firstItem.dataset.price;
+            const productUrl = firstItem.dataset.productUrl;
+
+            // Initialize main image with first sub-product's image
+            if (mainImage) {
+              if (mainImageUrl) {
+                // Hide placeholder if it exists
+                const placeholder = mainImage.parentElement.querySelector('.ai-main-placeholder-{{ ai_gen_id }}');
+                if (placeholder) {
+                  placeholder.style.display = 'none';
+                }
+                // Show and set image
+                mainImage.style.display = 'block';
+                mainImage.src = mainImageUrl;
+              }
+            }
+            
+            // Initialize price
+            if (price && priceValue) {
+              priceValue.textContent = price;
+            }
+            
+            // Initialize product URL
+            if (productUrl && mainLink) {
+              mainLink.href = productUrl;
+            }
+          }
+        });
+      }
+
+      handleSubProductClick(clickedItem, containerNum) {
+        const container = this.containers[containerNum];
+        const { subProducts, mainImage, priceValue, mainLink } = container;
+
+        subProducts.forEach(item => item.classList.remove('active'));
+        clickedItem.classList.add('active');
+
+        const mainImageUrl = clickedItem.dataset.mainImageUrl;
+        const price = clickedItem.dataset.price;
+        const productUrl = clickedItem.dataset.productUrl;
+
+        // Update main image
+        if (mainImage) {
+          if (mainImageUrl) {
+            // Hide placeholder if it exists
+            const placeholder = mainImage.parentElement.querySelector('.ai-main-placeholder-{{ ai_gen_id }}');
+            if (placeholder) {
+              placeholder.style.display = 'none';
+            }
+            // Show and update image
+            mainImage.style.display = 'block';
+            this.fadeImage(mainImage, () => {
+              mainImage.src = mainImageUrl;
+            });
+          }
+        }
+
+        // Update price
+        if (price && priceValue) {
+          priceValue.textContent = price;
+        }
+
+        // Update product URL
+        if (mainLink) {
+          if (productUrl) {
+            mainLink.href = productUrl;
+          } else {
+            mainLink.href = '#';
+          }
+        }
+      }
+
+      fadeImage(imageElement, callback) {
+        imageElement.classList.add('fade-out');
+        
+        setTimeout(() => {
+          callback();
+          imageElement.classList.remove('fade-out');
+        }, 150);
+      }
+    }
+
+    customElements.define('product-image-switch-{{ ai_gen_id }}', ProductImageSwitch{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Product image switch grid",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Default display"
+    },
+    {
+      "type": "image_picker",
+      "id": "default_image",
+      "label": "Default image"
+    },
+    {
+      "type": "text",
+      "id": "default_price",
+      "label": "Default price",
+      "default": "£0.00"
+    },
+    {
+      "type": "header",
+      "content": "Price box"
+    },
+    {
+      "type": "text",
+      "id": "price_label",
+      "label": "Price label",
+      "default": "Price"
+    },
+    {
+      "type": "range",
+      "id": "price_font_size",
+      "min": 16,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Price font size",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "price_bg_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "price_color",
+      "label": "Price color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "price_label_color",
+      "label": "Label color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "price_border_color",
+      "label": "Border color",
+      "default": "#e5e8ec"
+    },
+    {
+      "type": "range",
+      "id": "price_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Image style"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Main image border radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "sub_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Sub product border radius",
+      "default": 6
+    },
+    {
+      "type": "color",
+      "id": "sub_hover_border_color",
+      "label": "Sub product hover border",
+      "default": "#cccccc"
+    },
+    {
+      "type": "color",
+      "id": "sub_active_border_color",
+      "label": "Sub product active border",
+      "default": "#012f6d"
+    },
+    {
+      "type": "header",
+      "content": "Container 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "container_1_enabled",
+      "label": "Enable container 1",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "container_1_sub_count",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "label": "Number of sub-products",
+      "default": 4
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_1_thumb",
+      "label": "Product 1 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_1_main",
+      "label": "Product 1 main image"
+    },
+    {
+      "type": "text",
+      "id": "c1_sub_1_price",
+      "label": "Product 1 price"
+    },
+    {
+      "type": "url",
+      "id": "c1_sub_1_url",
+      "label": "Product 1 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_2_thumb",
+      "label": "Product 2 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_2_main",
+      "label": "Product 2 main image"
+    },
+    {
+      "type": "text",
+      "id": "c1_sub_2_price",
+      "label": "Product 2 price"
+    },
+    {
+      "type": "url",
+      "id": "c1_sub_2_url",
+      "label": "Product 2 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_3_thumb",
+      "label": "Product 3 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_3_main",
+      "label": "Product 3 main image"
+    },
+    {
+      "type": "text",
+      "id": "c1_sub_3_price",
+      "label": "Product 3 price"
+    },
+    {
+      "type": "url",
+      "id": "c1_sub_3_url",
+      "label": "Product 3 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_4_thumb",
+      "label": "Product 4 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_4_main",
+      "label": "Product 4 main image"
+    },
+    {
+      "type": "text",
+      "id": "c1_sub_4_price",
+      "label": "Product 4 price"
+    },
+    {
+      "type": "url",
+      "id": "c1_sub_4_url",
+      "label": "Product 4 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_5_thumb",
+      "label": "Product 5 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_5_main",
+      "label": "Product 5 main image"
+    },
+    {
+      "type": "text",
+      "id": "c1_sub_5_price",
+      "label": "Product 5 price"
+    },
+    {
+      "type": "url",
+      "id": "c1_sub_5_url",
+      "label": "Product 5 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_6_thumb",
+      "label": "Product 6 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_6_main",
+      "label": "Product 6 main image"
+    },
+    {
+      "type": "text",
+      "id": "c1_sub_6_price",
+      "label": "Product 6 price"
+    },
+    {
+      "type": "url",
+      "id": "c1_sub_6_url",
+      "label": "Product 6 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_7_thumb",
+      "label": "Product 7 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_7_main",
+      "label": "Product 7 main image"
+    },
+    {
+      "type": "text",
+      "id": "c1_sub_7_price",
+      "label": "Product 7 price"
+    },
+    {
+      "type": "url",
+      "id": "c1_sub_7_url",
+      "label": "Product 7 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_8_thumb",
+      "label": "Product 8 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_8_main",
+      "label": "Product 8 main image"
+    },
+    {
+      "type": "text",
+      "id": "c1_sub_8_price",
+      "label": "Product 8 price"
+    },
+    {
+      "type": "url",
+      "id": "c1_sub_8_url",
+      "label": "Product 8 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_9_thumb",
+      "label": "Product 9 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_9_main",
+      "label": "Product 9 main image"
+    },
+    {
+      "type": "text",
+      "id": "c1_sub_9_price",
+      "label": "Product 9 price"
+    },
+    {
+      "type": "url",
+      "id": "c1_sub_9_url",
+      "label": "Product 9 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_10_thumb",
+      "label": "Product 10 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_10_main",
+      "label": "Product 10 main image"
+    },
+    {
+      "type": "text",
+      "id": "c1_sub_10_price",
+      "label": "Product 10 price"
+    },
+    {
+      "type": "url",
+      "id": "c1_sub_10_url",
+      "label": "Product 10 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_11_thumb",
+      "label": "Product 11 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_11_main",
+      "label": "Product 11 main image"
+    },
+    {
+      "type": "text",
+      "id": "c1_sub_11_price",
+      "label": "Product 11 price"
+    },
+    {
+      "type": "url",
+      "id": "c1_sub_11_url",
+      "label": "Product 11 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_12_thumb",
+      "label": "Product 12 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_sub_12_main",
+      "label": "Product 12 main image"
+    },
+    {
+      "type": "text",
+      "id": "c1_sub_12_price",
+      "label": "Product 12 price"
+    },
+    {
+      "type": "url",
+      "id": "c1_sub_12_url",
+      "label": "Product 12 URL"
+    },
+    {
+      "type": "header",
+      "content": "Container 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "container_2_enabled",
+      "label": "Enable container 2",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "container_2_sub_count",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "label": "Number of sub-products",
+      "default": 4
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_1_thumb",
+      "label": "Product 1 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_1_main",
+      "label": "Product 1 main image"
+    },
+    {
+      "type": "text",
+      "id": "c2_sub_1_price",
+      "label": "Product 1 price"
+    },
+    {
+      "type": "url",
+      "id": "c2_sub_1_url",
+      "label": "Product 1 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_2_thumb",
+      "label": "Product 2 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_2_main",
+      "label": "Product 2 main image"
+    },
+    {
+      "type": "text",
+      "id": "c2_sub_2_price",
+      "label": "Product 2 price"
+    },
+    {
+      "type": "url",
+      "id": "c2_sub_2_url",
+      "label": "Product 2 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_3_thumb",
+      "label": "Product 3 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_3_main",
+      "label": "Product 3 main image"
+    },
+    {
+      "type": "text",
+      "id": "c2_sub_3_price",
+      "label": "Product 3 price"
+    },
+    {
+      "type": "url",
+      "id": "c2_sub_3_url",
+      "label": "Product 3 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_4_thumb",
+      "label": "Product 4 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_4_main",
+      "label": "Product 4 main image"
+    },
+    {
+      "type": "text",
+      "id": "c2_sub_4_price",
+      "label": "Product 4 price"
+    },
+    {
+      "type": "url",
+      "id": "c2_sub_4_url",
+      "label": "Product 4 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_5_thumb",
+      "label": "Product 5 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_5_main",
+      "label": "Product 5 main image"
+    },
+    {
+      "type": "text",
+      "id": "c2_sub_5_price",
+      "label": "Product 5 price"
+    },
+    {
+      "type": "url",
+      "id": "c2_sub_5_url",
+      "label": "Product 5 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_6_thumb",
+      "label": "Product 6 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_6_main",
+      "label": "Product 6 main image"
+    },
+    {
+      "type": "text",
+      "id": "c2_sub_6_price",
+      "label": "Product 6 price"
+    },
+    {
+      "type": "url",
+      "id": "c2_sub_6_url",
+      "label": "Product 6 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_7_thumb",
+      "label": "Product 7 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_7_main",
+      "label": "Product 7 main image"
+    },
+    {
+      "type": "text",
+      "id": "c2_sub_7_price",
+      "label": "Product 7 price"
+    },
+    {
+      "type": "url",
+      "id": "c2_sub_7_url",
+      "label": "Product 7 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_8_thumb",
+      "label": "Product 8 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_8_main",
+      "label": "Product 8 main image"
+    },
+    {
+      "type": "text",
+      "id": "c2_sub_8_price",
+      "label": "Product 8 price"
+    },
+    {
+      "type": "url",
+      "id": "c2_sub_8_url",
+      "label": "Product 8 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_9_thumb",
+      "label": "Product 9 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_9_main",
+      "label": "Product 9 main image"
+    },
+    {
+      "type": "text",
+      "id": "c2_sub_9_price",
+      "label": "Product 9 price"
+    },
+    {
+      "type": "url",
+      "id": "c2_sub_9_url",
+      "label": "Product 9 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_10_thumb",
+      "label": "Product 10 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_10_main",
+      "label": "Product 10 main image"
+    },
+    {
+      "type": "text",
+      "id": "c2_sub_10_price",
+      "label": "Product 10 price"
+    },
+    {
+      "type": "url",
+      "id": "c2_sub_10_url",
+      "label": "Product 10 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_11_thumb",
+      "label": "Product 11 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_11_main",
+      "label": "Product 11 main image"
+    },
+    {
+      "type": "text",
+      "id": "c2_sub_11_price",
+      "label": "Product 11 price"
+    },
+    {
+      "type": "url",
+      "id": "c2_sub_11_url",
+      "label": "Product 11 URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_12_thumb",
+      "label": "Product 12 thumbnail"
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_sub_12_main",
+      "label": "Product 12 main image"
+    },
+    {
+      "type": "text",
+      "id": "c2_sub_12_price",
+      "label": "Product 12 price"
+    },
+    {
+      "type": "url",
+      "id": "c2_sub_12_url",
+      "label": "Product 12 URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product image switch grid"
+    }
+  ]
+}
+{% endschema %}

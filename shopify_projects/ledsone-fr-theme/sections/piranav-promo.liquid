@@ -1,0 +1,706 @@
+<section class="piranav-promo">
+  <div class="container">
+
+    <div class="promo-header">
+      <span class="promo-eyebrow">✦ Limited Time ✦</span>
+      <h2>{{ section.settings.heading }}</h2>
+      <p>{{ section.settings.subheading }}</p>
+    </div>
+
+    {% if section.settings.show_timer %}
+      <div class="promo-timer fullwidth">
+        <div class="timer-inner">
+          <p class="timer-label">⏳ Today's Deal Ends In</p>
+          <div class="timer-box">
+            <div class="unit">
+              <span id="t-hours">23</span>
+              <label>Hours</label>
+            </div>
+            <span class="sep">:</span>
+            <div class="unit">
+              <span id="t-mins">59</span>
+              <label>Mins</label>
+            </div>
+            <span class="sep">:</span>
+            <div class="unit">
+              <span id="t-secs">59</span>
+              <label>Secs</label>
+            </div>
+          </div>
+          <div class="timer-bar"><div id="timer-bar-fill"></div></div>
+          <div class="timer-perks">
+            <span>🚚 Free UK delivery over £25</span>
+            <span class="divider">|</span>
+            <span>↩️ 30-day returns</span>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if section.settings.collection %}
+      {% assign coll = collections[section.settings.collection] %}
+      {% if coll and coll.products.size > 0 %}
+        {% assign per_day = 5 %}
+        {% assign day_num = 'now' | date: '%j' | plus: 0 %}
+        {% assign total_sets = coll.products.size | plus: per_day | minus: 1 | divided_by: per_day %}
+        {% assign today_set = day_num | modulo: total_sets %}
+        {% assign offset_num = today_set | times: per_day %}
+
+        <!-- DESKTOP GRID (5 col) -->
+        <div class="promo-grid desktop-view">
+          {% for product in coll.products limit: per_day offset: offset_num %}
+            {% assign variant = product.selected_or_first_available_variant %}
+            {% assign price = variant.price %}
+            {% assign compare_at_price = variant.compare_at_price %}
+            {% assign discount = 0 %}
+            {% if compare_at_price and compare_at_price > price %}
+              {% assign discount = compare_at_price | minus: price | times: 100.0 | divided_by: compare_at_price | round %}
+            {% endif %}
+            <div class="promo-card">
+              <div class="promo-img-container">
+                <div class="promo-banner">
+                  <div class="b1">{{ section.settings.banner_line1 }}</div>
+                  <div class="b2">{{ section.settings.banner_line2 }}</div>
+                  <div class="bs">{{ section.settings.banner_subtitle }}</div>
+                </div>
+                {% if discount > 0 %}
+                  <div class="promo-badge"><div class="val">{{ discount }}%</div><div class="txt">OFF</div></div>
+                {% endif %}
+                <div class="price-badge">
+                  {% if discount > 0 %}
+                    <div class="price-content">
+                      <span class="sale-price">{{ price | money }}</span>
+                      <span class="original-price">{{ compare_at_price | money }}</span>
+                    </div>
+                  {% else %}
+                    <div class="price-content"><span class="current-price">{{ price | money }}</span></div>
+                  {% endif %}
+                </div>
+                <div class="card-cta">
+                  <a href="{{ product.url }}" class="shop-btn">Shop Now 🛒</a>
+                </div>
+                <a href="{{ product.url }}" class="promo-img">
+                  <img src="{{ product.featured_image | img_url: '400x533', crop: 'center' }}" alt="{{ product.title | escape }}" loading="lazy" width="400" height="533">
+                </a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- MOBILE SWIPER (2 slides visible) -->
+        <div class="mobile-promo-slider mobile-view">
+          <div class="swiper-container">
+            <div class="swiper-wrapper">
+              {% for product in coll.products limit: per_day offset: offset_num %}
+                {% assign variant = product.selected_or_first_available_variant %}
+                {% assign price = variant.price %}
+                {% assign compare_at_price = variant.compare_at_price %}
+                {% assign discount = 0 %}
+                {% if compare_at_price and compare_at_price > price %}
+                  {% assign discount = compare_at_price | minus: price | times: 100.0 | divided_by: compare_at_price | round %}
+                {% endif %}
+                <div class="swiper-slide">
+                  <div class="promo-card">
+                    <div class="promo-img-container">
+                      {% if discount > 0 %}
+                        <div class="promo-badge"><div class="val">{{ discount }}%</div><div class="txt">OFF</div></div>
+                      {% endif %}
+                      <div class="price-badge">
+                        {% if discount > 0 %}
+                          <div class="price-content">
+                            <span class="sale-price">{{ price | money }}</span>
+                            <span class="original-price">{{ compare_at_price | money }}</span>
+                          </div>
+                        {% else %}
+                          <div class="price-content"><span class="current-price">{{ price | money }}</span></div>
+                        {% endif %}
+                      </div>
+                      <div class="card-cta">
+                        <a href="{{ product.url }}" class="shop-btn">Shop 🛒</a>
+                      </div>
+                      <a href="{{ product.url }}" class="promo-img">
+                        <img src="{{ product.featured_image | img_url: '400x533', crop: 'center' }}" alt="{{ product.title | escape }}" loading="lazy" width="400" height="533">
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-next"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="swiper-button-prev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+        </div>
+
+      {% endif %}
+    {% endif %}
+  </div>
+</section>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --ink:       #0d1b2a;
+  --ink-mid:   #1e3248;
+  --gold:      #b8912a;
+  --gold-lt:   #d4b060;
+  --gold-pale: #f0dea0;
+  --crimson:   #9b1010;
+  --crimson-lt:#c01818;
+  --cream:     #faf8f4;
+  --stone:     #f1ede6;
+  --stone-mid: #e0d9ce;
+  --muted:     #7a7060;
+  --white:     #ffffff;
+  --r-lg:      18px;
+  --r-md:      12px;
+  --r-sm:      8px;
+  --shadow-xs: 0 1px 4px rgba(13,27,42,0.07);
+  --shadow-sm: 0 3px 14px rgba(13,27,42,0.10);
+  --shadow-md: 0 8px 28px rgba(13,27,42,0.14);
+  --shadow-lg: 0 16px 48px rgba(13,27,42,0.20);
+}
+
+/* ── SECTION ── */
+.piranav-promo {
+  background: var(--cream);
+  padding: 52px 0 60px;
+  font-family: 'Outfit', sans-serif;
+}
+.piranav-promo .container {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+/* ── HEADER ── */
+.promo-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.promo-eyebrow {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+.promo-header h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.08;
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+}
+.promo-header p {
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ── TIMER ── */
+.promo-timer.fullwidth {
+  background: var(--ink);
+  border-radius: var(--r-lg);
+  margin-bottom: 36px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  position: relative;
+}
+.promo-timer.fullwidth::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 80% 50%, rgba(184,145,42,0.12) 0%, transparent 60%),
+              radial-gradient(ellipse at 20% 50%, rgba(155,16,16,0.10) 0%, transparent 55%);
+  pointer-events: none;
+}
+.timer-inner {
+  position: relative;
+  z-index: 1;
+  padding: 28px 32px 24px;
+  text-align: center;
+}
+.timer-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold-lt);
+  margin-bottom: 18px;
+}
+.timer-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.timer-box .unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: var(--r-md);
+  padding: 12px 22px 10px;
+  min-width: 76px;
+}
+.timer-box span {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1;
+}
+.timer-box label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-lt);
+  margin-top: 5px;
+}
+.timer-box .sep {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+  padding-bottom: 6px;
+}
+.timer-bar {
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto 16px;
+  height: 3px;
+  background: rgba(255,255,255,0.10);
+  border-radius: 2px;
+}
+#timer-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-pale));
+  border-radius: 2px;
+  transition: width 1s linear;
+}
+.timer-perks {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.5);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+.timer-perks .divider {
+  margin: 0 10px;
+  opacity: 0.4;
+}
+
+/* ── DESKTOP GRID ── */
+.promo-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+/* ── CARD ── */
+.promo-card {
+  background: var(--white);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--stone-mid);
+  height: 100%;
+  {% comment %} transition: transform 0.35s cubic-bezier(.22,.68,0,1.2), box-shadow 0.35s ease, border-color 0.35s ease; {% endcomment %}
+}
+.promo-card:hover {
+  {% comment %} transform: translateY(-6px); {% endcomment %}
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(184,145,42,0.3);
+}
+.promo-img-container {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--stone);
+  width: 100%;
+  height: 100%;
+}
+
+/* Subtle gradient overlay at bottom for CTA legibility */
+.promo-img-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 42%;
+  background: linear-gradient(to top, rgba(13,27,42,0.72) 0%, transparent 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ── BANNER ── */
+.promo-banner {
+  position: absolute;
+  top: 14px;
+  left: 12px;
+  background: linear-gradient(135deg, var(--crimson) 0%, #2a0606 100%);
+  padding: 7px 14px;
+  border-radius: var(--r-sm);
+  z-index: 3;
+  box-shadow: 0 3px 12px rgba(155,16,16,0.4);
+  line-height: 1.25;
+}
+.b1 {
+  font-size: 12px;
+  font-weight: 800;
+  background: linear-gradient(to top, #c8940d, #ffd055, #fff6c8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.05em;
+}
+.b2 { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.88); }
+.bs { font-size: 9px; color: rgba(255,255,255,0.55); margin-top: 1px; letter-spacing: 0.04em; }
+
+/* ── DISCOUNT BADGE ── */
+.promo-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 2px solid rgba(255,255,255,0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  box-shadow: 0 4px 14px rgba(13,27,42,0.35);
+}
+.promo-badge .val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1;
+}
+.promo-badge .txt {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--gold-lt);
+  margin-top: 1px;
+}
+
+/* ── PRICE BADGE ── */
+.price-badge {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  background: rgba(13,27,42,0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 5px 11px;
+  border-radius: var(--r-sm);
+  z-index: 3;
+  border: 1px solid rgba(184,145,42,0.45);
+}
+.price-content span { display: block; }
+.sale-price {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--gold-lt);
+}
+.current-price {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--white);
+}
+.original-price {
+  font-size: 10px;
+  color: rgba(255,255,255,0.45);
+  text-decoration: line-through;
+}
+
+/* ── CTA BUTTON ── */
+.card-cta {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  white-space: nowrap;
+}
+.shop-btn {
+  display: inline-block;
+  background: #0d53bb;
+  color: white;
+  padding: 8px 22px;
+  border-radius: 30px;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(13, 30, 70, 0.45);
+  transition: all 0.3s ease;
+}
+.shop-btn:hover {
+  background: linear-gradient(135deg, var(--ink-mid) 0%, var(--ink) 100%);
+  color: var(--gold-pale);
+  box-shadow: 0 6px 20px rgba(13,27,42,0.4);
+  transform: translateY(-2px);
+}
+
+/* ── IMAGE ── */
+.promo-img {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+.promo-img img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.45s cubic-bezier(.25,.46,.45,.94);
+}
+.promo-card:hover .promo-img img {
+  {% comment %} transform: scale(1.06); {% endcomment %}
+}
+
+/* ── SWIPER BASE ── */
+.mobile-view { display: none; }
+.mobile-promo-slider { position: relative; }
+.swiper-container {
+  overflow: hidden;
+  padding: 8px 0 52px;
+}
+.swiper-slide {
+  height: auto;
+  box-sizing: border-box;
+}
+
+/* Pagination */
+.swiper-pagination {
+  position: absolute;
+  bottom: 20px;
+  left: 0; width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  z-index: 10;
+}
+.swiper-pagination-bullet {
+  width: 7px; height: 7px;
+  background: var(--stone-mid);
+  opacity: 1;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.swiper-pagination-bullet-active {
+  background: var(--ink);
+  width: 20px;
+}
+
+/* Nav arrows */
+.swiper-button-next,
+.swiper-button-prev {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--ink);
+  border: 1px solid var(--stone-mid);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 42%;
+  transform: translateY(-50%);
+  margin-top: 0;
+  transition: all 0.25s ease;
+  z-index: 10;
+}
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background: var(--ink);
+  color: var(--white);
+  border-color: var(--ink);
+}
+.swiper-button-next::after,
+.swiper-button-prev::after { display: none; }
+.swiper-button-next { right: 4px; }
+.swiper-button-prev { left: 4px; }
+
+/* ── TABLET ── */
+@media (max-width: 1100px) {
+  .promo-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 900px) {
+  .promo-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .promo-header h2 { font-size: 2.4rem; }
+}
+
+/* ── MOBILE ≤ 768px — Swiper with 2 visible slides ── */
+@media (max-width: 768px) {
+  .desktop-view { display: none !important; }
+  .mobile-view  { display: block !important; }
+
+  .piranav-promo { padding: 32px 0 44px; }
+  .piranav-promo .container { padding: 0 14px; }
+
+  .promo-header { margin-bottom: 24px; }
+  .promo-header h2 { font-size: 2rem; }
+
+  /* Timer compact */
+  .timer-inner { padding: 20px 16px 18px; }
+  .timer-box .unit { min-width: 60px; padding: 10px 14px 8px; }
+  .timer-box span { font-size: 2rem; }
+  .timer-perks { font-size: 0.68rem; }
+  .timer-perks .divider { margin: 0 6px; }
+  .promo-timer.fullwidth { margin-bottom: 24px; border-radius: var(--r-md); }
+
+  /* Swiper shows 2 slides + a peek of the 3rd */
+  .swiper-container { padding: 6px 0 48px; }
+  .swiper-slide { padding: 4px 5px; }
+
+  /* Card badges scaled for 2-col */
+  .promo-badge { width: 50px; height: 50px; top: 8px; right: 8px; }
+  .promo-badge .val { font-size: 14px; }
+  .promo-badge .txt { font-size: 7px; }
+
+  .promo-banner { top: 8px; left: 8px; padding: 5px 10px; }
+  .b1 { font-size: 10px; }
+  .b2 { font-size: 9px; }
+  .bs { display: none; }
+
+  .price-badge { top: 62px; left: 8px; padding: 4px 9px; }
+  .sale-price, .current-price { font-size: 11px; }
+  .original-price { font-size: 9px; }
+
+  .card-cta { bottom: 10px; }
+  .shop-btn { padding: 7px 14px; font-size: 11px; }
+
+  /* Nav arrows — outside the cards */
+  .swiper-button-next { right: -2px; }
+  .swiper-button-prev { left: -2px; }
+}
+
+/* ── VERY SMALL ≤ 400px ── */
+@media (max-width: 400px) {
+  .promo-header h2 { font-size: 1.7rem; }
+  .timer-box .unit { min-width: 52px; padding: 8px 10px 7px; }
+  .timer-box span { font-size: 1.7rem; }
+  .price-badge { top: 10px; }
+}
+
+/* ── ANIMATION ── */
+.swiper-slide {
+  animation: cardIn 0.4s ease both;
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script>
+/* ── TIMER ── */
+function promoTimer() {
+  const fill = document.getElementById("timer-bar-fill");
+  if (!fill) return;
+  function tick() {
+    const now = new Date();
+    const midnight = new Date(); midnight.setHours(24,0,0,0);
+    const diff = midnight - now;
+    if (diff <= 0) { location.reload(); return; }
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    document.getElementById("t-hours").textContent = String(h).padStart(2,'0');
+    document.getElementById("t-mins").textContent  = String(m).padStart(2,'0');
+    document.getElementById("t-secs").textContent  = String(s).padStart(2,'0');
+    fill.style.width = ((86400000 - diff) / 86400000 * 100) + "%";
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+/* ── SWIPER ── */
+function initSwiper() {
+  if (typeof Swiper === 'undefined' || !window.matchMedia('(max-width: 768px)').matches) return;
+  if (window.promoSwiper) { window.promoSwiper.destroy(true, true); window.promoSwiper = null; }
+
+  window.promoSwiper = new Swiper('.mobile-promo-slider .swiper-container', {
+    slidesPerView: 2,          /* ← 2 columns always visible */
+    spaceBetween: 10,
+    centeredSlides: false,
+    loop: false,
+    speed: 380,
+    grabCursor: true,
+    breakpoints: {
+      400: { slidesPerView: 2.15, spaceBetween: 10 },
+      360: { slidesPerView: 2,    spaceBetween: 9  }
+    },
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true,
+      dynamicBullets: true
+    },
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev'
+    }
+  });
+}
+
+function destroySwiper() {
+  if (window.promoSwiper) { window.promoSwiper.destroy(true, true); window.promoSwiper = null; }
+}
+
+function handleResize() {
+  window.matchMedia('(max-width: 768px)').matches ? initSwiper() : destroySwiper();
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  promoTimer();
+
+  if (typeof Swiper === 'undefined') {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css';
+    document.head.appendChild(link);
+
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js';
+    s.onload = initSwiper;
+    document.head.appendChild(s);
+  } else {
+    initSwiper();
+  }
+
+  window.addEventListener('resize', handleResize);
+  document.addEventListener('touchstart', function(){}, {passive: true});
+});
+</script>
+
+{% schema %}
+{
+  "name": "Piranav Promo Section",
+  "settings": [
+    { "type": "text",       "id": "heading",          "label": "Heading",          "default": "Daily Promotion"          },
+    { "type": "text",       "id": "subheading",        "label": "Subheading",       "default": "Fresh Offers Every 24 Hours" },
+    { "type": "checkbox",   "id": "show_timer",        "label": "Show Timer",       "default": true                       },
+    { "type": "collection", "id": "collection",        "label": "Choose Collection"                                        },
+    { "type": "text",       "id": "banner_line1",      "label": "Banner Line 1",    "default": "BLACK FRIDAY"             },
+    { "type": "text",       "id": "banner_line2",      "label": "Banner Line 2",    "default": "WEEKEND SALE"             },
+    { "type": "text",       "id": "banner_subtitle",   "label": "Banner Subtitle",  "default": "Limited Time Deal"        }
+  ],
+  "presets": [
+    { "name": "Piranav Promo Section", "category": "Promotional" }
+  ]
+}
+{% endschema %}

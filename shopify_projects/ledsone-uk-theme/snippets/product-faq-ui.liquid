@@ -3,13 +3,17 @@
   {% assign faq_source = 'product' %}
 {% elsif collection.metafields.custom.faq_schema != blank %}
   {% assign faq_source = 'collection' %}
+{% elsif page.metafields.custom.faq_schema != blank %}
+  {% assign faq_source = 'page' %}
 {% endif %}
 
 {% if faq_source != nil %}
   {% if faq_source == 'product' %}
     {{ product.metafields.custom.faq_schema }}
-  {% else %}
+  {% elsif faq_source == 'collection' %}
     {{ collection.metafields.custom.faq_schema }}
+  {% else %}
+    {{ page.metafields.custom.faq_schema }}
   {% endif %}
 
   <div id="custom-faq-ui-container-{{ section.id }}"></div>
