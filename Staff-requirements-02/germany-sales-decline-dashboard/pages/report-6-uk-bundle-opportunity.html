@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report 6 — UK Bundle Opportunity — Germany</title>
+<style>
+:root{--navy:#0c1a30;--navy-2:#13284a;--ink:#1a2233;--muted:#5b6577;--line:#e3e7ee;--bg:#f4f6f9;--card:#ffffff;--gold:#b98b1e;--gold-soft:#faf3e0;--accent:#1f5eff;--accent-soft:#eaf0ff;--red:#b91c1c;--red-soft:#fff5f5;--warn:#d97706;--warn-soft:#fffbeb;--good:#0a7d4f;--good-soft:#e5f5ee;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;}
+.topbar{height:5px;background:linear-gradient(90deg,var(--navy) 0%,var(--navy-2) 40%,var(--accent) 100%);}
+.masthead{background:var(--card);padding:20px 32px;border-bottom:1px solid var(--line);box-shadow:0 1px 4px rgba(12,26,48,.05);}
+.masthead .inner{max-width:1440px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:20px;}
+.mark{width:40px;height:40px;background:var(--navy);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#e8d59a;flex:none;border:1.5px solid var(--gold);}
+.headtxt{flex:1;min-width:220px;}
+.kicker{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+.masthead h1{font-size:18px;font-weight:700;color:var(--navy);}
+.masthead .lede{font-size:12px;color:var(--muted);margin-top:2px;font-style:italic;}
+.statrow{display:flex;flex-wrap:wrap;gap:0;border-left:1px solid var(--line);padding-left:24px;}
+.stat{padding:0 20px;border-right:1px solid var(--line);}
+.stat:last-child{border-right:none;padding-right:0;}
+.stat .v{font-size:19px;font-weight:700;color:var(--navy);}
+.stat .l{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:2px;}
+.page{max-width:1440px;margin:0 auto;padding:24px 32px 48px;}
+.tbar{font-size:11px;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 14px;margin-bottom:18px;}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px;}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;}
+.kpi .kv{font-size:22px;font-weight:700;color:var(--navy);}
+.kpi .kl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:3px;}
+.kpi.warn .kv{color:var(--red);}
+.kpi.good .kv{color:var(--good);}
+.kpi.hi .kv{color:var(--accent);}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
+.filters{display:flex;flex-wrap:wrap;gap:6px;flex:1;}
+.fpill{font-size:11px;font-weight:700;border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:5px 13px;cursor:pointer;color:var(--muted);transition:all .15s;white-space:nowrap;}
+.fpill:hover{border-color:var(--navy);color:var(--navy);}
+.fpill.active{background:var(--navy);color:#e8d59a;border-color:var(--navy);}
+.search-wrap{position:relative;}
+.search-wrap input{font-size:12px;padding:7px 12px 7px 30px;border:1.5px solid var(--line);border-radius:8px;width:220px;outline:none;background:var(--card);color:var(--ink);}
+.search-wrap input:focus{border-color:var(--accent);}
+.search-wrap::before{content:"\2315";position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;}
+.tbl-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+th{background:var(--bg);padding:10px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);border-bottom:1px solid var(--line);white-space:nowrap;}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f8f9fc;}
+.sku-txt{font-size:11.5px;font-weight:600;color:var(--ink);font-family:monospace;word-break:break-all;max-width:320px;}
+.badge-yes{background:var(--good-soft);color:var(--good);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;}
+.badge-no{background:var(--red-soft);color:var(--red);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;}
+.badge-ready{background:var(--good-soft);color:var(--good);border-radius:4px;padding:3px 10px;font-size:11px;font-weight:700;}
+.badge-miss{background:var(--warn-soft);color:var(--warn);border-radius:4px;padding:3px 10px;font-size:11px;font-weight:700;}
+.chip-list{display:flex;flex-wrap:wrap;gap:4px;max-width:360px;}
+.chip{font-size:10px;font-weight:600;font-family:monospace;border-radius:4px;padding:2px 6px;white-space:nowrap;}
+.chip.found{background:var(--good-soft);color:var(--good);}
+.chip.miss{background:var(--red-soft);color:var(--red);}
+.pager{display:flex;align-items:center;justify-content:space-between;margin-top:14px;flex-wrap:wrap;gap:8px;}
+.pager-info{font-size:12px;color:var(--muted);}
+.pager-btns{display:flex;gap:6px;}
+.pager-btns button{font-size:12px;font-weight:600;padding:6px 14px;border:1.5px solid var(--line);border-radius:7px;background:var(--card);cursor:pointer;color:var(--navy);}
+.pager-btns button:disabled{opacity:.4;cursor:default;}
+.pager-btns button:not(:disabled):hover{background:var(--navy);color:#e8d59a;border-color:var(--navy);}
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--navy);text-decoration:none;background:var(--card);border:1.5px solid var(--line);border-radius:8px;padding:6px 14px;margin-bottom:18px;transition:border-color .15s;}
+.back-btn:hover{border-color:var(--gold);color:var(--gold);}
+.csv-btn{font-size:11px;font-weight:700;padding:6px 14px;border:1.5px solid var(--accent);border-radius:8px;background:var(--accent-soft);color:var(--accent);cursor:pointer;white-space:nowrap;}
+.csv-btn:hover{background:var(--accent);color:#fff;}
+footer.site{max-width:1440px;margin:0 auto;padding:20px 32px 36px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;}
+@media(max-width:640px){.masthead{padding:14px;}.page{padding:16px 12px 40px;}.search-wrap input{width:100%;}}
+</style>
+</head>
+<body>
+
+<div class="topbar"></div>
+
+<header class="masthead">
+  <div class="inner">
+    <div class="mark">6</div>
+    <div class="headtxt">
+      <p class="kicker">Report 6 &middot; Germany DE</p>
+      <h1>UK Bundle Opportunity &mdash; Germany Coverage Gap</h1>
+      <p class="lede" id="lede-txt">Loading live data&hellip;</p>
+    </div>
+    <div class="statrow">
+      <div class="stat"><div class="v" id="stat-total-uk">—</div><div class="l">Total UK Bundles</div></div>
+      <div class="stat"><div class="v" id="stat-not-in-de">—</div><div class="l">Not in Germany</div></div>
+      <div class="stat"><div class="v" id="stat-ready">—</div><div class="l">Ready for Review</div></div>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+
+  <a class="back-btn" href="../index.html">&#8592; Back to Hub</a>
+
+  <div class="tbar">
+    <strong>Source:</strong> listings.ebay_listings (UK, all_list=1) &middot; amazon_listings (UK) &middot; shopify_listings (UK, all_list=1) &middot; inventory.local_inventory_current_stock_location_wise (Germany) &middot; <span id="refresh-date">loading&hellip;</span>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi"><div class="kv" id="kpi-total-uk">—</div><div class="kl">Total UK Bundle SKUs</div></div>
+    <div class="kpi good"><div class="kv" id="kpi-already-de">—</div><div class="kl">Already Exists in Germany</div></div>
+    <div class="kpi warn"><div class="kv" id="kpi-not-de">—</div><div class="kl">Not in Germany</div></div>
+    <div class="kpi hi"><div class="kv" id="kpi-ready">—</div><div class="kl">Ready for Review</div></div>
+    <div class="kpi"><div class="kv" id="kpi-missing-comps">—</div><div class="kl">Missing Components</div></div>
+  </div>
+
+  <div class="controls">
+    <div class="filters" id="filter-bar">
+      <button class="fpill active" data-filter="all" id="pill-all">All Not in Germany (—)</button>
+      <button class="fpill" data-filter="ready" id="pill-ready">&#10003; Ready for Review (—)</button>
+      <button class="fpill" data-filter="missing" id="pill-missing">Missing Components (—)</button>
+    </div>
+    <div class="search-wrap"><input type="text" id="search" placeholder="Search SKU..." oninput="onSearch()"></div>
+    <button class="csv-btn" onclick="exportCSV()">&#8595; Export CSV</button>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>UK Bundle SKU</th>
+          <th style="width:60px"># Parts</th>
+          <th>Component List</th>
+          <th style="width:100px">DE Bundle</th>
+          <th style="width:80px">Found</th>
+          <th style="width:80px">Missing</th>
+          <th style="width:160px">Opportunity Status</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="pager">
+    <div class="pager-info" id="pager-info"></div>
+    <div class="pager-btns">
+      <button id="btn-prev" onclick="changePage(-1)">&#8592; Prev</button>
+      <button id="btn-next" onclick="changePage(1)">Next &#8594;</button>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site">
+  Germany Sales Decline Dashboard &middot; Report 6 &mdash; UK Bundle Opportunity &middot; AIOS &middot; <span id="footer-date">live</span>
+</footer>
+
+<script>
+
+var DATA = [];
+var filtered = [];
+var page = 0;
+var PAGE_SIZE = 100;
+var activeFilter = 'all';
+var searchTerm = '';
+
+function fmt(n){ return Number(n).toLocaleString(); }
+
+function escH(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function applyFilters(){
+  filtered = DATA.filter(function(r){
+    var matchSearch = !searchTerm || r.b.toLowerCase().indexOf(searchTerm) !== -1;
+    var matchFilter = true;
+    if(activeFilter === 'ready')   matchFilter = r.ready === true;
+    if(activeFilter === 'missing') matchFilter = r.ready !== true;
+    return matchSearch && matchFilter;
+  });
+  page = 0;
+  render();
+}
+
+function onSearch(){
+  searchTerm = document.getElementById('search').value.toLowerCase().trim();
+  applyFilters();
+}
+
+document.getElementById('filter-bar').addEventListener('click', function(e){
+  var btn = e.target.closest('.fpill');
+  if(!btn) return;
+  document.querySelectorAll('#filter-bar .fpill').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  activeFilter = btn.dataset.filter;
+  applyFilters();
+});
+
+function changePage(dir){
+  page += dir;
+  render();
+}
+
+function render(){
+  var total   = filtered.length;
+  var maxPage = Math.max(0, Math.ceil(total / PAGE_SIZE) - 1);
+  if(page > maxPage) page = maxPage;
+  if(page < 0) page = 0;
+  var start = page * PAGE_SIZE;
+  var end   = Math.min(start + PAGE_SIZE, total);
+  var slice = filtered.slice(start, end);
+
+  var rows = slice.map(function(r){
+    var compChips = r.components.map(function(c){
+      var isFound = r.found.indexOf(c) !== -1;
+      return '<span class="chip ' + (isFound ? 'found' : 'miss') + '">' + escH(c) + '</span>';
+    }).join('');
+
+    var statusBadge = r.ready
+      ? '<span class="badge-ready">&#10003; Ready for Review</span>'
+      : '<span class="badge-miss">Missing ' + r.mc + ' component' + (r.mc > 1 ? 's' : '') + '</span>';
+
+    return '<tr>'
+      + '<td><div class="sku-txt">' + escH(r.b) + '</div></td>'
+      + '<td style="text-align:center;font-weight:700;">' + r.tc + '</td>'
+      + '<td><div class="chip-list">' + compChips + '</div></td>'
+      + '<td><span class="badge-no">&#10007; No</span></td>'
+      + '<td style="text-align:center;">' + r.fc + ' / ' + r.tc + '</td>'
+      + '<td style="text-align:center;' + (r.mc > 0 ? 'color:var(--red);font-weight:700;' : '') + '">' + r.mc + '</td>'
+      + '<td>' + statusBadge + '</td>'
+      + '</tr>';
+  }).join('');
+
+  document.getElementById('tbody').innerHTML = rows ||
+    '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--muted)">No results</td></tr>';
+  document.getElementById('pager-info').textContent =
+    'Showing ' + (total === 0 ? 0 : start + 1) + '–' + end + ' of ' + fmt(total) + ' bundles';
+  document.getElementById('btn-prev').disabled = page === 0;
+  document.getElementById('btn-next').disabled = page >= maxPage;
+}
+
+function updateDashboard(s, d){
+  var notInDE = s.notInDE || 0;
+  var ready   = s.readyForReview || 0;
+  var missing = s.missingComps || 0;
+
+  document.getElementById('stat-total-uk').textContent   = fmt(s.totalUK);
+  document.getElementById('stat-not-in-de').textContent  = fmt(notInDE);
+  document.getElementById('stat-ready').textContent      = fmt(ready);
+
+  document.getElementById('lede-txt').textContent =
+    fmt(s.totalUK) + ' UK bundle SKUs checked against Germany — ' +
+    fmt(ready) + ' fully buildable from existing DE stock';
+
+  document.getElementById('kpi-total-uk').textContent      = fmt(s.totalUK);
+  document.getElementById('kpi-already-de').textContent    = fmt(s.alreadyInDE);
+  document.getElementById('kpi-not-de').textContent        = fmt(notInDE);
+  document.getElementById('kpi-ready').textContent         = fmt(ready);
+  document.getElementById('kpi-missing-comps').textContent = fmt(missing);
+
+  document.getElementById('pill-all').textContent     = 'All Not in Germany (' + fmt(notInDE) + ')';
+  document.getElementById('pill-ready').textContent   = '✓ Ready for Review (' + fmt(ready) + ')';
+  document.getElementById('pill-missing').textContent = 'Missing Components (' + fmt(missing) + ')';
+
+  document.getElementById('refresh-date').textContent = d;
+  document.getElementById('footer-date').textContent  = d;
+}
+
+function exportCSV(){
+  var headers = ['UK Bundle SKU','# Components','Components','DE Bundle Exists','Found','Missing','Opportunity Status'];
+  var csvRows = filtered.map(function(r){
+    return [
+      r.b,
+      r.tc,
+      '"' + r.components.join(' | ') + '"',
+      'No',
+      r.fc + '/' + r.tc,
+      r.mc,
+      r.ready ? 'Ready for Review' : 'Missing ' + r.mc + ' component(s)'
+    ].join(',');
+  });
+  var csv = headers.join(',') + '\n' + csvRows.join('\n');
+  var blob = new Blob([csv], { type: 'text/csv' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'de_uk_bundle_opportunity_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+async function loadLive(){
+  var tbody = document.getElementById('tbody');
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">&#9203; Loading live data&hellip;</td></tr>';
+  try{
+    var res  = await fetch('../../api/germany/uk-bundle-opportunity', { cache: 'no-store' });
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    var json = await res.json();
+    if(!json.ok) throw new Error(json.error || 'API error');
+    DATA = json.rows;
+    var d = json.refreshed_at ? json.refreshed_at.slice(0,10) : 'live';
+    updateDashboard(json.summary, d);
+    applyFilters();
+  } catch(err){
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--red)">&#9888; Failed to load: ' + err.message + '</td></tr>';
+  }
+}
+
+loadLive();
+
+// Auto-poll every 5 seconds — same mechanism as existing Germany reports
+setInterval(async function(){
+  try{
+    var res  = await fetch('../../api/germany/uk-bundle-opportunity', { cache: 'no-store' });
+    if(!res.ok) return;
+    var json = await res.json();
+    if(!json.ok || !json.rows) return;
+    DATA = json.rows;
+    var d = json.refreshed_at ? json.refreshed_at.slice(0,10) : 'live';
+    updateDashboard(json.summary, d);
+    applyFilters();
+  } catch(e){}
+}, 5000);
+
+</script>
+
+</body>
+</html>
