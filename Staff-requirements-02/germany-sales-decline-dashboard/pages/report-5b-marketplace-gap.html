@@ -368,7 +368,7 @@ footer.site{max-width:1440px;margin:0 auto;padding:20px 32px 36px;border-top:1px
         <option value="all">All DE SKUs</option>
         <option disabled>── By Account ──</option>
         <option value="miss-e1">Missing: led_sone</option>
-        <option value="miss-e4">Missing: so_926407</option>
+        <option value="miss-e4">Missing: sunsone</option>
         <option value="miss-e22">Missing: electricalsone</option>
         <option value="miss-e27">Missing: ledsonede</option>
         <option value="miss-e28">Missing: huettenlampen</option>
@@ -384,7 +384,7 @@ footer.site{max-width:1440px;margin:0 auto;padding:20px 32px 36px;border-top:1px
           <th>DE Stock</th>
           <th>eBay Overall</th>
           <th>led_sone</th>
-          <th>so_926407</th>
+          <th>sunsone</th>
           <th>electricalsone</th>
           <th>ledsonede</th>
           <th>huettenlampen</th>
@@ -664,7 +664,7 @@ var accFilterMode='missing-ebay';
 
 var ACC_COLS=[
   {key:'e1', label:'led_sone'},
-  {key:'e4', label:'so_926407'},
+  {key:'e4', label:'sunsone'},
   {key:'e22',label:'electricalsone'},
   {key:'e27',label:'ledsonede'},
   {key:'e28',label:'huettenlampen'},
@@ -762,7 +762,7 @@ function accRender(){
 }
 
 function accExportCSV(){
-  var headers=['SKU','DE Stock','eBay Overall','led_sone','so_926407','electricalsone','ledsonede','huettenlampen','homin_gmbh'];
+  var headers=['SKU','DE Stock','eBay Overall','led_sone','sunsone','electricalsone','ledsonede','huettenlampen','homin_gmbh'];
   var csvRows=accFiltered.map(function(r){
     return [r.s,r.st,r.e?'Listed':'No',r.e1?'Listed':'No',r.e4?'Listed':'No',r.e22?'Listed':'No',r.e27?'Listed':'No',r.e28?'Listed':'No',r.e222?'Listed':'No'].join(',');
   });

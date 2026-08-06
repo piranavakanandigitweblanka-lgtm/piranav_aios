@@ -2,7 +2,7 @@ const { Client } = require('pg');
 
 const EBAY_ACCOUNTS = [
   { id: 1,   name: 'led_sone' },
-  { id: 4,   name: 'so_926407' },
+  { id: 4,   name: 'sunsone' },
   { id: 22,  name: 'electricalsone' },
   { id: 27,  name: 'ledsonede' },
   { id: 28,  name: 'huettenlampen' },
