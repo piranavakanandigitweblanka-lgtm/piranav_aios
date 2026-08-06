@@ -717,9 +717,19 @@ function accRenderTable(){
   if(!slice.length){
     tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:28px;color:var(--muted)">No results</td></tr>';
   } else {
+    var accLogEntries=accLog_load();
     tbody.innerHTML=slice.map(function(r){
       var accCells=ACC_COLS.map(function(c){
-        return '<td>'+(r[c.key]?'<span class="badge-yes">&#10003;</span>':'<span class="badge-no">&#10007;</span>')+'</td>';
+        if(r[c.key]){
+          var logEntry=accLogEntries.find(function(e){return e.sku===r.s&&e.account===c.label;});
+          if(logEntry){
+            var d=new Date(logEntry.addedAt);
+            var ds=d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+            return '<td><span class="badge-yes">&#10003; Listed</span><div style="font-size:10px;color:var(--muted);margin-top:3px;">added '+ds+'</div></td>';
+          }
+          return '<td><span class="badge-yes">&#10003; Listed</span></td>';
+        }
+        return '<td><span class="badge-no">&#10007; No</span></td>';
       }).join('');
       return '<tr>'
         +'<td><div class="sku-txt">'+escH(r.s)+'</div></td>'
@@ -796,32 +806,70 @@ var PREV_KEY='de_marketplace_prev_state_v1';
 function log_load(){try{return JSON.parse(localStorage.getItem(LOG_KEY)||'[]');}catch(e){return [];}}
 function log_save(e){localStorage.setItem(LOG_KEY,JSON.stringify(e));}
 
+// eBay account-level transition log
+var ACC_LOG_KEY='de_ebay_acc_added_log_v1';
+var ACC_PREV_KEY='de_ebay_acc_prev_v1';
+function accLog_load(){try{return JSON.parse(localStorage.getItem(ACC_LOG_KEY)||'[]');}catch(e){return [];}}
+function accLog_save(e){localStorage.setItem(ACC_LOG_KEY,JSON.stringify(e));}
+
 function detectTransitions(newRows){
+  // --- channel-level (Amazon/eBay/Shopify overall) ---
   var prevMap={};
   try{prevMap=JSON.parse(localStorage.getItem(PREV_KEY)||'{}');}catch(e){}
   var newMap={};
   newRows.forEach(function(r){newMap[r.s]={a:r.a,e:r.e,sh:r.sh};});
   if(!Object.keys(prevMap).length){
     localStorage.setItem(PREV_KEY,JSON.stringify(newMap));
-    return;
-  }
-  var entries=log_load();
-  var changed=false;
-  var channels=[{key:'a',label:'Amazon DE'},{key:'e',label:'eBay DE'},{key:'sh',label:'Shopify DE'}];
-  newRows.forEach(function(r){
-    var prev=prevMap[r.s];
-    if(!prev) return;
-    channels.forEach(function(ch){
-      if(prev[ch.key]===0&&r[ch.key]===1){
-        if(!entries.some(function(e){return e.sku===r.s&&e.channel===ch.label;})){
-          entries.unshift({sku:r.s,channel:ch.label,addedAt:new Date().toISOString(),auto:true});
-          changed=true;
+  } else {
+    var entries=log_load();
+    var changed=false;
+    var channels=[{key:'a',label:'Amazon DE'},{key:'e',label:'eBay DE'},{key:'sh',label:'Shopify DE'}];
+    newRows.forEach(function(r){
+      var prev=prevMap[r.s];
+      if(!prev) return;
+      channels.forEach(function(ch){
+        if(prev[ch.key]===0&&r[ch.key]===1){
+          if(!entries.some(function(e){return e.sku===r.s&&e.channel===ch.label;})){
+            entries.unshift({sku:r.s,channel:ch.label,addedAt:new Date().toISOString(),auto:true});
+            changed=true;
+          }
         }
-      }
+      });
     });
+    if(changed){log_save(entries);updateLogBadge();log_render();}
+    localStorage.setItem(PREV_KEY,JSON.stringify(newMap));
+  }
+
+  // --- per-account eBay transitions ---
+  var accPrevMap={};
+  try{accPrevMap=JSON.parse(localStorage.getItem(ACC_PREV_KEY)||'{}');}catch(e){}
+  var accNewMap={};
+  newRows.forEach(function(r){
+    accNewMap[r.s]={e1:r.e1,e4:r.e4,e22:r.e22,e27:r.e27,e28:r.e28,e222:r.e222};
   });
-  if(changed){log_save(entries);updateLogBadge();log_render();}
-  localStorage.setItem(PREV_KEY,JSON.stringify(newMap));
+  if(!Object.keys(accPrevMap).length){
+    localStorage.setItem(ACC_PREV_KEY,JSON.stringify(accNewMap));
+  } else {
+    var accEntries=accLog_load();
+    var accChanged=false;
+    newRows.forEach(function(r){
+      var prev=accPrevMap[r.s];
+      if(!prev) return;
+      ACC_COLS.forEach(function(c){
+        if(prev[c.key]===0&&r[c.key]===1){
+          if(!accEntries.some(function(e){return e.sku===r.s&&e.account===c.label;})){
+            accEntries.unshift({sku:r.s,account:c.label,addedAt:new Date().toISOString()});
+            accChanged=true;
+          }
+        }
+      });
+    });
+    if(accChanged){
+      accLog_save(accEntries);
+      if(document.getElementById('tab-panel-3').classList.contains('active')) accRenderTable();
+    }
+    localStorage.setItem(ACC_PREV_KEY,JSON.stringify(accNewMap));
+  }
 }
 
 function log_remove(sku,channel){
