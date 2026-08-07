@@ -154,6 +154,7 @@
       <button class="qbtn" onclick="setRange('week')">This Week</button>
       <button class="qbtn" onclick="setRange('lastweek')">Last Week</button>
       <button class="qbtn" onclick="setRange('month')">This Month</button>
+      <button class="qbtn" onclick="setRange('all')">All Data</button>
     </div>
     <span class="load-status" id="loadStatus"></span>
     <button class="load-btn" onclick="loadAll()">Load EODs</button>
@@ -181,9 +182,9 @@
       <button class="exp-btn" onclick="exportCSV()">Export CSV</button>
     </div>
     <div id="stateWrap">
-      <div class="state-msg">
+      <div class="state-msg" id="stateMsg">
         <div class="icon">⚙️</div>
-        <div>Select a date range and click <strong>Load EODs</strong> to view the TEC team's daily logs.</div>
+        <div id="stateMsgText">Loading all TEC team EOD data…</div>
       </div>
     </div>
     <div id="tableWrap" style="display:none">
@@ -232,7 +233,8 @@ let availableDates = { Kuberan: new Set(), Piranav: new Set() };
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 (function init() {
-  setRange('week');
+  setRange('all');
+  loadAll();
 })();
 
 // ── Date helpers ──────────────────────────────────────────────────────────────
@@ -279,10 +281,13 @@ function setRange(preset) {
   else if (preset === 'month') {
     from = t.slice(0,7) + '-01'; to = t;
   }
+  else if (preset === 'all') {
+    from = '2026-03-01'; to = t;
+  }
   document.getElementById('dateFrom').value = from;
   document.getElementById('dateTo').value   = to;
   document.querySelectorAll('.qbtn').forEach(b => b.classList.remove('on'));
-  event && event.target && event.target.classList.add('on');
+  if (event && event.target) event.target.classList.add('on');
 }
 
 // ── Load all ──────────────────────────────────────────────────────────────────
@@ -324,15 +329,23 @@ async function loadAll() {
   const total = toFetch.length;
   document.getElementById('loadStatus').textContent = `Loading ${total} EOD files…`;
 
-  // Step 3: fetch each file
+  // Step 3: batched fetch — 8 parallel at a time to stay under GitHub 60 req/hr unauthenticated
+  const BATCH = 8;
   let done = 0;
-  const fetched = await Promise.all(toFetch.map(async ({ member, date }) => {
-    const md = await fetchFile(member.name, date);
-    done++;
-    setProgress(20 + Math.round(done / Math.max(total,1) * 75));
-    document.getElementById('loadStatus').textContent = `${done}/${total} files loaded`;
-    return { member, date, md };
-  }));
+  const fetched = [];
+  for (let i = 0; i < toFetch.length; i += BATCH) {
+    const chunk = toFetch.slice(i, i + BATCH);
+    const results = await Promise.all(chunk.map(async ({ member, date }) => {
+      const md = await fetchFile(member.name, date);
+      done++;
+      setProgress(20 + Math.round(done / Math.max(total,1) * 75));
+      document.getElementById('loadStatus').textContent = `${done}/${total} files loaded`;
+      return { member, date, md };
+    }));
+    fetched.push(...results);
+    // small pause between batches to avoid rate limit
+    if (i + BATCH < toFetch.length) await new Promise(r => setTimeout(r, 120));
+  }
 
   // Step 4: parse each file into rows
   let seq = 1;
