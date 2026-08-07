@@ -15,8 +15,8 @@
     --fail:#b91c1c;--fail-soft:#fff5f5;
     --na:#64748b;--na-soft:#eef2f7;
     --tec:#0369a1;--tec-soft:#e0f2fe;
-    --k:#7c3aed;--k-soft:#ede9fe;   /* Kuberan */
-    --p:#0369a1;--p-soft:#e0f2fe;   /* Piranav */
+    --k:#7c3aed;--k-soft:#ede9fe;
+    --p:#0369a1;--p-soft:#e0f2fe;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;}
@@ -29,7 +29,7 @@
   .headtxt{flex:1;min-width:180px;}
   .kicker{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tec);}
   .masthead h1{font-size:17px;font-weight:700;color:var(--navy);margin-top:2px;}
-  .statrow{display:flex;gap:0;border-left:1px solid var(--line);padding-left:22px;}
+  .statrow{display:flex;gap:0;border-left:1px solid var(--line);padding-left:22px;flex-wrap:wrap;}
   .stat{padding:0 16px;border-right:1px solid var(--line);}
   .stat:last-child{border-right:none;}
   .stat .v{font-size:16px;font-weight:700;color:var(--navy);}
@@ -44,38 +44,41 @@
   .back:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent);}
   .team-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:7px;background:var(--tec-soft);color:var(--tec);font-size:12.5px;font-weight:700;border:1px solid #7dd3fc;}
 
-  /* ── Date controls ── */
-  .ctrl-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px;padding:14px 18px;background:var(--card);border:1px solid var(--line);border-radius:12px;}
-  .ctrl-bar label{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;}
-  input[type=date]{border:1px solid var(--line);border-radius:7px;padding:7px 11px;font-size:13px;color:var(--ink);background:var(--card);outline:none;}
-  input[type=date]:focus{border-color:var(--tec);}
-  .quick-btns{display:flex;gap:6px;flex-wrap:wrap;}
-  .qbtn{border:1px solid var(--line);border-radius:6px;padding:6px 13px;font-size:12px;font-weight:600;cursor:pointer;background:var(--card);color:var(--muted);transition:all .12s;}
-  .qbtn:hover,.qbtn.on{background:var(--tec);border-color:var(--tec);color:#fff;}
-  .load-btn{border:none;border-radius:7px;padding:8px 22px;font-size:13px;font-weight:700;cursor:pointer;background:var(--tec);color:#fff;transition:opacity .12s;margin-left:auto;}
-  .load-btn:hover{opacity:.85;}
-  .sep{color:var(--line);font-size:18px;margin:0 2px;}
-
   /* ── Progress ── */
   .progress-bar{height:3px;background:var(--line);border-radius:2px;margin-bottom:12px;overflow:hidden;}
-  .progress-fill{height:100%;background:var(--tec);transition:width .25s;width:0%;}
+  .progress-fill{height:100%;background:var(--tec);transition:width .2s;width:0%;}
+  .load-status{font-size:12px;color:var(--muted);margin-bottom:8px;min-height:16px;}
 
   /* ── KPIs ── */
   .kpi-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
   .kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 18px;min-width:120px;}
   .kpi .kv{font-size:22px;font-weight:700;color:var(--navy);}
   .kpi .kl{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-top:2px;}
+  .kpi.k-card{border-color:var(--k);}
   .kpi.k-card .kv{color:var(--k);}
+  .kpi.p-card{border-color:var(--p);}
   .kpi.p-card .kv{color:var(--p);}
 
-  /* ── Table ── */
+  /* ── Table box ── */
   .tbox{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
   .tbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:11px 16px;border-bottom:1px solid var(--line);background:#f8fafc;}
-  .tbar .tlabel{font-size:12.5px;font-weight:700;color:var(--navy);flex:1;}
+  .tbar .tlabel{font-size:13px;font-weight:700;color:var(--navy);flex:1;min-width:160px;}
   .tbar .tcount{font-size:12px;color:var(--muted);}
-  input#taskSearch{border:1px solid var(--line);border-radius:6px;padding:6px 11px;font-size:12.5px;width:200px;outline:none;background:var(--card);}
+
+  /* ── Person filter ── */
+  .person-filter{display:flex;gap:6px;align-items:center;}
+  .pfbtn{border:1.5px solid var(--line);border-radius:7px;padding:6px 16px;font-size:12.5px;font-weight:700;cursor:pointer;background:var(--card);color:var(--muted);transition:all .13s;white-space:nowrap;}
+  .pfbtn:hover{border-color:var(--tec);color:var(--tec);}
+  .pfbtn.on-all{background:var(--tec);border-color:var(--tec);color:#fff;}
+  .pfbtn.on-k{background:var(--k);border-color:var(--k);color:#fff;}
+  .pfbtn.on-p{background:var(--p);border-color:var(--p);color:#fff;}
+
+  input#taskSearch{border:1px solid var(--line);border-radius:6px;padding:6px 11px;font-size:12.5px;width:190px;outline:none;background:var(--card);}
   input#taskSearch:focus{border-color:var(--tec);}
-  .exp-btn{border:none;border-radius:6px;padding:6px 14px;font-size:11.5px;font-weight:700;cursor:pointer;background:var(--good);color:#fff;}
+  .exp-btn{border:none;border-radius:6px;padding:6px 14px;font-size:11.5px;font-weight:700;cursor:pointer;background:var(--good);color:#fff;white-space:nowrap;}
+  .exp-btn:hover{opacity:.88;}
+
+  /* ── Table ── */
   .scroll{overflow-x:auto;}
   table{width:100%;border-collapse:collapse;font-size:11.5px;min-width:1300px;}
   thead th{position:sticky;top:0;z-index:1;background:#f0f3f8;text-align:left;padding:8px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#42506a;border-bottom:2px solid var(--line);white-space:nowrap;}
@@ -84,12 +87,10 @@
   tbody tr:last-child td{border-bottom:none;}
   tbody tr:hover td{background:#f7f9fc;}
 
-  /* Member header row */
-  tr.mem-hdr td{padding:8px 10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;border-top:2px solid var(--line);}
-  tr.mem-hdr.kuberan td{background:var(--k-soft);color:var(--k);}
-  tr.mem-hdr.piranav td{background:var(--p-soft);color:var(--p);}
+  tr.mem-hdr td{padding:9px 12px;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;border-top:3px solid;}
+  tr.mem-hdr.kuberan td{background:var(--k-soft);color:var(--k);border-color:var(--k);}
+  tr.mem-hdr.piranav td{background:var(--p-soft);color:var(--p);border-color:var(--p);}
 
-  /* Date group row */
   tr.date-hdr td{background:#fafbfc;padding:5px 10px;font-size:10.5px;font-weight:700;color:var(--muted);border-top:1px dashed var(--line);}
 
   /* Badges */
@@ -105,15 +106,14 @@
   .st-part{background:var(--warn-soft);color:var(--warn);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;}
   .url-link{color:var(--accent);text-decoration:none;font-size:10.5px;word-break:break-all;}
   .url-link:hover{text-decoration:underline;}
-  .no-eod-row td{background:var(--fail-soft);color:var(--fail);font-style:italic;}
+  .no-eod-row td{background:#fff8f8;color:var(--fail);font-style:italic;}
 
   /* State */
-  .state-msg{text-align:center;padding:56px 20px;color:var(--muted);font-size:13.5px;}
-  .state-msg .icon{font-size:36px;margin-bottom:10px;}
-  .load-status{font-size:12px;color:var(--muted);}
+  .state-msg{text-align:center;padding:64px 20px;color:var(--muted);font-size:13.5px;}
+  .state-msg .icon{font-size:40px;margin-bottom:12px;}
 
   footer.site{max-width:1500px;margin:0 auto;padding:18px 28px 36px;border-top:1px solid var(--line);color:var(--muted);font-size:11px;text-align:center;}
-  @media(max-width:900px){.page{padding:14px;}.ctrl-bar{gap:8px;}}
+  @media(max-width:900px){.page{padding:12px 14px 40px;}}
 </style>
 </head>
 <body>
@@ -127,8 +127,9 @@
       <h1>TEC Team — End of Day Report Log</h1>
     </div>
     <div class="statrow">
-      <div class="stat"><div class="kv" style="font-size:16px;font-weight:700;color:var(--navy)">Kuberan</div><div class="l">TEC01 · DMT002</div></div>
-      <div class="stat"><div class="kv" style="font-size:16px;font-weight:700;color:var(--navy)">Piranav</div><div class="l">TEC02 · DMT001</div></div>
+      <div class="stat"><div class="v" style="color:var(--k)">Kuberan</div><div class="l">TEC01 · DMT002</div></div>
+      <div class="stat"><div class="v" style="color:var(--p)">Piranav</div><div class="l">TEC02 · DMT001</div></div>
+      <div class="stat"><div class="v" id="statFiles">—</div><div class="l">EOD Files</div></div>
       <div class="stat"><div class="v" id="statRange">—</div><div class="l">Date Range</div></div>
     </div>
   </div>
@@ -139,29 +140,12 @@
   <div class="topbar-nav">
     <a class="back" href="../index.html">← Directory</a>
     <a class="back" href="eod.html">← EOD Viewer</a>
-    <span class="team-badge">⚙ TEC Team · 2 Members</span>
-  </div>
-
-  <!-- Date controls -->
-  <div class="ctrl-bar">
-    <label>From</label>
-    <input type="date" id="dateFrom">
-    <span class="sep">→</span>
-    <label>To</label>
-    <input type="date" id="dateTo">
-    <div class="quick-btns">
-      <button class="qbtn" onclick="setRange('today')">Today</button>
-      <button class="qbtn" onclick="setRange('week')">This Week</button>
-      <button class="qbtn" onclick="setRange('lastweek')">Last Week</button>
-      <button class="qbtn" onclick="setRange('month')">This Month</button>
-      <button class="qbtn" onclick="setRange('all')">All Data</button>
-    </div>
-    <span class="load-status" id="loadStatus"></span>
-    <button class="load-btn" onclick="loadAll()">Load EODs</button>
+    <span class="team-badge">⚙ TEC Team · 2 Members · All Data</span>
   </div>
 
   <!-- Progress -->
   <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+  <div class="load-status" id="loadStatus"></div>
 
   <!-- KPIs -->
   <div class="kpi-row" id="kpiRow" style="display:none">
@@ -178,15 +162,23 @@
     <div class="tbar">
       <span class="tlabel" id="tableLabel">TEC Team EOD Log</span>
       <span class="tcount" id="tableCount"></span>
+      <!-- Person filter -->
+      <div class="person-filter">
+        <button class="pfbtn on-all" id="pf-all"  onclick="setFilter('all')">All Members</button>
+        <button class="pfbtn"        id="pf-k"    onclick="setFilter('Kuberan')">Kuberan (TEC01)</button>
+        <button class="pfbtn"        id="pf-p"    onclick="setFilter('Piranav')">Piranav (TEC02)</button>
+      </div>
       <input type="text" id="taskSearch" placeholder="Search tasks…" oninput="renderTable()">
       <button class="exp-btn" onclick="exportCSV()">Export CSV</button>
     </div>
+
     <div id="stateWrap">
-      <div class="state-msg" id="stateMsg">
+      <div class="state-msg">
         <div class="icon">⚙️</div>
         <div id="stateMsgText">Loading all TEC team EOD data…</div>
       </div>
     </div>
+
     <div id="tableWrap" style="display:none">
       <div class="scroll">
         <table>
@@ -201,7 +193,7 @@
               <th>task_tier</th>
               <th>tier_description</th>
               <th style="min-width:300px">task_description</th>
-              <th>hours_spent</th>
+              <th class="num">hours_spent</th>
               <th>status</th>
               <th>verified</th>
               <th style="min-width:160px">verification_url</th>
@@ -217,7 +209,7 @@
 
 </main>
 
-<footer class="site">TEC Team EOD Log · Digital Marketing Member Reports · AIOS · Source: GitHub eod-reports · Read-only</footer>
+<footer class="site">TEC Team EOD Log · Digital Marketing · AIOS · Source: github.com/digitalmarketing69140951-sys/eod-reports · Read-only</footer>
 
 <script>
 // ── Config ────────────────────────────────────────────────────────────────────
@@ -225,112 +217,85 @@ const GH     = 'https://api.github.com/repos/digitalmarketing69140951-sys/eod-re
 const GH_RAW = 'https://raw.githubusercontent.com/digitalmarketing69140951-sys/eod-reports/main/eods';
 const MEMBERS = [
   { name:'Kuberan', empId:'TEC01', dbId:'DMT002', dept:'Technical / UI-UX', cssClass:'kuberan', color:'#7c3aed' },
-  { name:'Piranav', empId:'TEC02', dbId:'DMT001', dept:'Technical / SEO',    cssClass:'piranav', color:'#0369a1' },
+  { name:'Piranav', empId:'TEC02', dbId:'DMT001', dept:'Technical / SEO',   cssClass:'piranav', color:'#0369a1' },
 ];
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let allRows = [];
-let availableDates = { Kuberan: new Set(), Piranav: new Set() };
+let allRows      = [];
+let personFilter = 'all'; // 'all' | 'Kuberan' | 'Piranav'
 
-// ── Init ──────────────────────────────────────────────────────────────────────
-(function init() {
-  setRange('all');
-  loadAll();
-})();
+// ── Init: auto-load everything ─────────────────────────────────────────────────
+(function init() { loadAll(); })();
+
+// ── Person filter ─────────────────────────────────────────────────────────────
+function setFilter(who) {
+  personFilter = who;
+  document.getElementById('pf-all').className = 'pfbtn' + (who === 'all'      ? ' on-all' : '');
+  document.getElementById('pf-k'  ).className = 'pfbtn' + (who === 'Kuberan'  ? ' on-k'   : '');
+  document.getElementById('pf-p'  ).className = 'pfbtn' + (who === 'Piranav'  ? ' on-p'   : '');
+  renderTable();
+}
 
 // ── Date helpers ──────────────────────────────────────────────────────────────
-function today() {
-  return new Date().toISOString().slice(0,10);
-}
+function today() { return new Date().toISOString().slice(0,10); }
 function addDays(d, n) {
   const dt = new Date(d + 'T12:00:00Z');
   dt.setUTCDate(dt.getUTCDate() + n);
   return dt.toISOString().slice(0,10);
 }
-function mondayOf(d) {
-  const dt = new Date(d + 'T12:00:00Z');
-  const day = dt.getUTCDay() || 7;
-  dt.setUTCDate(dt.getUTCDate() - day + 1);
-  return dt.toISOString().slice(0,10);
-}
 function datesInRange(from, to) {
-  const dates = [];
-  let cur = from;
+  const dates = []; let cur = from;
   while (cur <= to) { dates.push(cur); cur = addDays(cur, 1); }
   return dates;
 }
 function fmtDisp(d) {
-  const [y,m,day] = d.split('-');
-  return `${day}/${m}/${y}`;
+  const [y,m,day] = d.split('-'); return `${day}/${m}/${y}`;
 }
 function fmtFull(d) {
   try {
-    const dt = new Date(d + 'T12:00:00Z');
-    return dt.toLocaleDateString('en-GB', { weekday:'short', day:'2-digit', month:'short', year:'numeric', timeZone:'UTC' });
+    return new Date(d + 'T12:00:00Z').toLocaleDateString('en-GB',
+      { weekday:'short', day:'2-digit', month:'short', year:'numeric', timeZone:'UTC' });
   } catch { return d; }
 }
 
-function setRange(preset) {
-  const t = today();
-  let from, to;
-  if (preset === 'today')    { from = t; to = t; }
-  else if (preset === 'week')    { from = mondayOf(t); to = t; }
-  else if (preset === 'lastweek') {
-    const lm = addDays(mondayOf(t), -7);
-    from = lm; to = addDays(lm, 4);
-  }
-  else if (preset === 'month') {
-    from = t.slice(0,7) + '-01'; to = t;
-  }
-  else if (preset === 'all') {
-    from = '2026-03-30'; to = t;
-  }
-  document.getElementById('dateFrom').value = from;
-  document.getElementById('dateTo').value   = to;
-  document.querySelectorAll('.qbtn').forEach(b => b.classList.remove('on'));
-  if (event && event.target) event.target.classList.add('on');
-}
-
-// ── Load all ──────────────────────────────────────────────────────────────────
+// ── Load all available EOD data ───────────────────────────────────────────────
 async function loadAll() {
-  const from = document.getElementById('dateFrom').value;
-  const to   = document.getElementById('dateTo').value;
-  if (!from || !to || from > to) { alert('Please select a valid date range.'); return; }
-
   allRows = [];
-  document.getElementById('stateWrap').style.display = 'none';
+  document.getElementById('stateWrap').style.display = '';
   document.getElementById('tableWrap').style.display = 'none';
   document.getElementById('kpiRow').style.display    = 'none';
   setProgress(5);
-  document.getElementById('loadStatus').textContent = 'Fetching available dates…';
+  setStatus('Fetching available dates…');
 
-  // Step 1: fetch directory for each member (2 API calls)
+  // Step 1 — directory listing for each member (2 API calls via GitHub API)
+  const availableDates = {};
   await Promise.all(MEMBERS.map(async m => {
     try {
-      const r = await fetch(`${GH}/${m.name}`, { headers: { Accept: 'application/vnd.github.v3+json' } });
-      if (!r.ok) { availableDates[m.name] = new Set(); return; }
+      const r = await fetch(`${GH}/${m.name}`, { headers:{ Accept:'application/vnd.github.v3+json' } });
+      if (!r.ok) { availableDates[m.name] = []; return; }
       const files = await r.json();
-      availableDates[m.name] = new Set(
-        files.filter(f => f.name.endsWith('.md')).map(f => f.name.replace('.md',''))
-      );
-    } catch { availableDates[m.name] = new Set(); }
+      availableDates[m.name] = Array.isArray(files)
+        ? files.filter(f => f.name.endsWith('.md')).map(f => f.name.replace('.md','')).sort()
+        : [];
+    } catch { availableDates[m.name] = []; }
   }));
 
-  setProgress(20);
+  const allDates = new Set([
+    ...availableDates['Kuberan'],
+    ...availableDates['Piranav'],
+  ]);
+  const totalFiles = availableDates['Kuberan'].length + availableDates['Piranav'].length;
+  setProgress(15);
 
-  // Step 2: determine which dates to fetch
-  const range = datesInRange(from, to);
-  const toFetch = []; // { member, date }
+  // Step 2 — build fetch list (only dates that exist in each member's folder)
+  const toFetch = [];
   MEMBERS.forEach(m => {
-    range.forEach(d => {
-      if (availableDates[m.name].has(d)) toFetch.push({ member: m, date: d });
-    });
+    availableDates[m.name].forEach(date => toFetch.push({ member: m, date }));
   });
 
-  const total = toFetch.length;
-  document.getElementById('loadStatus').textContent = `Loading ${total} EOD files…`;
+  setStatus(`Loading ${totalFiles} EOD files…`);
 
-  // Step 3: batched fetch — raw CDN has no rate limit, batch for browser connection limits
+  // Step 3 — fetch file content from raw CDN (no rate limit), 20 at a time
   const BATCH = 20;
   let done = 0;
   const fetched = [];
@@ -339,60 +304,51 @@ async function loadAll() {
     const results = await Promise.all(chunk.map(async ({ member, date }) => {
       const md = await fetchFile(member.name, date);
       done++;
-      setProgress(20 + Math.round(done / Math.max(total,1) * 75));
-      document.getElementById('loadStatus').textContent = `${done}/${total} files loaded`;
+      setProgress(15 + Math.round(done / Math.max(totalFiles, 1) * 82));
+      setStatus(`${done} / ${totalFiles} files loaded`);
       return { member, date, md };
     }));
     fetched.push(...results);
   }
 
-  // Step 4: parse each file into rows
-  let seq = 1;
+  // Step 4 — parse into rows, member by member, date ascending
   MEMBERS.forEach(m => {
-    // Get dates this member has in range, sorted ascending
-    const memberDates = range.filter(d => availableDates[m.name].has(d));
-    memberDates.forEach(date => {
-      const f = fetched.find(x => x.member.name === m.name && x.date === date);
-      const md = f ? f.md : null;
+    const dates = availableDates[m.name]; // already sorted ascending
+    dates.forEach(date => {
+      const f   = fetched.find(x => x.member.name === m.name && x.date === date);
+      const md  = f ? f.md : null;
       if (!md) {
-        // date was in available list but fetch failed
-        allRows.push({ seq: seq++, member: m, date, noEod: true });
+        allRows.push({ member: m, date, noEod: true, fetchFail: true });
         return;
       }
       const tasks = m.name === 'Kuberan' ? parseKuberan(md, date, m) : parsePiranav(md, date, m);
       if (tasks.length === 0) {
-        allRows.push({ seq: seq++, member: m, date, noEod: true });
+        allRows.push({ member: m, date, noEod: true });
       } else {
-        tasks.forEach(t => { t.seq = seq++; allRows.push(t); });
+        tasks.forEach(t => allRows.push(t));
       }
     });
-    // Add "no EOD" for dates in range with no file
-    const missingDates = range.filter(d => !availableDates[m.name].has(d));
-    missingDates.forEach(date => {
-      allRows.push({ seq: seq++, member: m, date, noEod: true, missing: true });
-    });
   });
 
-  // Sort: first by member order, then by date ascending
-  allRows.sort((a,b) => {
-    const mi = MEMBERS.indexOf(a.member), mj = MEMBERS.indexOf(b.member);
-    if (mi !== mj) return mi - mj;
-    return a.date < b.date ? -1 : 1;
-  });
+  // Determine actual date span
+  const taskDates = allRows.filter(r => !r.noEod).map(r => r.date).sort();
+  const spanFrom  = taskDates[0]               || '2026-03-30';
+  const spanTo    = taskDates[taskDates.length-1] || today();
 
-  // Re-sequence
-  allRows.forEach((r,i) => r.seq = i + 1);
+  // Update header stats
+  document.getElementById('statFiles').textContent = totalFiles;
+  document.getElementById('statRange').textContent = `${fmtDisp(spanFrom)} – ${fmtDisp(spanTo)}`;
 
-  document.getElementById('statRange').textContent = `${fmtDisp(from)} – ${fmtDisp(to)}`;
-  document.getElementById('loadStatus').textContent = '';
   setProgress(0);
-  updateKPIs(from, to);
+  setStatus('');
+  updateKPIs();
   renderTable();
+  document.getElementById('stateWrap').style.display = 'none';
   document.getElementById('tableWrap').style.display = '';
   document.getElementById('kpiRow').style.display    = 'flex';
 }
 
-// ── GitHub fetch — uses raw CDN (no rate limit) for file content ──────────────
+// ── GitHub raw fetch ──────────────────────────────────────────────────────────
 async function fetchFile(name, date) {
   try {
     const r = await fetch(`${GH_RAW}/${name}/${date}.md`);
@@ -402,86 +358,70 @@ async function fetchFile(name, date) {
 }
 
 // ── Parser: Kuberan ───────────────────────────────────────────────────────────
-// Format: ## Task N: Title / **Status:** / **Time Spent:** X Hours / **Definition of Done Met:** Yes
+// Sections start with: ## Task N: Title  or  ## UI Review N – Title
 function parseKuberan(md, date, member) {
-  const rows = [];
-  const taskPattern = /^##\s+(?:Task\s*\d+[.:]\s*|UI\s*Review\s*\d+[–-]\s*)(.+)/im;
-  const blocks = md.split(/^##\s+(?:Task\s*\d+|UI\s*Review\s*\d+)/im).slice(1);
-  const headers = [...md.matchAll(/^##\s+(?:Task\s*\d+[.:–-]\s*|UI\s*Review\s*\d+[–-]\s*)(.+)/gim)];
-
-  if (blocks.length === 0) return rows;
+  const rows    = [];
+  const headers = [...md.matchAll(/^##\s+(?:Task\s*\d+[.:–\-\s]+|UI\s*Review\s*\d+[.:–\-\s]+)(.+)/gim)];
+  const blocks  = md.split(/^##\s+(?:Task\s*\d+|UI\s*Review\s*\d+)/im).slice(1);
 
   blocks.forEach((body, i) => {
-    const titleMatch = headers[i];
-    const desc = titleMatch ? titleMatch[1].trim() : `Task ${i+1}`;
-
-    const hours   = extractNum(body, ['Time Spent','Time']) || '';
+    const desc    = headers[i] ? headers[i][1].trim() : `Task ${i+1}`;
+    const hours   = extractNum(body, ['Time Spent','Time']);
     const status  = extractVal(body, ['Status']) || 'Completed';
-    const dod     = extractVal(body, ['Definition of Done Met','Done']) || '';
+    const dod     = extractVal(body, ['Definition of Done Met','Done']);
     const url     = extractUrl(body);
-    const product = extractVal(body, ['What changed in the system']) || '';
-
-    const intent  = makeIntent('TASK', desc, i + 1);
+    const product = extractVal(body, ['What changed in the system','Affected Page']);
     const { tier, tierDesc } = classifyTier(desc, body);
 
     rows.push({
       date, member,
-      taskId: `TT${String(rows.length + 1).padStart(3,'0')}`,
-      dept: member.dept,
-      intentId: intent,
+      taskId:   '',
+      dept:     member.dept,
+      intentId: makeIntent(desc, i + 1),
       tier, tierDesc,
-      desc: cleanText(desc),
-      hours: parseFloat(hours) || '',
-      status: normaliseStatus(status),
+      desc:     cleanText(desc),
+      hours:    parseFloat(hours) || '',
+      status:   normaliseStatus(status),
       verified: normaliseDod(dod),
-      url: url,
-      waste: 'No',
-      product: product ? product.slice(0,60).replace(/\n/g,' ') : '',
+      url,
+      waste:    'No',
+      product:  (product || '').slice(0, 80).replace(/\n/g,' '),
     });
   });
   return rows;
 }
 
 // ── Parser: Piranav ───────────────────────────────────────────────────────────
-// Format: Task Name: Title / Status: / Evidence: / Definition of Done Met: Yes
-// Also:   UX Change / Review: Title / Affected Page: / Status: / Definition of Done Met:
+// Tasks marked by: "Task Name:" or "UX Change / Review:"
 function parsePiranav(md, date, member) {
-  const rows = [];
-
-  // Split into sections by "Task Name:" and "UX Change / Review:"
-  const pattern = /(?:^Task Name:|^UX Change \/ Review:)/gim;
-  const parts = md.split(pattern).slice(1);
-  const labels = [...md.matchAll(/(?:^Task Name:|^UX Change \/ Review:)/gim)];
-
-  if (parts.length === 0) return rows;
+  const rows   = [];
+  const labels = [...md.matchAll(/^(Task Name:|UX Change\s*\/\s*Review:)/gim)];
+  const parts  = md.split(/^(?:Task Name:|UX Change\s*\/\s*Review:)/im).slice(1);
 
   parts.forEach((body, i) => {
     const firstLine = body.split('\n')[0].trim();
-    const desc = firstLine || `Task ${i+1}`;
-
-    const status  = extractVal(body, ['Status']) || 'Completed';
-    const dod     = extractVal(body, ['Definition of Done Met','Done']) || '';
-    const url     = extractUrl(body);
-    const product = extractVal(body, ['Affected Page','What changed in the system','What changed in user experience']) || '';
-
-    const intent  = makeIntent('TASK', desc, i + 1);
+    const desc      = firstLine || `Task ${i+1}`;
+    const status    = extractVal(body, ['Status']) || 'Completed';
+    const dod       = extractVal(body, ['Definition of Done Met','Done']);
+    const url       = extractUrl(body);
+    const product   = extractVal(body, ['Affected Page','What changed in the system','What changed in user experience']);
+    const isUX      = labels[i] && labels[i][0].toLowerCase().includes('ux');
+    const dept      = isUX ? 'Technical / UI-UX' : member.dept;
     const { tier, tierDesc } = classifyTier(desc, body);
-    const isUX    = labels[i] && labels[i][0].toLowerCase().includes('ux');
-    const dept    = isUX ? 'Technical / UI-UX' : member.dept;
 
     rows.push({
       date, member,
-      taskId: `TT${String(rows.length + 1).padStart(3,'0')}`,
+      taskId:   '',
       dept,
-      intentId: intent,
+      intentId: makeIntent(desc, i + 1),
       tier, tierDesc,
-      desc: cleanText(desc),
-      hours: '',
-      status: normaliseStatus(status),
+      desc:     cleanText(desc),
+      hours:    '',
+      status:   normaliseStatus(status),
       verified: normaliseDod(dod),
       url,
-      waste: 'No',
-      product: product ? product.slice(0,60).replace(/\n/g,' ') : '',
+      waste:    'No',
+      product:  (product || '').slice(0, 80).replace(/\n/g,' '),
     });
   });
   return rows;
@@ -503,17 +443,17 @@ function extractNum(text, keys) {
            || text.match(new RegExp(`^${k}[:\\s]+([\\d.]+)\\s*[Hh]ours?`, 'im'));
     if (m) return m[1];
   }
-  const m2 = text.match(/(\d+(?:\.\d+)?)\s*[Hh]ours?/);
-  return m2 ? m2[1] : '';
+  const fallback = text.match(/(\d+(?:\.\d+)?)\s*[Hh]ours?/);
+  return fallback ? fallback[1] : '';
 }
 
 function extractUrl(text) {
-  const m = text.match(/https?:\/\/[^\s)\]"*,]+/);
+  const m = text.match(/https?:\/\/[^\s)\]"*,\n]+/);
   return m ? m[0].replace(/[.,;*]+$/, '') : '';
 }
 
 function cleanText(s) {
-  return s.replace(/\*+/g,'').replace(/#+/g,'').trim();
+  return s.replace(/\*+/g,'').replace(/^#+/,'').trim();
 }
 
 function normaliseStatus(s) {
@@ -526,10 +466,10 @@ function normaliseStatus(s) {
 
 function normaliseDod(s) {
   if (!s) return '—';
-  return /yes|done|complet/i.test(s) ? 'Yes' : /no\b|not/i.test(s) ? 'No' : s.slice(0,3);
+  return /yes|done|complet/i.test(s) ? 'Yes' : /\bno\b|not met/i.test(s) ? 'No' : '—';
 }
 
-function makeIntent(prefix, desc, idx) {
+function makeIntent(desc, idx) {
   const d = desc.toUpperCase();
   const kw = d.includes('SCROLL') ? 'SCROLL'
     : d.includes('BANNER') ? 'BANNER'
@@ -559,68 +499,86 @@ function makeIntent(prefix, desc, idx) {
 function classifyTier(desc, body) {
   const all = (desc + ' ' + body).toLowerCase();
   if (all.includes('leave') || all.includes('md sheet') || all.includes('not working') || all.includes('operational')) {
-    return { tier: 'C', tierDesc: 'C | Operational Necessity' };
+    return { tier:'C', tierDesc:'C | Operational Necessity' };
   }
   if (all.includes('monitoring') || all.includes('clarity') || all.includes('review') || all.includes('planning')
    || all.includes('gsc check') || all.includes('search console check') || all.includes('discussion')
    || all.includes('revenue-support') || all.includes('blog builder')) {
-    return { tier: 'B', tierDesc: 'B | Revenue-Support' };
+    return { tier:'B', tierDesc:'B | Revenue-Support' };
   }
-  return { tier: 'A', tierDesc: 'A | Revenue-Direct' };
+  return { tier:'A', tierDesc:'A | Revenue-Direct' };
 }
 
 function shortUrl(u) {
-  try { const x = new URL(u); return x.hostname.replace('www.','') + (x.pathname.length > 1 ? x.pathname.slice(0,20) : ''); }
-  catch { return u.slice(0,25); }
+  try {
+    const x = new URL(u);
+    return x.hostname.replace('www.','') + (x.pathname.length > 1 ? x.pathname.slice(0,22) : '');
+  } catch { return u.slice(0,28); }
 }
 
 function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── KPIs ──────────────────────────────────────────────────────────────────────
-function updateKPIs(from, to) {
+// ── KPIs (always based on all data, not filtered view) ────────────────────────
+function updateKPIs() {
   const taskRows = allRows.filter(r => !r.noEod);
-  const kRows  = taskRows.filter(r => r.member.name === 'Kuberan');
-  const pRows  = taskRows.filter(r => r.member.name === 'Piranav');
-  const hours  = taskRows.reduce((s,r) => s + (Number(r.hours)||0), 0);
-  const ver    = taskRows.filter(r => r.verified === 'Yes').length;
-  const days   = new Set(taskRows.map(r => r.date)).size;
+  const kRows    = taskRows.filter(r => r.member.name === 'Kuberan');
+  const pRows    = taskRows.filter(r => r.member.name === 'Piranav');
+  const hours    = taskRows.reduce((s,r) => s + (Number(r.hours)||0), 0);
+  const verified = taskRows.filter(r => r.verified === 'Yes').length;
+  const days     = new Set(taskRows.map(r => r.date)).size;
+
   document.getElementById('kpiTasks').textContent    = taskRows.length;
   document.getElementById('kpiHours').textContent    = hours.toFixed(1) + 'h';
-  document.getElementById('kpiVerified').textContent = ver;
+  document.getElementById('kpiVerified').textContent = verified;
   document.getElementById('kpiK').textContent        = kRows.length;
   document.getElementById('kpiP').textContent        = pRows.length;
   document.getElementById('kpiDays').textContent     = days;
-  document.getElementById('tableLabel').textContent  = `TEC Team EOD Log · ${fmtDisp(from)} – ${fmtDisp(to)}`;
 }
 
 // ── Render table ──────────────────────────────────────────────────────────────
 function renderTable() {
-  const q = (document.getElementById('taskSearch').value || '').toLowerCase();
-  const tbody = document.getElementById('eodBody');
+  const q      = (document.getElementById('taskSearch').value || '').toLowerCase();
+  const tbody  = document.getElementById('eodBody');
   tbody.innerHTML = '';
+
+  // Apply person filter + search
+  const visible = allRows.filter(r => {
+    if (r.noEod && r.missing) return false;
+    if (personFilter !== 'all' && r.member.name !== personFilter) return false;
+    if (!q) return true;
+    return [r.member.name, r.desc, r.intentId, r.dept, r.url, r.product]
+      .join(' ').toLowerCase().includes(q);
+  });
+
+  // Which members are shown (for member header rows)
+  const shownMembers = personFilter === 'all'
+    ? MEMBERS
+    : MEMBERS.filter(m => m.name === personFilter);
 
   let lastMember = null;
   let lastDate   = null;
-  let taskSeq    = {}; // per-member counter for display task_id
-  let visCount   = 0;
+  let taskSeq    = {};
+  let taskCount  = 0;
 
-  const visible = allRows.filter(r => {
-    if (r.missing) return false; // hide "missing" rows (no file on GitHub)
-    if (!q) return true;
-    return [r.member.name, r.desc, r.intentId, r.dept, r.url, r.product].join(' ').toLowerCase().includes(q);
+  // Determine members that appear in visible (maintain MEMBERS order)
+  const seenMembers = [];
+  visible.forEach(r => {
+    if (!seenMembers.find(m => m.name === r.member.name)) seenMembers.push(r.member);
   });
 
   visible.forEach(row => {
-    // Member header
+    // Member header row
     if (row.member.name !== lastMember) {
       lastMember = row.member.name;
       lastDate   = null;
       taskSeq[row.member.name] = 0;
+
       const hdr = tbody.insertRow();
       hdr.className = `mem-hdr ${row.member.cssClass}`;
-      hdr.innerHTML = `<td colspan="15">▸ ${row.member.name} &nbsp;·&nbsp; ${row.member.empId} &nbsp;·&nbsp; ${row.member.dbId} &nbsp;·&nbsp; ${row.member.dept}</td>`;
+      const memberTaskCount = allRows.filter(r => !r.noEod && r.member.name === row.member.name).length;
+      hdr.innerHTML = `<td colspan="15">▸ ${row.member.name} &nbsp;·&nbsp; ${row.member.empId} &nbsp;·&nbsp; ${row.member.dbId} &nbsp;·&nbsp; ${row.member.dept} &nbsp;·&nbsp; ${memberTaskCount} tasks total</td>`;
     }
 
     // Date group header
@@ -631,21 +589,23 @@ function renderTable() {
       dhdr.innerHTML = `<td colspan="15">${fmtFull(row.date)}</td>`;
     }
 
-    // Data row
-    taskSeq[row.member.name] = (taskSeq[row.member.name] || 0) + 1;
+    // Task sequence per member
+    if (!row.noEod) taskSeq[row.member.name] = (taskSeq[row.member.name] || 0) + 1;
     const tid = row.noEod ? '—' : `TT${String(taskSeq[row.member.name]).padStart(3,'0')}`;
     const tr  = tbody.insertRow();
 
     if (row.noEod) {
       tr.className = 'no-eod-row';
-      tr.innerHTML = `<td>${tid}</td><td>${fmtDisp(row.date)}</td><td>${row.member.empId}</td><td>${row.member.name}</td><td colspan="11" style="font-style:italic">— No EOD submitted for this date —</td>`;
+      tr.innerHTML = `<td>${tid}</td><td>${fmtDisp(row.date)}</td><td>${row.member.empId}</td><td>${row.member.name}</td><td colspan="11">— No EOD submitted —</td>`;
     } else {
+      taskCount++;
       const tierCls = row.tier === 'A' ? 'tier-a' : row.tier === 'B' ? 'tier-b' : 'tier-c';
       const verCls  = row.verified === 'Yes' ? 'yes-b' : row.verified === 'No' ? 'no-b' : 'na-b';
       const stsCls  = row.status === 'Completed' ? 'st-done' : row.status === 'Not Completed' ? 'st-miss' : 'st-part';
       const urlHtml = row.url
         ? `<a class="url-link" href="${esc(row.url)}" target="_blank" rel="noopener" title="${esc(row.url)}">${esc(shortUrl(row.url))}</a>`
         : '<span style="color:var(--muted)">—</span>';
+
       tr.innerHTML = `
         <td style="font-family:monospace;white-space:nowrap">${tid}</td>
         <td style="white-space:nowrap">${fmtDisp(row.date)}</td>
@@ -658,51 +618,55 @@ function renderTable() {
         <td>${esc(row.desc)}</td>
         <td class="num">${row.hours !== '' ? row.hours + 'h' : '—'}</td>
         <td><span class="${stsCls}">${esc(row.status)}</span></td>
-        <td><span class="${verCls}">${row.verified}</span></td>
+        <td><span class="${verCls}">${esc(row.verified)}</span></td>
         <td>${urlHtml}</td>
         <td style="text-align:center">${row.waste}</td>
         <td style="font-size:10.5px">${esc(row.product)}</td>`;
     }
-    visCount++;
   });
 
-  if (visCount === 0 && allRows.length > 0) {
+  if (taskCount === 0 && allRows.filter(r => !r.noEod).length > 0) {
     const tr = tbody.insertRow();
-    tr.innerHTML = `<td colspan="15" style="text-align:center;padding:32px;color:var(--muted)">No tasks match the current filter.</td>`;
+    tr.innerHTML = `<td colspan="15" style="text-align:center;padding:36px;color:var(--muted)">No tasks match the current filter.</td>`;
   }
 
-  const taskCount = visible.filter(r => !r.noEod).length;
+  // Label and count
+  const who = personFilter === 'all' ? 'All Members' : personFilter;
+  document.getElementById('tableLabel').textContent = `TEC Team EOD Log · ${who}`;
   document.getElementById('tableCount').textContent = `${taskCount} tasks`;
 }
 
 // ── Export CSV ────────────────────────────────────────────────────────────────
 function exportCSV() {
-  const from = document.getElementById('dateFrom').value;
-  const to   = document.getElementById('dateTo').value;
-  const hdr = ['task_id','date','emp_id','name','department','weekly_intent_id','task_tier','tier_description','task_description','hours_spent','status','verified','verification_url','waste_flag','product_ids_worked_on'];
+  const hdr = ['task_id','date','emp_id','name','department','weekly_intent_id',
+               'task_tier','tier_description','task_description','hours_spent',
+               'status','verified','verification_url','waste_flag','product_ids_worked_on'];
   const data = [hdr];
-  let seq = { Kuberan: 0, Piranav: 0 };
+  const seq  = {};
 
-  allRows.filter(r => !r.missing).forEach(r => {
+  // Export respects current person filter but not search (export all matching person)
+  const rows = personFilter === 'all'
+    ? allRows.filter(r => !r.noEod)
+    : allRows.filter(r => !r.noEod && r.member.name === personFilter);
+
+  rows.forEach(r => {
     seq[r.member.name] = (seq[r.member.name] || 0) + 1;
     const tid = `TT${String(seq[r.member.name]).padStart(3,'0')}`;
-    if (r.noEod) {
-      data.push([tid, fmtDisp(r.date), r.member.empId, r.member.name, r.member.dept, '', '', '', 'No EOD submitted', '', '', '', '', '', '']);
-    } else {
-      data.push([tid, fmtDisp(r.date), r.member.empId, r.member.name, r.dept, r.intentId, r.tier, r.tierDesc, r.desc, r.hours, r.status, r.verified, r.url, r.waste, r.product]);
-    }
+    data.push([tid, fmtDisp(r.date), r.member.empId, r.member.name, r.dept,
+               r.intentId, r.tier, r.tierDesc, r.desc, r.hours,
+               r.status, r.verified, r.url, r.waste, r.product]);
   });
 
   const csv = data.map(row => row.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = `TEC_EOD_${from}_${to}.csv`;
+  const who = personFilter === 'all' ? 'ALL' : personFilter.toUpperCase();
+  const a   = document.createElement('a');
+  a.href    = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `TEC_EOD_${who}_all.csv`;
   a.click();
 }
 
-function setProgress(pct) {
-  document.getElementById('progress').style.width = pct + '%';
-}
+function setProgress(pct) { document.getElementById('progress').style.width = pct + '%'; }
+function setStatus(msg)    { document.getElementById('loadStatus').textContent = msg; }
 </script>
 </body>
 </html>
