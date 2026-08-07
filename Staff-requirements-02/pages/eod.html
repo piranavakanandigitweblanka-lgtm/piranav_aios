@@ -6,112 +6,121 @@
 <title>EOD Reports · Digital Marketing Team</title>
 <style>
   :root{
-    --navy:#0c1a30; --navy-2:#13284a; --ink:#1a2233; --muted:#5b6577;
-    --line:#e3e7ee; --bg:#f4f6f9; --card:#ffffff;
-    --gold:#b98b1e; --gold-soft:#faf3e0;
-    --accent:#1f5eff; --accent-soft:#eaf0ff;
-    --good:#0a7d4f; --good-soft:#e5f5ee;
-    --warn:#b45309; --warn-soft:#fffbeb;
-    --fail:#b91c1c; --fail-soft:#fff5f5;
-    --na:#64748b; --na-soft:#eef2f7;
+    --navy:#0c1a30;--navy-2:#13284a;--ink:#1a2233;--muted:#5b6577;
+    --line:#e3e7ee;--bg:#f4f6f9;--card:#fff;
+    --gold:#b98b1e;--gold-soft:#faf3e0;
+    --accent:#1f5eff;--accent-soft:#eaf0ff;
+    --good:#0a7d4f;--good-soft:#e5f5ee;
+    --warn:#b45309;--warn-soft:#fffbeb;
+    --fail:#b91c1c;--fail-soft:#fff5f5;
+    --na:#64748b;--na-soft:#eef2f7;
+    --ads:#7c3aed;--ads-soft:#ede9fe;
+    --seo:#0a7d4f;--seo-soft:#e5f5ee;
+    --tec:#0369a1;--tec-soft:#e0f2fe;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:"Nirmala UI","Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;}
 
+  /* ── Masthead ── */
   .topbar{height:5px;background:linear-gradient(90deg,var(--navy) 0%,var(--navy-2) 55%,var(--gold) 100%);}
-  .masthead{background:var(--card);color:var(--ink);padding:22px 32px;border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(12,26,48,.03);}
-  .masthead .inner{max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:22px;}
-  .mark{width:42px;height:42px;background:var(--navy);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#e8d59a;flex:none;border:1.5px solid var(--gold);letter-spacing:.5px;}
-  .headtxt{flex:1;min-width:200px;}
-  .kicker{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
-  .masthead h1{font-size:19px;font-weight:700;color:var(--navy);}
-  .lede{font-size:12px;color:var(--muted);margin-top:3px;}
-  .statrow{display:flex;flex-wrap:wrap;gap:0;border-left:1px solid var(--line);padding-left:26px;}
-  .stat{padding:0 20px;border-right:1px solid var(--line);}
-  .stat:last-child{border-right:none;padding-right:0;}
-  .stat .v{font-size:18px;font-weight:700;color:var(--navy);}
-  .stat .l{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:2px;}
+  .masthead{background:var(--card);padding:20px 32px;border-bottom:1px solid var(--line);}
+  .masthead .inner{max-width:1440px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:20px;}
+  .mark{width:40px;height:40px;background:var(--navy);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#e8d59a;flex:none;border:1.5px solid var(--gold);}
+  .headtxt{flex:1;min-width:180px;}
+  .kicker{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);}
+  .masthead h1{font-size:17px;font-weight:700;color:var(--navy);margin-top:2px;}
+  .statrow{display:flex;gap:0;border-left:1px solid var(--line);padding-left:24px;}
+  .stat{padding:0 18px;border-right:1px solid var(--line);}
+  .stat:last-child{border-right:none;}
+  .stat .v{font-size:17px;font-weight:700;color:var(--navy);}
+  .stat .l{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:1px;}
 
-  .page{max-width:1280px;margin:0 auto;padding:24px 32px 48px;}
+  /* ── Page ── */
+  .page{max-width:1440px;margin:0 auto;padding:20px 28px 48px;}
 
-  /* Back + filters bar */
-  .topbar-nav{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:20px;}
-  .back{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;transition:all .15s;}
+  /* ── Top bar ── */
+  .topbar-nav{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:18px;}
+  .back{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border:1px solid var(--line);border-radius:7px;background:var(--card);color:var(--muted);text-decoration:none;font-size:12.5px;font-weight:600;transition:all .13s;}
   .back:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent);}
-  .team-btn{border:1px solid var(--line);border-radius:999px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer;background:var(--card);color:var(--muted);transition:all .12s;}
-  .team-btn:hover{border-color:var(--accent);color:var(--accent);}
-  .team-btn.on{background:var(--navy);border-color:var(--navy);color:#e8d59a;}
-  .team-btn.ads.on{background:#7c3aed;border-color:#7c3aed;color:#fff;}
-  .team-btn.seo.on{background:var(--good);border-color:var(--good);color:#fff;}
 
-  /* Member grid */
-  .section-title{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--navy-2);margin:0 0 12px;}
-  .section-title::after{content:"";flex:1;height:1px;background:var(--line);}
-  .member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px;margin-bottom:24px;}
-  .member-card{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:14px 10px;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 3px rgba(12,26,48,.04);transition:transform .13s,box-shadow .13s,border-color .13s;user-select:none;}
-  .member-card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(12,26,48,.09);border-color:var(--gold);}
-  .member-card.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft),0 4px 12px rgba(31,94,255,.12);}
-  .avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:15px;font-weight:700;background:var(--navy);color:#e8d59a;border:1.5px solid var(--gold);flex:none;}
-  .avatar.ads{background:#7c3aed;color:#fff;border-color:#a78bfa;}
-  .avatar.seo{background:var(--good);color:#fff;border-color:#34d399;}
-  .member-card .nm{font-size:12.5px;font-weight:700;}
-  .member-card .tm{font-size:10px;color:var(--muted);}
+  /* ── Team Tabs ── */
+  .team-tabs{display:flex;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card);width:fit-content;}
+  .team-tab{border:none;padding:10px 28px;font-size:13px;font-weight:700;cursor:pointer;background:transparent;color:var(--muted);transition:all .13s;border-right:1px solid var(--line);}
+  .team-tab:last-child{border-right:none;}
+  .team-tab:hover{background:var(--na-soft);}
+  .team-tab.active-ads{background:var(--ads);color:#fff;}
+  .team-tab.active-seo{background:var(--seo);color:#fff;}
+  .team-tab.active-tec{background:var(--tec);color:#fff;}
 
-  /* EOD Viewer */
-  .viewer{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
-  .viewer-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line);background:#f8fafc;}
-  .viewer-toolbar .who{font-size:14px;font-weight:700;color:var(--navy);flex:1;min-width:120px;}
-  .viewer-toolbar .team-pill{display:inline-block;border-radius:999px;padding:3px 11px;font-size:11px;font-weight:700;}
-  .team-pill.ads{background:#ede9fe;color:#5b21b6;}
-  .team-pill.seo{background:var(--good-soft);color:var(--good);}
-  select#datePicker{border:1px solid var(--line);border-radius:8px;padding:7px 12px;font-size:13px;color:var(--ink);background:var(--card);outline:none;cursor:pointer;min-width:160px;}
-  select#datePicker:focus{border-color:var(--accent);}
-  .nav-arrows{display:flex;gap:4px;}
-  .nav-arrows button{border:1px solid var(--line);border-radius:7px;width:32px;height:32px;background:var(--card);cursor:pointer;font-size:15px;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:all .12s;}
-  .nav-arrows button:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
-  .nav-arrows button:disabled{opacity:.35;cursor:default;}
+  /* ── Date controls ── */
+  .date-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:14px 0;}
+  .date-bar label{font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;}
+  input#datePick{border:1px solid var(--line);border-radius:7px;padding:7px 12px;font-size:13px;color:var(--ink);background:var(--card);outline:none;}
+  input#datePick:focus{border-color:var(--accent);}
+  .date-nav button{border:1px solid var(--line);border-radius:7px;width:32px;height:34px;background:var(--card);cursor:pointer;font-size:14px;color:var(--muted);transition:all .12s;}
+  .date-nav button:hover{border-color:var(--accent);color:var(--accent);}
+  .load-btn{border:none;border-radius:7px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;background:var(--navy);color:#e8d59a;transition:opacity .12s;}
+  .load-btn:hover{opacity:.85;}
 
-  /* Content area */
-  .viewer-body{padding:24px 28px;min-height:300px;}
-  .state-msg{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:260px;color:var(--muted);font-size:13.5px;gap:10px;}
-  .state-msg .icon{font-size:38px;}
+  /* ── Member pills ── */
+  .member-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+  .mpill{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:999px;font-size:11.5px;font-weight:700;cursor:pointer;border:1px solid transparent;transition:all .12s;user-select:none;}
+  .mpill .dot{width:7px;height:7px;border-radius:50%;flex:none;}
+  .mpill.on{box-shadow:0 0 0 2px currentColor;}
 
-  /* Markdown render styles */
-  .md-render h1,.md-render h2,.md-render h3{color:var(--navy);margin-top:22px;margin-bottom:8px;line-height:1.35;}
-  .md-render h1{font-size:18px;border-bottom:2px solid var(--line);padding-bottom:6px;margin-top:0;}
-  .md-render h2{font-size:15px;border-bottom:1px solid var(--line);padding-bottom:4px;}
-  .md-render h3{font-size:13.5px;color:var(--navy-2);}
-  .md-render p{margin-top:8px;font-size:13.5px;line-height:1.65;}
-  .md-render ul,.md-render ol{margin:8px 0 8px 22px;font-size:13.5px;}
-  .md-render li{margin-top:4px;line-height:1.6;}
-  .md-render strong{color:var(--ink);font-weight:700;}
-  .md-render em{color:var(--muted);}
-  .md-render hr{border:none;border-top:1px solid var(--line);margin:16px 0;}
-  .md-render a{color:var(--accent);text-decoration:none;}
-  .md-render a:hover{text-decoration:underline;}
-  .md-render blockquote{border-left:3px solid var(--gold);margin:10px 0;padding:6px 14px;background:var(--gold-soft);border-radius:0 6px 6px 0;font-size:13px;color:var(--muted);}
-  .md-render code{background:#f1f5f9;border-radius:4px;padding:1px 6px;font-size:12px;font-family:monospace;}
-  .md-render pre{background:#f1f5f9;border-radius:8px;padding:12px 14px;overflow-x:auto;font-size:12px;margin:10px 0;}
-  .md-render table{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0;}
-  .md-render th{background:#f0f3f8;padding:8px 10px;text-align:left;border:1px solid var(--line);font-size:11px;text-transform:uppercase;letter-spacing:.4px;}
-  .md-render td{padding:7px 10px;border:1px solid var(--line);}
-  .md-render tr:nth-child(even) td{background:#f8fafc;}
+  /* ── Summary KPIs ── */
+  .kpi-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;min-width:110px;}
+  .kpi .kv{font-size:22px;font-weight:700;color:var(--navy);}
+  .kpi .kl{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-top:2px;}
 
-  /* Section divider chips */
-  .md-section-chip{display:inline-block;background:var(--navy);color:#e8d59a;border-radius:6px;padding:2px 10px;font-size:10px;font-weight:700;letter-spacing:.5px;margin-right:8px;vertical-align:middle;}
+  /* ── Table ── */
+  .tbox{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .tbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:11px 16px;border-bottom:1px solid var(--line);background:#f8fafc;}
+  .tbar .tlabel{font-size:12px;font-weight:700;color:var(--navy);}
+  .tbar .tcount{font-size:12px;color:var(--muted);}
+  input#taskSearch{border:1px solid var(--line);border-radius:6px;padding:6px 11px;font-size:12.5px;width:220px;outline:none;background:var(--card);}
+  input#taskSearch:focus{border-color:var(--accent);}
+  .exp-btn{border:none;border-radius:6px;padding:6px 14px;font-size:11.5px;font-weight:700;cursor:pointer;background:var(--good);color:#fff;}
+  .exp-btn:hover{opacity:.85;}
+  .scroll{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:12px;min-width:1100px;}
+  thead th{position:sticky;top:0;background:#f0f3f8;text-align:left;padding:9px 11px;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:#42506a;border-bottom:2px solid var(--line);white-space:nowrap;user-select:none;}
+  thead th.num,td.num{text-align:right;}
+  tbody td{padding:8px 11px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.45;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:#f7f9fc;}
+  tr.member-hdr td{background:#f0f3f8;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--navy-2);padding:6px 11px;}
 
-  /* Footer */
-  footer.site{max-width:1280px;margin:0 auto;padding:20px 32px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;}
+  /* ── Badges ── */
+  .tier{display:inline-block;border-radius:4px;padding:2px 7px;font-size:10.5px;font-weight:700;white-space:nowrap;}
+  .tier-a{background:#dcfce7;color:#14532d;}
+  .tier-b{background:#fef3c7;color:#78350f;}
+  .tier-c{background:#f3f4f6;color:#374151;}
+  .tier-u{background:var(--na-soft);color:var(--na);}
+  .ybadge{background:var(--good-soft);color:var(--good);border-radius:4px;padding:2px 7px;font-size:10.5px;font-weight:700;}
+  .nbadge{background:var(--fail-soft);color:var(--fail);border-radius:4px;padding:2px 7px;font-size:10.5px;font-weight:700;}
+  .ubadge{background:var(--na-soft);color:var(--na);border-radius:4px;padding:2px 7px;font-size:10.5px;font-weight:700;}
+  .status-done{background:var(--good-soft);color:var(--good);border-radius:4px;padding:2px 7px;font-size:10.5px;font-weight:700;}
+  .status-miss{background:var(--fail-soft);color:var(--fail);border-radius:4px;padding:2px 7px;font-size:10.5px;font-weight:700;}
+  .status-part{background:var(--warn-soft);color:var(--warn);border-radius:4px;padding:2px 7px;font-size:10.5px;font-weight:700;}
+  .url-link{color:var(--accent);text-decoration:none;font-size:11px;word-break:break-all;}
+  .url-link:hover{text-decoration:underline;}
+  .no-eod{background:var(--fail-soft);}
+  .no-eod td{color:var(--fail);font-style:italic;}
 
-  @media(max-width:900px){
-    .statrow{border-left:none;padding-left:0;width:100%;}
-    .page{padding:20px 16px 40px;}
-  }
-  @media(max-width:640px){
-    .masthead{padding:18px 16px;}
-    .member-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));}
-    .viewer-body{padding:16px;}
-  }
+  /* ── State messages ── */
+  .state-msg{text-align:center;padding:56px 20px;color:var(--muted);font-size:13.5px;}
+  .state-msg .icon{font-size:36px;margin-bottom:12px;}
+
+  /* ── Loading bar ── */
+  .progress-bar{height:3px;background:var(--line);border-radius:2px;margin-bottom:14px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--accent);transition:width .3s;width:0%;}
+
+  footer.site{max-width:1440px;margin:0 auto;padding:18px 28px 36px;border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;text-align:center;}
+
+  @media(max-width:900px){.page{padding:16px;}.statrow{border-left:none;padding-left:0;width:100%;}}
+  @media(max-width:600px){.masthead{padding:16px;}.team-tab{padding:9px 16px;font-size:12px;}}
 </style>
 </head>
 <body>
@@ -123,12 +132,11 @@
     <div class="headtxt">
       <p class="kicker">Digit Web Lanka · Daily Reports</p>
       <h1>End of Day Reports · Digital Marketing Team</h1>
-      <p class="lede">Select a team member, then browse their daily EOD reports. Source: GitHub · eod-reports repository.</p>
     </div>
     <div class="statrow">
       <div class="stat"><div class="v">17</div><div class="l">Members</div></div>
-      <div class="stat"><div class="v">2</div><div class="l">Teams</div></div>
-      <div class="stat"><div class="v" id="stat-date">—</div><div class="l">Today</div></div>
+      <div class="stat"><div class="v">3</div><div class="l">Teams</div></div>
+      <div class="stat"><div class="v" id="statDate">—</div><div class="l">Viewing</div></div>
     </div>
   </div>
 </header>
@@ -136,294 +144,471 @@
 <main class="page">
 
   <div class="topbar-nav">
-    <a class="back" href="../index.html">← Back to Directory</a>
-    <button class="team-btn on" data-team="all" onclick="filterTeam('all',this)">All Members</button>
-    <button class="team-btn ads" data-team="ADS" onclick="filterTeam('ADS',this)">ADS Team</button>
-    <button class="team-btn seo" data-team="SEO" onclick="filterTeam('SEO',this)">SEO Team</button>
-  </div>
-
-  <div class="section-title">Team Members</div>
-  <div class="member-grid" id="memberGrid">
-    <!-- populated by JS -->
-  </div>
-
-  <div class="section-title">EOD Report Viewer</div>
-  <div class="viewer" id="viewer">
-    <div class="viewer-toolbar">
-      <span class="who" id="viewerWho">Select a member above</span>
-      <span class="team-pill" id="viewerTeam" style="display:none"></span>
-      <select id="datePicker" style="display:none" onchange="loadEOD()">
-        <option value="">Select date…</option>
-      </select>
-      <div class="nav-arrows">
-        <button id="btnPrev" title="Previous day" disabled onclick="stepDate(-1)">‹</button>
-        <button id="btnNext" title="Next day" disabled onclick="stepDate(1)">›</button>
-      </div>
+    <a class="back" href="../index.html">← Directory</a>
+    <div class="team-tabs">
+      <button class="team-tab active-ads" data-team="ADS" onclick="switchTeam('ADS',this)">ADS Team</button>
+      <button class="team-tab" data-team="SEO" onclick="switchTeam('SEO',this)">SEO Team</button>
+      <button class="team-tab" data-team="TEC" onclick="switchTeam('TEC',this)">TEC Team</button>
     </div>
-    <div class="viewer-body" id="viewerBody">
-      <div class="state-msg">
-        <span class="icon">👈</span>
-        <span>Select a team member to view their EOD reports.</span>
+  </div>
+
+  <!-- Date bar -->
+  <div class="date-bar">
+    <label>Date</label>
+    <span class="date-nav"><button onclick="shiftDate(-1)" title="Previous day">‹</button></span>
+    <input type="date" id="datePick">
+    <span class="date-nav"><button onclick="shiftDate(1)" title="Next day">›</button></span>
+    <button class="load-btn" onclick="loadTeam()">Load EODs</button>
+    <span id="loadStatus" style="font-size:12px;color:var(--muted);"></span>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+  <!-- Member pills -->
+  <div class="member-pills" id="memberPills"></div>
+
+  <!-- KPI row -->
+  <div class="kpi-row" id="kpiRow" style="display:none">
+    <div class="kpi"><div class="kv" id="kpiTotal">—</div><div class="kl">Total Tasks</div></div>
+    <div class="kpi"><div class="kv" id="kpiHours">—</div><div class="kl">Total Hours</div></div>
+    <div class="kpi"><div class="kv" id="kpiVerified">—</div><div class="kl">Verified</div></div>
+    <div class="kpi"><div class="kv" id="kpiSubmitted">—</div><div class="kl">Submitted</div></div>
+    <div class="kpi"><div class="kv" id="kpiMissing">—</div><div class="kl">No EOD</div></div>
+  </div>
+
+  <!-- Table -->
+  <div class="tbox" id="tableBox">
+    <div class="state-msg" id="stateMsg">
+      <div class="icon">📋</div>
+      <div>Select a date and click <strong>Load EODs</strong> to view the team's daily reports.</div>
+    </div>
+    <div id="tableWrap" style="display:none">
+      <div class="tbar">
+        <span class="tlabel" id="tableLabel">EOD Log</span>
+        <span class="tcount" id="tableCount"></span>
+        <input type="text" id="taskSearch" placeholder="Filter tasks…" oninput="filterTable()">
+        <button class="exp-btn" onclick="exportCSV()">Export CSV</button>
+      </div>
+      <div class="scroll">
+        <table id="eodTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Date</th>
+              <th>Member</th>
+              <th>Dept</th>
+              <th>Task Code</th>
+              <th>Tier</th>
+              <th style="min-width:280px">Task Description</th>
+              <th>Hours</th>
+              <th>Status</th>
+              <th>Verified</th>
+              <th style="min-width:160px">URL</th>
+            </tr>
+          </thead>
+          <tbody id="eodBody"></tbody>
+        </table>
       </div>
     </div>
   </div>
 
 </main>
 
-<footer class="site">EOD Reports · Digital Marketing Member Reports · AIOS · Source: GitHub eod-reports repository · Read-only view</footer>
+<footer class="site">EOD Reports · Digital Marketing Member Reports · AIOS · Source: GitHub eod-reports · Read-only</footer>
 
 <script>
-// ── Members ───────────────────────────────────────────────────────────────────
-const MEMBERS = [
-  { name:'Dilaksi',     team:'SEO' },
-  { name:'Hetheesha',   team:'SEO' },
-  { name:'Jakshan',     team:'SEO' },
-  { name:'Kamsi',       team:'SEO' },
-  { name:'Piranav',     team:'SEO' },
-  { name:'Sukirtha',    team:'SEO' },
-  { name:'Jefri',       team:'ADS' },
-  { name:'Kuberan',     team:'ADS' },
-  { name:'Mahima',      team:'ADS' },
-  { name:'Ripson',      team:'ADS' },
-  { name:'Sajeepan',    team:'ADS' },
-  { name:'Sonya',       team:'ADS' },
-  { name:'Thanishtika', team:'ADS' },
-  { name:'Thasitha',    team:'ADS' },
-  { name:'Theekshy',    team:'ADS' },
-  { name:'Thishoban',   team:'ADS' },
-  { name:'Thivagini',   team:'ADS' },
-];
+// ── Team config ───────────────────────────────────────────────────────────────
+const TEAMS = {
+  ADS: {
+    members: ['Sonya','Sajeepan','Theekshy','Thivagini','Mahima','Ripson','Thishoban','Jefri','Thasitha','Thanishtika','Jakshan'],
+    color: '#7c3aed', soft: '#ede9fe',
+  },
+  SEO: {
+    members: ['Hetheesha','Kamsi','Dilaksi','Sukirtha'],
+    color: '#0a7d4f', soft: '#e5f5ee',
+  },
+  TEC: {
+    members: ['Kuberan','Piranav'],
+    color: '#0369a1', soft: '#e0f2fe',
+  },
+};
 
-// ── Config ────────────────────────────────────────────────────────────────────
 const GH_OWNER = 'digitalmarketing69140951-sys';
 const GH_REPO  = 'eod-reports';
 const GH_API   = 'https://api.github.com';
 
-function ghHeaders() {
-  return { 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'staff-eod-dashboard' };
-}
-
 // ── State ─────────────────────────────────────────────────────────────────────
-let allMembers = [];
-let currentMember = null;
-let currentDates = [];
-let activeTeamFilter = 'all';
+let activeTeam = 'ADS';
+let allRows = [];       // parsed task rows for current view
+let hiddenMembers = new Set();
 
 // ── Init ──────────────────────────────────────────────────────────────────────
-document.getElementById('stat-date').textContent = new Date().toISOString().slice(0,10);
+(function init() {
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = String(today.getMonth()+1).padStart(2,'0');
+  const d = String(today.getDate()).padStart(2,'0');
+  document.getElementById('datePick').value = `${y}-${m}-${d}`;
+  document.getElementById('statDate').textContent = `${d}/${m}/${y}`;
+  renderPills();
+})();
 
-async function init() {
-  allMembers = MEMBERS;
-  renderMemberGrid(allMembers);
+// ── Team switch ───────────────────────────────────────────────────────────────
+function switchTeam(team, btn) {
+  activeTeam = team;
+  document.querySelectorAll('.team-tab').forEach(b => b.className = 'team-tab');
+  btn.className = `team-tab active-${team.toLowerCase()}`;
+  hiddenMembers.clear();
+  allRows = [];
+  renderPills();
+  resetTable();
 }
 
-// ── Member grid ───────────────────────────────────────────────────────────────
-function renderMemberGrid(members) {
-  const grid = document.getElementById('memberGrid');
-  grid.innerHTML = '';
-  const visible = activeTeamFilter === 'all'
-    ? members
-    : members.filter(m => m.team === activeTeamFilter);
-
-  visible.forEach(m => {
-    const card = document.createElement('div');
-    card.className = 'member-card' + (currentMember && currentMember.name === m.name ? ' active' : '');
-    card.dataset.name = m.name;
-    card.dataset.team = m.team;
-    card.innerHTML = `
-      <span class="avatar ${m.team.toLowerCase()}">${m.name[0]}</span>
-      <span class="nm">${m.name}</span>
-      <span class="tm">${m.team} Team</span>`;
-    card.onclick = () => selectMember(m);
-    grid.appendChild(card);
-  });
+// ── Member pills ──────────────────────────────────────────────────────────────
+function renderPills() {
+  const t = TEAMS[activeTeam];
+  const wrap = document.getElementById('memberPills');
+  wrap.innerHTML = t.members.map(name => `
+    <span class="mpill on" data-m="${name}" style="background:${t.soft};color:${t.color};border-color:${t.color}" onclick="toggleMember('${name}',this)">
+      <span class="dot" style="background:${t.color}"></span>${name}
+    </span>`).join('');
 }
 
-function filterTeam(team, btn) {
-  activeTeamFilter = team;
-  document.querySelectorAll('.team-btn').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-  renderMemberGrid(allMembers);
-}
-
-// ── Member selection ──────────────────────────────────────────────────────────
-async function selectMember(m) {
-  currentMember = m;
-  currentDates = [];
-
-  // Update active card
-  document.querySelectorAll('.member-card').forEach(c => {
-    c.classList.toggle('active', c.dataset.name === m.name);
-  });
-
-  document.getElementById('viewerWho').textContent = m.name;
-  const pill = document.getElementById('viewerTeam');
-  pill.textContent = m.team;
-  pill.className = 'team-pill ' + m.team.toLowerCase();
-  pill.style.display = '';
-
-  const picker = document.getElementById('datePicker');
-  picker.style.display = 'none';
-  picker.innerHTML = '<option value="">Loading dates…</option>';
-
-  setViewerBody('<div class="state-msg"><span class="icon">⏳</span><span>Loading available dates…</span></div>');
-  setBtnState();
-
-  const ghRes = await fetch(`${GH_API}/repos/${GH_OWNER}/${GH_REPO}/contents/eods/${encodeURIComponent(m.name)}`, { headers: ghHeaders() });
-  if (!ghRes.ok) {
-    setViewerBody(`<div class="state-msg"><span class="icon">⚠️</span><span>Could not load dates (GitHub ${ghRes.status}). Rate limit may apply — try again in a minute.</span></div>`);
-    return;
+function toggleMember(name, el) {
+  if (hiddenMembers.has(name)) {
+    hiddenMembers.delete(name);
+    const t = TEAMS[activeTeam];
+    el.className = 'mpill on';
+    el.style.cssText = `background:${t.soft};color:${t.color};border-color:${t.color}`;
+  } else {
+    hiddenMembers.add(name);
+    el.className = 'mpill';
+    el.style.cssText = 'background:#f1f5f9;color:#94a3b8;border-color:#e2e8f0';
   }
-  const files = await ghRes.json();
-
-  currentDates = files
-    .filter(f => f.name.endsWith('.md'))
-    .map(f => f.name.replace('.md', ''))
-    .sort()
-    .reverse();
-
-  picker.innerHTML = currentDates.map(d =>
-    `<option value="${d}">${fmtDate(d)}</option>`
-  ).join('');
-  picker.style.display = '';
-  setBtnState();
-
-  // Auto-load most recent
-  if (currentDates.length) loadEOD();
-  else setViewerBody('<div class="state-msg"><span class="icon">📭</span><span>No EOD reports found for this member.</span></div>');
+  renderTable();
 }
 
-// ── Date navigation ───────────────────────────────────────────────────────────
-function stepDate(dir) {
-  const picker = document.getElementById('datePicker');
-  const idx = currentDates.indexOf(picker.value);
-  const next = idx + dir; // dates are newest-first, so +1 = older
-  if (next >= 0 && next < currentDates.length) {
-    picker.value = currentDates[next];
-    loadEOD();
+// ── Date nav ──────────────────────────────────────────────────────────────────
+function shiftDate(dir) {
+  const inp = document.getElementById('datePick');
+  const d = new Date(inp.value + 'T12:00:00Z');
+  d.setUTCDate(d.getUTCDate() + dir);
+  inp.value = d.toISOString().slice(0,10);
+}
+
+// ── Load EODs ─────────────────────────────────────────────────────────────────
+async function loadTeam() {
+  const date = document.getElementById('datePick').value;
+  if (!date) return;
+
+  const [y,mo,d] = date.split('-');
+  document.getElementById('statDate').textContent = `${d}/${mo}/${y}`;
+
+  const members = TEAMS[activeTeam].members;
+  allRows = [];
+  resetTable();
+  document.getElementById('stateMsg').style.display = 'none';
+  setProgress(0);
+  document.getElementById('loadStatus').textContent = `Loading ${members.length} members…`;
+  document.getElementById('kpiRow').style.display = 'none';
+
+  let done = 0;
+  const results = await Promise.all(members.map(async name => {
+    const r = await fetchEOD(name, date);
+    done++;
+    setProgress(Math.round(done / members.length * 100));
+    document.getElementById('loadStatus').textContent = `${done}/${members.length} loaded`;
+    return { name, result: r };
+  }));
+
+  document.getElementById('loadStatus').textContent = '';
+  setProgress(0);
+
+  // Build rows
+  let seq = 1;
+  results.forEach(({ name, result }) => {
+    if (result === null) {
+      allRows.push({ seq: seq++, date, member: name, team: activeTeam, noEod: true });
+    } else {
+      const tasks = parseEOD(result, name, date, activeTeam);
+      if (tasks.length === 0) {
+        allRows.push({ seq: seq++, date, member: name, team: activeTeam, noEod: true });
+      } else {
+        tasks.forEach(t => { t.seq = seq++; allRows.push(t); });
+      }
+    }
+  });
+
+  updateKPIs();
+  renderTable();
+  document.getElementById('tableWrap').style.display = '';
+  document.getElementById('stateMsg').style.display = 'none';
+  document.getElementById('tableLabel').textContent = `EOD Log — ${TEAMS[activeTeam].members.length} Members — ${date}`;
+}
+
+// ── GitHub fetch ──────────────────────────────────────────────────────────────
+async function fetchEOD(member, date) {
+  try {
+    const url = `${GH_API}/repos/${GH_OWNER}/${GH_REPO}/contents/eods/${encodeURIComponent(member)}/${date}.md`;
+    const r = await fetch(url, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
+    if (!r.ok) return null;
+    const data = await r.json();
+    return atob(data.content.replace(/\n/g,''));
+  } catch { return null; }
+}
+
+// ── Markdown parser → task rows ───────────────────────────────────────────────
+function parseEOD(md, member, date, team) {
+  const rows = [];
+  const lines = md.split('\n');
+
+  // Try SEO-style: ## Task N: description
+  const taskPattern = /^##\s+Task\s*\d+[.:]\s*(.+)/i;
+  let taskBlocks = [];
+  let current = null;
+
+  lines.forEach(line => {
+    const m = line.match(taskPattern);
+    if (m) {
+      if (current) taskBlocks.push(current);
+      current = { desc: m[1].trim(), lines: [] };
+    } else if (current) {
+      current.lines.push(line);
+    }
+  });
+  if (current) taskBlocks.push(current);
+
+  if (taskBlocks.length > 0) {
+    // SEO / structured format
+    taskBlocks.forEach((blk, i) => {
+      const body = blk.lines.join('\n');
+      const hours  = extractField(body, ['Time','Hours']) || extractHours(body);
+      const status = extractField(body, ['Status']) || '';
+      const verified = extractField(body, ['Definition of Done Met','Verified','Done']) || '';
+      const url = extractUrl(body);
+      const code = guessTaskCode(blk.desc, team, i);
+      const tier = guessTier(blk.desc, body);
+
+      rows.push({ date, member, team, desc: blk.desc, code, tier, hours: parseHours(hours), status: normaliseStatus(status), verified: normaliseVerified(verified), url });
+    });
+  } else {
+    // ADS / narrative format — use section headers
+    const sectionPattern = /^#{1,3}\s+(.+)/;
+    const skip = /^(Date|Time vs\. Priority|Priority Distribution|Operational EOD|Team Discussions|Support,|The "Why"|Pending|Next Steps|Diagnostic|What was tried|What worked|What did not|Lessons|Questions|Review Period)/i;
+
+    lines.forEach((line, idx) => {
+      const m = line.match(sectionPattern);
+      if (!m) return;
+      const desc = m[1].trim();
+      if (skip.test(desc)) return;
+      if (desc.length < 5) return;
+
+      // Grab next ~8 lines as context
+      const ctx = lines.slice(idx+1, idx+9).join('\n');
+      const hours = extractHours(ctx) || extractHours(line);
+      const code = guessTaskCode(desc, team, rows.length);
+      const tier = guessTier(desc, ctx);
+      const url = extractUrl(ctx);
+
+      rows.push({ date, member, team, desc, code, tier, hours: parseHours(hours), status: 'Completed', verified: '', url });
+    });
   }
+
+  return rows;
 }
 
-function setBtnState() {
-  const picker = document.getElementById('datePicker');
-  const idx = currentDates.indexOf(picker.value);
-  document.getElementById('btnPrev').disabled = (idx <= 0);
-  document.getElementById('btnNext').disabled = (idx < 0 || idx >= currentDates.length - 1);
-}
-
-// ── EOD load + render ─────────────────────────────────────────────────────────
-async function loadEOD() {
-  const picker = document.getElementById('datePicker');
-  const date = picker.value;
-  if (!date || !currentMember) return;
-  setBtnState();
-
-  setViewerBody('<div class="state-msg"><span class="icon">⏳</span><span>Loading EOD report…</span></div>');
-
-  const ghRes = await fetch(
-    `${GH_API}/repos/${GH_OWNER}/${GH_REPO}/contents/eods/${encodeURIComponent(currentMember.name)}/${date}.md`,
-    { headers: ghHeaders() }
-  );
-
-  if (ghRes.status === 404) {
-    setViewerBody('<div class="state-msg"><span class="icon">📭</span><span>No EOD report was submitted for this date.</span></div>');
-    return;
+// ── Parse helpers ─────────────────────────────────────────────────────────────
+function extractField(text, keys) {
+  for (const k of keys) {
+    const m = text.match(new RegExp(`\\*\\*${k}[^*]*\\*\\*[:\\s]*([^\n]+)`, 'i'));
+    if (m) return m[1].replace(/\*/g,'').trim();
+    const m2 = text.match(new RegExp(`^${k}[:\\s]+([^\n]+)`, 'im'));
+    if (m2) return m2[1].replace(/\*/g,'').trim();
   }
-  if (!ghRes.ok) {
-    setViewerBody(`<div class="state-msg"><span class="icon">⚠️</span><span>GitHub error ${ghRes.status} — rate limit may apply.</span></div>`);
-    return;
+  return '';
+}
+
+function extractHours(text) {
+  const m = text.match(/(\d+(?:\.\d+)?)\s*[Hh]ours?/);
+  return m ? m[1] : '';
+}
+
+function extractUrl(text) {
+  const m = text.match(/https?:\/\/[^\s)>\]"]+/);
+  return m ? m[0].replace(/[.,;]+$/, '') : '';
+}
+
+function parseHours(v) {
+  const n = parseFloat(v);
+  return isNaN(n) ? '' : n;
+}
+
+function normaliseStatus(s) {
+  if (!s) return 'Completed';
+  const l = s.toLowerCase();
+  if (l.includes('not complet') || l.includes('miss') || l.includes('not working')) return 'Missed';
+  if (l.includes('partial') || l.includes('in progress') || l.includes('ongoing')) return 'Partial';
+  return 'Completed';
+}
+
+function normaliseVerified(v) {
+  if (!v) return '';
+  return /yes|done|complet/i.test(v) ? 'Yes' : /no|not/i.test(v) ? 'No' : v;
+}
+
+function guessTaskCode(desc, team, idx) {
+  const d = desc.toUpperCase();
+  if (d.includes('BLOG') && d.includes('PUB')) return `${team}_BLOG_PUB`;
+  if (d.includes('BLOG')) return `${team}_BLOG_OPT`;
+  if (d.includes('BACKLINK') || d.includes('BKLINK')) return `${team}_BKLINK`;
+  if (d.includes('ON-PAGE') || d.includes('ONPAGE') || d.includes('META') || d.includes('SEO OPTIM')) return `${team}_ONPAGE`;
+  if (d.includes('INTERNAL LINK') || d.includes('INT_LINK')) return `${team}_INT_LINK`;
+  if (d.includes('SCHEMA') || d.includes('FAQ')) return `${team}_SCHEMA`;
+  if (d.includes('COLLECTION')) return `${team}_COLL`;
+  if (d.includes('LISTING') || d.includes('TRANSFER')) return `${team}_LISTING`;
+  if (d.includes('ROAS')) return `${team}_ROAS`;
+  if (d.includes('CAMPAIGN')) return `${team}_CAMP`;
+  if (d.includes('FEED') || d.includes('MERCHANT')) return `${team}_FEED`;
+  if (d.includes('NEGATIVE') || d.includes('SEARCH TERM')) return `${team}_NEG_KW`;
+  if (d.includes('PDP') || d.includes('PRODUCT')) return `${team}_PROD`;
+  if (d.includes('PERFORMANCE')) return `${team}_PERF`;
+  if (d.includes('GSC') || d.includes('SEARCH CONSOLE')) return `${team}_GSC`;
+  if (d.includes('LEAVE')) return `${team}_LEAVE`;
+  if (d.includes('DAILY') && d.includes('MONIT')) return `${team}_DAILY_MON`;
+  return `${team}_TASK_${String(idx+1).padStart(3,'0')}`;
+}
+
+function guessTier(desc, body) {
+  const all = (desc + ' ' + body).toLowerCase();
+  if (all.includes('leave') || all.includes('operational necessity') || all.includes('waste')) return 'C';
+  if (all.includes('revenue-support') || all.includes('monitoring') || all.includes('review') || all.includes('gsc') || all.includes('search console')) return 'B';
+  return 'A';
+}
+
+// ── KPIs ──────────────────────────────────────────────────────────────────────
+function updateKPIs() {
+  const members = TEAMS[activeTeam].members;
+  const taskRows = allRows.filter(r => !r.noEod);
+  const noEodRows = allRows.filter(r => r.noEod);
+  const submitted = members.length - noEodRows.length;
+  const totalHours = taskRows.reduce((s,r) => s + (Number(r.hours)||0), 0);
+  const verified = taskRows.filter(r => r.verified === 'Yes').length;
+
+  document.getElementById('kpiTotal').textContent = taskRows.length;
+  document.getElementById('kpiHours').textContent = totalHours.toFixed(1) + 'h';
+  document.getElementById('kpiVerified').textContent = verified;
+  document.getElementById('kpiSubmitted').textContent = `${submitted}/${members.length}`;
+  document.getElementById('kpiMissing').textContent = noEodRows.length;
+  document.getElementById('kpiRow').style.display = 'flex';
+}
+
+// ── Render table ──────────────────────────────────────────────────────────────
+function renderTable() {
+  const q = (document.getElementById('taskSearch').value || '').toLowerCase();
+  const tbody = document.getElementById('eodBody');
+  tbody.innerHTML = '';
+
+  const t = TEAMS[activeTeam];
+  let visCount = 0;
+  let lastMember = null;
+
+  const visible = allRows.filter(r => {
+    if (hiddenMembers.has(r.member)) return false;
+    if (!q) return true;
+    return [r.member, r.desc, r.code, r.url].join(' ').toLowerCase().includes(q);
+  });
+
+  visible.forEach(row => {
+    if (row.member !== lastMember) {
+      const hdr = document.createElement('tr');
+      hdr.className = 'member-hdr';
+      hdr.innerHTML = `<td colspan="11" style="color:${t.color}">▸ ${row.member} — ${t.members.indexOf(row.member) > -1 ? activeTeam : ''}</td>`;
+      tbody.appendChild(hdr);
+      lastMember = row.member;
+    }
+
+    const tr = document.createElement('tr');
+    if (row.noEod) {
+      tr.className = 'no-eod';
+      tr.innerHTML = `<td>${row.seq}</td><td>${fmtDate(row.date)}</td><td>${row.member}</td><td>${row.team}</td><td colspan="7" style="color:var(--fail);font-style:italic">— No EOD submitted for this date —</td>`;
+    } else {
+      const tierCls = row.tier === 'A' ? 'tier-a' : row.tier === 'B' ? 'tier-b' : row.tier === 'C' ? 'tier-c' : 'tier-u';
+      const verCls  = row.verified === 'Yes' ? 'ybadge' : row.verified === 'No' ? 'nbadge' : 'ubadge';
+      const stsCls  = row.status === 'Completed' ? 'status-done' : row.status === 'Missed' ? 'status-miss' : 'status-part';
+      const urlHtml = row.url ? `<a class="url-link" href="${esc(row.url)}" target="_blank" rel="noopener">${shortUrl(row.url)}</a>` : '<span style="color:var(--muted)">—</span>';
+      tr.innerHTML = `
+        <td class="num">${row.seq}</td>
+        <td style="white-space:nowrap">${fmtDate(row.date)}</td>
+        <td style="white-space:nowrap;font-weight:600">${row.member}</td>
+        <td><span style="font-size:10.5px;font-weight:700;color:${t.color}">${row.team}</span></td>
+        <td style="font-size:10.5px;font-family:monospace;white-space:nowrap">${esc(row.code)}</td>
+        <td><span class="tier ${tierCls}">${row.tier}</span></td>
+        <td>${esc(row.desc)}</td>
+        <td class="num">${row.hours !== '' ? row.hours + 'h' : '—'}</td>
+        <td><span class="${stsCls}">${row.status}</span></td>
+        <td><span class="${verCls}">${row.verified || '—'}</span></td>
+        <td>${urlHtml}</td>`;
+    }
+    tbody.appendChild(tr);
+    visCount++;
+  });
+
+  if (visCount === 0) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="11" style="text-align:center;padding:32px;color:var(--muted)">No tasks match the current filter.</td>`;
+    tbody.appendChild(tr);
   }
 
-  const fileData = await ghRes.json();
-  const markdown = atob(fileData.content.replace(/\n/g, ''));
-  const html = mdToHtml(markdown);
-  setViewerBody(`<div class="md-render">${html}</div>`);
+  document.getElementById('tableCount').textContent = `${visible.filter(r=>!r.noEod).length} tasks`;
 }
 
-function setViewerBody(html) {
-  document.getElementById('viewerBody').innerHTML = html;
+function filterTable() { renderTable(); }
+
+function resetTable() {
+  document.getElementById('tableWrap').style.display = 'none';
+  document.getElementById('stateMsg').style.display = '';
+  document.getElementById('kpiRow').style.display = 'none';
+  document.getElementById('eodBody').innerHTML = '';
 }
 
-// ── Markdown → HTML (lightweight renderer, no dependencies) ───────────────────
-function mdToHtml(md) {
-  let html = escHtml(md);
-
-  // Code blocks (before inline code)
-  html = html.replace(/```[\s\S]*?```/g, m => {
-    const inner = m.slice(3, -3).replace(/^\w+\n/, '');
-    return `<pre><code>${inner}</code></pre>`;
+// ── Export CSV ────────────────────────────────────────────────────────────────
+function exportCSV() {
+  const date = document.getElementById('datePick').value;
+  const hdr = ['#','Date','Member','Dept','Task Code','Tier','Task Description','Hours','Status','Verified','URL'];
+  const rows = [hdr];
+  allRows.filter(r => !hiddenMembers.has(r.member)).forEach(r => {
+    if (r.noEod) {
+      rows.push([r.seq, fmtDate(r.date), r.member, r.team, '', '', 'No EOD submitted', '', '', '', '']);
+    } else {
+      rows.push([r.seq, fmtDate(r.date), r.member, r.team, r.code, r.tier, r.desc, r.hours, r.status, r.verified, r.url]);
+    }
   });
-
-  // Inline code
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-
-  // Headings
-  html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
-  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-
-  // HR
-  html = html.replace(/^---+$/gm, '<hr>');
-
-  // Bold / italic
-  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-
-  // Links
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-
-  // Blockquotes
-  html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
-
-  // Unordered lists
-  html = html.replace(/((?:^- .+\n?)+)/gm, m => {
-    const items = m.trim().split('\n').map(l => `<li>${l.replace(/^- /, '')}</li>`).join('');
-    return `<ul>${items}</ul>`;
-  });
-
-  // Ordered lists
-  html = html.replace(/((?:^\d+\. .+\n?)+)/gm, m => {
-    const items = m.trim().split('\n').map(l => `<li>${l.replace(/^\d+\. /, '')}</li>`).join('');
-    return `<ol>${items}</ol>`;
-  });
-
-  // Tables (simple)
-  html = html.replace(/((?:^\|.+\|\n?)+)/gm, m => {
-    const rows = m.trim().split('\n').filter(r => !/^\|[-| :]+\|$/.test(r.trim()));
-    if (rows.length < 2) return m;
-    const [head, ...body] = rows;
-    const th = head.split('|').filter(c => c.trim()).map(c => `<th>${c.trim()}</th>`).join('');
-    const trs = body.map(r => {
-      const tds = r.split('|').filter(c => c.trim()).map(c => `<td>${c.trim()}</td>`).join('');
-      return `<tr>${tds}</tr>`;
-    }).join('');
-    return `<table><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table>`;
-  });
-
-  // Paragraphs — wrap remaining bare lines
-  html = html.replace(/^(?!<[a-z]).+$/gm, m => `<p>${m}</p>`);
-
-  // Clean up excess blank lines between block elements
-  html = html.replace(/(<\/(?:h[1-6]|p|ul|ol|hr|blockquote|table|pre)>)\s*(<(?:h[1-6]|p|ul|ol|hr|blockquote|table|pre))/g, '$1$2');
-
-  return html;
+  const csv = rows.map(r => r.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `EOD_${activeTeam}_${date}.csv`;
+  a.click();
 }
 
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function setProgress(pct) {
+  document.getElementById('progress').style.width = pct + '%';
 }
 
 function fmtDate(d) {
-  // YYYY-MM-DD → "Thu 06 Aug 2026"
-  try {
-    const dt = new Date(d + 'T12:00:00Z');
-    return dt.toLocaleDateString('en-GB', { weekday:'short', day:'2-digit', month:'short', year:'numeric', timeZone:'UTC' });
-  } catch { return d; }
+  if (!d) return '';
+  const [y,mo,day] = d.split('-');
+  return `${day}/${mo}/${y}`;
 }
 
-// ── Boot ───────────────────────────────────────────────────────────────────────
-init();
+function shortUrl(u) {
+  try { return new URL(u).hostname.replace('www.',''); } catch { return u.slice(0,30); }
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 </script>
 </body>
 </html>
