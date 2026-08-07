@@ -446,78 +446,93 @@ function parseKuberan(md, date, member) {
 }
 
 // ── Parser: Piranav ───────────────────────────────────────────────────────────
-// Handles all format variants across Mar–Jul 2026:
-//   May:   Task N\nTask Name: Title    Duration: X Hours
-//   Jun+:  Task N — Title (em dash)   Duration: X Hours
-//   UX:    UX Change / Review: Title  or same em-dash variant
+// All observed format variants:
+//   Apr/Jul  : "Task Name: Title" / "UX Change / Review: Title"
+//   May      : "Task N\nTask Name: Title"  (Task N alone, name on next line)
+//   Jun v1   : "Task N: Title"             (colon inline)
+//   Jun v2   : "Task N — Title"            (em-dash inline)
+//   Jun UX   : bare title line above "Affected Page" (no UX prefix)
+//   Leave    : file contains only "leave"
 function parsePiranav(md, date, member) {
   const rows  = [];
+
+  // Skip leave / blank
+  if (/^\s*leave\s*$/i.test(md.trim()) || md.trim() === '') return rows;
+
   const lines = md.split('\n');
 
-  // Skip leave/blank files
-  const preview = md.trim().toLowerCase();
-  if (preview === 'leave' || preview === '') return rows;
+  // ── Step 1: collect all candidate task-start line indices ──────────────────
+  // Pattern A: Task Name: / UX Change / Review:  (Apr, May, Jul)
+  const PAT_A = /^(?:Task\s+Name\s*:|UX\s+Change\s*\/\s*Review\s*:)/i;
+  // Pattern B: Task N: Title  or  Task N — Title  (Jun v1/v2)
+  const PAT_B = /^Task\s+\d+\s*[.:—–-]/i;
 
-  // Find task header lines — "Task N" alone, or "Task N — Title", or "Task Name:", or "UX Change / Review:"
-  const TASK_HDR = /^(?:Task\s+\d+\s*(?:[—–\-].*)?$|Task\s+Name\s*:|UX\s+Change\s*\/\s*Review\s*:)/i;
-  const headerIdxs = [];
-  lines.forEach((line, i) => { if (TASK_HDR.test(line.trim())) headerIdxs.push(i); });
-  if (headerIdxs.length === 0) return rows;
+  const candidates = new Set();
 
-  headerIdxs.forEach((start, i) => {
-    const end        = headerIdxs[i + 1] || lines.length;
+  lines.forEach((line, i) => {
+    const t = line.trim();
+    if (PAT_A.test(t) || PAT_B.test(t)) candidates.add(i);
+  });
+
+  // Pattern C: bare UX header — non-field line followed within 4 lines by "Affected Page"
+  lines.forEach((line, i) => {
+    const t = line.trim();
+    if (/^Affected\s+Page/i.test(t)) {
+      // walk back to find the non-empty, non-section, non-field preceding line
+      for (let j = i - 1; j >= Math.max(0, i - 5); j--) {
+        const prev = lines[j].trim();
+        if (!prev) continue;
+        if (/^(?:Shopify\s|Status|Duration|Evidence|What\s|Definition|Task|UX\s+Change|Diagnostic|Team|Support|Time\s+Summary|Date|Employee|End\s+of|Daily)/i.test(prev)) break;
+        if (!candidates.has(j)) candidates.add(j);
+        break;
+      }
+    }
+  });
+
+  const startIdxs = Array.from(candidates).sort((a, b) => a - b);
+  if (startIdxs.length === 0) return rows;
+
+  // ── Step 2: build task blocks and extract fields ───────────────────────────
+  startIdxs.forEach((start, i) => {
+    const end        = startIdxs[i + 1] || lines.length;
     const headerLine = lines[start].trim();
     const body       = lines.slice(start + 1, end).join('\n');
 
-    // Determine title and whether it's a UX task
-    let isUX  = /UX\s+Change\s*\/\s*Review/i.test(headerLine);
     let title = '';
+    let isUX  = false;
 
     if (/^Task\s+Name\s*:/i.test(headerLine)) {
-      // "Task Name: Title" on same line
       title = headerLine.replace(/^Task\s+Name\s*:\s*/i, '').trim();
+
     } else if (/^UX\s+Change\s*\/\s*Review\s*:/i.test(headerLine)) {
       title = headerLine.replace(/^UX\s+Change\s*\/\s*Review\s*:\s*/i, '').trim();
       isUX  = true;
-    } else if (/^Task\s+\d+\s*[—–\-]/.test(headerLine)) {
-      // "Task 1 — Title" (em-dash inline)
-      title = headerLine.replace(/^Task\s+\d+\s*[—–\-]+\s*/i, '').trim();
-      // Check if next line is "Task Name:" or "UX Change" to get real title
+
+    } else if (PAT_B.test(headerLine)) {
+      // Task N: Title  or  Task N — Title
+      title = headerLine.replace(/^Task\s+\d+\s*[.:—–-]+\s*/i, '').trim();
+      // Detect UX: if the block has "Affected Page" it's a UX task
+      if (/Affected\s+Page/i.test(body)) isUX = true;
+
     } else {
-      // "Task N" alone — title is on the next meaningful line (Task Name: or UX Change /)
-      const nextLine = lines.slice(start + 1, start + 4).find(l => {
-        const t = l.trim();
-        return t && (/^Task\s+Name\s*:/i.test(t) || /^UX\s+Change/i.test(t));
-      });
-      if (nextLine) {
-        if (/^Task\s+Name\s*:/i.test(nextLine.trim())) {
-          title = nextLine.trim().replace(/^Task\s+Name\s*:\s*/i,'');
-        } else if (/^UX\s+Change\s*\/\s*Review\s*:/i.test(nextLine.trim())) {
-          title = nextLine.trim().replace(/^UX\s+Change\s*\/\s*Review\s*:\s*/i,'');
-          isUX  = true;
-        }
-      }
+      // Bare UX header (Pattern C)
+      title = headerLine;
+      isUX  = true;
     }
 
-    if (!title) {
-      // fallback: first non-empty non-field line in body
-      title = (body.split('\n').find(l => {
-        const t = l.trim();
-        return t && !/^Status:|^Duration:|^Evidence|^What Changed|^Definition|^Task\s+Name|^UX\s+Change|^Affected|^Tools/i.test(t);
-      }) || '').trim() || `Task ${i + 1}`;
-    }
+    if (!title) title = `Task ${i + 1}`;
 
+    const dept    = isUX ? 'Technical / UI-UX' : member.dept;
     const status  = extractVal(body, ['Status']) || 'Completed';
     const dod     = extractDod(body);
     const url     = extractUrl(body);
-    const product = extractVal(body, ['Affected Page','What changed in the system','What Changed in the System','What changed in user experience','What Changed in User Experience']);
-    const dept    = isUX ? 'Technical / UI-UX' : member.dept;
-
-    // Hours: Duration field
-    const hrsMatch = body.match(/Duration[:\s]+([\d.]+)\s*[Hh]ours?/im)
-                  || body.match(/Duration[:\s]+([\d.]+)\s*[Hh]\b/im);
-    const hours = hrsMatch ? hrsMatch[1] : '';
-
+    const product = extractVal(body, [
+      'Affected Page','What changed in the system','What Changed in the System',
+      'What changed in user experience','What Changed in User Experience',
+    ]);
+    const hrsM  = body.match(/Duration\s*[:\s]+([\d.]+)\s*[Hh]ours?/i)
+               || body.match(/Duration\s*[:\s]+([\d.]+)h\b/i);
+    const hours = hrsM ? hrsM[1] : '';
     const { tier, tierDesc } = classifyTier(title, body);
 
     rows.push({
@@ -532,9 +547,10 @@ function parsePiranav(md, date, member) {
       verified: normaliseDod(dod),
       url,
       waste:    'No',
-      product:  (product || '').replace(/\n/g,' ').trim().slice(0, 80),
+      product:  (product || '').replace(/\n/g, ' ').trim().slice(0, 80),
     });
   });
+
   return rows;
 }
 
