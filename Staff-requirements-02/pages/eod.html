@@ -173,8 +173,35 @@
 <footer class="site">EOD Reports · Digital Marketing Member Reports · AIOS · Source: GitHub eod-reports repository · Read-only view</footer>
 
 <script>
+// ── Members ───────────────────────────────────────────────────────────────────
+const MEMBERS = [
+  { name:'Dilaksi',     team:'SEO' },
+  { name:'Hetheesha',   team:'SEO' },
+  { name:'Jakshan',     team:'SEO' },
+  { name:'Kamsi',       team:'SEO' },
+  { name:'Piranav',     team:'SEO' },
+  { name:'Sukirtha',    team:'SEO' },
+  { name:'Jefri',       team:'ADS' },
+  { name:'Kuberan',     team:'ADS' },
+  { name:'Mahima',      team:'ADS' },
+  { name:'Ripson',      team:'ADS' },
+  { name:'Sajeepan',    team:'ADS' },
+  { name:'Sonya',       team:'ADS' },
+  { name:'Thanishtika', team:'ADS' },
+  { name:'Thasitha',    team:'ADS' },
+  { name:'Theekshy',    team:'ADS' },
+  { name:'Thishoban',   team:'ADS' },
+  { name:'Thivagini',   team:'ADS' },
+];
+
 // ── Config ────────────────────────────────────────────────────────────────────
-const API = '/api/eod/reader';
+const GH_OWNER = 'digitalmarketing69140951-sys';
+const GH_REPO  = 'eod-reports';
+const GH_API   = 'https://api.github.com';
+
+function ghHeaders() {
+  return { 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'staff-eod-dashboard' };
+}
 
 // ── State ─────────────────────────────────────────────────────────────────────
 let allMembers = [];
@@ -186,10 +213,7 @@ let activeTeamFilter = 'all';
 document.getElementById('stat-date').textContent = new Date().toISOString().slice(0,10);
 
 async function init() {
-  const res = await fetch(API + '?action=members');
-  const data = await res.json();
-  if (!data.ok) return;
-  allMembers = data.members;
+  allMembers = MEMBERS;
   renderMemberGrid(allMembers);
 }
 
@@ -245,14 +269,18 @@ async function selectMember(m) {
   setViewerBody('<div class="state-msg"><span class="icon">⏳</span><span>Loading available dates…</span></div>');
   setBtnState();
 
-  const res = await fetch(`${API}?action=dates&member=${encodeURIComponent(m.name)}`);
-  const data = await res.json();
-  if (!data.ok) {
-    setViewerBody(`<div class="state-msg"><span class="icon">⚠️</span><span>Could not load dates: ${data.error}</span></div>`);
+  const ghRes = await fetch(`${GH_API}/repos/${GH_OWNER}/${GH_REPO}/contents/eods/${encodeURIComponent(m.name)}`, { headers: ghHeaders() });
+  if (!ghRes.ok) {
+    setViewerBody(`<div class="state-msg"><span class="icon">⚠️</span><span>Could not load dates (GitHub ${ghRes.status}). Rate limit may apply — try again in a minute.</span></div>`);
     return;
   }
+  const files = await ghRes.json();
 
-  currentDates = data.dates; // sorted newest first
+  currentDates = files
+    .filter(f => f.name.endsWith('.md'))
+    .map(f => f.name.replace('.md', ''))
+    .sort()
+    .reverse();
 
   picker.innerHTML = currentDates.map(d =>
     `<option value="${d}">${fmtDate(d)}</option>`
@@ -292,19 +320,23 @@ async function loadEOD() {
 
   setViewerBody('<div class="state-msg"><span class="icon">⏳</span><span>Loading EOD report…</span></div>');
 
-  const res = await fetch(`${API}?action=read&member=${encodeURIComponent(currentMember.name)}&date=${encodeURIComponent(date)}`);
-  const data = await res.json();
+  const ghRes = await fetch(
+    `${GH_API}/repos/${GH_OWNER}/${GH_REPO}/contents/eods/${encodeURIComponent(currentMember.name)}/${date}.md`,
+    { headers: ghHeaders() }
+  );
 
-  if (!data.ok) {
-    if (res.status === 404) {
-      setViewerBody('<div class="state-msg"><span class="icon">📭</span><span>No EOD report was submitted for this date.</span></div>');
-    } else {
-      setViewerBody(`<div class="state-msg"><span class="icon">⚠️</span><span>Error: ${data.error}</span></div>`);
-    }
+  if (ghRes.status === 404) {
+    setViewerBody('<div class="state-msg"><span class="icon">📭</span><span>No EOD report was submitted for this date.</span></div>');
+    return;
+  }
+  if (!ghRes.ok) {
+    setViewerBody(`<div class="state-msg"><span class="icon">⚠️</span><span>GitHub error ${ghRes.status} — rate limit may apply.</span></div>`);
     return;
   }
 
-  const html = mdToHtml(data.markdown);
+  const fileData = await ghRes.json();
+  const markdown = atob(fileData.content.replace(/\n/g, ''));
+  const html = mdToHtml(markdown);
   setViewerBody(`<div class="md-render">${html}</div>`);
 }
 
