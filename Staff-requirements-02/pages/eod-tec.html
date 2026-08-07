@@ -221,7 +221,8 @@
 
 <script>
 // ── Config ────────────────────────────────────────────────────────────────────
-const GH = 'https://api.github.com/repos/digitalmarketing69140951-sys/eod-reports/contents/eods';
+const GH     = 'https://api.github.com/repos/digitalmarketing69140951-sys/eod-reports/contents/eods';
+const GH_RAW = 'https://raw.githubusercontent.com/digitalmarketing69140951-sys/eod-reports/main/eods';
 const MEMBERS = [
   { name:'Kuberan', empId:'TEC01', dbId:'DMT002', dept:'Technical / UI-UX', cssClass:'kuberan', color:'#7c3aed' },
   { name:'Piranav', empId:'TEC02', dbId:'DMT001', dept:'Technical / SEO',    cssClass:'piranav', color:'#0369a1' },
@@ -329,8 +330,8 @@ async function loadAll() {
   const total = toFetch.length;
   document.getElementById('loadStatus').textContent = `Loading ${total} EOD files…`;
 
-  // Step 3: batched fetch — 8 parallel at a time to stay under GitHub 60 req/hr unauthenticated
-  const BATCH = 8;
+  // Step 3: batched fetch — raw CDN has no rate limit, batch for browser connection limits
+  const BATCH = 20;
   let done = 0;
   const fetched = [];
   for (let i = 0; i < toFetch.length; i += BATCH) {
@@ -343,8 +344,6 @@ async function loadAll() {
       return { member, date, md };
     }));
     fetched.push(...results);
-    // small pause between batches to avoid rate limit
-    if (i + BATCH < toFetch.length) await new Promise(r => setTimeout(r, 120));
   }
 
   // Step 4: parse each file into rows
@@ -393,13 +392,12 @@ async function loadAll() {
   document.getElementById('kpiRow').style.display    = 'flex';
 }
 
-// ── GitHub fetch ──────────────────────────────────────────────────────────────
+// ── GitHub fetch — uses raw CDN (no rate limit) for file content ──────────────
 async function fetchFile(name, date) {
   try {
-    const r = await fetch(`${GH}/${name}/${date}.md`, { headers: { Accept: 'application/vnd.github.v3+json' } });
+    const r = await fetch(`${GH_RAW}/${name}/${date}.md`);
     if (!r.ok) return null;
-    const data = await r.json();
-    return atob(data.content.replace(/\n/g,''));
+    return await r.text();
   } catch { return null; }
 }
 
