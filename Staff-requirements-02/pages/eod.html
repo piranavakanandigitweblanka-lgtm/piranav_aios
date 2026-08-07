@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EOD Reports · Digital Marketing Team</title>
+<style>
+  :root{
+    --navy:#0c1a30; --navy-2:#13284a; --ink:#1a2233; --muted:#5b6577;
+    --line:#e3e7ee; --bg:#f4f6f9; --card:#ffffff;
+    --gold:#b98b1e; --gold-soft:#faf3e0;
+    --accent:#1f5eff; --accent-soft:#eaf0ff;
+    --good:#0a7d4f; --good-soft:#e5f5ee;
+    --warn:#b45309; --warn-soft:#fffbeb;
+    --fail:#b91c1c; --fail-soft:#fff5f5;
+    --na:#64748b; --na-soft:#eef2f7;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:"Nirmala UI","Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;}
+
+  .topbar{height:5px;background:linear-gradient(90deg,var(--navy) 0%,var(--navy-2) 55%,var(--gold) 100%);}
+  .masthead{background:var(--card);color:var(--ink);padding:22px 32px;border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(12,26,48,.03);}
+  .masthead .inner{max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:22px;}
+  .mark{width:42px;height:42px;background:var(--navy);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#e8d59a;flex:none;border:1.5px solid var(--gold);letter-spacing:.5px;}
+  .headtxt{flex:1;min-width:200px;}
+  .kicker{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+  .masthead h1{font-size:19px;font-weight:700;color:var(--navy);}
+  .lede{font-size:12px;color:var(--muted);margin-top:3px;}
+  .statrow{display:flex;flex-wrap:wrap;gap:0;border-left:1px solid var(--line);padding-left:26px;}
+  .stat{padding:0 20px;border-right:1px solid var(--line);}
+  .stat:last-child{border-right:none;padding-right:0;}
+  .stat .v{font-size:18px;font-weight:700;color:var(--navy);}
+  .stat .l{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:2px;}
+
+  .page{max-width:1280px;margin:0 auto;padding:24px 32px 48px;}
+
+  /* Back + filters bar */
+  .topbar-nav{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:20px;}
+  .back{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;transition:all .15s;}
+  .back:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent);}
+  .team-btn{border:1px solid var(--line);border-radius:999px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer;background:var(--card);color:var(--muted);transition:all .12s;}
+  .team-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .team-btn.on{background:var(--navy);border-color:var(--navy);color:#e8d59a;}
+  .team-btn.ads.on{background:#7c3aed;border-color:#7c3aed;color:#fff;}
+  .team-btn.seo.on{background:var(--good);border-color:var(--good);color:#fff;}
+
+  /* Member grid */
+  .section-title{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--navy-2);margin:0 0 12px;}
+  .section-title::after{content:"";flex:1;height:1px;background:var(--line);}
+  .member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px;margin-bottom:24px;}
+  .member-card{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:14px 10px;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 3px rgba(12,26,48,.04);transition:transform .13s,box-shadow .13s,border-color .13s;user-select:none;}
+  .member-card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(12,26,48,.09);border-color:var(--gold);}
+  .member-card.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft),0 4px 12px rgba(31,94,255,.12);}
+  .avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:15px;font-weight:700;background:var(--navy);color:#e8d59a;border:1.5px solid var(--gold);flex:none;}
+  .avatar.ads{background:#7c3aed;color:#fff;border-color:#a78bfa;}
+  .avatar.seo{background:var(--good);color:#fff;border-color:#34d399;}
+  .member-card .nm{font-size:12.5px;font-weight:700;}
+  .member-card .tm{font-size:10px;color:var(--muted);}
+
+  /* EOD Viewer */
+  .viewer{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .viewer-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line);background:#f8fafc;}
+  .viewer-toolbar .who{font-size:14px;font-weight:700;color:var(--navy);flex:1;min-width:120px;}
+  .viewer-toolbar .team-pill{display:inline-block;border-radius:999px;padding:3px 11px;font-size:11px;font-weight:700;}
+  .team-pill.ads{background:#ede9fe;color:#5b21b6;}
+  .team-pill.seo{background:var(--good-soft);color:var(--good);}
+  select#datePicker{border:1px solid var(--line);border-radius:8px;padding:7px 12px;font-size:13px;color:var(--ink);background:var(--card);outline:none;cursor:pointer;min-width:160px;}
+  select#datePicker:focus{border-color:var(--accent);}
+  .nav-arrows{display:flex;gap:4px;}
+  .nav-arrows button{border:1px solid var(--line);border-radius:7px;width:32px;height:32px;background:var(--card);cursor:pointer;font-size:15px;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:all .12s;}
+  .nav-arrows button:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
+  .nav-arrows button:disabled{opacity:.35;cursor:default;}
+
+  /* Content area */
+  .viewer-body{padding:24px 28px;min-height:300px;}
+  .state-msg{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:260px;color:var(--muted);font-size:13.5px;gap:10px;}
+  .state-msg .icon{font-size:38px;}
+
+  /* Markdown render styles */
+  .md-render h1,.md-render h2,.md-render h3{color:var(--navy);margin-top:22px;margin-bottom:8px;line-height:1.35;}
+  .md-render h1{font-size:18px;border-bottom:2px solid var(--line);padding-bottom:6px;margin-top:0;}
+  .md-render h2{font-size:15px;border-bottom:1px solid var(--line);padding-bottom:4px;}
+  .md-render h3{font-size:13.5px;color:var(--navy-2);}
+  .md-render p{margin-top:8px;font-size:13.5px;line-height:1.65;}
+  .md-render ul,.md-render ol{margin:8px 0 8px 22px;font-size:13.5px;}
+  .md-render li{margin-top:4px;line-height:1.6;}
+  .md-render strong{color:var(--ink);font-weight:700;}
+  .md-render em{color:var(--muted);}
+  .md-render hr{border:none;border-top:1px solid var(--line);margin:16px 0;}
+  .md-render a{color:var(--accent);text-decoration:none;}
+  .md-render a:hover{text-decoration:underline;}
+  .md-render blockquote{border-left:3px solid var(--gold);margin:10px 0;padding:6px 14px;background:var(--gold-soft);border-radius:0 6px 6px 0;font-size:13px;color:var(--muted);}
+  .md-render code{background:#f1f5f9;border-radius:4px;padding:1px 6px;font-size:12px;font-family:monospace;}
+  .md-render pre{background:#f1f5f9;border-radius:8px;padding:12px 14px;overflow-x:auto;font-size:12px;margin:10px 0;}
+  .md-render table{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0;}
+  .md-render th{background:#f0f3f8;padding:8px 10px;text-align:left;border:1px solid var(--line);font-size:11px;text-transform:uppercase;letter-spacing:.4px;}
+  .md-render td{padding:7px 10px;border:1px solid var(--line);}
+  .md-render tr:nth-child(even) td{background:#f8fafc;}
+
+  /* Section divider chips */
+  .md-section-chip{display:inline-block;background:var(--navy);color:#e8d59a;border-radius:6px;padding:2px 10px;font-size:10px;font-weight:700;letter-spacing:.5px;margin-right:8px;vertical-align:middle;}
+
+  /* Footer */
+  footer.site{max-width:1280px;margin:0 auto;padding:20px 32px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;}
+
+  @media(max-width:900px){
+    .statrow{border-left:none;padding-left:0;width:100%;}
+    .page{padding:20px 16px 40px;}
+  }
+  @media(max-width:640px){
+    .masthead{padding:18px 16px;}
+    .member-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));}
+    .viewer-body{padding:16px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar"></div>
+<header class="masthead">
+  <div class="inner">
+    <span class="mark">EOD</span>
+    <div class="headtxt">
+      <p class="kicker">Digit Web Lanka · Daily Reports</p>
+      <h1>End of Day Reports · Digital Marketing Team</h1>
+      <p class="lede">Select a team member, then browse their daily EOD reports. Source: GitHub · eod-reports repository.</p>
+    </div>
+    <div class="statrow">
+      <div class="stat"><div class="v">17</div><div class="l">Members</div></div>
+      <div class="stat"><div class="v">2</div><div class="l">Teams</div></div>
+      <div class="stat"><div class="v" id="stat-date">—</div><div class="l">Today</div></div>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+
+  <div class="topbar-nav">
+    <a class="back" href="../index.html">← Back to Directory</a>
+    <button class="team-btn on" data-team="all" onclick="filterTeam('all',this)">All Members</button>
+    <button class="team-btn ads" data-team="ADS" onclick="filterTeam('ADS',this)">ADS Team</button>
+    <button class="team-btn seo" data-team="SEO" onclick="filterTeam('SEO',this)">SEO Team</button>
+  </div>
+
+  <div class="section-title">Team Members</div>
+  <div class="member-grid" id="memberGrid">
+    <!-- populated by JS -->
+  </div>
+
+  <div class="section-title">EOD Report Viewer</div>
+  <div class="viewer" id="viewer">
+    <div class="viewer-toolbar">
+      <span class="who" id="viewerWho">Select a member above</span>
+      <span class="team-pill" id="viewerTeam" style="display:none"></span>
+      <select id="datePicker" style="display:none" onchange="loadEOD()">
+        <option value="">Select date…</option>
+      </select>
+      <div class="nav-arrows">
+        <button id="btnPrev" title="Previous day" disabled onclick="stepDate(-1)">‹</button>
+        <button id="btnNext" title="Next day" disabled onclick="stepDate(1)">›</button>
+      </div>
+    </div>
+    <div class="viewer-body" id="viewerBody">
+      <div class="state-msg">
+        <span class="icon">👈</span>
+        <span>Select a team member to view their EOD reports.</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site">EOD Reports · Digital Marketing Member Reports · AIOS · Source: GitHub eod-reports repository · Read-only view</footer>
+
+<script>
+// ── Config ────────────────────────────────────────────────────────────────────
+const API = '/api/eod/reader';
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let allMembers = [];
+let currentMember = null;
+let currentDates = [];
+let activeTeamFilter = 'all';
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+document.getElementById('stat-date').textContent = new Date().toISOString().slice(0,10);
+
+async function init() {
+  const res = await fetch(API + '?action=members');
+  const data = await res.json();
+  if (!data.ok) return;
+  allMembers = data.members;
+  renderMemberGrid(allMembers);
+}
+
+// ── Member grid ───────────────────────────────────────────────────────────────
+function renderMemberGrid(members) {
+  const grid = document.getElementById('memberGrid');
+  grid.innerHTML = '';
+  const visible = activeTeamFilter === 'all'
+    ? members
+    : members.filter(m => m.team === activeTeamFilter);
+
+  visible.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'member-card' + (currentMember && currentMember.name === m.name ? ' active' : '');
+    card.dataset.name = m.name;
+    card.dataset.team = m.team;
+    card.innerHTML = `
+      <span class="avatar ${m.team.toLowerCase()}">${m.name[0]}</span>
+      <span class="nm">${m.name}</span>
+      <span class="tm">${m.team} Team</span>`;
+    card.onclick = () => selectMember(m);
+    grid.appendChild(card);
+  });
+}
+
+function filterTeam(team, btn) {
+  activeTeamFilter = team;
+  document.querySelectorAll('.team-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderMemberGrid(allMembers);
+}
+
+// ── Member selection ──────────────────────────────────────────────────────────
+async function selectMember(m) {
+  currentMember = m;
+  currentDates = [];
+
+  // Update active card
+  document.querySelectorAll('.member-card').forEach(c => {
+    c.classList.toggle('active', c.dataset.name === m.name);
+  });
+
+  document.getElementById('viewerWho').textContent = m.name;
+  const pill = document.getElementById('viewerTeam');
+  pill.textContent = m.team;
+  pill.className = 'team-pill ' + m.team.toLowerCase();
+  pill.style.display = '';
+
+  const picker = document.getElementById('datePicker');
+  picker.style.display = 'none';
+  picker.innerHTML = '<option value="">Loading dates…</option>';
+
+  setViewerBody('<div class="state-msg"><span class="icon">⏳</span><span>Loading available dates…</span></div>');
+  setBtnState();
+
+  const res = await fetch(`${API}?action=dates&member=${encodeURIComponent(m.name)}`);
+  const data = await res.json();
+  if (!data.ok) {
+    setViewerBody(`<div class="state-msg"><span class="icon">⚠️</span><span>Could not load dates: ${data.error}</span></div>`);
+    return;
+  }
+
+  currentDates = data.dates; // sorted newest first
+
+  picker.innerHTML = currentDates.map(d =>
+    `<option value="${d}">${fmtDate(d)}</option>`
+  ).join('');
+  picker.style.display = '';
+  setBtnState();
+
+  // Auto-load most recent
+  if (currentDates.length) loadEOD();
+  else setViewerBody('<div class="state-msg"><span class="icon">📭</span><span>No EOD reports found for this member.</span></div>');
+}
+
+// ── Date navigation ───────────────────────────────────────────────────────────
+function stepDate(dir) {
+  const picker = document.getElementById('datePicker');
+  const idx = currentDates.indexOf(picker.value);
+  const next = idx + dir; // dates are newest-first, so +1 = older
+  if (next >= 0 && next < currentDates.length) {
+    picker.value = currentDates[next];
+    loadEOD();
+  }
+}
+
+function setBtnState() {
+  const picker = document.getElementById('datePicker');
+  const idx = currentDates.indexOf(picker.value);
+  document.getElementById('btnPrev').disabled = (idx <= 0);
+  document.getElementById('btnNext').disabled = (idx < 0 || idx >= currentDates.length - 1);
+}
+
+// ── EOD load + render ─────────────────────────────────────────────────────────
+async function loadEOD() {
+  const picker = document.getElementById('datePicker');
+  const date = picker.value;
+  if (!date || !currentMember) return;
+  setBtnState();
+
+  setViewerBody('<div class="state-msg"><span class="icon">⏳</span><span>Loading EOD report…</span></div>');
+
+  const res = await fetch(`${API}?action=read&member=${encodeURIComponent(currentMember.name)}&date=${encodeURIComponent(date)}`);
+  const data = await res.json();
+
+  if (!data.ok) {
+    if (res.status === 404) {
+      setViewerBody('<div class="state-msg"><span class="icon">📭</span><span>No EOD report was submitted for this date.</span></div>');
+    } else {
+      setViewerBody(`<div class="state-msg"><span class="icon">⚠️</span><span>Error: ${data.error}</span></div>`);
+    }
+    return;
+  }
+
+  const html = mdToHtml(data.markdown);
+  setViewerBody(`<div class="md-render">${html}</div>`);
+}
+
+function setViewerBody(html) {
+  document.getElementById('viewerBody').innerHTML = html;
+}
+
+// ── Markdown → HTML (lightweight renderer, no dependencies) ───────────────────
+function mdToHtml(md) {
+  let html = escHtml(md);
+
+  // Code blocks (before inline code)
+  html = html.replace(/```[\s\S]*?```/g, m => {
+    const inner = m.slice(3, -3).replace(/^\w+\n/, '');
+    return `<pre><code>${inner}</code></pre>`;
+  });
+
+  // Inline code
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+  // Headings
+  html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+  // HR
+  html = html.replace(/^---+$/gm, '<hr>');
+
+  // Bold / italic
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+  // Links
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+
+  // Blockquotes
+  html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+
+  // Unordered lists
+  html = html.replace(/((?:^- .+\n?)+)/gm, m => {
+    const items = m.trim().split('\n').map(l => `<li>${l.replace(/^- /, '')}</li>`).join('');
+    return `<ul>${items}</ul>`;
+  });
+
+  // Ordered lists
+  html = html.replace(/((?:^\d+\. .+\n?)+)/gm, m => {
+    const items = m.trim().split('\n').map(l => `<li>${l.replace(/^\d+\. /, '')}</li>`).join('');
+    return `<ol>${items}</ol>`;
+  });
+
+  // Tables (simple)
+  html = html.replace(/((?:^\|.+\|\n?)+)/gm, m => {
+    const rows = m.trim().split('\n').filter(r => !/^\|[-| :]+\|$/.test(r.trim()));
+    if (rows.length < 2) return m;
+    const [head, ...body] = rows;
+    const th = head.split('|').filter(c => c.trim()).map(c => `<th>${c.trim()}</th>`).join('');
+    const trs = body.map(r => {
+      const tds = r.split('|').filter(c => c.trim()).map(c => `<td>${c.trim()}</td>`).join('');
+      return `<tr>${tds}</tr>`;
+    }).join('');
+    return `<table><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table>`;
+  });
+
+  // Paragraphs — wrap remaining bare lines
+  html = html.replace(/^(?!<[a-z]).+$/gm, m => `<p>${m}</p>`);
+
+  // Clean up excess blank lines between block elements
+  html = html.replace(/(<\/(?:h[1-6]|p|ul|ol|hr|blockquote|table|pre)>)\s*(<(?:h[1-6]|p|ul|ol|hr|blockquote|table|pre))/g, '$1$2');
+
+  return html;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function fmtDate(d) {
+  // YYYY-MM-DD → "Thu 06 Aug 2026"
+  try {
+    const dt = new Date(d + 'T12:00:00Z');
+    return dt.toLocaleDateString('en-GB', { weekday:'short', day:'2-digit', month:'short', year:'numeric', timeZone:'UTC' });
+  } catch { return d; }
+}
+
+// ── Boot ───────────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
