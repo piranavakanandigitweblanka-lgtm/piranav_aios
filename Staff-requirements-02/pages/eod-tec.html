@@ -376,70 +376,163 @@ async function fetchFile(name, date) {
 }
 
 // ── Parser: Kuberan ───────────────────────────────────────────────────────────
-// Sections start with: ## Task N: Title  or  ## UI Review N – Title
+// Handles all format variants across Mar–Jul 2026:
+//   July:     ## Task 1: Title       **Time Spent:** X Hours  **bold:** fields
+//   June:     Task 1: Title          Time: Xh                 plain fields
+//   Mar-May:  Task 01 – Title (Xh)   Time: Xh / (Xh) in title plain fields
 function parseKuberan(md, date, member) {
-  const rows    = [];
-  const headers = [...md.matchAll(/^##\s+(?:Task\s*\d+[.:–\-\s]+|UI\s*Review\s*\d+[.:–\-\s]+)(.+)/gim)];
-  const blocks  = md.split(/^##\s+(?:Task\s*\d+|UI\s*Review\s*\d+)/im).slice(1);
+  const rows  = [];
+  const lines = md.split('\n');
 
-  blocks.forEach((body, i) => {
-    const desc    = headers[i] ? headers[i][1].trim() : `Task ${i+1}`;
-    const hours   = extractNum(body, ['Time Spent','Time']);
+  // Match any task header line — ## Task N / Task N: / Task NN – / Task NN—
+  const TASK_HDR = /^(?:##\s+)?Task\s+0*\d+\s*(?:[.:–—\-]|$)/i;
+
+  // Find indices of task header lines
+  const headerIdxs = [];
+  lines.forEach((line, i) => { if (TASK_HDR.test(line.trim())) headerIdxs.push(i); });
+  if (headerIdxs.length === 0) return rows;
+
+  headerIdxs.forEach((start, i) => {
+    const end        = headerIdxs[i + 1] || lines.length;
+    const headerLine = lines[start].trim();
+    const body       = lines.slice(start + 1, end).join('\n');
+
+    // Extract title — strip ## Task N: / Task NN – / Task NN— prefixes
+    let title = headerLine
+      .replace(/^##\s+/, '')
+      .replace(/^Task\s+0*\d+\s*[.:–—\-]+\s*/i, '')
+      .replace(/\s*\([\d.]+h\)\s*$/i, '')   // strip trailing (3h)
+      .trim();
+    if (!title) {
+      // Title may be on next non-blank line (June/May inline format)
+      title = (lines.slice(start + 1, start + 4).find(l => l.trim() && !/^Status:|^Time|^Evidence/i.test(l.trim())) || '').trim();
+    }
+    if (!title) title = `Task ${i + 1}`;
+
+    // Hours: (Xh) in header, or Time: Xh, or **Time Spent:** X Hours, or Duration:
+    let hours = '';
+    const hrsInTitle = headerLine.match(/\(([\d.]+)h\)/i);
+    if (hrsInTitle) {
+      hours = hrsInTitle[1];
+    } else {
+      const hrsMatch = body.match(/(?:\*\*Time\s*Spent[^*]*\*\*|^Time\s*Spent|^Time)[:\s]+\*?([\d.]+)\*?\s*[Hh]?ours?/im)
+                    || body.match(/^Time[:\s]+([\d.]+)h\b/im)
+                    || body.match(/Duration[:\s]+([\d.]+)\s*[Hh]ours?/im);
+      if (hrsMatch) hours = hrsMatch[1];
+    }
+
     const status  = extractVal(body, ['Status']) || 'Completed';
-    const dod     = extractVal(body, ['Definition of Done Met','Done']);
+    const dod     = extractDod(body);
     const url     = extractUrl(body);
-    const product = extractVal(body, ['What changed in the system','Affected Page']);
-    const { tier, tierDesc } = classifyTier(desc, body);
+    const product = extractVal(body, ['What changed in the system','What Changed in the System','Affected Page']);
+    const { tier, tierDesc } = classifyTier(title, body);
 
     rows.push({
       date, member,
       taskId:   '',
       dept:     member.dept,
-      intentId: makeIntent(desc, i + 1),
+      intentId: makeIntent(title, rows.length + 1),
       tier, tierDesc,
-      desc:     cleanText(desc),
+      desc:     cleanText(title),
       hours:    parseFloat(hours) || '',
       status:   normaliseStatus(status),
       verified: normaliseDod(dod),
       url,
       waste:    'No',
-      product:  (product || '').slice(0, 80).replace(/\n/g,' '),
+      product:  (product || '').replace(/\n/g,' ').trim().slice(0, 80),
     });
   });
   return rows;
 }
 
 // ── Parser: Piranav ───────────────────────────────────────────────────────────
-// Tasks marked by: "Task Name:" or "UX Change / Review:"
+// Handles all format variants across Mar–Jul 2026:
+//   May:   Task N\nTask Name: Title    Duration: X Hours
+//   Jun+:  Task N — Title (em dash)   Duration: X Hours
+//   UX:    UX Change / Review: Title  or same em-dash variant
 function parsePiranav(md, date, member) {
-  const rows   = [];
-  const labels = [...md.matchAll(/^(Task Name:|UX Change\s*\/\s*Review:)/gim)];
-  const parts  = md.split(/^(?:Task Name:|UX Change\s*\/\s*Review:)/im).slice(1);
+  const rows  = [];
+  const lines = md.split('\n');
 
-  parts.forEach((body, i) => {
-    const firstLine = body.split('\n')[0].trim();
-    const desc      = firstLine || `Task ${i+1}`;
-    const status    = extractVal(body, ['Status']) || 'Completed';
-    const dod       = extractVal(body, ['Definition of Done Met','Done']);
-    const url       = extractUrl(body);
-    const product   = extractVal(body, ['Affected Page','What changed in the system','What changed in user experience']);
-    const isUX      = labels[i] && labels[i][0].toLowerCase().includes('ux');
-    const dept      = isUX ? 'Technical / UI-UX' : member.dept;
-    const { tier, tierDesc } = classifyTier(desc, body);
+  // Skip leave/blank files
+  const preview = md.trim().toLowerCase();
+  if (preview === 'leave' || preview === '') return rows;
+
+  // Find task header lines — "Task N" alone, or "Task N — Title", or "Task Name:", or "UX Change / Review:"
+  const TASK_HDR = /^(?:Task\s+\d+\s*(?:[—–\-].*)?$|Task\s+Name\s*:|UX\s+Change\s*\/\s*Review\s*:)/i;
+  const headerIdxs = [];
+  lines.forEach((line, i) => { if (TASK_HDR.test(line.trim())) headerIdxs.push(i); });
+  if (headerIdxs.length === 0) return rows;
+
+  headerIdxs.forEach((start, i) => {
+    const end        = headerIdxs[i + 1] || lines.length;
+    const headerLine = lines[start].trim();
+    const body       = lines.slice(start + 1, end).join('\n');
+
+    // Determine title and whether it's a UX task
+    let isUX  = /UX\s+Change\s*\/\s*Review/i.test(headerLine);
+    let title = '';
+
+    if (/^Task\s+Name\s*:/i.test(headerLine)) {
+      // "Task Name: Title" on same line
+      title = headerLine.replace(/^Task\s+Name\s*:\s*/i, '').trim();
+    } else if (/^UX\s+Change\s*\/\s*Review\s*:/i.test(headerLine)) {
+      title = headerLine.replace(/^UX\s+Change\s*\/\s*Review\s*:\s*/i, '').trim();
+      isUX  = true;
+    } else if (/^Task\s+\d+\s*[—–\-]/.test(headerLine)) {
+      // "Task 1 — Title" (em-dash inline)
+      title = headerLine.replace(/^Task\s+\d+\s*[—–\-]+\s*/i, '').trim();
+      // Check if next line is "Task Name:" or "UX Change" to get real title
+    } else {
+      // "Task N" alone — title is on the next meaningful line (Task Name: or UX Change /)
+      const nextLine = lines.slice(start + 1, start + 4).find(l => {
+        const t = l.trim();
+        return t && (/^Task\s+Name\s*:/i.test(t) || /^UX\s+Change/i.test(t));
+      });
+      if (nextLine) {
+        if (/^Task\s+Name\s*:/i.test(nextLine.trim())) {
+          title = nextLine.trim().replace(/^Task\s+Name\s*:\s*/i,'');
+        } else if (/^UX\s+Change\s*\/\s*Review\s*:/i.test(nextLine.trim())) {
+          title = nextLine.trim().replace(/^UX\s+Change\s*\/\s*Review\s*:\s*/i,'');
+          isUX  = true;
+        }
+      }
+    }
+
+    if (!title) {
+      // fallback: first non-empty non-field line in body
+      title = (body.split('\n').find(l => {
+        const t = l.trim();
+        return t && !/^Status:|^Duration:|^Evidence|^What Changed|^Definition|^Task\s+Name|^UX\s+Change|^Affected|^Tools/i.test(t);
+      }) || '').trim() || `Task ${i + 1}`;
+    }
+
+    const status  = extractVal(body, ['Status']) || 'Completed';
+    const dod     = extractDod(body);
+    const url     = extractUrl(body);
+    const product = extractVal(body, ['Affected Page','What changed in the system','What Changed in the System','What changed in user experience','What Changed in User Experience']);
+    const dept    = isUX ? 'Technical / UI-UX' : member.dept;
+
+    // Hours: Duration field
+    const hrsMatch = body.match(/Duration[:\s]+([\d.]+)\s*[Hh]ours?/im)
+                  || body.match(/Duration[:\s]+([\d.]+)\s*[Hh]\b/im);
+    const hours = hrsMatch ? hrsMatch[1] : '';
+
+    const { tier, tierDesc } = classifyTier(title, body);
 
     rows.push({
       date, member,
       taskId:   '',
       dept,
-      intentId: makeIntent(desc, i + 1),
+      intentId: makeIntent(title, rows.length + 1),
       tier, tierDesc,
-      desc:     cleanText(desc),
-      hours:    '',
+      desc:     cleanText(title),
+      hours:    parseFloat(hours) || '',
       status:   normaliseStatus(status),
       verified: normaliseDod(dod),
       url,
       waste:    'No',
-      product:  (product || '').slice(0, 80).replace(/\n/g,' '),
+      product:  (product || '').replace(/\n/g,' ').trim().slice(0, 80),
     });
   });
   return rows;
@@ -448,21 +541,19 @@ function parsePiranav(md, date, member) {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function extractVal(text, keys) {
   for (const k of keys) {
+    // bold markdown: **Key:** Value
     const m = text.match(new RegExp(`\\*\\*${k}[^*]*\\*\\*[:\\s]*([^\\n]+)`, 'i'))
-           || text.match(new RegExp(`^${k}[:\\s]+([^\\n]+)`, 'im'));
+           // plain: Key: Value (on its own line, possibly preceded by blank line)
+           || text.match(new RegExp(`(?:^|\\n)${k}\\s*:[\\s]*([^\\n]+)`, 'i'));
     if (m) return m[1].replace(/\*+/g,'').trim();
   }
   return '';
 }
 
-function extractNum(text, keys) {
-  for (const k of keys) {
-    const m = text.match(new RegExp(`\\*\\*${k}[^*]*\\*\\*[:\\s]*([\\d.]+)\\s*[Hh]ours?`, 'i'))
-           || text.match(new RegExp(`^${k}[:\\s]+([\\d.]+)\\s*[Hh]ours?`, 'im'));
-    if (m) return m[1];
-  }
-  const fallback = text.match(/(\d+(?:\.\d+)?)\s*[Hh]ours?/);
-  return fallback ? fallback[1] : '';
+// Handles "Definition of Done Met", "Definition of done met", case-insensitive
+function extractDod(text) {
+  const m = text.match(/Definition\s+of\s+[Dd]one\s+[Mm]et\s*:?\s*\*?\s*([^\n]+)/i);
+  return m ? m[1].replace(/\*+/g,'').trim() : '';
 }
 
 function extractUrl(text) {
