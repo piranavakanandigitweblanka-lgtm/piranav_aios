@@ -213,12 +213,52 @@
 
 <script>
 // ── Config ────────────────────────────────────────────────────────────────────
-const GH     = 'https://api.github.com/repos/digitalmarketing69140951-sys/eod-reports/contents/eods';
 const GH_RAW = 'https://raw.githubusercontent.com/digitalmarketing69140951-sys/eod-reports/main/eods';
 const MEMBERS = [
   { name:'Kuberan', empId:'TEC01', dbId:'DMT002', dept:'Technical / UI-UX', cssClass:'kuberan', color:'#7c3aed' },
   { name:'Piranav', empId:'TEC02', dbId:'DMT001', dept:'Technical / SEO',   cssClass:'piranav', color:'#0369a1' },
 ];
+
+// Known EOD dates per member (from repo, verified 2026-08-07)
+// All file fetches go direct to raw CDN — no GitHub API needed
+const KNOWN_DATES = {
+  Kuberan: [
+    '2026-03-30','2026-03-31',
+    '2026-04-01','2026-04-02','2026-04-03','2026-04-06','2026-04-07','2026-04-08','2026-04-09','2026-04-10',
+    '2026-04-13','2026-04-14','2026-04-15','2026-04-16','2026-04-17',
+    '2026-04-20','2026-04-21','2026-04-22','2026-04-23','2026-04-24',
+    '2026-04-27','2026-04-28','2026-04-29','2026-04-30',
+    '2026-05-01','2026-05-04','2026-05-05','2026-05-06','2026-05-07','2026-05-08',
+    '2026-05-11','2026-05-12','2026-05-13','2026-05-14','2026-05-15',
+    '2026-05-18','2026-05-19','2026-05-20','2026-05-21','2026-05-22',
+    '2026-05-25','2026-05-26','2026-05-27','2026-05-28','2026-05-29',
+    '2026-06-01','2026-06-02','2026-06-03','2026-06-04','2026-06-05',
+    '2026-06-08','2026-06-09','2026-06-10','2026-06-11','2026-06-12',
+    '2026-06-15','2026-06-16','2026-06-17','2026-06-18','2026-06-19',
+    '2026-06-22','2026-06-23','2026-06-24','2026-06-25','2026-06-26',
+    '2026-06-29','2026-06-30',
+    '2026-07-01','2026-07-02','2026-07-03','2026-07-06','2026-07-07','2026-07-08','2026-07-09','2026-07-10',
+    '2026-07-13','2026-07-22',
+  ],
+  Piranav: [
+    '2026-03-31',
+    '2026-04-01','2026-04-02','2026-04-03','2026-04-06','2026-04-07','2026-04-08','2026-04-09','2026-04-10',
+    '2026-04-13','2026-04-14','2026-04-16','2026-04-17',
+    '2026-04-20','2026-04-21','2026-04-22','2026-04-23','2026-04-24',
+    '2026-04-27','2026-04-28','2026-04-29','2026-04-30',
+    '2026-05-01','2026-05-04','2026-05-05','2026-05-06','2026-05-07','2026-05-08',
+    '2026-05-11','2026-05-12','2026-05-13','2026-05-14','2026-05-15',
+    '2026-05-18','2026-05-19','2026-05-20','2026-05-21','2026-05-22',
+    '2026-05-25','2026-05-26','2026-05-27','2026-05-28','2026-05-29',
+    '2026-06-01','2026-06-02','2026-06-03','2026-06-04','2026-06-05',
+    '2026-06-08','2026-06-09','2026-06-10','2026-06-11','2026-06-12',
+    '2026-06-15','2026-06-16','2026-06-17','2026-06-18','2026-06-19',
+    '2026-06-22','2026-06-23','2026-06-24',
+    '2026-06-29','2026-06-30',
+    '2026-07-01','2026-07-02','2026-07-03','2026-07-06','2026-07-07','2026-07-08','2026-07-09',
+    '2026-07-13','2026-07-14',
+  ],
+};
 
 // ── State ─────────────────────────────────────────────────────────────────────
 let allRows      = [];
@@ -259,43 +299,24 @@ function fmtFull(d) {
 }
 
 // ── Load all available EOD data ───────────────────────────────────────────────
+// Uses KNOWN_DATES hardcoded list — no GitHub API calls, all fetches via raw CDN
 async function loadAll() {
   allRows = [];
   document.getElementById('stateWrap').style.display = '';
   document.getElementById('tableWrap').style.display = 'none';
   document.getElementById('kpiRow').style.display    = 'none';
-  setProgress(5);
-  setStatus('Fetching available dates…');
 
-  // Step 1 — directory listing for each member (2 API calls via GitHub API)
-  const availableDates = {};
-  await Promise.all(MEMBERS.map(async m => {
-    try {
-      const r = await fetch(`${GH}/${m.name}`, { headers:{ Accept:'application/vnd.github.v3+json' } });
-      if (!r.ok) { availableDates[m.name] = []; return; }
-      const files = await r.json();
-      availableDates[m.name] = Array.isArray(files)
-        ? files.filter(f => f.name.endsWith('.md')).map(f => f.name.replace('.md','')).sort()
-        : [];
-    } catch { availableDates[m.name] = []; }
-  }));
-
-  const allDates = new Set([
-    ...availableDates['Kuberan'],
-    ...availableDates['Piranav'],
-  ]);
-  const totalFiles = availableDates['Kuberan'].length + availableDates['Piranav'].length;
-  setProgress(15);
-
-  // Step 2 — build fetch list (only dates that exist in each member's folder)
+  // Build fetch list from hardcoded known dates
   const toFetch = [];
   MEMBERS.forEach(m => {
-    availableDates[m.name].forEach(date => toFetch.push({ member: m, date }));
+    KNOWN_DATES[m.name].forEach(date => toFetch.push({ member: m, date }));
   });
+  const totalFiles = toFetch.length;
 
+  setProgress(5);
   setStatus(`Loading ${totalFiles} EOD files…`);
 
-  // Step 3 — fetch file content from raw CDN (no rate limit), 20 at a time
+  // Fetch all via raw CDN — 20 parallel at a time
   const BATCH = 20;
   let done = 0;
   const fetched = [];
@@ -304,19 +325,18 @@ async function loadAll() {
     const results = await Promise.all(chunk.map(async ({ member, date }) => {
       const md = await fetchFile(member.name, date);
       done++;
-      setProgress(15 + Math.round(done / Math.max(totalFiles, 1) * 82));
+      setProgress(5 + Math.round(done / totalFiles * 92));
       setStatus(`${done} / ${totalFiles} files loaded`);
       return { member, date, md };
     }));
     fetched.push(...results);
   }
 
-  // Step 4 — parse into rows, member by member, date ascending
+  // Parse into rows — member by member, date ascending (KNOWN_DATES is already sorted)
   MEMBERS.forEach(m => {
-    const dates = availableDates[m.name]; // already sorted ascending
-    dates.forEach(date => {
-      const f   = fetched.find(x => x.member.name === m.name && x.date === date);
-      const md  = f ? f.md : null;
+    KNOWN_DATES[m.name].forEach(date => {
+      const f  = fetched.find(x => x.member.name === m.name && x.date === date);
+      const md = f ? f.md : null;
       if (!md) {
         allRows.push({ member: m, date, noEod: true, fetchFail: true });
         return;
@@ -330,12 +350,10 @@ async function loadAll() {
     });
   });
 
-  // Determine actual date span
+  // Header stats
   const taskDates = allRows.filter(r => !r.noEod).map(r => r.date).sort();
-  const spanFrom  = taskDates[0]               || '2026-03-30';
-  const spanTo    = taskDates[taskDates.length-1] || today();
-
-  // Update header stats
+  const spanFrom  = taskDates[0] || '2026-03-30';
+  const spanTo    = taskDates[taskDates.length - 1] || today();
   document.getElementById('statFiles').textContent = totalFiles;
   document.getElementById('statRange').textContent = `${fmtDisp(spanFrom)} – ${fmtDisp(spanTo)}`;
 
