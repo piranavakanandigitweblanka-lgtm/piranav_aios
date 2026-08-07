@@ -984,125 +984,219 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blC
     { key:'kw_top10',     label:'Top 10 Keywords',      fmt: v=>fNum(v),              reverse:false, src:'GSC' },
   ];
 
-  /* Build weekly KPI cards HTML */
-  let wkpiCardsHtml = '';
-  if (curW) {
-    wkpiDefs.forEach(def => {
-      const cur  = curW[def.key]  || 0;
-      const prv  = prevW ? (prevW[def.key] || 0) : null;
-      const pct  = prv !== null ? _wowPct(cur, prv) : null;
-      const color = _wowStatusColor(pct, def.reverse);
-      const bg    = _wowBg(pct, def.reverse);
-      const label = _wowStatusLabel(pct, def.reverse);
-      wkpiCardsHtml += `
-        <div style="background:${bg};border:1px solid ${color}22;border-radius:13px;padding:15px 17px;position:relative;border-left:4px solid ${color}">
-          <div style="position:absolute;top:10px;right:12px;font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#64748b;background:#f1f5f9;border-radius:4px;padding:1px 5px">${def.src}</div>
-          <div style="font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-right:40px">${def.label}</div>
-          <div style="font-size:22px;font-weight:700;margin-top:5px;line-height:1;color:var(--navy)">${def.fmt(cur)}</div>
+  /* ── Reactive Weekly Section ─────────────────────────── */
+  window._wRows     = weeklyRows;
+  window._wkpiDefs  = wkpiDefs;
+  window._wLatestSe = latestSe;
+  window._wPrevSe   = prevSe;
+
+  window._renderWeekly = function(ci, pi) {
+    const wRows = window._wRows;
+    if (!wRows || !wRows.length) return;
+    const cW = wRows[ci] || null;
+    const pW = wRows[pi] || null;
+    const cDays = cW ? (cW.days_in_week || 0) : 0;
+    const isPart = cDays > 0 && cDays < 7;
+    const pWarn = isPart
+      ? `<span style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;border-radius:5px;padding:2px 7px;font-size:10.5px;font-weight:600;margin-left:6px">&#9888; Partial week — ${cDays} of 7 days</span>`
+      : '';
+    const curRange = cW ? _weekRange(cW.week_start) : '—';
+    const prvRange = pW ? _weekRange(pW.week_start) : 'N/A';
+
+    /* KPI cards */
+    let cardsHtml = '';
+    if (cW) {
+      window._wkpiDefs.forEach(def => {
+        const cur = cW[def.key] || 0;
+        const prv = pW ? (pW[def.key] || 0) : null;
+        const pct = prv !== null ? _wowPct(cur, prv) : null;
+        const color = _wowStatusColor(pct, def.reverse);
+        const bg = _wowBg(pct, def.reverse);
+        const label = _wowStatusLabel(pct, def.reverse);
+        cardsHtml += `
+          <div style="background:${bg};border:1px solid ${color}22;border-radius:13px;padding:15px 17px;position:relative;border-left:4px solid ${color}">
+            <div style="position:absolute;top:10px;right:12px;font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#64748b;background:#f1f5f9;border-radius:4px;padding:1px 5px">${def.src}</div>
+            <div style="font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-right:40px">${def.label}</div>
+            <div style="font-size:22px;font-weight:700;margin-top:5px;line-height:1;color:var(--navy)">${def.fmt(cur)}</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+              <div style="font-size:11px;color:var(--muted)">Prev: <strong>${prv !== null ? def.fmt(prv) : '—'}</strong></div>
+              ${_wowBadge(pct, def.reverse)}
+            </div>
+            <div style="margin-top:5px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:${color}">${label}</div>
+          </div>`;
+      });
+      const lSe = window._wLatestSe;
+      const pSe = window._wPrevSe;
+      const seTrafficCur = lSe ? parseFloat(lSe.semrush_traffic_est) || 0 : 0;
+      const seTrafficPrv = pSe ? parseFloat(pSe.semrush_traffic_est) || 0 : null;
+      const seTPct = seTrafficPrv ? _wowPct(seTrafficCur, seTrafficPrv) : null;
+      const seTColor = _wowStatusColor(seTPct, false);
+      const seTBg = _wowBg(seTPct, false);
+      cardsHtml += `
+        <div style="background:${seTBg};border:1px solid ${seTColor}22;border-radius:13px;padding:15px 17px;position:relative;border-left:4px solid ${seTColor}">
+          <div style="position:absolute;top:10px;right:12px;font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#64748b;background:#f1f5f9;border-radius:4px;padding:1px 5px">SEMrush</div>
+          <div style="font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-right:40px">Organic Traffic Est.</div>
+          <div style="font-size:22px;font-weight:700;margin-top:5px;line-height:1;color:var(--navy)">${fNum(seTrafficCur)}</div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
-            <div style="font-size:11px;color:var(--muted)">Prev: <strong>${prv !== null ? def.fmt(prv) : '—'}</strong></div>
-            ${_wowBadge(pct, def.reverse)}
+            <div style="font-size:11px;color:var(--muted)">Prev mo: <strong>${seTrafficPrv !== null ? fNum(seTrafficPrv) : '—'}</strong></div>
+            ${_wowBadge(seTPct, false)}
           </div>
-          <div style="margin-top:5px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:${color}">${label}</div>
+          <div style="margin-top:5px;font-size:10px;color:#94a3b8;font-style:italic">Monthly snapshot · weekly N/A</div>
         </div>`;
-    });
+    } else {
+      cardsHtml = `<div class="alert">Weekly GSC data is not yet available. The GSC pipeline starts from Mar 2026 — ensure the database is receiving daily data.</div>`;
+    }
 
-    /* SEMrush Traffic — monthly, special card */
-    const seTrafficCur  = latestSe ? parseFloat(latestSe.semrush_traffic_est) || 0 : 0;
-    const seTrafficPrv  = prevSe   ? parseFloat(prevSe.semrush_traffic_est)   || 0 : null;
-    const seTPct        = seTrafficPrv ? _wowPct(seTrafficCur, seTrafficPrv) : null;
-    const seTColor      = _wowStatusColor(seTPct, false);
-    const seTBg         = _wowBg(seTPct, false);
-    wkpiCardsHtml += `
-      <div style="background:${seTBg};border:1px solid ${seTColor}22;border-radius:13px;padding:15px 17px;position:relative;border-left:4px solid ${seTColor}">
-        <div style="position:absolute;top:10px;right:12px;font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#64748b;background:#f1f5f9;border-radius:4px;padding:1px 5px">SEMrush</div>
-        <div style="font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-right:40px">Organic Traffic Est.</div>
-        <div style="font-size:22px;font-weight:700;margin-top:5px;line-height:1;color:var(--navy)">${fNum(seTrafficCur)}</div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
-          <div style="font-size:11px;color:var(--muted)">Prev mo: <strong>${seTrafficPrv !== null ? fNum(seTrafficPrv) : '—'}</strong></div>
-          ${_wowBadge(seTPct, false)}
+    /* Comparison table rows */
+    let tblRows = '';
+    if (cW) {
+      const allDefs = [
+        ...window._wkpiDefs,
+        { key:'se_traffic', label:'SEMrush Organic Traffic', fmt: v=>fNum(v), reverse:false, src:'SEMrush (monthly)' },
+      ];
+      allDefs.forEach(def => {
+        let cur, prv;
+        if (def.key === 'se_traffic') {
+          cur = window._wLatestSe ? parseFloat(window._wLatestSe.semrush_traffic_est)||0 : 0;
+          prv = window._wPrevSe   ? parseFloat(window._wPrevSe.semrush_traffic_est)||0   : null;
+        } else {
+          cur = cW[def.key] || 0;
+          prv = pW ? (pW[def.key] || 0) : null;
+        }
+        const pct = prv !== null ? _wowPct(cur, prv) : null;
+        const diff = prv !== null ? cur - prv : null;
+        const color = _wowStatusColor(pct, def.reverse);
+        const diffFmt = diff !== null ? ((diff >= 0 ? '+' : '') + (def.key === 'ctr_pct' ? diff.toFixed(2)+'%' : def.key === 'avg_position' ? diff.toFixed(1) : fNum(Math.round(diff)))) : '—';
+        tblRows += `<tr>
+          <td style="font-weight:600">${def.label} <span style="font-size:9.5px;color:var(--muted);font-weight:400">${def.src}</span></td>
+          <td class="num" style="font-weight:700">${def.fmt(cur)}</td>
+          <td class="num">${prv !== null ? def.fmt(prv) : '—'}</td>
+          <td class="num" style="color:${diff !== null ? (diff === 0 ? '#64748b' : (def.reverse ? (diff < 0 ? '#0a7d4f' : '#b91c1c') : (diff > 0 ? '#0a7d4f' : '#b91c1c'))) : '#94a3b8'}">${diffFmt}</td>
+          <td class="num">${_wowBadge(pct, def.reverse)}</td>
+          <td class="num"><span style="font-weight:700;color:${color};font-size:11px">${_wowStatusLabel(pct, def.reverse)}</span></td>
+        </tr>`;
+      });
+    }
+
+    const dynHtml = `
+      <div class="section-title" style="margin-top:0">&#128197; SEO Weekly KPI Summary ${pWarn}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px">
+        ${cW ? `Showing: <strong>${curRange}</strong> vs <strong>${pW ? prvRange : 'N/A'}</strong> &nbsp;·&nbsp; Source: GSC (PostgreSQL pipeline) &nbsp;·&nbsp; ${_nextUpdateStr('daily')} &nbsp;·&nbsp; <em style="color:var(--warn)">&#9888; GSC pipeline ≈ 50% of true click totals — use for trend direction only</em>` : 'Weekly data unavailable'}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:11px;margin-bottom:18px">
+        ${cardsHtml}
+      </div>
+      ${cW ? `
+      <div class="section-title">&#128200; SEO KPI Weekly Comparison ${pWarn}</div>
+      <div style="display:flex;align-items:center;gap:18px;margin-bottom:10px;flex-wrap:wrap">
+        <div style="background:#f0f5ff;border:1px solid ${isPart ? '#fed7aa' : '#c7d9ff'};border-radius:8px;padding:7px 16px;font-size:12px">
+          <span style="color:#64748b;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px">Current Week</span><br>
+          <strong style="font-size:15px;color:#1f5eff">${curRange}</strong>
+          ${isPart ? `<br><span style="font-size:10px;color:#c2410c;font-weight:600">&#9888; ${cDays} of 7 days available — data still arriving</span>` : ''}
         </div>
-        <div style="margin-top:5px;font-size:10px;color:#94a3b8;font-style:italic">Monthly snapshot · weekly N/A</div>
-      </div>`;
-  } else {
-    wkpiCardsHtml = `<div class="alert">Weekly GSC data is not yet available. The GSC pipeline starts from Mar 2026 — ensure the database is receiving daily data.</div>`;
-  }
+        <div style="font-size:18px;color:#94a3b8">vs</div>
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:7px 16px;font-size:12px">
+          <span style="color:#64748b;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px">Compare Week</span><br>
+          <strong style="font-size:15px;color:#475569">${prvRange}</strong>
+        </div>
+        <div style="font-size:11px;color:#94a3b8;margin-left:auto">Source: GSC PostgreSQL pipeline &bull; ~50% of true click totals</div>
+      </div>
+      <div class="tbox" style="margin-bottom:18px">
+        <div class="scroll">
+          <table>
+            <thead><tr>
+              <th>KPI</th>
+              <th class="num">Current Week<br><span style="font-weight:400;font-size:10px;color:#94a3b8">${curRange}</span>${isPart ? `<br><span style="font-weight:600;font-size:10px;color:#c2410c">&#9888; ${cDays}/7 days</span>` : ''}</th>
+              <th class="num">Compare Week<br><span style="font-weight:400;font-size:10px;color:#94a3b8">${prvRange}</span></th>
+              <th class="num">Difference</th>
+              <th class="num">WoW %</th>
+              <th class="num">Trend</th>
+            </tr></thead>
+            <tbody>${tblRows}</tbody>
+          </table>
+        </div>
+      </div>` : ''}`;
 
-  const weeklySummaryHtml = `
-    <div class="section-title" style="margin-top:0">&#128197; SEO Weekly KPI Summary ${partialWarn}</div>
-    <div style="font-size:11px;color:var(--muted);margin-bottom:10px">
-      ${curW ? `Current week: <strong>${_weekLabel(curW.week_start)}</strong> &nbsp;·&nbsp; Previous week: <strong>${prevW ? _weekLabel(prevW.week_start) : 'N/A'}</strong> &nbsp;·&nbsp; Source: GSC (PostgreSQL pipeline)` : 'Weekly data unavailable'}
-      &nbsp;·&nbsp; ${_nextUpdateStr('daily')}
-      &nbsp;·&nbsp; <em style="color:var(--warn)">&#9888; GSC pipeline ≈ 50% of true click totals — use for trend direction only</em>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:11px;margin-bottom:18px">
-      ${wkpiCardsHtml}
-    </div>`;
+    document.getElementById('weekly-dynamic').innerHTML = dynHtml;
 
-  /* ── Weekly Comparison Table ───────────────────────────── */
-  let wkpiTableRows = '';
-  if (curW) {
-    const allDefs = [
-      ...wkpiDefs,
-      { key:'se_traffic', label:'SEMrush Organic Traffic', fmt: v=>fNum(v), reverse:false, src:'SEMrush (monthly)' },
-    ];
-    allDefs.forEach(def => {
-      let cur, prv;
-      if (def.key === 'se_traffic') {
-        cur = latestSe ? parseFloat(latestSe.semrush_traffic_est)||0 : 0;
-        prv = prevSe   ? parseFloat(prevSe.semrush_traffic_est)||0   : null;
-      } else {
-        cur = curW[def.key] || 0;
-        prv = prevW ? (prevW[def.key] || 0) : null;
-      }
-      const pct  = prv !== null ? _wowPct(cur, prv) : null;
-      const diff = prv !== null ? cur - prv : null;
-      const color = _wowStatusColor(pct, def.reverse);
-      const diffFmt = diff !== null ? ((diff >= 0 ? '+' : '') + (def.key === 'ctr_pct' ? diff.toFixed(2)+'%' : def.key === 'avg_position' ? diff.toFixed(1) : fNum(Math.round(diff)))) : '—';
-      wkpiTableRows += `<tr>
-        <td style="font-weight:600">${def.label} <span style="font-size:9.5px;color:var(--muted);font-weight:400">${def.src}</span></td>
-        <td class="num" style="font-weight:700">${def.fmt(cur)}</td>
-        <td class="num">${prv !== null ? def.fmt(prv) : '—'}</td>
-        <td class="num" style="color:${diff !== null ? (diff === 0 ? '#64748b' : (def.reverse ? (diff < 0 ? '#0a7d4f' : '#b91c1c') : (diff > 0 ? '#0a7d4f' : '#b91c1c'))) : '#94a3b8'}">${diffFmt}</td>
-        <td class="num">${_wowBadge(pct, def.reverse)}</td>
-        <td class="num"><span style="font-weight:700;color:${color};font-size:11px">${_wowStatusLabel(pct, def.reverse)}</span></td>
+    /* All-weeks history table — highlight selected rows */
+    const histRows = [...wRows].reverse().map((r, revIdx) => {
+      const realIdx = wRows.length - 1 - revIdx;
+      const isCur = realIdx === ci;
+      const isPrv = realIdx === pi;
+      const partial = r.days_in_week > 0 && r.days_in_week < 7;
+      const rowBg = isCur ? 'background:#eff6ff' : isPrv ? 'background:#f8fafc' : '';
+      return `<tr style="${rowBg}">
+        <td style="font-weight:600;white-space:nowrap">
+          ${_weekRange(r.week_start)}
+          ${isCur ? '<span style="background:#1f5eff;color:#fff;border-radius:4px;font-size:9px;padding:1px 5px;margin-left:4px">CURRENT</span>' : ''}
+          ${isPrv ? '<span style="background:#64748b;color:#fff;border-radius:4px;font-size:9px;padding:1px 5px;margin-left:4px">COMPARE</span>' : ''}
+          ${partial ? `<span style="color:#c2410c;font-size:10px;margin-left:4px">&#9888; ${r.days_in_week}/7d</span>` : ''}
+        </td>
+        <td class="num">${fNum(r.clicks)}</td>
+        <td class="num">${fNum(r.impressions)}</td>
+        <td class="num">${r.ctr_pct.toFixed(2)}%</td>
+        <td class="num">${r.avg_position.toFixed(1)}</td>
+        <td class="num">${fNum(r.kw_top3)}</td>
+        <td class="num">${fNum(r.kw_top10)}</td>
+        <td class="num" style="color:${partial ? '#c2410c' : '#64748b'}">${r.days_in_week}/7</td>
       </tr>`;
-    });
-  }
+    }).join('');
 
-  const _curWRange  = curW  ? _weekRange(curW.week_start)  : '—';
-  const _prvWRange  = prevW ? _weekRange(prevW.week_start) : 'N/A';
+    const histEl = document.getElementById('weekly-history');
+    if (histEl) histEl.innerHTML = `
+      <div class="tbox" style="margin-top:10px">
+        <div class="scroll">
+          <table>
+            <thead><tr>
+              <th>Week (Mon – Sun)</th>
+              <th class="num">Clicks</th>
+              <th class="num">Impressions</th>
+              <th class="num">CTR</th>
+              <th class="num">Avg Pos</th>
+              <th class="num">Top-3 KWs</th>
+              <th class="num">Top-10 KWs</th>
+              <th class="num">Days</th>
+            </tr></thead>
+            <tbody>${histRows}</tbody>
+          </table>
+        </div>
+      </div>`;
+  };
 
-  const weeklyTableHtml = curW ? `
-    <div class="section-title">&#128200; SEO KPI Weekly Comparison ${partialWarn}</div>
-    <div style="display:flex;align-items:center;gap:18px;margin-bottom:10px;flex-wrap:wrap">
-      <div style="background:#f0f5ff;border:1px solid ${isPartialWeek ? '#fed7aa' : '#c7d9ff'};border-radius:8px;padding:7px 16px;font-size:12px">
-        <span style="color:#64748b;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px">Current Week</span><br>
-        <strong style="font-size:15px;color:#1f5eff">${_curWRange}</strong>
-        ${isPartialWeek ? `<br><span style="font-size:10px;color:#c2410c;font-weight:600">&#9888; ${curWDays} of 7 days available — data still arriving</span>` : ''}
+  /* Build week-selector dropdown options */
+  const _wkOpts = (selectedIdx) => weeklyRows.slice().reverse().map((r, revIdx) => {
+    const i = weeklyRows.length - 1 - revIdx;
+    const partial = r.days_in_week > 0 && r.days_in_week < 7;
+    const lbl = _weekRange(r.week_start) + (partial ? ` ⚠ ${r.days_in_week}/7d` : '');
+    return `<option value="${i}"${i === selectedIdx ? ' selected' : ''}>${lbl}</option>`;
+  }).join('');
+
+  const _lastIdx = weeklyRows.length - 1;
+  const _prvIdx  = Math.max(0, _lastIdx - 1);
+
+  const weeklySummaryHtml = weeklyRows.length ? `
+    <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:16px;padding:12px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px">
+      <div>
+        <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">&#128197; Current Week</div>
+        <select id="wk-sel-cur" style="border:1px solid #c7d9ff;border-radius:6px;padding:5px 10px;font-size:13px;background:#fff;color:#1f5eff;font-weight:600;cursor:pointer;min-width:200px">${_wkOpts(_lastIdx)}</select>
       </div>
-      <div style="font-size:18px;color:#94a3b8">vs</div>
-      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:7px 16px;font-size:12px">
-        <span style="color:#64748b;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px">Previous Week</span><br>
-        <strong style="font-size:15px;color:#475569">${_prvWRange}</strong>
+      <div style="font-size:18px;color:#94a3b8;padding-bottom:6px">vs</div>
+      <div>
+        <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Compare Week</div>
+        <select id="wk-sel-prv" style="border:1px solid #e2e8f0;border-radius:6px;padding:5px 10px;font-size:13px;background:#fff;color:#475569;font-weight:600;cursor:pointer;min-width:200px">${_wkOpts(_prvIdx)}</select>
       </div>
-      <div style="font-size:11px;color:#94a3b8;margin-left:auto">Source: GSC PostgreSQL pipeline &bull; ~50% of true click totals</div>
+      <div style="font-size:11px;color:#94a3b8;align-self:center;margin-left:auto">${weeklyRows.length} weeks of data available &nbsp;·&nbsp; ${_nextUpdateStr('daily')}</div>
     </div>
-    <div class="tbox" style="margin-bottom:18px">
-      <div class="scroll">
-        <table>
-          <thead><tr>
-            <th>KPI</th>
-            <th class="num">Current Week<br><span style="font-weight:400;font-size:10px;color:#94a3b8">${_curWRange}</span>${isPartialWeek ? `<br><span style="font-weight:600;font-size:10px;color:#c2410c">&#9888; ${curWDays}/7 days</span>` : ''}</th>
-            <th class="num">Previous Week<br><span style="font-weight:400;font-size:10px;color:#94a3b8">${_prvWRange}</span></th>
-            <th class="num">Difference</th>
-            <th class="num">WoW %</th>
-            <th class="num">Trend</th>
-          </tr></thead>
-          <tbody>${wkpiTableRows}</tbody>
-        </table>
-      </div>
-    </div>` : '';
+    <div id="weekly-dynamic"></div>
+    <details style="margin-bottom:18px">
+      <summary style="cursor:pointer;padding:10px 14px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:600;color:#334155;user-select:none">
+        &#128203; All ${weeklyRows.length} Weeks — Full Data History &nbsp;<span style="font-size:11px;font-weight:400;color:#94a3b8">(click to expand)</span>
+      </summary>
+      <div id="weekly-history"></div>
+    </details>` : `<div class="alert">Weekly GSC data is not yet available. The GSC pipeline starts from Mar 2026 — ensure the database is receiving daily data.</div>`;
+
+  const weeklyTableHtml = '';
 
   /* ── Executive Insights ────────────────────────────────── */
   let execInsightsHtml = '';
@@ -1262,7 +1356,6 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blC
   /* ── Inject HTML ────────────────────────────────────────── */
   document.getElementById('exec-content').innerHTML = `
     ${weeklySummaryHtml}
-    ${weeklyTableHtml}
     ${execInsightsHtml}
     ${alertsHtmlFinal}
     ${kpiHtml}
@@ -1346,6 +1439,18 @@ function renderExec(csv, gscRows, posRows, adsRows, dqSrc, compRows, blRows, blC
     <div class="section-title">Data Quality Panel</div>
     ${dqHtml}
   `;
+
+  /* ── Wire reactive weekly section ─────────────────────── */
+  if (weeklyRows.length) {
+    const _lastW = weeklyRows.length - 1;
+    window._renderWeekly(_lastW, Math.max(0, _lastW - 1));
+    const _sCur = document.getElementById('wk-sel-cur');
+    const _sPrv = document.getElementById('wk-sel-prv');
+    if (_sCur && _sPrv) {
+      _sCur.addEventListener('change', () => window._renderWeekly(+_sCur.value, +_sPrv.value));
+      _sPrv.addEventListener('change', () => window._renderWeekly(+_sCur.value, +_sPrv.value));
+    }
+  }
 
   /* ── Render Chart.js charts ─────────────────────────────── */
   if (charts.trend) charts.trend.destroy();
