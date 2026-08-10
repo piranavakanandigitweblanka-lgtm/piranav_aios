@@ -341,7 +341,7 @@ async function loadOverview() {
   if (loaded.overview) return renderOverview(cache.overview);
   const wrap = document.getElementById('overview-content');
   try {
-    const res  = await fetch('/api/organic-revenue?type=overview');
+    const res  = await fetch('/api/intel-api?service=organic&type=overview');
     const data = await res.json();
     if (!data.ok) throw new Error(data.error);
     cache.overview   = data;
@@ -482,7 +482,7 @@ async function loadByPage() {
   const wrap = document.getElementById('bypage-content');
   wrap.innerHTML = '<div class="loading"><div class="spinner"></div><br>Loading landing page data…</div>';
   try {
-    const res  = await fetch('/api/organic-revenue?type=by-page');
+    const res  = await fetch('/api/intel-api?service=organic&type=by-page');
     const data = await res.json();
     if (!data.ok) throw new Error(data.error);
     cache.bypage  = data;
@@ -652,7 +652,7 @@ async function loadByType() {
   const wrap = document.getElementById('bytype-content');
   wrap.innerHTML = '<div class="loading"><div class="spinner"></div><br>Loading…</div>';
   try {
-    const res  = await fetch('/api/organic-revenue?type=by-type');
+    const res  = await fetch('/api/intel-api?service=organic&type=by-type');
     const data = await res.json();
     if (!data.ok) throw new Error(data.error);
     cache.bytype  = data;
@@ -768,7 +768,7 @@ async function loadTrend() {
   const wrap = document.getElementById('trend-content');
   wrap.innerHTML = '<div class="loading"><div class="spinner"></div><br>Loading trend data…</div>';
   try {
-    const res  = await fetch('/api/organic-revenue?type=trend');
+    const res  = await fetch('/api/intel-api?service=organic&type=trend');
     const data = await res.json();
     if (!data.ok) throw new Error(data.error);
     cache.trend  = data;
