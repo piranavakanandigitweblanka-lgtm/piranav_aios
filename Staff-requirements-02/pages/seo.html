@@ -677,15 +677,15 @@ async function loadExec() {
 
   try {
     const [seRes, compRes, gscRes, posRes, adsRes, dqRes, blRes, blSnap, weekRes] = await Promise.all([
-      fetch('/api/seo?module=semrush&type=history'),
-      fetch('/api/seo?module=semrush&type=competitors'),
-      fetch('/api/seo?module=exec&type=gsc-monthly'),
-      fetch('/api/seo?module=exec&type=position-dist'),
-      fetch('/api/seo?module=exec&type=ads-monthly'),
-      fetch('/api/seo?module=exec&type=data-quality'),
-      fetch('/api/seo?module=semrush&type=backlinks-history'),
-      fetch('/api/seo?module=semrush&type=backlinks'),
-      fetch('/api/seo?module=exec&type=gsc-weekly'),
+      fetch('/api/intel-api?service=seo&module=semrush&type=history'),
+      fetch('/api/intel-api?service=seo&module=semrush&type=competitors'),
+      fetch('/api/intel-api?service=seo&module=exec&type=gsc-monthly'),
+      fetch('/api/intel-api?service=seo&module=exec&type=position-dist'),
+      fetch('/api/intel-api?service=seo&module=exec&type=ads-monthly'),
+      fetch('/api/intel-api?service=seo&module=exec&type=data-quality'),
+      fetch('/api/intel-api?service=seo&module=semrush&type=backlinks-history'),
+      fetch('/api/intel-api?service=seo&module=semrush&type=backlinks'),
+      fetch('/api/intel-api?service=seo&module=exec&type=gsc-weekly'),
     ]);
 
     const seJson   = await seRes.json();
@@ -1878,7 +1878,7 @@ function loadLostDomains() {
   const timer = setTimeout(() => ctrl.abort(), 10000);
   const sub  = document.getElementById('lost-domains-sub');
   const body = document.getElementById('lost-domains-body');
-  fetch('/api/seo?module=semrush&type=lost-domains', { signal: ctrl.signal })
+  fetch('/api/intel-api?service=seo&module=semrush&type=lost-domains', { signal: ctrl.signal })
     .then(r => r.json())
     .then(d => { clearTimeout(timer); renderLostDomains(d); })
     .catch(() => {
@@ -2057,8 +2057,8 @@ async function loadProducts() {
 
   try {
     const [pagesRes, listingsRes] = await Promise.all([
-      fetch('/api/seo?module=products&type=pages' + dateParams()),
-      fetch('/api/seo?module=products&type=listings'),
+      fetch('/api/intel-api?service=seo&module=products&type=pages' + dateParams()),
+      fetch('/api/intel-api?service=seo&module=products&type=listings'),
     ]);
     const pagesJson    = await pagesRes.json();
     const listingsJson = await listingsRes.json();
@@ -2249,7 +2249,7 @@ function loadKeywords(subType) {
       const el2 = document.getElementById('kw-ctr-panel');
       if (el2) el2.innerHTML = '<div class="loading"><div class="spinner"></div><br>Loading top keywords first&hellip;</div>';
       const kwDateParam = dateParams();
-      fetch('/api/seo?module=keywords&type=top' + kwDateParam)
+      fetch('/api/intel-api?service=seo&module=keywords&type=top' + kwDateParam)
         .then(r => r.json())
         .then(json => {
           if (!json.ok) throw new Error(json.error || 'API error');
@@ -2272,7 +2272,7 @@ function loadKeywords(subType) {
   if (kwActive === 'rank-dist') {
     const rdEl = document.getElementById('kw-rankdist-panel');
     if (rdEl) rdEl.innerHTML = '<div class="loading"><div class="spinner"></div><br>Loading ranking distribution&hellip;</div>';
-    fetch('/api/seo?module=keywords&type=rank-dist' + dateParams())
+    fetch('/api/intel-api?service=seo&module=keywords&type=rank-dist' + dateParams())
       .then(r => r.json())
       .then(json => {
         if (!json.ok) throw new Error(json.error || 'API error');
@@ -2291,13 +2291,13 @@ function loadKeywords(subType) {
     const gapEl = document.getElementById('kw-gap-panel');
     if (gapEl) gapEl.innerHTML = '<div class="loading"><div class="spinner"></div><br>Loading keyword gap data&hellip;</div>';
     /* load competitor list first, then load default competitor data */
-    fetch('/api/seo?module=semrush&type=gap-competitors')
+    fetch('/api/intel-api?service=seo&module=semrush&type=gap-competitors')
       .then(r => r.json())
       .then(json => {
         kwData.gapCompetitors = json.rows || [];
         const defaultComp = kwData.gapCompetitors[0]?.competitor_domain || 'ledhut.co.uk';
         kwData.gapActiveComp = defaultComp;
-        return fetch('/api/seo?module=semrush&type=keyword-gap&competitor=' + encodeURIComponent(defaultComp)).then(r => r.json());
+        return fetch('/api/intel-api?service=seo&module=semrush&type=keyword-gap&competitor=' + encodeURIComponent(defaultComp)).then(r => r.json());
       })
       .then(json => {
         if (!json.ok) throw new Error(json.error || 'API error');
@@ -2313,7 +2313,7 @@ function loadKeywords(subType) {
   }
 
   if (kwActive === 'semrush') {
-    fetch('/api/seo?module=semrush&type=keywords')
+    fetch('/api/intel-api?service=seo&module=semrush&type=keywords')
       .then(r => r.json())
       .then(json => {
         if (!json.ok) throw new Error(json.error || 'API error');
@@ -2329,7 +2329,7 @@ function loadKeywords(subType) {
   }
 
   const kwDateParam = (kwActive === 'top' || kwActive === 'opportunity') ? dateParams() : '';
-  fetch('/api/seo?module=keywords&type=' + kwActive + kwDateParam)
+  fetch('/api/intel-api?service=seo&module=keywords&type=' + kwActive + kwDateParam)
     .then(r => r.json())
     .then(json => {
       if (!json.ok) throw new Error(json.error || 'API error');
@@ -2677,7 +2677,7 @@ function switchGapCompetitor(comp) {
   kwData.gapActiveComp = comp;
   const el = document.getElementById('kw-gap-panel');
   if (el) el.innerHTML = '<div class="loading"><div class="spinner"></div><br>Loading&hellip;</div>';
-  fetch('/api/seo?module=semrush&type=keyword-gap&competitor=' + encodeURIComponent(comp))
+  fetch('/api/intel-api?service=seo&module=semrush&type=keyword-gap&competitor=' + encodeURIComponent(comp))
     .then(r => r.json())
     .then(json => {
       if (!json.ok) throw new Error(json.error || 'API error');
@@ -3007,7 +3007,7 @@ function loadLanding(subType) {
   if (body) body.innerHTML = '<div class="loading"><div class="spinner"></div><br>Fetching ' + landingActive + '&hellip;</div>';
 
   if (landingActive === 'semrush-pages') {
-    fetch('/api/seo?module=semrush&type=pages')
+    fetch('/api/intel-api?service=seo&module=semrush&type=pages')
       .then(r => r.json())
       .then(json => {
         if (!json.ok) throw new Error(json.error || 'API error');
@@ -3023,7 +3023,7 @@ function loadLanding(subType) {
   }
 
   const lpDateParam = (landingActive === 'pages' || landingActive === 'by-type') ? dateParams() : '';
-  fetch('/api/seo?module=landing&type=' + landingActive + lpDateParam)
+  fetch('/api/intel-api?service=seo&module=landing&type=' + landingActive + lpDateParam)
     .then(r => r.json())
     .then(json => {
       if (!json.ok) throw new Error(json.error || 'API error');
@@ -3136,7 +3136,7 @@ function toggleSrPageKws(btn, pageUrl) {
   };
 
   if (kwLoaded.semrush) { showKws(); return; }
-  fetch('/api/seo?module=semrush&type=keywords')
+  fetch('/api/intel-api?service=seo&module=semrush&type=keywords')
     .then(r=>r.json()).then(json=>{ kwData.semrush=json.rows||[]; kwLoaded.semrush=true; showKws(); })
     .catch(()=>{ expandTr.innerHTML=`<td colspan="7" style="padding:12px 18px;background:#f0f4ff;color:#dc2626;font-size:12px">Failed to load keywords.</td>`; });
 }
@@ -3369,7 +3369,7 @@ function toggleKwHistory(btn, query) {
   };
 
   if (kwHistoryCache[query]) { render(kwHistoryCache[query]); return; }
-  fetch('/api/seo?module=keywords&type=kw-history&q=' + encodeURIComponent(query))
+  fetch('/api/intel-api?service=seo&module=keywords&type=kw-history&q=' + encodeURIComponent(query))
     .then(r => r.json())
     .then(json => { kwHistoryCache[query] = json.rows || []; render(kwHistoryCache[query]); })
     .catch(() => { expandTr.querySelector('td').innerHTML = '<div style="font-size:12px;color:#dc2626">Failed to load history.</div>'; });
@@ -3418,7 +3418,7 @@ function toggleLpTrend(btn, pageUrl) {
   };
 
   if (lpTrendCache[pageUrl]) { showTrend(lpTrendCache[pageUrl]); return; }
-  fetch('/api/seo?module=landing&type=page-trend&page=' + encodeURIComponent(pageUrl))
+  fetch('/api/intel-api?service=seo&module=landing&type=page-trend&page=' + encodeURIComponent(pageUrl))
     .then(r=>r.json())
     .then(json=>{ lpTrendCache[pageUrl]=json.rows||[]; showTrend(lpTrendCache[pageUrl]); })
     .catch(()=>{ expandTr.innerHTML=`<td colspan="9" style="padding:12px 18px;background:#f0fdf4;color:#dc2626;font-size:12px">Failed to load trend.</td>`; });
@@ -3520,8 +3520,8 @@ async function loadActions() {
   wrap.innerHTML = '<div class="loading"><div class="spinner"></div><br>Building action list&hellip;</div>';
 
   Promise.all([
-    fetch('/api/seo?module=actions&type=priorities' + dateParams()).then(r=>r.json()),
-    fetch('/api/seo?module=technical&type=cannibalization' + dateParams()).then(r=>r.json()).catch(()=>({ok:false,rows:[]})),
+    fetch('/api/intel-api?service=seo&module=actions&type=priorities' + dateParams()).then(r=>r.json()),
+    fetch('/api/intel-api?service=seo&module=technical&type=cannibalization' + dateParams()).then(r=>r.json()).catch(()=>({ok:false,rows:[]})),
   ]).then(([priJson, cannJson]) => {
     if (!priJson.ok) throw new Error(priJson.error || 'API error');
     actAllRows = priJson.rows || [];
@@ -3736,7 +3736,7 @@ function loadTechnical(subType) {
     const cwvEl = document.getElementById('tech-cwv-panel');
     if (cwvEl) cwvEl.innerHTML = '<div class="loading"><div class="spinner"></div><br>Fetching PageSpeed data from Google&hellip;</div>';
     techData.cwv = { mobile: null, desktop: null };
-    fetch('/api/seo?module=technical&type=cwv&strategy=mobile')
+    fetch('/api/intel-api?service=seo&module=technical&type=cwv&strategy=mobile')
       .then(r => { if (!r.ok && r.status !== 502) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(json => {
         if (!json.ok) {
@@ -3768,7 +3768,7 @@ function loadTechnical(subType) {
           deskDiv.textContent = 'Loading desktop scores…';
           cwvEl2.appendChild(deskDiv);
         }
-        return fetch('/api/seo?module=technical&type=cwv&strategy=desktop')
+        return fetch('/api/intel-api?service=seo&module=technical&type=cwv&strategy=desktop')
           .then(r => r.json());
       })
       .then(json2 => {
@@ -3789,7 +3789,7 @@ function loadTechnical(subType) {
   const body = document.getElementById('tech-tab-body');
   if (body) body.innerHTML = '<div class="loading"><div class="spinner"></div><br>Fetching ' + techActive + '&hellip;</div>';
 
-  fetch('/api/seo?module=technical&type=' + techActive + dateParams())
+  fetch('/api/intel-api?service=seo&module=technical&type=' + techActive + dateParams())
     .then(r => r.json())
     .then(json => {
       if (!json.ok) throw new Error(json.error || 'API error');
@@ -4336,7 +4336,7 @@ let geoLoaded = false;
 function loadGeo() {
   if (geoLoaded) return;
   geoLoaded = true;
-  fetch('/api/seo?module=geo')
+  fetch('/api/intel-api?service=seo&module=geo')
     .then(r => r.json())
     .then(d => { if (d.ok) renderGeo(d); else document.getElementById('geo-content').innerHTML = '<div class="alert">Failed to load AI readiness data.</div>'; })
     .catch(() => { document.getElementById('geo-content').innerHTML = '<div class="alert">Network error loading AI readiness.</div>'; });
@@ -4483,7 +4483,7 @@ function renderGeo(d) {
 }
 
 function toggleGeoItem(key, done) {
-  fetch(`/api/seo?module=geo&type=toggle&key=${key}&done=${done}`)
+  fetch(`/api/intel-api?service=seo&module=geo&type=toggle&key=${key}&done=${done}`)
     .then(() => { geoLoaded = false; loadGeo(); });
 }
 
