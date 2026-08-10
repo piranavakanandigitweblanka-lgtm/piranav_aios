@@ -115,7 +115,7 @@ footer.site{max-width:1180px;margin:0 auto;padding:24px 32px 44px;border-top:1px
 <script>
 (function(){
   const KEY='auth_germany';
-  if(sessionStorage.getItem(KEY)==='1') document.getElementById('auth-overlay').style.display='none';
+  if(sessionStorage.getItem(KEY)==='1'||sessionStorage.getItem('auth_admin')==='1') document.getElementById('auth-overlay').style.display='none';
   function setLoading(on){const b=document.getElementById('auth-btn');b.disabled=on;b.textContent=on?'Signing in…':'Sign In';b.style.opacity=on?'.6':'1';}
   async function authCheck(){
     const u=document.getElementById('auth-user').value.trim().toLowerCase();

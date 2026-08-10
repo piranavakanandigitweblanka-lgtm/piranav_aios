@@ -149,7 +149,7 @@ footer.site{margin-top:22px;color:var(--muted);font-size:12px;text-align:center;
 <script>
 (function(){
   const KEY='auth_theekshy';
-  if(sessionStorage.getItem(KEY)==='1') document.getElementById('auth-overlay').style.display='none';
+  if(sessionStorage.getItem(KEY)==='1'||sessionStorage.getItem('auth_admin')==='1') document.getElementById('auth-overlay').style.display='none';
   function setLoading(on){const b=document.getElementById('auth-btn');b.disabled=on;b.textContent=on?'Signing in…':'Sign In';b.style.opacity=on?'.6':'1';}
   async function authCheck(){
     const u=document.getElementById('auth-user').value.trim().toLowerCase();
