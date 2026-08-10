@@ -1023,7 +1023,7 @@ function toggleTrk2(){
 }
 
 /* ══════════════════════════════════════════════════
-   REQUIREMENT 1 — Live via /api/hetheesha/req1
+   REQUIREMENT 1 — Live via /api/members-api?member=hetheesha&type=req1
    Revenue + GSC: PostgreSQL DB
    Meta/Alt/FAQ: Shopify Admin GraphQL (live)
    Fix Tracker: localStorage (per-browser fix dates)
@@ -1256,7 +1256,7 @@ async function r1_loadLive(){
   const banner=document.getElementById('r1LiveBanner');
   if(banner){banner.className='live-banner loading';banner.textContent='⏳ Loading live data from Shopify + DB…';}
   try{
-    const res=await fetch('/api/hetheesha/req1');
+    const res=await fetch('/api/members-api?member=hetheesha&type=req1');
     const data=await res.json();
     if(!data.ok) throw new Error(data.error||'API error');
     P=data.rows.map(r=>({k:r.rank,h:r.handle,rev:r.revenue,mtr:r.meta_title,mdr:r.meta_desc,alt:r.alt_missing,imp:r.impressions,ctr:r.ctr,faq:r.faq}));
@@ -1590,7 +1590,7 @@ async function trkBaRefresh(handle, safeH){
   if(tbody) tbody.innerHTML = `<tr><td colspan="4" style="padding:12px;color:var(--muted);text-align:center;">⏳ Loading…</td></tr>`;
 
   try {
-    const url = `/api/hetheesha/req1?type=ba&handle=${encodeURIComponent(handle)}&before_from=${bf}&before_to=${bt}&after_from=${af}&after_to=${at}`;
+    const url = `/api/members-api?member=hetheesha&type=ba&handle=${encodeURIComponent(handle)}&before_from=${bf}&before_to=${bt}&after_from=${af}&after_to=${at}`;
     const resp = await fetch(url);
     const data = await resp.json();
     if(!data.ok) throw new Error(data.error||'API error');
@@ -1880,7 +1880,7 @@ async function r2_loadLive() {
   banner.className = 'live-banner loading';
   msg.textContent  = 'Loading live data from Shopify + PostgreSQL GSC…';
   try {
-    const resp = await fetch('/api/hetheesha/req2');
+    const resp = await fetch('/api/members-api?member=hetheesha&type=req2');
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
     if (!data.ok) throw new Error(data.error || 'API error');

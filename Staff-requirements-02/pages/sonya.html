@@ -829,7 +829,7 @@
    REQ 1 — Live Google Ads Campaign Performance
    Source:  google_ads.campaign_performance + google_ads.campaigns
    Filter:  campaign_name ILIKE '%Sonya%' + campaign_id 20810136438
-   API:     /api/sonya/dashboard?type=campaign-performance&from=YYYY-MM-DD&to=YYYY-MM-DD
+   API:     /api/members-api?member=sonya&type=campaign-performance&from=YYYY-MM-DD&to=YYYY-MM-DD
    ============================================================ */
 
 /* ---- Date helpers ---- */
@@ -882,7 +882,7 @@ async function loadData(from, to) {
   table.style.opacity   = '0.3';
 
   try {
-    const res  = await fetch(`/api/sonya/dashboard?type=campaign-performance&from=${from}&to=${to}`);
+    const res  = await fetch(`/api/members-api?member=sonya&type=campaign-performance&from=${from}&to=${to}`);
     const json = await res.json();
 
     if (!json.ok) throw new Error(json.error || 'API error');
@@ -1135,7 +1135,7 @@ async function tLoadData(from, to) {
   if (loading) loading.style.display = 'block';
   if (errBox)  errBox.style.display  = 'none';
   try {
-    const res  = await fetch(`/api/sonya/dashboard?type=trend-performance&from=${from}&to=${to}`);
+    const res  = await fetch(`/api/members-api?member=sonya&type=trend-performance&from=${from}&to=${to}`);
     const json = await res.json();
     if (!json.ok) throw new Error(json.error || 'API error');
     tRawData = json.products;
@@ -1295,7 +1295,7 @@ async function oLoadData(from, to) {
   if (errBox)  errBox.style.display  = 'none';
   if (scroll)  scroll.style.opacity  = '0.3';
   try {
-    const res  = await fetch(`/api/sonya/dashboard?type=opportunity&from=${from}&to=${to}`);
+    const res  = await fetch(`/api/members-api?member=sonya&type=opportunity&from=${from}&to=${to}`);
     const json = await res.json();
     if (!json.ok) throw new Error(json.error || 'API error');
     oRawData = json.products;
@@ -12523,7 +12523,7 @@ async function pLoadData(from,to){
   errBox.style.display='none';
   if(scroll)scroll.style.opacity='0.3';
   try{
-    const res=await fetch(`/api/sonya/dashboard?type=product-performance&from=${from}&to=${to}`);
+    const res=await fetch(`/api/members-api?member=sonya&type=product-performance&from=${from}&to=${to}`);
     const json=await res.json();
     if(!json.ok)throw new Error(json.error||'API error');
     pRawData=json.products;
@@ -12667,7 +12667,7 @@ async function swsLoadData() {
   if (loading) loading.style.display = 'block';
   if (errBox)  errBox.style.display  = 'none';
   try {
-    const res  = await fetch('/api/sonya/dashboard?type=stop-waste-spend');
+    const res  = await fetch('/api/members-api?member=sonya&type=stop-waste-spend');
     const json = await res.json();
     if (!json.ok) throw new Error(json.error || 'API error');
     swsRawData = json.campaigns;
@@ -12862,7 +12862,7 @@ function r6LoadData() {
   document.getElementById('r6TableWrap').style.display= 'none';
   document.getElementById('r6Pager').innerHTML        = '';
 
-  fetch('/api/sonya/daily-orders' + dateParam)
+  fetch('/api/members-api?member=sonya&type=daily-orders' + dateParam)
     .then(function(res) { return res.json(); })
     .then(function(d) {
       document.getElementById('r6Loading').style.display = 'none';

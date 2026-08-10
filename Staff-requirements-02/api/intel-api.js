@@ -1,16 +1,19 @@
-// Combined SEO API — routes by ?module= to avoid Vercel Hobby function limit
-// ?module=exec     &type=gsc-monthly|position-dist|ads-monthly|data-quality
-// ?module=products &type=pages|listings
-// ?module=keywords &type=top|opportunity|rising|declining
-// ?module=landing  &type=pages|by-type|top-pages
+// Intel API — routes by ?service=seo|germany|organic
+// ?service=seo     → SEO Intelligence (?module=exec|products|keywords|landing|actions|technical|semrush|geo)
+// ?service=germany → Germany dashboard (?type=marketplace-gap|uk-bundle)
+// ?service=organic → Organic revenue (?type=overview|by-page|trend|by-type)
 
 const { Client } = require('pg');
 const https = require('https');
 
-const ADS_ACCOUNT   = 4503486236;
+// ══════════════════════════════════════════════════════════════════════════════
+// SEO SERVICE — full seo.js
+// ══════════════════════════════════════════════════════════════════════════════
+
+const ADS_ACCOUNT    = 4503486236;
 const GSC_SUB_SOURCE = 104;
 
-function makeClient(connStr) {
+function makeSeoClient(connStr) {
   return new Client({
     connectionString: connStr,
     ssl: { rejectUnauthorized: false },
@@ -445,12 +448,9 @@ async function handleLpMoM(client, res) {
   });
 }
 
-/* ─── MAIN HANDLER ──────────────────────────────────────────── */
-
 /* ─── ACTIONS ───────────────────────────────────────────────── */
 
 async function handleActionPriorities(client, res, from, to) {
-  // Two parallel queries: opportunity keywords + declining movers
   const latest = await getLatestDate(client);
   const curTo   = addDays(latest, 0);
   const curFrom = addDays(latest, -29);
@@ -458,7 +458,6 @@ async function handleActionPriorities(client, res, from, to) {
   const prvFrom = addDays(latest, -59);
 
   const [oppRes, decRes, ctrRes] = await Promise.all([
-    // Opportunity keywords: pos 4-20, >= 50 impressions
     client.query(`
       SELECT query,
         SUM(clicks)::int                                                AS clicks,
@@ -471,8 +470,6 @@ async function handleActionPriorities(client, res, from, to) {
       HAVING AVG(position) BETWEEN 4 AND 20 AND SUM(impressions) >= 100
       ORDER BY SUM(impressions) DESC LIMIT 80
     `, [GSC_SUB_SOURCE, from, to]),
-
-    // Declining movers: largest position drops
     client.query(`
       WITH current_period AS (
         SELECT query,
@@ -496,8 +493,6 @@ async function handleActionPriorities(client, res, from, to) {
       WHERE (p.prv_pos-c.cur_pos) < -2
       ORDER BY (p.prv_pos-c.cur_pos) ASC LIMIT 30
     `, [GSC_SUB_SOURCE, curFrom, curTo, prvFrom, prvTo]),
-
-    // CTR underperformers: high impressions, CTR well below position benchmark
     client.query(`
       SELECT query,
         SUM(clicks)::int                                                AS clicks,
@@ -515,8 +510,6 @@ async function handleActionPriorities(client, res, from, to) {
   ]);
 
   const actions = [];
-
-  // Score and label opportunity keywords
   for (const r of oppRes.rows) {
     const pos=parseFloat(r.avg_position)||0, imp=parseInt(r.impressions)||0, ctr=parseFloat(r.ctr_pct)||0;
     let score=0;
@@ -526,7 +519,6 @@ async function handleActionPriorities(client, res, from, to) {
     else              score=45;
     score += Math.min(imp/200, 10);
     score = Math.min(100, Math.round(score));
-
     let category, action_label, why;
     if (pos<=7 && imp>=200) {
       category='quick-win'; action_label='Push to Top 3';
@@ -545,8 +537,6 @@ async function handleActionPriorities(client, res, from, to) {
       cur_pos: pos, impressions: imp, clicks: parseInt(r.clicks)||0, ctr_pct: ctr,
       action_label, why, pos_change: null });
   }
-
-  // Declining alerts
   for (const r of decRes.rows) {
     const drop = Math.abs(parseFloat(r.pos_change)||0);
     const score = Math.min(100, Math.round(55 + drop * 1.2));
@@ -557,15 +547,11 @@ async function handleActionPriorities(client, res, from, to) {
       why: `Position fell ${drop} places (was #${r.prv_pos}, now #${r.cur_pos}) in last 30 days.`,
       pos_change: parseFloat(r.pos_change)||0 });
   }
-
-  // CTR underperformers
   for (const r of ctrRes.rows) {
     const pos=parseFloat(r.avg_position)||0, imp=parseInt(r.impressions)||0, ctr=parseFloat(r.ctr_pct)||0;
-    // Benchmark CTR for pos 1-3 is ~15-30%, 4-7 ~5-10%, 8-10 ~2-4%
     const bench = pos<=3 ? 15 : pos<=7 ? 5 : 2;
     const gap   = Math.max(0, bench - ctr);
     const score = Math.min(100, Math.round(50 + gap * 2 + Math.min(imp/500, 15)));
-    // Avoid duplicates already captured by opportunity
     if (!actions.find(a => a.query === r.query)) {
       actions.push({ id: `ctr-${r.query}`, category: 'ctr-boost', priority_score: score,
         query: r.query, cur_pos: pos, impressions: imp, clicks: parseInt(r.clicks)||0,
@@ -574,18 +560,14 @@ async function handleActionPriorities(client, res, from, to) {
         pos_change: null });
     }
   }
-
-  // Sort by priority_score DESC, assign P-level
   actions.sort((a,b) => b.priority_score - a.priority_score);
   const ranked = actions.map((a,i) => ({
     ...a,
     rank: i+1,
     priority: a.priority_score >= 85 ? 'P1' : a.priority_score >= 70 ? 'P2' : a.priority_score >= 55 ? 'P3' : 'P4',
   }));
-
   const summary = { quick_win:0, ctr_boost:0, rescue:0, content:0, decline:0 };
   ranked.forEach(a => { if (summary[a.category.replace('-','_')] !== undefined) summary[a.category.replace('-','_')]++; });
-
   return res.status(200).json({
     ok:true, type:'priorities', from, to,
     date_range_movers: { cur_period:{from:curFrom,to:curTo}, prv_period:{from:prvFrom,to:prvTo} },
@@ -646,7 +628,6 @@ async function handleKwHistory(client, res, query) {
 
 async function handleTechCoverage(client, res, from, to) {
   const [coverRes, shopifyRes, freshRes] = await Promise.all([
-    // Page-type coverage breakdown
     client.query(`
       SELECT
         COUNT(DISTINCT page)                                                                       AS total_indexed,
@@ -660,15 +641,11 @@ async function handleTechCoverage(client, res, from, to) {
       FROM google_search_console.page
       WHERE sub_source=$1 AND search_type='web' AND date BETWEEN $2 AND $3
     `, [GSC_SUB_SOURCE, from, to]),
-
-    // Shopify product count for coverage ratio
     client.query(`
       SELECT COUNT(*) AS total_products
       FROM listings.shopify_listings
       WHERE sub_source=$1 AND is_parent=1
     `, [GSC_SUB_SOURCE]),
-
-    // Pages by days_with_data bucket (freshness proxy)
     client.query(`
       SELECT
         CASE
@@ -687,15 +664,12 @@ async function handleTechCoverage(client, res, from, to) {
       GROUP BY freshness_bucket
     `, [GSC_SUB_SOURCE, from, to]),
   ]);
-
   const cov = coverRes.rows[0];
   const totalProducts  = parseInt(shopifyRes.rows[0].total_products) || 0;
   const indexedProducts= parseInt(cov.products) || 0;
   const coverageRatio  = totalProducts > 0 ? parseFloat(((indexedProducts/totalProducts)*100).toFixed(1)) : 0;
-
   const freshness = {};
   freshRes.rows.forEach(r => { freshness[r.freshness_bucket] = parseInt(r.page_count)||0; });
-
   return res.status(200).json({
     ok: true, type: 'coverage', from, to,
     stats: {
@@ -713,7 +687,6 @@ async function handleTechCoverage(client, res, from, to) {
 }
 
 async function handleTechCannib(client, res, from, to) {
-  // Keywords where 2+ distinct pages appear in query_page — limited to clicked rows
   const { rows: raw } = await client.query(`
     WITH page_kw AS (
       SELECT query, page, SUM(clicks)::int AS clicks
@@ -736,8 +709,6 @@ async function handleTechCannib(client, res, from, to) {
     JOIN page_kw pk ON pk.query = mp.query
     ORDER BY mp.total_clicks DESC, mp.query, pk.clicks DESC
   `, [GSC_SUB_SOURCE, from, to]);
-
-  // Group by keyword
   const grouped = {};
   for (const r of raw) {
     if (!grouped[r.query]) {
@@ -746,7 +717,6 @@ async function handleTechCannib(client, res, from, to) {
     grouped[r.query].pages.push({ page:r.page, clicks:parseInt(r.page_clicks)||0 });
   }
   const rows = Object.values(grouped);
-
   return res.status(200).json({ ok:true, type:'cannibalization', from, to, total:rows.length, rows });
 }
 
@@ -765,7 +735,6 @@ async function handleTechZeroClick(client, res, from, to) {
     ORDER BY SUM(impressions) DESC
     LIMIT 300
   `, [GSC_SUB_SOURCE, from, to]);
-
   return res.status(200).json({
     ok: true, type:'zero-click', from, to, total:rows.length,
     rows: rows.map(r => ({
@@ -809,20 +778,236 @@ async function handleCwv(res, strategy) {
   }
 }
 
-module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+/* ─── SEMRUSH ────────────────────────────────────────────────── */
+
+async function handleSemrush(type, res, req) {
+  const NEON_URL = process.env.NEON_DATABASE_URL;
+  if (!NEON_URL) return res.status(500).json({ ok:false, cause:'no_neon_url', error:'NEON_DATABASE_URL not set' });
+  const nc = makeSeoClient(NEON_URL);
+  try {
+    await nc.connect();
+    if (type === 'history') {
+      const { rows } = await nc.query(`
+        SELECT month, rank, organic_keywords, kw_top3, kw_top4_10, kw_top11_20,
+               kw_top21_100, traffic_est, traffic_cost_gbp, paid_keywords, paid_traffic
+        FROM semrush_history ORDER BY month ASC`);
+      return res.json({ ok:true, rows });
+    }
+    if (type === 'competitors') {
+      const { rows } = await nc.query(`
+        SELECT domain, month, rank, organic_keywords, traffic_est, traffic_cost_gbp
+        FROM semrush_competitor_history
+        WHERE domain IN ('lightingcompany.co.uk','ledhut.co.uk','industville.co.uk','thevintagelightbulbcompany.com','lampspares.co.uk')
+        ORDER BY domain, month ASC`);
+      return res.json({ ok:true, rows });
+    }
+    if (type === 'backlinks') {
+      const { rows } = await nc.query(`
+        SELECT snapshot_date, authority_score, total_backlinks, referring_domains, referring_ips, follow_links, nofollow_links
+        FROM semrush_backlinks ORDER BY snapshot_date ASC`);
+      return res.json({ ok:true, rows });
+    }
+    if (type === 'backlinks-history') {
+      const { rows } = await nc.query(`
+        SELECT snapshot_date, total_backlinks, referring_domains
+        FROM semrush_backlinks_history ORDER BY snapshot_date ASC`);
+      return res.json({ ok:true, rows });
+    }
+    if (type === 'lost-domains') {
+      const { rows: snaps } = await nc.query(`
+        SELECT DISTINCT snapshot_date FROM semrush_refdomains
+        ORDER BY snapshot_date DESC LIMIT 2`);
+      if (snaps.length < 1) return res.json({ ok:true, latest: null, previous: null, lost:[], gained:[], current:[] });
+      const latest   = snaps[0].snapshot_date;
+      const previous = snaps[1] ? snaps[1].snapshot_date : null;
+      const [latestRes, prevRes] = await Promise.all([
+        nc.query(`SELECT domain, authority_score, backlinks_count, first_seen, last_seen FROM semrush_refdomains WHERE snapshot_date=$1 ORDER BY backlinks_count DESC`, [latest]),
+        previous ? nc.query(`SELECT domain FROM semrush_refdomains WHERE snapshot_date=$1`, [previous]) : Promise.resolve({ rows:[] })
+      ]);
+      const latestDomains = new Set(latestRes.rows.map(r => r.domain));
+      const prevDomains   = new Set(prevRes.rows.map(r => r.domain));
+      const lost   = previous ? prevRes.rows.filter(r => !latestDomains.has(r.domain)).map(r => r.domain) : [];
+      const gained = previous ? latestRes.rows.filter(r => !prevDomains.has(r.domain)) : [];
+      return res.json({ ok:true, latest, previous, current: latestRes.rows, lost, gained });
+    }
+    if (type === 'keywords') {
+      const { rows } = await nc.query(`
+        SELECT keyword, position, prev_position, volume, cpc, url, traffic, keyword_difficulty, intent, snapshot_date
+        FROM semrush_keywords
+        WHERE snapshot_date = (SELECT MAX(snapshot_date) FROM semrush_keywords)
+        ORDER BY traffic DESC LIMIT 100`);
+      return res.json({ ok:true, rows });
+    }
+    if (type === 'pages') {
+      const { rows } = await nc.query(`
+        SELECT page_url, traffic, keywords_count, traffic_share, page_type, snapshot_date
+        FROM semrush_pages
+        WHERE snapshot_date = (SELECT MAX(snapshot_date) FROM semrush_pages)
+        ORDER BY traffic DESC LIMIT 50`);
+      return res.json({ ok:true, rows });
+    }
+    if (type === 'gap-competitors') {
+      const { rows } = await nc.query(`
+        SELECT competitor_domain, COUNT(*) AS kw_count, MAX(snapshot_date) AS snapshot_date
+        FROM semrush_keyword_gap
+        GROUP BY competitor_domain
+        ORDER BY kw_count DESC`);
+      return res.json({ ok:true, rows });
+    }
+    if (type === 'keyword-gap') {
+      const competitor = req.query.competitor || 'ledhut.co.uk';
+      const { rows } = await nc.query(`
+        SELECT keyword, competitor_domain, competitor_position, volume,
+               competitor_traffic, competitor_url, keyword_difficulty, intent,
+               ledsone_position, opportunity_score, snapshot_date
+        FROM semrush_keyword_gap
+        WHERE competitor_domain = $1
+        ORDER BY opportunity_score DESC, volume DESC
+        LIMIT 100`, [competitor]);
+      return res.json({ ok:true, rows, competitor });
+    }
+    return res.status(400).json({ ok:false, error:`semrush: unknown type "${type}"` });
+  } catch (err) {
+    return errResponse(res, err);
+  } finally {
+    try { await nc.end(); } catch (_) {}
+  }
+}
+
+/* ─── GEO ────────────────────────────────────────────────────── */
+
+async function handleGeo(type, query, res) {
+  const NEON_URL = process.env.NEON_DATABASE_URL;
+  if (!NEON_URL) return res.status(500).json({ ok:false, error:'NEON_DATABASE_URL not set' });
+  const nc = makeSeoClient(NEON_URL);
+  try {
+    await nc.connect();
+    await nc.query(`
+      CREATE TABLE IF NOT EXISTS geo_checklist (
+        item_key VARCHAR(60) PRIMARY KEY,
+        label    TEXT NOT NULL,
+        done     BOOLEAN DEFAULT FALSE,
+        updated_at TIMESTAMP DEFAULT NOW()
+      )`);
+    await nc.query(`
+      INSERT INTO geo_checklist (item_key, label) VALUES
+        ('faqpage_schema',    'Add FAQPage schema to top 20 product pages'),
+        ('aggregate_rating',  'Add aggregateRating schema to products with reviews'),
+        ('sameas_org',        'Add sameAs array to Organization schema (social + trade directories)'),
+        ('wikidata_entity',   'Create Wikidata entity for LEDSone brand'),
+        ('author_schema',     'Add author/Person schema to blog posts'),
+        ('credentials_schema','Add trade body memberships to Organization schema (hasCredential)'),
+        ('blog_30_posts',     'Expand blog to 30+ posts targeting informational keywords'),
+        ('link_building_5',   'Earn 5 UK electrical/LED trade publication backlinks')
+      ON CONFLICT (item_key) DO NOTHING`);
+    if (type === 'toggle') {
+      const { key, done } = query;
+      if (!key) return res.json({ ok:false, error:'key required' });
+      await nc.query(`UPDATE geo_checklist SET done=$1, updated_at=NOW() WHERE item_key=$2`, [done === 'true', key]);
+      return res.json({ ok:true });
+    }
+    const [blR, histR, kwR, clR] = await Promise.all([
+      nc.query(`SELECT authority_score, referring_domains, total_backlinks FROM semrush_backlinks ORDER BY snapshot_date DESC LIMIT 1`),
+      nc.query(`SELECT organic_keywords, kw_top3, traffic_est FROM semrush_history ORDER BY month DESC LIMIT 1`),
+      nc.query(`SELECT COUNT(*)::int AS total,
+                  COUNT(CASE WHEN position<=3  THEN 1 END)::int AS top3,
+                  COUNT(CASE WHEN position<=10 THEN 1 END)::int AS top10
+                FROM semrush_keywords
+                WHERE snapshot_date=(SELECT MAX(snapshot_date) FROM semrush_keywords)`),
+      nc.query(`SELECT item_key, label, done FROM geo_checklist ORDER BY item_key`),
+    ]);
+    const bl   = blR.rows[0]   || {};
+    const hist = histR.rows[0] || {};
+    const kw   = kwR.rows[0]   || {};
+    const checklist = clR.rows;
+    const AI_BOTS = ['GPTBot','ChatGPT-User','ClaudeBot','PerplexityBot','Google-Extended'];
+    let robotsBots = {};
+    try {
+      const rtxt = await fetch('https://ledsone.co.uk/robots.txt', { signal: AbortSignal.timeout(6000) }).then(r => r.text());
+      for (const agent of AI_BOTS) {
+        const re = new RegExp(`User-agent:\\s*${agent}[\\s\\S]{0,80}?(Allow|Disallow):\\s*(\\S+)`, 'i');
+        const m = rtxt.match(re);
+        if (!m) { robotsBots[agent] = 'not_mentioned'; continue; }
+        robotsBots[agent] = m[1].toLowerCase() === 'allow' ? 'allow' : 'disallow';
+      }
+    } catch(_) { AI_BOTS.forEach(b => { robotsBots[b] = 'check_failed'; }); }
+    let schemaTypes = [], hasSameAs = false, hasOgTags = false;
+    try {
+      const html = await fetch('https://ledsone.co.uk/', {
+        headers: { 'User-Agent': 'ClaudeBot/1.0' },
+        signal: AbortSignal.timeout(8000),
+      }).then(r => r.text());
+      const ldBlocks = [...html.matchAll(/<script[^>]+type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi)];
+      for (const m of ldBlocks) {
+        try {
+          const obj = JSON.parse(m[1]);
+          const types = Array.isArray(obj) ? obj.map(o => o['@type']) : [obj['@type']];
+          schemaTypes.push(...types.filter(Boolean));
+          if (JSON.stringify(obj).includes('"sameAs"')) hasSameAs = true;
+        } catch(_) {}
+      }
+      hasOgTags = /property=["']og:title["']/.test(html);
+    } catch(_) {}
+    const cl = (k) => checklist.find(c => c.item_key === k)?.done || false;
+    const authorityScore = parseInt(bl.authority_score) || 0;
+    const refDomains     = parseInt(bl.referring_domains) || 0;
+    const orgKws         = parseInt(hist.organic_keywords) || 0;
+    const top3           = parseInt(kw.top3) || 0;
+    const trafficEst     = parseInt(hist.traffic_est) || 0;
+    const allowedBots    = Object.values(robotsBots).filter(v => v === 'allow').length;
+    const hasFaqSchema   = schemaTypes.includes('FAQPage') || cl('faqpage_schema');
+    const hasAggRating   = schemaTypes.includes('AggregateRating') || cl('aggregate_rating');
+    const hasOrgSchema   = schemaTypes.some(t => t === 'Organization' || t === 'WebSite');
+    const hasSameAsFinal = hasSameAs || cl('sameas_org');
+    let dim_crawler  = Math.min(10, allowedBots * 2);
+    let dim_auth     = authorityScore >= 50 ? 9 : authorityScore >= 40 ? 7 : authorityScore >= 30 ? 4 : authorityScore >= 20 ? 2 : 1;
+    if (refDomains < 700) dim_auth = Math.max(1, dim_auth - 1);
+    let dim_entity   = 2 + (hasOrgSchema ? 2 : 0) + (hasSameAsFinal ? 2 : 0) + (cl('wikidata_entity') ? 2 : 0) + (hasOgTags ? 1 : 0);
+    dim_entity       = Math.min(10, dim_entity);
+    let dim_content  = 3 + (orgKws >= 10000 ? 2 : orgKws >= 5000 ? 1 : 0) + (top3 >= 100 ? 2 : top3 >= 50 ? 1 : 0) + (hasFaqSchema ? 2 : 0);
+    dim_content      = Math.min(10, dim_content);
+    let dim_eeat     = 2 + (hasAggRating ? 2 : 0) + (cl('author_schema') ? 2 : 0) + (cl('credentials_schema') ? 2 : 0);
+    dim_eeat         = Math.min(10, dim_eeat);
+    let dim_foot     = 2 + (orgKws >= 10000 ? 3 : orgKws >= 5000 ? 2 : 0) + (top3 >= 100 ? 2 : top3 >= 50 ? 1 : 0) + (trafficEst >= 5000 ? 2 : 0);
+    dim_foot         = Math.min(10, dim_foot);
+    let dim_schema   = 1 + (hasOrgSchema ? 1 : 0) + (hasOgTags ? 1 : 0) + (hasFaqSchema ? 3 : 0) + (hasAggRating ? 2 : 0) + (hasSameAsFinal ? 1 : 0);
+    dim_schema       = Math.min(10, dim_schema);
+    const totalScore = Math.round((dim_crawler + dim_auth + dim_entity + dim_content + dim_eeat + dim_foot + dim_schema) / 70 * 100);
+    return res.json({
+      ok: true,
+      score: totalScore,
+      dimensions: [
+        { key:'crawler_access',   label:'AI Crawler Access',    score:dim_crawler, max:10, details:{ bots:robotsBots } },
+        { key:'authority',        label:'Domain Authority',      score:dim_auth,    max:10, details:{ authority_score:authorityScore, referring_domains:refDomains, total_backlinks:parseInt(bl.total_backlinks)||0 } },
+        { key:'entity_clarity',   label:'Brand Entity Clarity',  score:dim_entity,  max:10, details:{ has_org_schema:hasOrgSchema, has_sameas:hasSameAsFinal, has_wikidata:cl('wikidata_entity'), has_og_tags:hasOgTags } },
+        { key:'content_format',   label:'Content & Format',      score:dim_content, max:10, details:{ organic_keywords:orgKws, top3_keywords:top3, has_faq_schema:hasFaqSchema } },
+        { key:'eeat',             label:'E-E-A-T Signals',       score:dim_eeat,    max:10, details:{ has_agg_rating:hasAggRating, has_author_schema:cl('author_schema') } },
+        { key:'organic_footprint',label:'Organic Footprint',     score:dim_foot,    max:10, details:{ organic_keywords:orgKws, top3_keywords:top3, traffic_est:trafficEst } },
+        { key:'structured_data',  label:'Structured Data',       score:dim_schema,  max:10, details:{ schema_types:schemaTypes, has_faq:hasFaqSchema, has_agg_rating:hasAggRating, has_sameas:hasSameAsFinal } },
+      ],
+      checklist,
+      robots: robotsBots,
+      schema_types: schemaTypes,
+    });
+  } catch (err) {
+    return errResponse(res, err);
+  } finally {
+    try { await nc.end(); } catch(_) {}
+  }
+}
+
+/* ─── SEO main sub-handler ──────────────────────────────────── */
+
+async function handleSEO(req, res) {
   res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=60');
   if (req.method === 'OPTIONS') return res.status(200).end();
-
   const module_ = (req.query.module || '').trim();
   const type    = (req.query.type   || '').trim();
   const DB_URL  = process.env.DATABASE_URL;
   if (!DB_URL) return res.status(500).json({ ok:false, cause:'no_db_url', error:'DATABASE_URL not set' });
-
   const from = req.query.from || '2026-03-20';
   const to   = req.query.to   || new Date().toISOString().slice(0,10);
-
-  const client = makeClient(DB_URL);
+  const client = makeSeoClient(DB_URL);
   try {
     await client.connect();
     switch (module_) {
@@ -886,243 +1071,395 @@ module.exports = async function handler(req, res) {
   } finally {
     try { await client.end(); } catch (_) {}
   }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// GERMANY SERVICE
+// ══════════════════════════════════════════════════════════════════════════════
+
+function makeGermanyClient() {
+  return new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+    connectionTimeoutMillis: 15000,
+    statement_timeout: 55000,
+  });
+}
+
+const EBAY_ACCOUNTS = [
+  { id: 1,   name: 'led_sone' },
+  { id: 4,   name: 'sunsone' },
+  { id: 22,  name: 'electricalsone' },
+  { id: 27,  name: 'ledsonede' },
+  { id: 28,  name: 'huettenlampen' },
+  { id: 222, name: 'homin_gmbh' },
+];
+
+function ebayAccountCTEs(id) {
+  return `
+  raw_ebay_${id} AS (
+    SELECT DISTINCT CASE WHEN sku LIKE '%-IDE' THEN LEFT(sku, LENGTH(sku)-4) ELSE sku END AS base
+    FROM listings.ebay_listings
+    WHERE site = 'Germany' AND all_list = 1 AND sub_source = ${id} AND sku IS NOT NULL AND sku != ''
+  ),
+  ecov_${id} AS (
+    SELECT DISTINCT unnest(string_to_array(base, '+')) AS covered_sku FROM raw_ebay_${id}
+    UNION
+    SELECT DISTINCT array_to_string(parts[1:n], '+') AS covered_sku
+    FROM (SELECT base, string_to_array(base,'+') AS parts, generate_series(1,array_length(string_to_array(base,'+'),1)) AS n FROM raw_ebay_${id}) x
+  )`;
+}
+
+async function handleMarketplaceGap(client, req, res) {
+  const { rows } = await client.query(`
+    WITH stock AS (
+      SELECT p.sku, SUM(licsl.stock)::int AS st
+      FROM inventory.products p
+      JOIN inventory.local_inventory_current_stock_location_wise licsl ON licsl.inventory_id = p.id
+      WHERE licsl.warehouse_location = 'Germany' AND licsl.stock > 0
+      GROUP BY p.sku
+    ),
+    raw_amz AS (
+      SELECT DISTINCT CASE WHEN sku LIKE '%-IDE' THEN LEFT(sku, LENGTH(sku)-4) ELSE sku END AS base
+      FROM listings.amazon_listings WHERE site = 'Germany' AND sku IS NOT NULL AND sku != ''
+    ),
+    amz_coverage AS (
+      SELECT DISTINCT unnest(string_to_array(base, '+')) AS covered_sku FROM raw_amz
+      UNION
+      SELECT DISTINCT array_to_string(parts[1:n], '+') AS covered_sku
+      FROM (SELECT base, string_to_array(base,'+') AS parts, generate_series(1,array_length(string_to_array(base,'+'),1)) AS n FROM raw_amz) x
+    ),
+    raw_ebay AS (
+      SELECT DISTINCT CASE WHEN sku LIKE '%-IDE' THEN LEFT(sku, LENGTH(sku)-4) ELSE sku END AS base
+      FROM listings.ebay_listings WHERE site = 'Germany' AND all_list = 1 AND sku IS NOT NULL AND sku != ''
+    ),
+    ebay_coverage AS (
+      SELECT DISTINCT unnest(string_to_array(base, '+')) AS covered_sku FROM raw_ebay
+      UNION
+      SELECT DISTINCT array_to_string(parts[1:n], '+') AS covered_sku
+      FROM (SELECT base, string_to_array(base,'+') AS parts, generate_series(1,array_length(string_to_array(base,'+'),1)) AS n FROM raw_ebay) x
+    ),
+    raw_shop AS (
+      SELECT DISTINCT CASE WHEN sku LIKE '%-IDE' THEN LEFT(sku, LENGTH(sku)-4) ELSE sku END AS base
+      FROM listings.shopify_listings WHERE site = 'Germany' AND all_list = 1 AND sku IS NOT NULL AND sku != ''
+    ),
+    shop_coverage AS (
+      SELECT DISTINCT unnest(string_to_array(base, '+')) AS covered_sku FROM raw_shop
+      UNION
+      SELECT DISTINCT array_to_string(parts[1:n], '+') AS covered_sku
+      FROM (SELECT base, string_to_array(base,'+') AS parts, generate_series(1,array_length(string_to_array(base,'+'),1)) AS n FROM raw_shop) x
+    ),
+    ${EBAY_ACCOUNTS.map(acc => ebayAccountCTEs(acc.id)).join(',')}
+    SELECT
+      s.sku AS s, s.st,
+      MAX(CASE WHEN ac.covered_sku IS NOT NULL THEN 1 ELSE 0 END)::int AS a,
+      MAX(CASE WHEN ec.covered_sku IS NOT NULL THEN 1 ELSE 0 END)::int AS e,
+      MAX(CASE WHEN sc.covered_sku IS NOT NULL THEN 1 ELSE 0 END)::int AS sh,
+      MAX(CASE WHEN e1.covered_sku  IS NOT NULL THEN 1 ELSE 0 END)::int AS e1,
+      MAX(CASE WHEN e4.covered_sku  IS NOT NULL THEN 1 ELSE 0 END)::int AS e4,
+      MAX(CASE WHEN e22.covered_sku IS NOT NULL THEN 1 ELSE 0 END)::int AS e22,
+      MAX(CASE WHEN e27.covered_sku IS NOT NULL THEN 1 ELSE 0 END)::int AS e27,
+      MAX(CASE WHEN e28.covered_sku IS NOT NULL THEN 1 ELSE 0 END)::int AS e28,
+      MAX(CASE WHEN e222.covered_sku IS NOT NULL THEN 1 ELSE 0 END)::int AS e222
+    FROM stock s
+    LEFT JOIN amz_coverage   ac  ON ac.covered_sku  = s.sku
+    LEFT JOIN ebay_coverage  ec  ON ec.covered_sku  = s.sku
+    LEFT JOIN shop_coverage  sc  ON sc.covered_sku  = s.sku
+    LEFT JOIN ecov_1         e1  ON e1.covered_sku  = s.sku
+    LEFT JOIN ecov_4         e4  ON e4.covered_sku  = s.sku
+    LEFT JOIN ecov_22        e22 ON e22.covered_sku = s.sku
+    LEFT JOIN ecov_27        e27 ON e27.covered_sku = s.sku
+    LEFT JOIN ecov_28        e28 ON e28.covered_sku = s.sku
+    LEFT JOIN ecov_222       e222 ON e222.covered_sku = s.sku
+    GROUP BY s.sku, s.st ORDER BY s.st DESC
+  `);
+  const total          = rows.length;
+  const notAnywhere    = rows.filter(r => !r.a && !r.e && !r.sh).length;
+  const missingAmazon  = rows.filter(r => !r.a).length;
+  const missingEbay    = rows.filter(r => !r.e).length;
+  const missingShopify = rows.filter(r => !r.sh).length;
+  const allThree       = rows.filter(r => r.a && r.e && r.sh).length;
+  const ebayAccounts = EBAY_ACCOUNTS.map(acc => {
+    const col = 'e' + acc.id;
+    return { id: acc.id, name: acc.name, listed: rows.filter(r => r[col] === 1).length, missing: rows.filter(r => r[col] === 0).length };
+  });
+  if (req.query.debug) {
+    const drow = rows.find(r => r.s === req.query.debug);
+    return res.status(200).json({ ok: true, debug_sku: req.query.debug, result: drow || null });
+  }
+  return res.status(200).json({
+    ok: true,
+    refreshed_at: new Date().toISOString(),
+    summary: { total, notAnywhere, missingAmazon, missingEbay, missingShopify, allThree },
+    ebayAccounts,
+    rows,
+  });
+}
+
+async function handleUkBundle(client, res) {
+  const { rows } = await client.query(`
+    WITH uk_bundles AS (
+      SELECT DISTINCT CASE WHEN sku LIKE '%-IDE' THEN LEFT(sku, LENGTH(sku)-4) ELSE sku END AS bundle_sku
+      FROM listings.ebay_listings WHERE site = 'UK' AND sku LIKE '%+%' AND all_list = 1 AND sku IS NOT NULL AND sku != ''
+      UNION
+      SELECT DISTINCT CASE WHEN sku LIKE '%-IDE' THEN LEFT(sku, LENGTH(sku)-4) ELSE sku END
+      FROM listings.amazon_listings WHERE site = 'UK' AND sku LIKE '%+%' AND sku IS NOT NULL AND sku != ''
+      UNION
+      SELECT DISTINCT CASE WHEN sku LIKE '%-IDE' THEN LEFT(sku, LENGTH(sku)-4) ELSE sku END
+      FROM listings.shopify_listings WHERE site = 'UK' AND sku LIKE '%+%' AND all_list = 1 AND sku IS NOT NULL AND sku != ''
+    ),
+    de_bundles AS (
+      SELECT DISTINCT CASE WHEN sku LIKE '%-IDE' THEN LEFT(sku, LENGTH(sku)-4) ELSE sku END AS bundle_sku
+      FROM listings.ebay_listings WHERE site = 'Germany' AND sku LIKE '%+%' AND all_list = 1 AND sku IS NOT NULL AND sku != ''
+      UNION
+      SELECT DISTINCT CASE WHEN sku LIKE '%-IDE' THEN LEFT(sku, LENGTH(sku)-4) ELSE sku END
+      FROM listings.amazon_listings WHERE site = 'Germany' AND sku LIKE '%+%' AND sku IS NOT NULL AND sku != ''
+      UNION
+      SELECT DISTINCT CASE WHEN sku LIKE '%-IDE' THEN LEFT(sku, LENGTH(sku)-4) ELSE sku END
+      FROM listings.shopify_listings WHERE site = 'Germany' AND sku LIKE '%+%' AND all_list = 1 AND sku IS NOT NULL AND sku != ''
+    ),
+    de_stock AS (
+      SELECT p.sku, SUM(licsl.stock)::int AS de_qty
+      FROM inventory.products p
+      JOIN inventory.local_inventory_current_stock_location_wise licsl ON licsl.inventory_id = p.id
+      WHERE licsl.warehouse_location = 'Germany' AND licsl.stock > 0
+      GROUP BY p.sku
+    ),
+    uk_components AS (
+      SELECT ub.bundle_sku, unnest(string_to_array(ub.bundle_sku, '+')) AS component_sku FROM uk_bundles ub
+    ),
+    bundle_check AS (
+      SELECT
+        uc.bundle_sku,
+        COUNT(uc.component_sku)::int AS tc,
+        COUNT(ds.sku)::int AS fc,
+        (COUNT(uc.component_sku) - COUNT(ds.sku))::int AS mc,
+        bool_and(ds.sku IS NOT NULL) AS ready,
+        array_agg(DISTINCT uc.component_sku ORDER BY uc.component_sku) AS components,
+        array_remove(array_agg(CASE WHEN ds.sku IS NOT NULL THEN uc.component_sku END ORDER BY uc.component_sku), NULL) AS found,
+        array_remove(array_agg(CASE WHEN ds.sku IS NULL THEN uc.component_sku END ORDER BY uc.component_sku), NULL) AS missing
+      FROM uk_components uc
+      LEFT JOIN de_stock ds ON ds.sku = uc.component_sku
+      GROUP BY uc.bundle_sku
+    )
+    SELECT bc.bundle_sku AS b, bc.tc, bc.fc, bc.mc, bc.ready,
+      CASE WHEN db.bundle_sku IS NOT NULL THEN 1 ELSE 0 END AS de_exists,
+      bc.components, bc.found, bc.missing
+    FROM bundle_check bc
+    LEFT JOIN de_bundles db ON db.bundle_sku = bc.bundle_sku
+    ORDER BY bc.ready DESC, bc.tc DESC, bc.bundle_sku
+  `);
+  const totalUK        = rows.length;
+  const alreadyInDE    = rows.filter(r => r.de_exists === 1).length;
+  const notInDE        = rows.filter(r => r.de_exists === 0).length;
+  const readyForReview = rows.filter(r => r.de_exists === 0 && r.ready).length;
+  const missingComps   = rows.filter(r => r.de_exists === 0 && !r.ready).length;
+  const outputRows = rows.filter(r => r.de_exists === 0).map(r => ({
+    b: r.b, tc: r.tc, fc: r.fc, mc: r.mc, ready: r.ready,
+    components: r.components || [], found: r.found || [], missing: r.missing || [],
+  }));
+  return res.status(200).json({
+    ok: true,
+    refreshed_at: new Date().toISOString(),
+    summary: { totalUK, alreadyInDE, notInDE, readyForReview, missingComps },
+    rows: outputRows,
+  });
+}
+
+async function handleGermany(req, res) {
+  res.setHeader('Cache-Control', 'no-store');
+  const type = req.query.type;
+  if (!type) return res.status(400).json({ ok: false, error: 'Missing ?type= (marketplace-gap | uk-bundle)' });
+  if (!['marketplace-gap', 'uk-bundle'].includes(type)) {
+    return res.status(400).json({ ok: false, error: `Unknown type: ${type}` });
+  }
+  if (!process.env.DATABASE_URL) return res.status(500).json({ ok: false, error: 'DATABASE_URL not configured' });
+  const client = makeGermanyClient();
+  try {
+    await client.connect();
+    if (type === 'marketplace-gap') return await handleMarketplaceGap(client, req, res);
+    if (type === 'uk-bundle')       return await handleUkBundle(client, res);
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: err.message });
+  } finally {
+    await client.end().catch(() => {});
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ORGANIC REVENUE SERVICE
+// ══════════════════════════════════════════════════════════════════════════════
+
+function makeOrganicClient() {
+  return new Client({
+    connectionString: process.env.POSTGRES_URL || process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+    connectionTimeoutMillis: 15000,
+    statement_timeout: 30000,
+  });
+}
+
+const PAGE_TYPE_SQL = `
+  CASE
+    WHEN landing_page = '/'                    THEN 'Home'
+    WHEN landing_page LIKE '/products/%'       THEN 'Product'
+    WHEN landing_page LIKE '/collections/%'    THEN 'Collection'
+    WHEN landing_page LIKE '/blogs/%'          THEN 'Content'
+    WHEN landing_page LIKE '/pages/%'          THEN 'Content'
+    ELSE 'Other'
+  END
+`;
+
+async function handleOrganicOverview(client, res) {
+  const [totals, top10, latest] = await Promise.all([
+    client.query(`
+      SELECT
+        SUM(sessions)::bigint             AS total_sessions,
+        SUM(ecommerce_purchases)::bigint  AS total_orders,
+        ROUND(SUM(purchase_revenue)::numeric, 2) AS total_revenue,
+        COUNT(DISTINCT landing_page)::int AS total_pages,
+        COUNT(DISTINCT CASE WHEN purchase_revenue > 0 THEN landing_page END)::int AS revenue_pages
+      FROM google_analytics.organic_landing_page_revenue
+      WHERE run_date = (SELECT MAX(run_date) FROM google_analytics.organic_landing_page_revenue)
+        AND session_default_channel_group = 'Organic Search'
+    `),
+    client.query(`
+      SELECT
+        landing_page,
+        ${PAGE_TYPE_SQL} AS page_type,
+        SUM(sessions)::int                      AS sessions,
+        SUM(ecommerce_purchases)::int           AS orders,
+        ROUND(SUM(purchase_revenue)::numeric,2) AS revenue,
+        ROUND(SUM(purchase_revenue) / NULLIF(SUM(sessions),0)::numeric, 4) AS rev_per_session,
+        ROUND(SUM(purchase_revenue) / NULLIF(SUM(ecommerce_purchases),0)::numeric, 2) AS avg_order_value
+      FROM google_analytics.organic_landing_page_revenue
+      WHERE run_date = (SELECT MAX(run_date) FROM google_analytics.organic_landing_page_revenue)
+        AND session_default_channel_group = 'Organic Search'
+        AND purchase_revenue > 0
+      GROUP BY landing_page
+      ORDER BY SUM(purchase_revenue) DESC
+      LIMIT 10
+    `),
+    client.query(`
+      SELECT
+        MAX(run_date)::date   AS last_updated,
+        MAX(date_end)::date   AS data_through,
+        MIN(date_start)::date AS data_from
+      FROM google_analytics.organic_landing_page_revenue
+    `),
+  ]);
+  const t = totals.rows[0] || {};
+  const meta = latest.rows[0] || {};
+  return res.status(200).json({
+    ok: true,
+    meta: { last_updated: meta.last_updated, data_through: meta.data_through, data_from: meta.data_from },
+    totals: {
+      total_sessions:  t.total_sessions,
+      total_orders:    t.total_orders,
+      total_revenue:   t.total_revenue,
+      total_pages:     t.total_pages,
+      revenue_pages:   t.revenue_pages,
+      rev_per_session: t.total_sessions > 0 ? (parseFloat(t.total_revenue) / parseInt(t.total_sessions)).toFixed(4) : '0',
+      avg_order_value: t.total_orders > 0 ? (parseFloat(t.total_revenue) / parseInt(t.total_orders)).toFixed(2) : '0',
+    },
+    top10: top10.rows,
+  });
+}
+
+async function handleOrganicByPage(client, res) {
+  const { rows } = await client.query(`
+    SELECT
+      landing_page,
+      ${PAGE_TYPE_SQL} AS page_type,
+      SUM(sessions)::int                      AS sessions,
+      SUM(active_users)::int                  AS active_users,
+      SUM(ecommerce_purchases)::int           AS orders,
+      ROUND(SUM(purchase_revenue)::numeric,2) AS revenue,
+      ROUND(SUM(purchase_revenue) / NULLIF(SUM(sessions),0)::numeric, 4) AS rev_per_session,
+      ROUND(SUM(purchase_revenue) / NULLIF(SUM(ecommerce_purchases),0)::numeric, 2) AS avg_order_value,
+      MAX(run_date)::date AS last_seen
+    FROM google_analytics.organic_landing_page_revenue
+    WHERE run_date = (SELECT MAX(run_date) FROM google_analytics.organic_landing_page_revenue)
+      AND session_default_channel_group = 'Organic Search'
+    GROUP BY landing_page
+    ORDER BY SUM(purchase_revenue) DESC
+    LIMIT 1000
+  `);
+  return res.status(200).json({ ok: true, rows });
+}
+
+async function handleOrganicTrend(client, res) {
+  const { rows } = await client.query(`
+    SELECT
+      DATE_TRUNC('month', run_date)::date      AS month,
+      MAX(run_date)::date                      AS run_date,
+      SUM(sessions)::int                       AS sessions,
+      SUM(ecommerce_purchases)::int            AS orders,
+      ROUND(SUM(purchase_revenue)::numeric, 2) AS revenue,
+      COUNT(DISTINCT landing_page)::int        AS pages,
+      COUNT(DISTINCT CASE WHEN purchase_revenue > 0 THEN landing_page END)::int AS revenue_pages
+    FROM google_analytics.organic_landing_page_revenue
+    WHERE session_default_channel_group = 'Organic Search'
+    GROUP BY DATE_TRUNC('month', run_date)
+    ORDER BY month ASC
+  `);
+  return res.status(200).json({ ok: true, rows });
+}
+
+async function handleOrganicByType(client, res) {
+  const { rows } = await client.query(`
+    SELECT
+      ${PAGE_TYPE_SQL} AS page_type,
+      SUM(sessions)::int                       AS sessions,
+      SUM(ecommerce_purchases)::int            AS orders,
+      ROUND(SUM(purchase_revenue)::numeric, 2) AS revenue,
+      COUNT(DISTINCT landing_page)::int        AS pages,
+      COUNT(DISTINCT CASE WHEN purchase_revenue > 0 THEN landing_page END)::int AS revenue_pages,
+      ROUND(SUM(purchase_revenue) / NULLIF(SUM(sessions),0)::numeric, 4) AS rev_per_session,
+      ROUND(SUM(purchase_revenue) / NULLIF(SUM(ecommerce_purchases),0)::numeric, 2) AS avg_order_value
+    FROM google_analytics.organic_landing_page_revenue
+    WHERE run_date = (SELECT MAX(run_date) FROM google_analytics.organic_landing_page_revenue)
+      AND session_default_channel_group = 'Organic Search'
+    GROUP BY page_type
+    ORDER BY SUM(purchase_revenue) DESC
+  `);
+  return res.status(200).json({ ok: true, rows });
+}
+
+async function handleOrganic(req, res) {
+  res.setHeader('Cache-Control', 'no-store');
+  const type = req.query.type || 'overview';
+  const client = makeOrganicClient();
+  try {
+    await client.connect();
+    switch (type) {
+      case 'overview': return await handleOrganicOverview(client, res);
+      case 'by-page':  return await handleOrganicByPage(client, res);
+      case 'trend':    return await handleOrganicTrend(client, res);
+      case 'by-type':  return await handleOrganicByType(client, res);
+      default:
+        return res.status(400).json({ ok: false, error: `Unknown type "${type}". Valid: overview, by-page, trend, by-type` });
+    }
+  } catch (err) {
+    return errResponse(res, err);
+  } finally {
+    try { await client.end(); } catch (_) {}
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MAIN ROUTER
+// ══════════════════════════════════════════════════════════════════════════════
+
+module.exports = async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+
+  const service = (req.query.service || '').trim();
+  if (service === 'seo')     return handleSEO(req, res);
+  if (service === 'germany') return handleGermany(req, res);
+  if (service === 'organic') return handleOrganic(req, res);
+  return res.status(400).json({ ok: false, error: 'Missing ?service= (seo|germany|organic)' });
 };
-
-/* ─── SEMRUSH (Neon DB) ────────────────────────────────────── */
-
-async function handleSemrush(type, res, req) {
-  const NEON_URL = process.env.NEON_DATABASE_URL;
-  if (!NEON_URL) return res.status(500).json({ ok:false, cause:'no_neon_url', error:'NEON_DATABASE_URL not set' });
-  const nc = makeClient(NEON_URL);
-  try {
-    await nc.connect();
-    if (type === 'history') {
-      const { rows } = await nc.query(`
-        SELECT month, rank, organic_keywords, kw_top3, kw_top4_10, kw_top11_20,
-               kw_top21_100, traffic_est, traffic_cost_gbp, paid_keywords, paid_traffic
-        FROM semrush_history ORDER BY month ASC`);
-      return res.json({ ok:true, rows });
-    }
-    if (type === 'competitors') {
-      const { rows } = await nc.query(`
-        SELECT domain, month, rank, organic_keywords, traffic_est, traffic_cost_gbp
-        FROM semrush_competitor_history
-        WHERE domain IN ('lightingcompany.co.uk','ledhut.co.uk','industville.co.uk','thevintagelightbulbcompany.com','lampspares.co.uk')
-        ORDER BY domain, month ASC`);
-      return res.json({ ok:true, rows });
-    }
-    if (type === 'backlinks') {
-      const { rows } = await nc.query(`
-        SELECT snapshot_date, authority_score, total_backlinks, referring_domains, referring_ips, follow_links, nofollow_links
-        FROM semrush_backlinks ORDER BY snapshot_date ASC`);
-      return res.json({ ok:true, rows });
-    }
-    if (type === 'backlinks-history') {
-      const { rows } = await nc.query(`
-        SELECT snapshot_date, total_backlinks, referring_domains
-        FROM semrush_backlinks_history ORDER BY snapshot_date ASC`);
-      return res.json({ ok:true, rows });
-    }
-    if (type === 'lost-domains') {
-      // Two most recent snapshot dates
-      const { rows: snaps } = await nc.query(`
-        SELECT DISTINCT snapshot_date FROM semrush_refdomains
-        ORDER BY snapshot_date DESC LIMIT 2`);
-      if (snaps.length < 1) return res.json({ ok:true, latest: null, previous: null, lost:[], gained:[], current:[] });
-      const latest   = snaps[0].snapshot_date;
-      const previous = snaps[1] ? snaps[1].snapshot_date : null;
-      const [latestRes, prevRes] = await Promise.all([
-        nc.query(`SELECT domain, authority_score, backlinks_count, first_seen, last_seen FROM semrush_refdomains WHERE snapshot_date=$1 ORDER BY backlinks_count DESC`, [latest]),
-        previous ? nc.query(`SELECT domain FROM semrush_refdomains WHERE snapshot_date=$1`, [previous]) : Promise.resolve({ rows:[] })
-      ]);
-      const latestDomains = new Set(latestRes.rows.map(r => r.domain));
-      const prevDomains   = new Set(prevRes.rows.map(r => r.domain));
-      const lost   = previous ? prevRes.rows.filter(r => !latestDomains.has(r.domain)).map(r => r.domain) : [];
-      const gained = previous ? latestRes.rows.filter(r => !prevDomains.has(r.domain)) : [];
-      return res.json({ ok:true, latest, previous, current: latestRes.rows, lost, gained });
-    }
-    if (type === 'keywords') {
-      const { rows } = await nc.query(`
-        SELECT keyword, position, prev_position, volume, cpc, url, traffic, keyword_difficulty, intent, snapshot_date
-        FROM semrush_keywords
-        WHERE snapshot_date = (SELECT MAX(snapshot_date) FROM semrush_keywords)
-        ORDER BY traffic DESC LIMIT 100`);
-      return res.json({ ok:true, rows });
-    }
-    if (type === 'pages') {
-      const { rows } = await nc.query(`
-        SELECT page_url, traffic, keywords_count, traffic_share, page_type, snapshot_date
-        FROM semrush_pages
-        WHERE snapshot_date = (SELECT MAX(snapshot_date) FROM semrush_pages)
-        ORDER BY traffic DESC LIMIT 50`);
-      return res.json({ ok:true, rows });
-    }
-    if (type === 'gap-competitors') {
-      const { rows } = await nc.query(`
-        SELECT competitor_domain, COUNT(*) AS kw_count, MAX(snapshot_date) AS snapshot_date
-        FROM semrush_keyword_gap
-        GROUP BY competitor_domain
-        ORDER BY kw_count DESC`);
-      return res.json({ ok:true, rows });
-    }
-
-    if (type === 'keyword-gap') {
-      const competitor = req.query.competitor || 'ledhut.co.uk';
-      const { rows } = await nc.query(`
-        SELECT keyword, competitor_domain, competitor_position, volume,
-               competitor_traffic, competitor_url, keyword_difficulty, intent,
-               ledsone_position, opportunity_score, snapshot_date
-        FROM semrush_keyword_gap
-        WHERE competitor_domain = $1
-        ORDER BY opportunity_score DESC, volume DESC
-        LIMIT 100`, [competitor]);
-      return res.json({ ok:true, rows, competitor });
-    }
-    return res.status(400).json({ ok:false, error:`semrush: unknown type "${type}"` });
-  } catch (err) {
-    return errResponse(res, err);
-  } finally {
-    try { await nc.end(); } catch (_) {}
-  }
-}
-
-/* ─── GEO / AI READINESS ────────────────────────────────────── */
-
-async function handleGeo(type, query, res) {
-  const NEON_URL = process.env.NEON_DATABASE_URL;
-  if (!NEON_URL) return res.status(500).json({ ok:false, error:'NEON_DATABASE_URL not set' });
-  const nc = makeClient(NEON_URL);
-  try {
-    await nc.connect();
-
-    /* checklist table */
-    await nc.query(`
-      CREATE TABLE IF NOT EXISTS geo_checklist (
-        item_key VARCHAR(60) PRIMARY KEY,
-        label    TEXT NOT NULL,
-        done     BOOLEAN DEFAULT FALSE,
-        updated_at TIMESTAMP DEFAULT NOW()
-      )`);
-    await nc.query(`
-      INSERT INTO geo_checklist (item_key, label) VALUES
-        ('faqpage_schema',    'Add FAQPage schema to top 20 product pages'),
-        ('aggregate_rating',  'Add aggregateRating schema to products with reviews'),
-        ('sameas_org',        'Add sameAs array to Organization schema (social + trade directories)'),
-        ('wikidata_entity',   'Create Wikidata entity for LEDSone brand'),
-        ('author_schema',     'Add author/Person schema to blog posts'),
-        ('credentials_schema','Add trade body memberships to Organization schema (hasCredential)'),
-        ('blog_30_posts',     'Expand blog to 30+ posts targeting informational keywords'),
-        ('link_building_5',   'Earn 5 UK electrical/LED trade publication backlinks')
-      ON CONFLICT (item_key) DO NOTHING`);
-
-    /* toggle handler */
-    if (type === 'toggle') {
-      const { key, done } = query;
-      if (!key) return res.json({ ok:false, error:'key required' });
-      await nc.query(`UPDATE geo_checklist SET done=$1, updated_at=NOW() WHERE item_key=$2`, [done === 'true', key]);
-      return res.json({ ok:true });
-    }
-
-    /* pull SEMrush data */
-    const [blR, histR, kwR, clR] = await Promise.all([
-      nc.query(`SELECT authority_score, referring_domains, total_backlinks FROM semrush_backlinks ORDER BY snapshot_date DESC LIMIT 1`),
-      nc.query(`SELECT organic_keywords, kw_top3, traffic_est FROM semrush_history ORDER BY month DESC LIMIT 1`),
-      nc.query(`SELECT COUNT(*)::int AS total,
-                  COUNT(CASE WHEN position<=3  THEN 1 END)::int AS top3,
-                  COUNT(CASE WHEN position<=10 THEN 1 END)::int AS top10
-                FROM semrush_keywords
-                WHERE snapshot_date=(SELECT MAX(snapshot_date) FROM semrush_keywords)`),
-      nc.query(`SELECT item_key, label, done FROM geo_checklist ORDER BY item_key`),
-    ]);
-
-    const bl   = blR.rows[0]   || {};
-    const hist = histR.rows[0] || {};
-    const kw   = kwR.rows[0]   || {};
-    const checklist = clR.rows;
-
-    /* fetch robots.txt */
-    const AI_BOTS = ['GPTBot','ChatGPT-User','ClaudeBot','PerplexityBot','Google-Extended'];
-    let robotsBots = {};
-    try {
-      const rtxt = await fetch('https://ledsone.co.uk/robots.txt', { signal: AbortSignal.timeout(6000) }).then(r => r.text());
-      for (const agent of AI_BOTS) {
-        const re = new RegExp(`User-agent:\\s*${agent}[\\s\\S]{0,80}?(Allow|Disallow):\\s*(\\S+)`, 'i');
-        const m = rtxt.match(re);
-        if (!m) { robotsBots[agent] = 'not_mentioned'; continue; }
-        robotsBots[agent] = m[1].toLowerCase() === 'allow' ? 'allow' : 'disallow';
-      }
-    } catch(_) { AI_BOTS.forEach(b => { robotsBots[b] = 'check_failed'; }); }
-
-    /* fetch homepage schema */
-    let schemaTypes = [], hasSameAs = false, hasOgTags = false;
-    try {
-      const html = await fetch('https://ledsone.co.uk/', {
-        headers: { 'User-Agent': 'ClaudeBot/1.0' },
-        signal: AbortSignal.timeout(8000),
-      }).then(r => r.text());
-      const ldBlocks = [...html.matchAll(/<script[^>]+type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi)];
-      for (const m of ldBlocks) {
-        try {
-          const obj = JSON.parse(m[1]);
-          const types = Array.isArray(obj) ? obj.map(o => o['@type']) : [obj['@type']];
-          schemaTypes.push(...types.filter(Boolean));
-          if (JSON.stringify(obj).includes('"sameAs"')) hasSameAs = true;
-        } catch(_) {}
-      }
-      hasOgTags = /property=["']og:title["']/.test(html);
-    } catch(_) {}
-
-    /* checklist lookups */
-    const cl = (k) => checklist.find(c => c.item_key === k)?.done || false;
-
-    /* dimension scoring */
-    const authorityScore = parseInt(bl.authority_score) || 0;
-    const refDomains     = parseInt(bl.referring_domains) || 0;
-    const orgKws         = parseInt(hist.organic_keywords) || 0;
-    const top3           = parseInt(kw.top3) || 0;
-    const trafficEst     = parseInt(hist.traffic_est) || 0;
-    const allowedBots    = Object.values(robotsBots).filter(v => v === 'allow').length;
-
-    const hasFaqSchema   = schemaTypes.includes('FAQPage') || cl('faqpage_schema');
-    const hasAggRating   = schemaTypes.includes('AggregateRating') || cl('aggregate_rating');
-    const hasOrgSchema   = schemaTypes.some(t => t === 'Organization' || t === 'WebSite');
-    const hasSameAsFinal = hasSameAs || cl('sameas_org');
-
-    let dim_crawler  = Math.min(10, allowedBots * 2);
-    let dim_auth     = authorityScore >= 50 ? 9 : authorityScore >= 40 ? 7 : authorityScore >= 30 ? 4 : authorityScore >= 20 ? 2 : 1;
-    if (refDomains < 700) dim_auth = Math.max(1, dim_auth - 1);
-    let dim_entity   = 2 + (hasOrgSchema ? 2 : 0) + (hasSameAsFinal ? 2 : 0) + (cl('wikidata_entity') ? 2 : 0) + (hasOgTags ? 1 : 0);
-    dim_entity       = Math.min(10, dim_entity);
-    let dim_content  = 3 + (orgKws >= 10000 ? 2 : orgKws >= 5000 ? 1 : 0) + (top3 >= 100 ? 2 : top3 >= 50 ? 1 : 0) + (hasFaqSchema ? 2 : 0);
-    dim_content      = Math.min(10, dim_content);
-    let dim_eeat     = 2 + (hasAggRating ? 2 : 0) + (cl('author_schema') ? 2 : 0) + (cl('credentials_schema') ? 2 : 0);
-    dim_eeat         = Math.min(10, dim_eeat);
-    let dim_foot     = 2 + (orgKws >= 10000 ? 3 : orgKws >= 5000 ? 2 : 0) + (top3 >= 100 ? 2 : top3 >= 50 ? 1 : 0) + (trafficEst >= 5000 ? 2 : 0);
-    dim_foot         = Math.min(10, dim_foot);
-    let dim_schema   = 1 + (hasOrgSchema ? 1 : 0) + (hasOgTags ? 1 : 0) + (hasFaqSchema ? 3 : 0) + (hasAggRating ? 2 : 0) + (hasSameAsFinal ? 1 : 0);
-    dim_schema       = Math.min(10, dim_schema);
-
-    const totalScore = Math.round((dim_crawler + dim_auth + dim_entity + dim_content + dim_eeat + dim_foot + dim_schema) / 70 * 100);
-
-    return res.json({
-      ok: true,
-      score: totalScore,
-      dimensions: [
-        { key:'crawler_access',   label:'AI Crawler Access',    score:dim_crawler, max:10, details:{ bots:robotsBots } },
-        { key:'authority',        label:'Domain Authority',      score:dim_auth,    max:10, details:{ authority_score:authorityScore, referring_domains:refDomains, total_backlinks:parseInt(bl.total_backlinks)||0 } },
-        { key:'entity_clarity',   label:'Brand Entity Clarity',  score:dim_entity,  max:10, details:{ has_org_schema:hasOrgSchema, has_sameas:hasSameAsFinal, has_wikidata:cl('wikidata_entity'), has_og_tags:hasOgTags } },
-        { key:'content_format',   label:'Content & Format',      score:dim_content, max:10, details:{ organic_keywords:orgKws, top3_keywords:top3, has_faq_schema:hasFaqSchema } },
-        { key:'eeat',             label:'E-E-A-T Signals',       score:dim_eeat,    max:10, details:{ has_agg_rating:hasAggRating, has_author_schema:cl('author_schema') } },
-        { key:'organic_footprint',label:'Organic Footprint',     score:dim_foot,    max:10, details:{ organic_keywords:orgKws, top3_keywords:top3, traffic_est:trafficEst } },
-        { key:'structured_data',  label:'Structured Data',       score:dim_schema,  max:10, details:{ schema_types:schemaTypes, has_faq:hasFaqSchema, has_agg_rating:hasAggRating, has_sameas:hasSameAsFinal } },
-      ],
-      checklist,
-      robots: robotsBots,
-      schema_types: schemaTypes,
-    });
-  } catch (err) {
-    return errResponse(res, err);
-  } finally {
-    try { await nc.end(); } catch(_) {}
-  }
-}

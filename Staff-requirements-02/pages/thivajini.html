@@ -1263,7 +1263,7 @@ var TV_LOADED={r1:false,r2:false,r3:false,r4:false};
 function tvLoadReq1(){
   if(TV_LOADED.r1)return;TV_LOADED.r1=true;
   tvState('panel-1','load','⏳ Loading weekly campaign data + Shopify UTM orders…');
-  fetch('/api/thivajini/dashboard?type=req1')
+  fetch('/api/members-api?member=thivajini&type=req1')
     .then(function(r){return r.json();})
     .then(function(d){
       tvHide('panel-1');
@@ -1299,10 +1299,10 @@ function buildR2Url(){
   if(days==='custom'){
     var f=document.getElementById('r2-from')?document.getElementById('r2-from').value:'';
     var t=document.getElementById('r2-to')?document.getElementById('r2-to').value:'';
-    if(f&&t) return '/api/thivajini/dashboard?type=req2&from='+f+'&to='+t;
+    if(f&&t) return '/api/members-api?member=thivajini&type=req2&from='+f+'&to='+t;
     return null;
   }
-  return '/api/thivajini/dashboard?type=req2&days='+days;
+  return '/api/members-api?member=thivajini&type=req2&days='+days;
 }
 function onR2RangeChange(){
   var days=document.getElementById('r2-days-filter').value;
@@ -1363,7 +1363,7 @@ function tvLoadReq2(){
 function tvLoadReq3(){
   if(TV_LOADED.r3)return;TV_LOADED.r3=true;
   tvState('panel-3','load','⏳ Loading stock-spend data…');
-  fetch('/api/thivajini/dashboard?type=req3')
+  fetch('/api/members-api?member=thivajini&type=req3')
     .then(function(r){return r.json();})
     .then(function(d){
       tvHide('panel-3');
@@ -1377,7 +1377,7 @@ function tvLoadReq3(){
 function tvLoadReq4(){
   if(TV_LOADED.r4)return;TV_LOADED.r4=true;
   tvState('panel-4','load','⏳ Loading order data…');
-  fetch('/api/thivajini/dashboard?type=req4')
+  fetch('/api/members-api?member=thivajini&type=req4')
     .then(function(r){return r.json();})
     .then(function(d){
       tvHide('panel-4');

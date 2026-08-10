@@ -483,10 +483,10 @@ function buildApiUrl(type, daysEl, fromEl, toEl){
   if(days==='custom'){
     const f=document.getElementById(fromEl)?.value;
     const t=document.getElementById(toEl)?.value;
-    if(f&&t) return '../api/jackshan/dashboard?type='+type+'&from='+f+'&to='+t;
+    if(f&&t) return '../api/members-api?member=jakshan&type='+type+'&from='+f+'&to='+t;
     return null;
   }
-  return '../api/jackshan/dashboard?type='+type+'&days='+days;
+  return '../api/members-api?member=jakshan&type='+type+'&days='+days;
 }
 
 function onR1RangeChange(){

@@ -2083,7 +2083,7 @@ function r2SetRangeLive(key){
   var from=fromD.toISOString().slice(0,10);
   var to=toD.toISOString().slice(0,10);
   if(el)el.style.display='block';
-  fetch('/api/theekshy/dashboard?type=req2&from='+from+'&to='+to)
+  fetch('/api/members-api?member=theekshy&type=req2&from='+from+'&to='+to)
     .then(function(res){return res.json();})
     .then(function(d){
       if(el)el.style.display='none';
@@ -2134,7 +2134,7 @@ function thLoadReq1(from,to){
   var errEl=document.getElementById('th-error-r1');
   if(loadEl)loadEl.style.display='block';
   if(errEl)errEl.style.display='none';
-  var url='/api/theekshy/dashboard?type=req1'+(from&&to?'&from='+from+'&to='+to:'');
+  var url='/api/members-api?member=theekshy&type=req1'+(from&&to?'&from='+from+'&to='+to:'');
   fetch(url)
     .then(function(r){return r.json();})
     .then(function(d){
@@ -2198,7 +2198,7 @@ function thLoadFeed(reqNum){
 
   // Use feed-specific dates if set, else fall back to Req1 dates
   var from=TH_FEED_FROM||TH_FROM, to=TH_FEED_TO||TH_TO;
-  var url='/api/theekshy/dashboard?type=feed'+(from&&to?'&from='+from+'&to='+to:'');
+  var url='/api/members-api?member=theekshy&type=feed'+(from&&to?'&from='+from+'&to='+to:'');
 
   fetch(url)
     .then(function(r){return r.json();})
@@ -2262,7 +2262,7 @@ function thLoadProdOpt() {
 
   var from = (document.getElementById('thDateFrom')||{}).value || '';
   var to   = (document.getElementById('thDateTo')  ||{}).value || '';
-  var url  = '/api/theekshy/dashboard?type=prodopt' + (from && to ? '&from='+from+'&to='+to : '');
+  var url  = '/api/members-api?member=theekshy&type=prodopt' + (from && to ? '&from='+from+'&to='+to : '');
 
   fetch(url)
     .then(function(r){ return r.json(); })

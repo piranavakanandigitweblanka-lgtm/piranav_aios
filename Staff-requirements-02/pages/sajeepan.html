@@ -871,7 +871,7 @@ async function sjLoadData(from, to){
   if(errBox)  errBox.style.display='none';
   if(ctrlBar) ctrlBar.style.opacity='0.4';
   try {
-    const res  = await fetch(`/api/sajeepan/dashboard?from=${from}&to=${to}`);
+    const res  = await fetch(`/api/members-api?member=sajeepan&from=${from}&to=${to}`);
     const json = await res.json();
     if(!json.ok) throw new Error(json.error||'API error');
     CAMPAIGNS = json.campaigns;
@@ -1462,7 +1462,7 @@ function openDrawer(idx){
   const from = (document.getElementById('sjDateFrom')||{}).value || sjMeta.from || '';
   const to   = (document.getElementById('sjDateTo')  ||{}).value || sjMeta.to   || '';
   if(from && to){
-    fetch(`/api/sajeepan/dashboard?type=proddetail&item=${encodeURIComponent(p.item)}&from=${from}&to=${to}`)
+    fetch(`/api/members-api?member=sajeepan&type=proddetail&item=${encodeURIComponent(p.item)}&from=${from}&to=${to}`)
       .then(r => r.json())
       .then(json => {
         if(!json.ok) throw new Error(json.error);
@@ -1629,7 +1629,7 @@ async function r2LoadData(from, to){
   if(loading) loading.style.display='block';
   if(errBox)  errBox.style.display='none';
   try {
-    const url = from && to ? `/api/sajeepan/dashboard?type=req2&from=${from}&to=${to}` : '/api/sajeepan/dashboard?type=req2';
+    const url = from && to ? `/api/members-api?member=sajeepan&type=req2&from=${from}&to=${to}` : '/api/members-api?member=sajeepan&type=req2';
     const res  = await fetch(url);
     const json = await res.json();
     if(!json.ok) throw new Error(json.error||'API error');
