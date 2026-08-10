@@ -401,7 +401,7 @@ async function loadLive(){
   var tbody = document.getElementById('tbody');
   tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">&#9203; Loading live data&hellip;</td></tr>';
   try{
-    var res  = await fetch('../../api/germany/uk-bundle-opportunity', { cache: 'no-store' });
+    var res  = await fetch('../../api/germany/dashboard?type=uk-bundle', { cache: 'no-store' });
     if(!res.ok) throw new Error('HTTP ' + res.status);
     var json = await res.json();
     if(!json.ok) throw new Error(json.error || 'API error');
@@ -426,7 +426,7 @@ loadLive();
 // Auto-poll every 5 seconds — same mechanism as existing Germany reports
 setInterval(async function(){
   try{
-    var res  = await fetch('../../api/germany/uk-bundle-opportunity', { cache: 'no-store' });
+    var res  = await fetch('../../api/germany/dashboard?type=uk-bundle', { cache: 'no-store' });
     if(!res.ok) return;
     var json = await res.json();
     if(!json.ok || !json.rows) return;

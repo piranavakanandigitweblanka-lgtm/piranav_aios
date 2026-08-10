@@ -779,7 +779,7 @@ async function loadLive(){
   tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--muted)">&#9203; Loading live data&hellip;</td></tr>';
 
   try{
-    var res=await fetch('../../api/germany/marketplace-gap',{cache:'no-store'});
+    var res=await fetch('../../api/germany/dashboard?type=marketplace-gap',{cache:'no-store'});
     if(!res.ok) throw new Error('HTTP '+res.status);
     var json=await res.json();
     if(!json.ok) throw new Error(json.error||'API error');
@@ -965,7 +965,7 @@ function log_exportCSV(){
 // Auto-poll every 5 seconds — silently refresh DATA and re-render
 setInterval(async function(){
   try{
-    var res=await fetch('../../api/germany/marketplace-gap',{cache:'no-store'});
+    var res=await fetch('../../api/germany/dashboard?type=marketplace-gap',{cache:'no-store'});
     if(!res.ok) return;
     var json=await res.json();
     if(!json.ok||!json.rows) return;

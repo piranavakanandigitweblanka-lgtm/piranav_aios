@@ -3,193 +3,559 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Digital Marketing Member Reports</title>
+<title>Digital Marketing · Directory</title>
 <style>
-  :root{
-    --navy:#0c1a30; --navy-2:#13284a; --ink:#1a2233; --muted:#5b6577;
-    --line:#e3e7ee; --bg:#f4f6f9; --card:#ffffff;
-    --gold:#b98b1e; --gold-soft:#faf3e0;
-    --accent:#1f5eff; --accent-soft:#eaf0ff;
-    --good:#0a7d4f; --good-soft:#e5f5ee;
-    --na:#64748b; --na-soft:#eef2f7;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:"Nirmala UI","Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;}
+:root{
+  --sidebar-bg:#0c1a30;
+  --sidebar-w:220px;
+  --sidebar-border:#1a2d4a;
+  --sidebar-muted:#7a8fa8;
+  --sidebar-hover:#162540;
+  --sidebar-active:#1f3a5f;
+  --sidebar-section:#4a6080;
+  --gold:#c9982a;
+  --gold-soft:#faf3e0;
+  --body-bg:#f0f2f6;
+  --card:#ffffff;
+  --ink:#0f1f33;
+  --muted:#64748b;
+  --line:#e2e8f0;
+  --accent:#1a73e8;
+  --accent-soft:#e8f0fe;
+  --good:#0a7d4f;
+  --good-soft:#e5f5ee;
+  --warn:#b45309;
+  --tec:#0369a1;
+  --tec-soft:#e0f2fe;
+  --seo:#0a7d4f;
+  --seo-soft:#e5f5ee;
+  --ads:#7c3aed;
+  --ads-soft:#ede9fe;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--body-bg);color:var(--ink);}
 
-  /* ── Masthead (official letterhead feel) ── */
-  .topbar{height:5px;background:linear-gradient(90deg,var(--navy) 0%,var(--navy-2) 55%,var(--gold) 100%);}
-  .masthead{background:var(--card);color:var(--ink);padding:22px 32px;border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(12,26,48,.03);}
-  .masthead .inner{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:22px;}
-  .eyebrow .mark{width:42px;height:42px;background:var(--navy);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#e8d59a;flex:none;border:1.5px solid var(--gold);letter-spacing:.5px;}
-  .headtxt{flex:1;min-width:260px;}
-  .masthead .kicker{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
-  .masthead h1{font-size:19px;font-weight:700;letter-spacing:.2px;line-height:1.3;color:var(--navy);}
-  .masthead .lede{font-size:12px;color:var(--muted);margin-top:3px;max-width:560px;}
-  .statrow{display:flex;flex-wrap:wrap;gap:0;border-left:1px solid var(--line);padding-left:26px;}
-  .stat{padding:0 22px;border-right:1px solid var(--line);}
-  .stat:last-child{border-right:none;padding-right:0;}
-  .stat .v{font-size:20px;font-weight:700;color:var(--navy);letter-spacing:.2px;}
-  .stat .l{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:3px;}
+/* ── Layout ── */
+.shell{display:flex;height:100vh;overflow:hidden;}
 
-  /* ── Body ── */
-  .page{max-width:1180px;margin:0 auto;padding:28px 32px 44px;}
-  .toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--line);}
-  .toolbar .hint{font-size:12.5px;color:var(--muted);}
-  #member-search{height:42px;padding:0 16px;border:1px solid var(--line);border-radius:8px;font-size:13.5px;width:280px;max-width:100%;background:var(--card);outline:none;transition:box-shadow .15s,border-color .15s;box-sizing:border-box;}
-  #member-search:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft);}
+/* ── Sidebar ── */
+.sidebar{
+  width:var(--sidebar-w);flex:none;
+  background:var(--sidebar-bg);
+  display:flex;flex-direction:column;
+  border-right:1px solid var(--sidebar-border);
+  overflow:hidden;
+}
+.sb-brand{padding:18px 16px 14px;border-bottom:1px solid var(--sidebar-border);flex:none;}
+.sb-brand .logo{
+  width:36px;height:36px;border-radius:8px;
+  background:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;color:#0c1a30;
+  letter-spacing:.5px;margin-bottom:8px;
+}
+.sb-brand .brand-name{font-size:13px;font-weight:700;color:#fff;line-height:1.2;}
+.sb-brand .brand-sub{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--sidebar-muted);margin-top:2px;}
 
-  .section-title{display:flex;align-items:center;gap:12px;font-size:11.5px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;color:var(--navy-2);margin:20px 0 10px;}
-  .section-title::after{content:"";flex:1;height:1px;background:var(--line);}
-  .section-title .count{background:var(--na-soft);color:var(--na);border-radius:999px;padding:2px 11px;font-size:11px;letter-spacing:0;}
+.sb-scroll{flex:1;overflow-y:auto;padding:10px 0 6px;}
+.sb-scroll::-webkit-scrollbar{width:4px;}
+.sb-scroll::-webkit-scrollbar-track{background:transparent;}
+.sb-scroll::-webkit-scrollbar-thumb{background:#1f3a5f;border-radius:2px;}
 
-  .roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
-  a.row{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:18px 14px;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 3px rgba(12,26,48,.05);transition:transform .15s,box-shadow .15s,border-color .15s;}
-  a.row:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(12,26,48,.09);border-color:var(--gold);}
-  .avatar{width:44px;height:44px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:16px;font-weight:600;}
-  .avatar.live{background:var(--navy);color:#e8d59a;border:1.5px solid var(--gold);}
-  .avatar.idle{background:var(--na-soft);color:var(--na);border:1.5px solid var(--line);}
-  .who{min-width:0;}
-  .who .nm{display:block;font-size:13.5px;font-weight:700;letter-spacing:.2px;}
-  .who .role{display:block;font-size:10.5px;color:var(--muted);margin-top:2px;}
-  .tags{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;}
-  .tag{font-size:9px;font-weight:700;letter-spacing:.3px;border-radius:4px;padding:2px 6px;white-space:nowrap;}
-  .tag.r{background:var(--accent-soft);color:var(--accent);}
-  .tag.none{background:var(--na-soft);color:var(--na);}
-  .status{font-size:9.5px;font-weight:700;border-radius:999px;padding:3px 10px;white-space:nowrap;}
-  .status.live{background:var(--good-soft);color:var(--good);}
-  .status.pending{background:var(--gold-soft);color:var(--gold);}
+.sb-section{font-size:9.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--sidebar-section);padding:14px 16px 5px;}
 
-  footer.site{max-width:1180px;margin:0 auto;padding:26px 32px 44px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;}
-  @media(max-width:900px){
-    .statrow{border-left:none;padding-left:0;width:100%;justify-content:space-between;}
-  }
-  @media(max-width:640px){
-    .masthead{padding:24px 20px;}
-    .masthead h1{font-size:19px;}
-    .page{padding:32px 18px 48px;}
-    .roster{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
-  }
+.sb-item{
+  display:flex;align-items:center;gap:10px;
+  padding:7px 14px;cursor:pointer;
+  transition:background .12s;
+  text-decoration:none;border-left:3px solid transparent;
+}
+.sb-item:hover{background:var(--sidebar-hover);}
+.sb-item.active{background:var(--sidebar-active);border-left-color:var(--gold);}
+.sb-item.active .sb-name{color:#fff;}
+
+.sb-icon{
+  width:28px;height:28px;border-radius:6px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;
+}
+.sb-icon.intel{background:rgba(201,152,42,.15);font-size:13px;}
+.sb-icon.member{background:rgba(255,255,255,.07);font-size:13px;font-weight:700;color:#b8cde0;}
+.sb-icon.ext{background:rgba(255,255,255,.05);font-size:13px;}
+
+.sb-name{font-size:12.5px;font-weight:600;color:#b8cde0;line-height:1.2;flex:1;}
+.sb-sub{font-size:9.5px;color:var(--sidebar-muted);margin-top:1px;}
+
+.sb-pill{
+  font-size:9px;font-weight:700;padding:1px 6px;border-radius:999px;
+  color:#fff;letter-spacing:.3px;white-space:nowrap;
+}
+.sb-pill.live{background:var(--good);}
+.sb-pill.gold{background:var(--gold);color:#0c1a30;}
+
+.sb-divider{height:1px;background:var(--sidebar-border);margin:8px 14px;}
+
+.sb-footer{
+  padding:12px 14px;border-top:1px solid var(--sidebar-border);flex:none;
+  background:rgba(255,255,255,.03);
+}
+.sb-footer .dev{font-size:10px;color:var(--sidebar-muted);}
+.sb-footer .dev strong{color:var(--gold);font-weight:700;}
+
+/* ── Main ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+.topbar{
+  flex:none;background:var(--card);border-bottom:1px solid var(--line);
+  padding:0 28px;height:58px;display:flex;align-items:center;gap:16px;
+  position:relative;
+}
+.topbar-gradient{position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--accent) 0%,var(--seo) 40%,var(--gold) 70%,var(--ads) 100%);}
+.tb-title{font-size:17px;font-weight:700;color:var(--ink);flex:1;}
+.tb-title span{color:var(--gold);}
+.live-badge{
+  display:flex;align-items:center;gap:6px;
+  background:#f0f4f8;border:1px solid var(--line);
+  border-radius:999px;padding:5px 13px;
+  font-size:11.5px;font-weight:600;color:var(--muted);
+}
+.live-dot{width:7px;height:7px;background:var(--good);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+.content{flex:1;overflow-y:auto;padding:24px 28px 40px;}
+
+/* ── Search ── */
+.search-bar{
+  display:flex;align-items:center;gap:12px;margin-bottom:22px;
+}
+.search-bar input{
+  flex:1;max-width:340px;height:40px;padding:0 14px;
+  border:1px solid var(--line);border-radius:8px;
+  font-size:13px;background:var(--card);outline:none;
+  transition:border-color .13s,box-shadow .13s;
+}
+.search-bar input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+
+/* ── KPI strip ── */
+.kpi-strip{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;}
+.kpi-card{
+  background:var(--card);border:1px solid var(--line);border-radius:10px;
+  padding:14px 20px;flex:1;min-width:120px;border-top:3px solid var(--line);
+}
+.kpi-card.gold{border-top-color:var(--gold);}
+.kpi-card.seo{border-top-color:var(--seo);}
+.kpi-card.ads{border-top-color:var(--ads);}
+.kpi-card.tec{border-top-color:var(--tec);}
+.kpi-card.accent{border-top-color:var(--accent);}
+.kpi-card .kv{font-size:22px;font-weight:700;color:var(--ink);}
+.kpi-card .kl{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+
+/* ── Section title ── */
+.sec-title{
+  display:flex;align-items:center;gap:10px;
+  font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:#374151;margin:0 0 12px;
+}
+.sec-title::after{content:"";flex:1;height:1px;background:var(--line);}
+.sec-title .cnt{background:#eef2f7;color:var(--muted);border-radius:999px;padding:2px 10px;font-size:10.5px;letter-spacing:0;}
+
+/* ── Cards grid ── */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px;}
+
+/* Intelligence cards */
+.intel-card{
+  display:flex;flex-direction:column;gap:10px;
+  padding:18px 16px;background:var(--card);
+  border:1px solid var(--line);border-radius:12px;
+  text-decoration:none;color:inherit;
+  transition:transform .13s,box-shadow .13s,border-color .13s;
+  border-top:3px solid var(--line);
+}
+.intel-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.08);border-color:var(--gold);}
+.intel-card.seo{border-top-color:var(--seo);}
+.intel-card.eod{border-top-color:var(--ads);}
+.intel-card.org{border-top-color:var(--good);}
+
+.ic-avatar{
+  width:42px;height:42px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;color:#fff;
+  letter-spacing:.3px;
+}
+.ic-avatar.seo{background:var(--seo);}
+.ic-avatar.eod{background:var(--ads);}
+.ic-avatar.org{background:var(--good);}
+.ic-avatar.de{background:var(--gold);color:#0c1a30;}
+
+.ic-title{font-size:14px;font-weight:700;color:var(--ink);}
+.ic-desc{font-size:11px;color:var(--muted);line-height:1.5;margin-top:2px;}
+.ic-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
+.ic-tag{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:4px;background:var(--accent-soft);color:var(--accent);}
+.ic-status{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:700;border-radius:999px;padding:3px 10px;
+  width:fit-content;margin-top:2px;
+}
+.ic-status.live{background:var(--good-soft);color:var(--good);}
+.ic-status.live::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--good);}
+
+/* Member cards */
+.member-card{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 14px;background:var(--card);
+  border:1px solid var(--line);border-radius:10px;
+  text-decoration:none;color:inherit;
+  transition:transform .13s,box-shadow .13s,border-color .13s;
+}
+.member-card:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.07);border-color:var(--accent);}
+.mc-avatar{
+  width:40px;height:40px;border-radius:9px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:700;color:#fff;
+  background:var(--ink);
+}
+.mc-info{flex:1;min-width:0;}
+.mc-name{font-size:13px;font-weight:700;color:var(--ink);}
+.mc-role{font-size:10.5px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mc-badge{
+  font-size:9px;font-weight:700;padding:2px 8px;border-radius:999px;
+  background:var(--good-soft);color:var(--good);white-space:nowrap;
+}
+
+@media(max-width:900px){
+  .sidebar{display:none;}
+  .content{padding:16px;}
+  .topbar{padding:0 16px;}
+}
 </style>
 </head>
 <body>
 
-<div class="topbar"></div>
-<header class="masthead">
-  <div class="inner">
-    <span class="eyebrow"><span class="mark">DM</span></span>
-    <div class="headtxt">
-      <p class="kicker">Digit Web Lanka · Official Directory</p>
-      <h1>Digital Marketing · Member Reporting Directory</h1>
-      <p class="lede">Select a member to open their dashboard at Requirement 1 — all requirements appear as tabs on the page.</p>
+<!-- Auth Overlay -->
+<div id="auth-overlay" style="position:fixed;inset:0;z-index:9999;background:#0c1a30;display:flex;align-items:center;justify-content:center;">
+  <div style="background:#1e293b;border:1px solid #334155;border-radius:16px;padding:40px 36px;width:100%;max-width:380px;text-align:center;">
+    <div style="width:42px;height:42px;border-radius:10px;background:#c9982a;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#0c1a30;margin:0 auto 16px;">DM</div>
+    <h2 style="font-size:20px;font-weight:700;color:#f1f5f9;margin-bottom:6px;">Admin Access</h2>
+    <p style="font-size:13px;color:#64748b;margin-bottom:28px;">Digit Web Lanka · Member Directory</p>
+    <input id="auth-user" type="text" placeholder="Username" autocomplete="username"
+      style="width:100%;padding:11px 14px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:14px;margin-bottom:12px;outline:none;font-family:inherit;">
+    <input id="auth-pass" type="password" placeholder="Password" autocomplete="current-password"
+      style="width:100%;padding:11px 14px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:14px;margin-bottom:12px;outline:none;font-family:inherit;">
+    <button onclick="authCheck()" style="width:100%;padding:11px;border-radius:8px;background:#c9982a;color:#0c1a30;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit;">Sign In</button>
+    <div id="auth-error" style="color:#f87171;font-size:13px;margin-top:10px;min-height:18px;"></div>
+  </div>
+</div>
+<script>
+(function(){
+  const KEY='auth_admin';
+  if(sessionStorage.getItem(KEY)==='1') document.getElementById('auth-overlay').style.display='none';
+  window.authCheck=async function(){
+    const u=document.getElementById('auth-user').value.trim();
+    const p=document.getElementById('auth-pass').value;
+    const err=document.getElementById('auth-error');
+    if(!u||!p){err.textContent='Enter username and password.';return;}
+    err.textContent='Signing in…';
+    try{
+      const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({username:u,password:p,page_key:'admin'})});
+      const d=await r.json();
+      if(d.ok){sessionStorage.setItem(KEY,'1');document.getElementById('auth-overlay').style.display='none';}
+      else{err.textContent='Invalid credentials.';}
+    }catch(e){err.textContent='Network error.';}
+  };
+  document.addEventListener('keydown',function(e){if(e.key==='Enter'&&document.getElementById('auth-overlay').style.display!=='none')authCheck();});
+})();
+</script>
+
+<!-- Logout Button -->
+<div id="logout-btn" style="display:none;position:fixed;top:14px;right:18px;z-index:9998;align-items:center;gap:7px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:7px 15px;font-size:12px;font-weight:700;color:#64748b;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.09);font-family:'Segoe UI',system-ui,sans-serif;transition:all .15s;" onmouseover="this.style.background='#fef2f2';this.style.color='#b91c1c';this.style.borderColor='#fecaca';" onmouseout="this.style.background='#fff';this.style.color='#64748b';this.style.borderColor='#e2e8f0';" onclick="sessionStorage.removeItem('auth_admin');location.reload();">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+  Logout
+</div>
+<script>
+(function(){
+  if(sessionStorage.getItem('auth_admin')==='1') document.getElementById('logout-btn').style.display='flex';
+  new MutationObserver(function(){
+    if(document.getElementById('auth-overlay').style.display==='none')
+      document.getElementById('logout-btn').style.display='flex';
+  }).observe(document.getElementById('auth-overlay'),{attributes:true,attributeFilter:['style']});
+})();
+</script>
+
+<div class="shell">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="logo">DM</div>
+      <div class="brand-name">Digit Web Lanka</div>
+      <div class="brand-sub">DM Dashboard</div>
     </div>
-    <div class="statrow">
-      <div class="stat"><div class="v">6</div><div class="l">Members</div></div>
-      <div class="stat"><div class="v">6</div><div class="l">Active Dashboards</div></div>
-      <div class="stat"><div class="v">2026-08-04</div><div class="l">Updated</div></div>
+
+    <div class="sb-scroll">
+
+      <!-- Main -->
+      <div class="sb-section">Main</div>
+      <a class="sb-item" href="https://digital-marketing-member-pages.vercel.app/">
+        <span class="sb-icon ext">🏠</span>
+        <div><div class="sb-name">Home</div><div class="sb-sub">DM Member Pages</div></div>
+      </a>
+      <a class="sb-item active" href="index.html">
+        <span class="sb-icon ext">📁</span>
+        <div><div class="sb-name">Directory</div></div>
+      </a>
+      <a class="sb-item" href="germany-sales-decline-dashboard/index.html">
+        <span class="sb-icon ext" style="background:rgba(201,152,42,.12);font-size:11px;font-weight:800;color:var(--gold);">DE</span>
+        <div><div class="sb-name" style="color:#fbbf24;">Germany</div><div class="sb-sub">Sales Decline</div></div>
+      </a>
+
+      <div class="sb-divider"></div>
+
+      <!-- Intelligence -->
+      <div class="sb-section">Intelligence</div>
+      <a class="sb-item" href="pages/seo.html">
+        <span class="sb-icon intel">📈</span>
+        <div><div class="sb-name">SEO Intelligence</div><div class="sb-sub">Weekly KPI · 18m Trends</div></div>
+      </a>
+      <a class="sb-item" href="pages/eod.html">
+        <span class="sb-icon" style="background:rgba(124,58,237,.18);font-size:12px;font-weight:800;color:#c4b5fd;">EOD</span>
+        <div><div class="sb-name" style="color:#c4b5fd;">EOD Reports</div><div class="sb-sub">13 Members · 3 Teams</div></div>
+      </a>
+      <a class="sb-item" href="pages/eod-tec.html">
+        <span class="sb-icon" style="background:rgba(3,105,161,.18);font-size:12px;">⚙</span>
+        <div><div class="sb-name" style="color:#7dd3fc;">TEC Team Log</div></div>
+      </a>
+      <a class="sb-item" href="pages/eod-seo.html">
+        <span class="sb-icon" style="background:rgba(10,125,79,.18);font-size:12px;">🔍</span>
+        <div><div class="sb-name" style="color:#6ee7b7;">SEO Team Log</div></div>
+      </a>
+      <a class="sb-item" href="pages/eod-ads.html">
+        <span class="sb-icon" style="background:rgba(124,58,237,.18);font-size:12px;">📊</span>
+        <div><div class="sb-name" style="color:#c4b5fd;">ADS Team Log</div></div>
+      </a>
+      <a class="sb-item" href="pages/organic-revenue.html">
+        <span class="sb-icon intel">💰</span>
+        <div><div class="sb-name">Organic Revenue</div><div class="sb-sub">GA4 · Daily Updates</div></div>
+      </a>
+
+      <div class="sb-divider"></div>
+
+      <!-- Members -->
+      <div class="sb-section">Member Dashboards</div>
+      <a class="sb-item" href="pages/hetheesha.html">
+        <span class="sb-icon member">H</span>
+        <div><div class="sb-name">Hetheesha</div><div class="sb-sub">SEO · ledsone.fr</div></div>
+        <span class="sb-pill live">Live</span>
+      </a>
+      <a class="sb-item" href="pages/jakshan.html">
+        <span class="sb-icon member">J</span>
+        <div><div class="sb-name">Jakshan</div><div class="sb-sub">SEO · ledsone.co.uk</div></div>
+        <span class="sb-pill live">Live</span>
+      </a>
+      <a class="sb-item" href="pages/sajeepan.html">
+        <span class="sb-icon member">S</span>
+        <div><div class="sb-name">Sajeepan</div><div class="sb-sub">Google Ads · ledsone.de</div></div>
+        <span class="sb-pill live">Live</span>
+      </a>
+      <a class="sb-item" href="pages/sonya.html">
+        <span class="sb-icon member">S</span>
+        <div><div class="sb-name">Sonya</div><div class="sb-sub">Google Ads · UK</div></div>
+        <span class="sb-pill live">Live</span>
+      </a>
+      <a class="sb-item" href="pages/theekshy.html">
+        <span class="sb-icon member">T</span>
+        <div><div class="sb-name">Theekshy</div><div class="sb-sub">Digital Marketing</div></div>
+        <span class="sb-pill live">Live</span>
+      </a>
+      <a class="sb-item" href="pages/thivajini.html">
+        <span class="sb-icon member">T</span>
+        <div><div class="sb-name">Thivajini</div><div class="sb-sub">Digital Marketing</div></div>
+        <span class="sb-pill live">Live</span>
+      </a>
+
     </div>
-  </div>
-</header>
 
-<main class="page">
+    <div class="sb-footer">
+      <div class="dev">Developed by <strong>Piranav</strong></div>
+      <div style="font-size:10px;color:#3d5470;margin-top:3px;">AIOS · Digit Web Lanka</div>
+    </div>
+  </aside>
 
-  <div class="toolbar">
-    <input id="member-search" type="text" placeholder="Filter members by name…" aria-label="Filter members by name">
-    <a class="row" href="https://digital-marketing-member-pages.vercel.app/" title="Home" style="height:42px;box-sizing:border-box;flex-direction:row;width:auto;text-align:left;padding:0 16px 0 10px;gap:8px;">
-      <span class="avatar live" style="width:26px;height:26px;font-size:11px;flex:none;">🏠</span>
-      <span class="nm" style="font-size:13px;">Home</span>
-    </a>
-    <a class="row" href="germany-sales-decline-dashboard/index.html" title="Germany Sales Decline" style="height:42px;box-sizing:border-box;flex-direction:row;width:auto;text-align:left;padding:0 16px 0 10px;gap:8px;border-color:#b98b1e;">
-      <span class="avatar live" style="width:26px;height:26px;font-size:11px;flex:none;background:#b98b1e;border-color:#e8d59a;">DE</span>
-      <span class="nm" style="font-size:13px;">Germany</span>
-    </a>
-    <span class="hint">Data pages are PostgreSQL / Shopify / GSC-sourced snapshots · read-only</span>
-  </div>
+  <!-- ── Main ── -->
+  <div class="main">
 
-  <div class="section-title">Intelligence Dashboards <span class="count">3</span></div>
-  <div class="roster" style="margin-bottom:20px">
-    <a class="row" href="pages/seo.html" data-name="seo intelligence" style="border-color:var(--gold)">
-      <span class="avatar live" style="font-size:13px;background:#0c1a30;color:#e8d59a;">SEO</span>
-      <span class="who"><span class="nm">SEO Intelligence</span><span class="role">ledsone.co.uk · Weekly KPI · 18-Month Trends · GSC + Ads + SEMrush</span></span>
-      <div class="tags">
-        <span class="tag r">Weekly KPI</span>
-        <span class="tag r">18m Trends</span>
-        <span class="tag r">WoW Alerts</span>
-        <span class="tag r">Keywords</span>
-        <span class="tag r">Actions</span>
+    <div class="topbar">
+      <div class="topbar-gradient"></div>
+      <div class="tb-title">Digital Marketing &mdash; <span>Member Directory</span></div>
+      <div class="live-badge">
+        <span class="live-dot"></span>
+        <span id="liveDate">—</span>
       </div>
-      <span class="status live">7 Phases Live</span>
-    </a>
-    <a class="row" href="pages/eod.html" data-name="eod reports end of day" style="border-color:#7c3aed">
-      <span class="avatar live" style="font-size:11px;background:#7c3aed;color:#fff;border-color:#a78bfa;">EOD</span>
-      <span class="who"><span class="nm">EOD Reports</span><span class="role">17 Members · ADS + SEO Teams · Daily Reports</span></span>
-      <div class="tags">
-        <span class="tag r">Daily EOD</span>
-        <span class="tag r">ADS Team</span>
-        <span class="tag r">SEO Team</span>
-        <span class="tag r">17 Members</span>
+    </div>
+
+    <div class="content">
+
+      <!-- Search -->
+      <div class="search-bar">
+        <input id="member-search" type="text" placeholder="🔍  Search dashboards and members…">
       </div>
-      <span class="status live">GitHub · Live</span>
-    </a>
-    <a class="row" href="pages/organic-revenue.html" data-name="organic revenue intelligence" style="border-color:var(--good)">
-      <span class="avatar live" style="font-size:11px;background:#0a7d4f;color:#fff;border-color:#0a7d4f;">ORG<br>REV</span>
-      <span class="who"><span class="nm">Organic Revenue</span><span class="role">ledsone.co.uk · GA4 Measured Revenue</span></span>
-      <div class="tags">
-        <span class="tag r">Overview</span>
-        <span class="tag r">By Page</span>
-        <span class="tag r">By Type</span>
-        <span class="tag r">Trend</span>
+
+      <!-- KPI strip -->
+      <div class="kpi-strip">
+        <div class="kpi-card accent">
+          <div class="kv">3</div>
+          <div class="kl">Intelligence Dashboards</div>
+        </div>
+        <div class="kpi-card gold">
+          <div class="kv">6</div>
+          <div class="kl">Member Dashboards</div>
+        </div>
+        <div class="kpi-card tec">
+          <div class="kv">2</div>
+          <div class="kl">TEC Members</div>
+        </div>
+        <div class="kpi-card seo">
+          <div class="kv">5</div>
+          <div class="kl">SEO Members</div>
+        </div>
+        <div class="kpi-card ads">
+          <div class="kv">6</div>
+          <div class="kl">ADS Members</div>
+        </div>
+        <div class="kpi-card" style="border-top-color:#0a7d4f;">
+          <div class="kv" style="font-size:15px;margin-top:4px;">2026-08-09</div>
+          <div class="kl">Last Updated</div>
+        </div>
       </div>
-      <span class="status live">Phase 8 · Daily Updates</span>
-    </a>
-  </div>
 
-  <div class="section-title">Active Dashboards <span class="count">6</span></div>
-  <div class="roster" id="roster-active">
-    <a class="row" href="pages/hetheesha.html" data-name="hetheesha" data-member="hetheesha">
-      <span class="avatar live">H</span>
-      <span class="who"><span class="nm">Hetheesha</span><span class="role">SEO &amp; Digital Marketing · ledsone.fr</span></span>
-      <span class="status live" id="badge-hetheesha">4 Reports Live</span>
-    </a>
-    <a class="row" href="pages/jakshan.html" data-name="jakshan" data-member="jakshan">
-      <span class="avatar live">J</span>
-      <span class="who"><span class="nm">Jakshan</span><span class="role">SEO &amp; Digital Marketing · ledsone.co.uk</span></span>
-      <span class="status live" id="badge-jakshan">2 Reports Live</span>
-    </a>
-    <a class="row" href="pages/sajeepan.html" data-name="sajeepan" data-member="sajeepan">
-      <span class="avatar live">S</span>
-      <span class="who"><span class="nm">Sajeepan</span><span class="role">Google Ads · ledsone.de</span></span>
-      <span class="status live" id="badge-sajeepan">2 Reports Live</span>
-    </a>
-    <a class="row" href="pages/sonya.html" data-name="sonya" data-member="sonya">
-      <span class="avatar live">S</span>
-      <span class="who"><span class="nm">Sonya</span><span class="role">Google Ads · UK</span></span>
-      <span class="status live" id="badge-sonya">6 Reports Live</span>
-    </a>
-    <a class="row" href="pages/theekshy.html" data-name="theekshy" data-member="theekshy">
-      <span class="avatar live">T</span>
-      <span class="who"><span class="nm">Theekshy</span><span class="role">Digital Marketing team</span></span>
-      <span class="status live" id="badge-theekshy">4 Reports Live</span>
-    </a>
-    <a class="row" href="pages/thivajini.html" data-name="thivajini" data-member="thivajini">
-      <span class="avatar live">T</span>
-      <span class="who"><span class="nm">Thivajini</span><span class="role">Digital Marketing team</span></span>
-      <span class="status live" id="badge-thivajini">4 Reports Live</span>
-    </a>
-  </div>
+      <!-- Intelligence Dashboards -->
+      <div class="sec-title">Intelligence Dashboards <span class="cnt">3</span></div>
+      <div class="cards-grid" style="margin-bottom:28px;" id="grid-intel">
 
-</main>
+        <a class="intel-card seo" href="pages/seo.html" data-search="seo intelligence weekly kpi trends">
+          <div class="ic-avatar seo">SEO</div>
+          <div>
+            <div class="ic-title">SEO Intelligence</div>
+            <div class="ic-desc">ledsone.co.uk · Weekly KPI · 18-Month Trends · GSC + Ads + SEMrush</div>
+          </div>
+          <div class="ic-tags">
+            <span class="ic-tag">Weekly KPI</span>
+            <span class="ic-tag">18m Trends</span>
+            <span class="ic-tag">WoW Alerts</span>
+            <span class="ic-tag">Keywords</span>
+          </div>
+          <span class="ic-status live">7 Phases Live</span>
+        </a>
 
-<footer class="site">Digital Marketing Member Reports · AIOS · updated 2026-08-04 · data pages are PostgreSQL-sourced snapshots</footer>
+        <a class="intel-card eod" href="pages/eod.html" data-search="eod reports end of day ads seo tec members">
+          <div class="ic-avatar eod">EOD</div>
+          <div>
+            <div class="ic-title">EOD Reports</div>
+            <div class="ic-desc">13 Members · TEC + SEO + ADS Teams · Daily Reports</div>
+          </div>
+          <div class="ic-tags">
+            <span class="ic-tag">Daily EOD</span>
+            <span class="ic-tag">TEC Team</span>
+            <span class="ic-tag">SEO Team</span>
+            <span class="ic-tag">ADS Team</span>
+          </div>
+          <span class="ic-status live">GitHub · Live</span>
+        </a>
+
+        <a class="intel-card" href="germany-sales-decline-dashboard/index.html" style="border-top-color:var(--gold);" data-search="germany sales decline dashboard de">
+          <div class="ic-avatar de">DE</div>
+          <div>
+            <div class="ic-title">Germany Dashboard</div>
+            <div class="ic-desc">Sales Decline Analysis · ledsone.de</div>
+          </div>
+          <div class="ic-tags">
+            <span class="ic-tag">Sales</span>
+            <span class="ic-tag">Decline</span>
+            <span class="ic-tag">Analysis</span>
+          </div>
+          <span class="ic-status live">Live</span>
+        </a>
+
+      </div>
+
+      <!-- Member Dashboards -->
+      <div class="sec-title">Member Dashboards <span class="cnt">6</span></div>
+      <div class="cards-grid" id="grid-members">
+
+        <a class="member-card" href="pages/hetheesha.html" data-search="hetheesha seo ledsone.fr">
+          <span class="mc-avatar" style="background:#0a7d4f;">H</span>
+          <div class="mc-info">
+            <div class="mc-name">Hetheesha</div>
+            <div class="mc-role">SEO · ledsone.fr</div>
+          </div>
+          <span class="mc-badge">4 Reports</span>
+        </a>
+
+        <a class="member-card" href="pages/jakshan.html" data-search="jakshan seo ledsone.co.uk">
+          <span class="mc-avatar" style="background:#0369a1;">J</span>
+          <div class="mc-info">
+            <div class="mc-name">Jakshan</div>
+            <div class="mc-role">SEO · ledsone.co.uk</div>
+          </div>
+          <span class="mc-badge">2 Reports</span>
+        </a>
+
+        <a class="member-card" href="pages/sajeepan.html" data-search="sajeepan google ads ledsone.de">
+          <span class="mc-avatar" style="background:#7c3aed;">S</span>
+          <div class="mc-info">
+            <div class="mc-name">Sajeepan</div>
+            <div class="mc-role">Google Ads · ledsone.de</div>
+          </div>
+          <span class="mc-badge">2 Reports</span>
+        </a>
+
+        <a class="member-card" href="pages/sonya.html" data-search="sonya google ads uk">
+          <span class="mc-avatar" style="background:#be185d;">S</span>
+          <div class="mc-info">
+            <div class="mc-name">Sonya</div>
+            <div class="mc-role">Google Ads · UK</div>
+          </div>
+          <span class="mc-badge">6 Reports</span>
+        </a>
+
+        <a class="member-card" href="pages/theekshy.html" data-search="theekshy digital marketing">
+          <span class="mc-avatar" style="background:#b45309;">T</span>
+          <div class="mc-info">
+            <div class="mc-name">Theekshy</div>
+            <div class="mc-role">Digital Marketing</div>
+          </div>
+          <span class="mc-badge">4 Reports</span>
+        </a>
+
+        <a class="member-card" href="pages/thivajini.html" data-search="thivajini digital marketing">
+          <span class="mc-avatar" style="background:#0891b2;">T</span>
+          <div class="mc-info">
+            <div class="mc-name">Thivajini</div>
+            <div class="mc-role">Digital Marketing</div>
+          </div>
+          <span class="mc-badge">4 Reports</span>
+        </a>
+
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+
+</div><!-- /shell -->
 
 <script>
-document.getElementById('member-search').addEventListener('input',function(){
-  var q=this.value.trim().toLowerCase();
-  document.querySelectorAll('a.row[data-name]').forEach(function(r){
-    r.style.display=(r.getAttribute('data-name')||'').indexOf(q)>-1?'':'none';
+document.getElementById('liveDate').textContent =
+  new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+
+document.getElementById('member-search').addEventListener('input', function() {
+  const q = this.value.trim().toLowerCase();
+  document.querySelectorAll('[data-search]').forEach(el => {
+    const match = !q || (el.dataset.search||'').includes(q) ||
+      (el.textContent||'').toLowerCase().includes(q);
+    el.style.display = match ? '' : 'none';
   });
 });
-
-// Badge counts are hardcoded in HTML — no API call needed
 </script>
 </body>
 </html>
