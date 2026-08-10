@@ -3,7 +3,7 @@
 **File:** `pages/theekshy.html`
 **Title:** Theekshy — Google Ads Campaign Optimisation Dashboard
 **Scope:** Google Ads — Theekshy's campaign IDs (hardcoded in API)
-**Last updated:** 2026-07-23
+**Last updated:** 2026-08-10
 
 ---
 
@@ -31,14 +31,14 @@ All four sections load from a single API endpoint with a `type` parameter.
 **Live API — date-range filtered**
 
 ```javascript
-fetch(`/api/theekshy/dashboard?type=req2&from=${from}&to=${to}`)
+fetch(`/api/members-api?member=theekshy&type=req2&from=${from}&to=${to}`)
 ```
 
 Single API route handles all section types via `?type=` switch.
 
 ---
 
-## API Route — `/api/theekshy/dashboard.js`
+## API Route — `/api/members-api.js (theekshy section)`
 
 ### Section 1 — Campaign Optimisation
 
@@ -103,7 +103,7 @@ Cross-references Google Ads product feed with current inventory:
 
 ## Key Logic
 
-- **Campaign filter:** Theekshy's campaign IDs hardcoded in `api/theekshy/dashboard.js`
+- **Campaign filter:** Theekshy's campaign IDs hardcoded in `api/members-api.js (theekshy section)`
 - **Single API, multiple types:** `?type=req1/req2/req3/req4` switch in the API handler
 - **Date range:** User controls `from` / `to` — passed as query params
 - **Stock × Feed cross-reference:** Section 4 compares inventory stock to feed status to generate action queue

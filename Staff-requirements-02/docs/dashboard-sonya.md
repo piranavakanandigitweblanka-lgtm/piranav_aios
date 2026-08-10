@@ -3,7 +3,7 @@
 **File:** `pages/sonya.html`
 **Title:** Sonya — Google Ads Campaign Dashboard
 **Scope:** Google Ads — campaign ID 20810136438 + campaigns named '%Sonya%'
-**Last updated:** 2026-07-29
+**Last updated:** 2026-08-10
 
 ---
 
@@ -17,12 +17,12 @@ Full Google Ads performance dashboard for Sonya. Six-tab view covering campaign 
 
 | Tab | Requirement | Title | API endpoint |
 |---|---|---|---|
-| 1 | Req 1 | Campaign Data Dashboard | `/api/sonya/campaign-performance` |
-| 2 | Req 2 | Product Data | `/api/sonya/product-performance` |
-| 3 | Req 3 | Trend & Segment Dashboard | `/api/sonya/trend-performance` |
-| 4 | Req 4 | Opportunity SKUs Dashboard | `/api/sonya/opportunity` |
-| 5 | Req 5 | Stop Waste Spend | `/api/sonya/stop-waste-spend` |
-| 6 | Req 6 | Daily Orders | `/api/sonya/daily-orders` |
+| 1 | Req 1 | Campaign Data Dashboard | `/api/members-api?member=sonya&type=campaign-performance` |
+| 2 | Req 2 | Product Data | `/api/members-api?member=sonya&type=product-performance` |
+| 3 | Req 3 | Trend & Segment Dashboard | `/api/members-api?member=sonya&type=trend-performance` |
+| 4 | Req 4 | Opportunity SKUs Dashboard | `/api/members-api?member=sonya&type=opportunity` |
+| 5 | Req 5 | Stop Waste Spend | `/api/members-api?member=sonya&type=stop-waste-spend` |
+| 6 | Req 6 | Daily Orders | `/api/members-api?member=sonya&type=daily-orders` |
 
 ---
 
@@ -30,14 +30,14 @@ Full Google Ads performance dashboard for Sonya. Six-tab view covering campaign 
 
 **Live API — date-range filtered**
 
-Each tab fetches its own endpoint with `?from=YYYY-MM-DD&to=YYYY-MM-DD`.
-Tab 5 (Stop Waste Spend) also uses `fetch('/api/sonya/stop-waste-spend')`.
+Each tab fetches `/api/members-api?member=sonya&type=<req>` with `?from=YYYY-MM-DD&to=YYYY-MM-DD`.
+(Previously separate files — merged into `api/members-api.js` on 2026-08-10)
 
 ---
 
 ## API Routes
 
-### `/api/sonya/campaign-performance.js` — Req 1
+### `?type=campaign-performance` — Req 1
 
 **Campaign filter:**
 ```sql
@@ -56,7 +56,7 @@ WHERE ... AND cp.date BETWEEN $from AND $to
 
 ---
 
-### `/api/sonya/product-performance.js` — Req 2
+### `?type=product-performance` — Req 2
 
 Product-level Google Ads performance for Sonya's campaigns.
 
@@ -68,7 +68,7 @@ Filtered to Sonya's campaign IDs. Returns spend, clicks, conversions per product
 
 ---
 
-### `/api/sonya/trend-performance.js` — Req 3
+### `?type=trend-performance` — Req 3
 
 Time-series trend data for Sonya's campaigns — daily or weekly aggregated spend, conversions, ROAS.
 
@@ -81,7 +81,7 @@ CSV export: `sonya_req3_trend_{from}_to_{to}.csv`
 
 ---
 
-### `/api/sonya/opportunity.js` — Req 4
+### `?type=opportunity` — Req 4
 
 **Purpose:** Identifies SKUs with high sales velocity but low/no Google Ads spend — opportunity to add PPC.
 
@@ -108,7 +108,7 @@ Also joins:
 
 ---
 
-### `/api/sonya/stop-waste-spend.js` — Req 5
+### `?type=stop-waste-spend` — Req 5
 
 **Purpose:** Identifies wasteful Google Ads spend — low conversion / high cost assets, irrelevant search terms.
 
@@ -129,7 +129,7 @@ CSV export: `sonya_req5_stop_waste_spend.csv`
 
 ---
 
-### `/api/sonya/daily-orders.js` — Req 6
+### `?type=daily-orders` — Req 6
 
 **Purpose:** Yesterday's UK orders across all marketplaces with stock, Shopify UK price, and 7-day sales velocity.
 

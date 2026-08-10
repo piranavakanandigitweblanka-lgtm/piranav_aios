@@ -3,7 +3,7 @@
 **File:** `pages/jakshan.html`
 **Title:** Jackshan — Requirements 1 & 2 — GSC Analysis & SEO Tracker
 **Store:** ledsone.co.uk
-**Last updated:** 2026-07-23
+**Last updated:** 2026-08-10
 
 ---
 
@@ -26,14 +26,14 @@ GSC (Google Search Console) keyword analysis and SEO optimisation tracker for le
 
 **Live API — date-range filtered**
 
-Both tabs call `../api/jackshan/dashboard` with `type=req1` or `type=req2` and a date range or rolling days filter.
+Both tabs call `/api/members-api?member=jakshan` with `type=req1` or `type=req2` and a date range or rolling days filter.
 
 ```javascript
 // URL builder
 buildApiUrl('req1', 'r1-days-filter', 'r1-from', 'r1-to')
-// → /api/jackshan/dashboard?type=req1&from=YYYY-MM-DD&to=YYYY-MM-DD
+// → /api/members-api?member=jakshan&type=req1&from=YYYY-MM-DD&to=YYYY-MM-DD
 // or
-// → /api/jackshan/dashboard?type=req1&days=30
+// → /api/members-api?member=jakshan&type=req1&days=30
 ```
 
 Both fetches run in parallel:
@@ -43,7 +43,8 @@ Promise.all([fetch(url1), fetch(url2)])
 
 ---
 
-## API Route — `/api/jackshan/dashboard.js`
+## API Route — `/api/members-api?member=jakshan`
+(Previously `api/jackshan/dashboard.js` — merged into `api/members-api.js` on 2026-08-10)
 
 ### Req 1 — GSC Priority Keyword Analysis
 
@@ -85,7 +86,7 @@ Tracks SEO tasks per product (meta title, meta description, image alt text, sche
 
 ## Key Logic
 
-- **Priority product list:** Hardcoded in `api/jackshan/dashboard.js` — a curated list of ledsone.co.uk product handles to track
+- **Priority product list:** Hardcoded in `api/members-api.js` (jakshan section) — a curated list of ledsone.co.uk product handles to track
 - **Top keyword:** `DISTINCT ON (page) ORDER BY clicks DESC` — picks the highest-click query per URL
 - **Date filter:** User selects rolling days (7/30/90) or custom date range — passed as query params
 - **sub_source filter:** GSC data is filtered by sub_source to isolate ledsone.co.uk traffic

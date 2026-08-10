@@ -3,7 +3,7 @@
 **File:** `pages/hetheesha.html`
 **Title:** Hetheesha — SEO Requirements | ledsone.fr
 **Store:** ledsone.fr (Shopify: jedsz8-km.myshopify.com)
-**Last updated:** 2026-07-23
+**Last updated:** 2026-08-10
 
 ---
 
@@ -31,8 +31,8 @@ SEO and content audit dashboard for ledsone.fr (French store). Covers top-sellin
 
 | Tab | Data source | Method |
 |---|---|---|
-| Tab 1 (Products SEO) | Static JS array in HTML + Shopify GQL live call | `fetch('/api/hetheesha/req1')` |
-| Tab 2 (Collections) | Static JS array in HTML + GSC from DB | `fetch('/api/hetheesha/req2')` |
+| Tab 1 (Products SEO) | Static JS array in HTML + Shopify GQL live call | `fetch('/api/members-api?member=hetheesha&type=req1')` |
+| Tab 2 (Collections) | Static JS array in HTML + GSC from DB | `fetch('/api/members-api?member=hetheesha&type=req2')` |
 | Tab 3 (Duplicates) | Static JS array in HTML | Embedded |
 | Tab 4 (Stock Alert) | Static JS array in HTML | Embedded |
 | Tab 5 (SEO Tracker) | Static JS array in HTML | Embedded |
@@ -41,7 +41,10 @@ SEO and content audit dashboard for ledsone.fr (French store). Covers top-sellin
 
 ## API Routes
 
-### `/api/hetheesha/req1.js`
+**Consolidated endpoint:** `/api/members-api?member=hetheesha&type=req1|req2`
+(Previously separate files — merged into `api/members-api.js` on 2026-08-10)
+
+### `?type=req1`
 
 **Purpose:** Enriches static product list with live Shopify metafield data (FAQ schema) and GSC impressions/CTR.
 
@@ -62,7 +65,7 @@ WHERE handle = $1
 
 ---
 
-### `/api/hetheesha/req2.js`
+### `?type=req2`
 
 **Purpose:** Enriches collection list with live GSC data.
 

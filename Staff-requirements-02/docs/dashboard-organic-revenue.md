@@ -28,18 +28,19 @@ Organic revenue analytics dashboard for ledsone.co.uk. Shows revenue attributed 
 
 **Live API — latest snapshot (no date filter)**
 
-Each tab calls `/api/organic-revenue` with a `type` parameter. Data comes from a pre-aggregated GA4 snapshot stored in the database — not real-time.
+Each tab calls `/api/intel-api?service=organic` with a `type` parameter. Data comes from a pre-aggregated GA4 snapshot stored in the database — not real-time.
 
 ```javascript
-fetch('/api/organic-revenue?type=overview')
-fetch('/api/organic-revenue?type=by-page')
-fetch('/api/organic-revenue?type=by-type')
-fetch('/api/organic-revenue?type=trend')
+fetch('/api/intel-api?service=organic&type=overview')
+fetch('/api/intel-api?service=organic&type=by-page')
+fetch('/api/intel-api?service=organic&type=by-type')
+fetch('/api/intel-api?service=organic&type=trend')
 ```
 
 ---
 
-## API Route — `/api/organic-revenue.js`
+## API Route — `/api/intel-api?service=organic`
+(Previously `api/organic-revenue.js` — merged into `api/intel-api.js` on 2026-08-10)
 
 **Source schema/table:** `google_analytics.organic_landing_page_revenue`
 

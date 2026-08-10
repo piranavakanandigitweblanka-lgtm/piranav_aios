@@ -3,7 +3,7 @@
 **File:** `pages/sajeepan.html`
 **Title:** Sajeepan — Google Ads Product Intelligence Dashboard
 **Scope:** Google Ads PMax campaigns — 6 campaigns
-**Last updated:** 2026-07-28
+**Last updated:** 2026-08-10
 
 ---
 
@@ -32,17 +32,18 @@ Req 2 loads lazily — data only fetched when the tab is first clicked.
 
 ```javascript
 // Req 1
-fetch(`/api/sajeepan/dashboard?from=${from}&to=${to}`)
+fetch(`/api/members-api?member=sajeepan&from=${from}&to=${to}`)
 
 // Req 2
-fetch(`/api/sajeepan/dashboard?type=req2&from=${from}&to=${to}`)
+fetch(`/api/members-api?member=sajeepan&type=req2&from=${from}&to=${to}`)
 ```
 
 Both share the same API file with `?type=` routing.
 
 ---
 
-## API Route — `/api/sajeepan/dashboard.js`
+## API Route — `/api/members-api?member=sajeepan`
+(Previously `api/sajeepan/dashboard.js` — merged into `api/members-api.js` on 2026-08-10)
 
 ### Req 1 Queries
 

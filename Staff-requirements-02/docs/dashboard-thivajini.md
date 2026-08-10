@@ -4,7 +4,7 @@
 **Title:** Thivajini — Requirements Dashboard · LEDSone FR · Google Ads
 **Store:** ledsone-fra.myshopify.com (ledsone FR)
 **Scope:** Google Ads — ledsone FR campaigns
-**Last updated:** 2026-07-23
+**Last updated:** 2026-08-10
 
 ---
 
@@ -30,19 +30,20 @@ Google Ads and Shopify order attribution dashboard for ledsone FR (French store)
 
 ```javascript
 // Section 1
-fetch('/api/thivajini/dashboard?type=req1')
+fetch('/api/members-api?member=thivajini&type=req1')
 
 // Section 2
-fetch(url)  // /api/thivajini/dashboard?type=req2 (or similar)
+fetch(url)  // /api/members-api?member=thivajini&type=req2 (or similar)
 
 // Section 3 & 4
-fetch('/api/thivajini/dashboard?type=req3')
-fetch('/api/thivajini/dashboard?type=req4')
+fetch('/api/members-api?member=thivajini&type=req3')
+fetch('/api/members-api?member=thivajini&type=req4')
 ```
 
 ---
 
-## API Route — `/api/thivajini/dashboard.js`
+## API Route — `/api/members-api?member=thivajini`
+(Previously `api/thivajini/dashboard.js` — merged into `api/members-api.js` on 2026-08-10)
 
 ### Section 1 — Conversion Tracking & Data Integrity
 

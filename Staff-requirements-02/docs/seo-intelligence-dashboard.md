@@ -14,7 +14,7 @@
 2. [Architecture](#2-architecture)
 3. [File Map](#3-file-map)
 4. [Data Sources](#4-data-sources)
-5. [API Reference — `api/seo.js`](#5-api-reference)
+5. [API Reference — `api/intel-api.js`](#5-api-reference)
 6. [Phase 1 — Executive Overview](#6-phase-1--executive-overview)
 7. [Phase 2 — Product Intelligence](#7-phase-2--product-intelligence)
 8. [Phase 3 — Keyword Intelligence](#8-phase-3--keyword-intelligence)
@@ -57,7 +57,7 @@ PostgreSQL (207.148.78.148:5432)
   db=ledsone · user=dbhub_readonly (READ-ONLY)
         │
         ▼
-api/seo.js  ←  Vercel Serverless Function (Node.js, pg)
+api/intel-api.js  ←  Vercel Serverless Function (Node.js, pg)
   ?module=exec|products|keywords|landing|actions|technical
   ?type=<sub-type>
         │
@@ -78,7 +78,7 @@ data/seo-master-dataset.csv  ←  37-month SEMrush + corrected GSC + Ads
 
 | Decision | Reason |
 |---|---|
-| Single `api/seo.js` (not 4–6 sub-files) | Vercel Hobby plan caps at 12 serverless functions. 10 total across the project. |
+| Single `api/intel-api.js` (not 4–6 sub-files) | Vercel Hobby plan caps at 12 serverless functions. 10 total across the project. |
 | `?module=` routing inside one handler | Avoids function-count bloat while keeping sub-logic clearly separated |
 | CSV for SEMrush data | SEMrush API is not in the pipeline; maintainable manual export |
 | Lazy tab loading | Avoids 6 simultaneous DB queries on page open |
@@ -206,13 +206,13 @@ The original master CSV (docs/) had GSC clicks for Mar–May 2026 exactly 2× th
 
 ## 5. API Reference
 
-**Base:** `https://staff-requirements-02.vercel.app/api/seo`  
+**Base:** `https://staff-requirements-02.vercel.app/api/intel-api?service=seo`  
 **Auth:** None (internal staff tool)  
 **Cache:** `s-maxage=300, stale-while-revalidate=60`  
 **DB timeout:** 30,000ms per query  
 **Connection timeout:** 15,000ms  
 
-All endpoints: `GET /api/seo?module=<module>&type=<type>[&from=YYYY-MM-DD&to=YYYY-MM-DD]`
+All endpoints: `GET /api/intel-api?service=seo&module=<module>&type=<type>[&from=YYYY-MM-DD&to=YYYY-MM-DD]`
 
 Default date range: `from=2026-03-20`, `to=<today>`
 
@@ -875,16 +875,16 @@ vercel --prod --yes
 
 | Function | Purpose |
 |---|---|
-| `api/seo.js` | All 6 SEO modules (exec, products, keywords, landing, actions, technical) |
-| `api/germany/marketplace-gap.js` | Germany sales gap dashboard |
-| `api/hetheesha/req1.js` | Hetheesha requirement 1 |
-| `api/hetheesha/req2.js` | Hetheesha requirement 2 |
-| `api/jackshan/dashboard.js` | Jakshan dashboard |
-| `api/sajeepan/dashboard.js` | Sajeepan dashboard |
-| `api/sonya/daily-orders.js` | Sonya daily orders |
-| `api/sonya/dashboard.js` | Sonya main dashboard |
-| `api/theekshy/dashboard.js` | Theekshy dashboard |
-| `api/thivajini/dashboard.js` | Thivajini dashboard |
+| `api/intel-api.js` | All 6 SEO modules (exec, products, keywords, landing, actions, technical) |
+| `api/intel-api.js (service=germany)` | Germany sales gap dashboard |
+| `api/members-api.js (member=hetheesha type=req1)` | Hetheesha requirement 1 |
+| `api/members-api.js (member=hetheesha type=req2)` | Hetheesha requirement 2 |
+| `api/members-api.js (member=jakshan)` | Jakshan dashboard |
+| `api/members-api.js (member=sajeepan)` | Sajeepan dashboard |
+| `api/members-api.js (member=sonya type=daily-orders)` | Sonya daily orders |
+| `api/members-api.js (member=sonya)` | Sonya main dashboard |
+| `api/members-api.js (member=theekshy)` | Theekshy dashboard |
+| `api/members-api.js (member=thivajini)` | Thivajini dashboard |
 
 **Environment variable required:** `DATABASE_URL` (PostgreSQL connection string)
 
@@ -893,7 +893,7 @@ vercel --prod --yes
 { "functions": { "api/**/*.js": { "maxDuration": 60 } } }
 ```
 
-**Consolidation history:** Originally 4 separate SEO API files (`executive.js`, `products.js`, `keywords.js`, `landing-pages.js`) caused the function count to hit 13 → exceeded Hobby limit. All merged into `api/seo.js` in commit `eaf08d0`.
+**Consolidation history:** Originally 4 separate SEO API files (`executive.js`, `products.js`, `keywords.js`, `landing-pages.js`) caused the function count to hit 13 → exceeded Hobby limit. All merged into `api/intel-api.js` in commit `eaf08d0`.
 
 ---
 
@@ -905,7 +905,7 @@ Decisions and incidents worth remembering for future sessions:
 |---|---|
 | 2026-07 | GSC master CSV had doubled clicks for Mar–May 2026 (2× error). Corrected in `data/seo-master-dataset.csv`. Original `docs/` copy not corrected — use only `data/` copy. |
 | 2026-07 | ILIKE JOIN on `page ILIKE '%/products/' \|\| handle` timed out at 30s on 269k × 5217 rows. Fixed by separate queries + JS merge. Never retry this pattern on large tables. |
-| 2026-07 | Vercel Hobby plan hit 13-function limit when 4 SEO sub-files were separate. Merged into `api/seo.js`. Keep ≤ 12 functions total across the project. |
+| 2026-07 | Vercel Hobby plan hit 13-function limit when 4 SEO sub-files were separate. Merged into `api/intel-api.js`. Keep ≤ 12 functions total across the project. |
 | 2026-07 | `dirCondition` in `rising`/`declining` SQL uses a JS-constructed string — this is NOT injection-vulnerable because the value is hardcoded in a switch case, not from `req.query`. |
 | 2026-07 | `listingsJson` scope bug: declared inside `loadProducts()` but referenced in `renderProducts()`. Fixed by promoting to module-level `prodListingsCount`. |
 | 2026-07 | Jul 2026 row in master CSV was initially written with March's values (1,921 instead of 3,854). Caught and fixed immediately via Edit tool. |
