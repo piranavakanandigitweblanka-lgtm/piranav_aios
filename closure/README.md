@@ -107,6 +107,32 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+---
+
+### 2026-08-14 — AIOS Recovery Closure (Aug 6–14 Work)
+
+**Context:** Multiple sessions between 2026-08-06 and 2026-08-14 completed significant work across Staff-requirements and Staff-requirements-02 without AIOS closure entries. This section is a recovery closure written in a single audit session (2026-08-14). No production changes were made during this recovery session. All items below are PARTIAL or OPEN pending GPT review and completion of AIOS documentation.
+
+**Recovery audit report:** `Staff-requirements-02/evidence/aios-recovery-audit-2026-08-14.md`
+**GPT review evidence gap report:** `evidence/piranav/gpt-review-evidence-gap-2026-08-14.md`
+**GPT review template:** `evidence/templates/gpt-review-of-claude-output-template.md`
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SAJEEPAN-R3-2026-08-11 | Sajeepan Req 3 — Revenue Protection & PPC Actions tab (8 queries, ROAS bands) | `SR-02/api/members-api.js`, `SR-02/pages/sajeepan.html` | `closure/sajeepan/requirement-3-2026-08-11.md` | `717f3d8` | NO | No capability/evidence/validation files; SR-02 doc not updated for R3 | Create capability + evidence + validation; update SR-02 dashboard doc | PARTIAL |
+| PIRANAV-AUTH-2026-08-10 | DB-backed auth system (Neon, page_key model) across 14 SR-02 dashboards | `SR-02/api/auth.js` + 14 HTML pages | `closure/piranav/auth-system-2026-08-10.md` | `d1fc7c9`, `18888cb` | NO | No capability file; Neon table schema not in any AIOS doc | Create auth system capability doc | PARTIAL |
+| PIRANAV-API-CONSOLIDATION-2026-08-10 | API consolidation: 11 member APIs → members-api.js (Vercel 3/12 fn) | `SR-02/api/members-api.js` + 11 deleted files | `closure/piranav/api-consolidation-2026-08-10.md` | `d12c3ee`, `7945500` | NO at main AIOS | Stale sajeepan workflow doc (old API path); no main AIOS capability file | Create capability; fix stale workflow doc | PARTIAL |
+| PIRANAV-EOD-SUITE-2026-08-10 | EOD dashboard suite (eod.html, eod-ads.html, eod-seo.html, eod-tec.html) | `SR-02/pages/eod-*.html` | `closure/piranav/eod-dashboard-suite-2026-08-10.md` | `d1fc7c9`, `5525080` | PARTIAL | eod-ads.html has UNSTAGED 4-member expansion (will be lost); no main AIOS capability | COMMIT unstaged eod-ads.html; create EOD capability | PARTIAL |
+| PIRANAV-SR01-STAFFIDPERF-2026-08-14 | Staff ID Performance dashboard (5 tabs) + recovery incident (work lost from live, recovered from Vercel snapshot) | `SR-01/pages/staff-id-performance.html` | `closure/piranav/staff-id-performance-2026-08-14.md` | `9ebde22`–`61e2beb`, `fb3a5fe`, `1258fd9` | NO | Merge conflict RESOLVED (commit 1258fd9); no AIOS capability or incident doc | Create capability + incident doc | PARTIAL |
+| PIRANAV-SR01-OVERVIEW-2026-08-14 | SR-01 workstream AIOS overview (scope, dashboards, APIs, git state) | `docs/dashboards/architecture/sr01-workstream-overview.md` (to be created) | `closure/piranav/sr01-workstream-overview-2026-08-14.md` | a4033b8, 61e2beb | NO | No overview doc exists; SR-01 deployment URL not confirmed | Create SR-01 overview doc; confirm deployment URL with Piranav | OPEN |
+| PIRANAV-SEO-AUG07-2026-08-07 | SEO dashboard Aug 7 enhancement — reactive week selector, 26-week history table | `SR-02/pages/seo.html` | `closure/piranav/seo-dashboard-aug07-enhancement-2026-08-07.md` | `6e94b70` | PARTIAL | Existing capability + closure outdated (Aug 3 only); Aug 7 features not in AIOS docs | Extend existing capability + closure files | PARTIAL |
+| PIRANAV-SHOPIFY-SHIPPING-2026-08-11 | Shopify shipping rate update — 9 EU countries +£1.50/€1.50 via Shopify MCP | `capability/piranav/shopify-shipping-rate-update-2026-08-11.md` | `closure/piranav/shopify-shipping-rate-update-2026-08-11.md` | NONE — untracked | NO | Capability file UNTRACKED — will be lost; no git commit; no evidence file | COMMIT untracked file immediately; create evidence file | PARTIAL |
+| PIRANAV-EOD-ADS-EXPANSION | eod-ads.html expanded from 6 to 10 ADS members (Thasitha/Theekshy/Ripson/Thanishtika) | `SR-02/pages/eod-ads.html` | git diff output (unstaged) | NONE — unstaged | NO | Changes UNSTAGED and NOT committed — will be lost | COMMIT immediately | OPEN |
+
+**Session Result: PARTIAL** — All 9 items recovered with evidence from git. All are PARTIAL or OPEN because GPT review evidence is missing for all items and AIOS documentation is incomplete. No production changes made in this recovery session.
+
+---
+
 ## Pre-2026-06-25 Closure Status
 
 Work performed before 2026-06-25 is documented in Desktop daily logs but does NOT have formal closure entries here. These sessions are considered LEGACY — not failed, but outside the closure authority of this file.

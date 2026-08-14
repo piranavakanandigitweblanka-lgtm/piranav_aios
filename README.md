@@ -10,10 +10,12 @@
 | Assigned Subfolder | `C:\Users\PC\Documents\piranav_aios` |
 | Parent Domain | Website Tec team |
 | Coordinator | Varmen |
-| GitHub Repository (as stated by assignment) | https://github.com/piranavakanandigitweblanka-lgtm/piranav_aios |
-| Git Remote (actual, found during discovery) | https://github.com/piranavakanandigitweblanka-lgtm/aios-piranav.git |
-| Git Root (actual local) | `C:\Users\PC` (parent home directory) |
-| Current Branch | master |
+| GitHub Repository | https://github.com/piranavakanandigitweblanka-lgtm/piranav_aios |
+| Git Remote (verified 2026-08-14) | `https://github.com/piranavakanandigitweblanka-lgtm/piranav_aios.git` |
+| Local Path | `C:\Users\PC\Documents\piranav_aios` |
+| Current Branch | main |
+| Staff-requirements-02 | Subfolder of this repo — same remote |
+| Staff-requirements (SR-01) | Separate repo → https://github.com/digitalmarketing69140951-sys/Staff-requirements |
 | Build Date | 2026-06-25 |
 | Status | STARTER — structure created, evidence linking pending |
 

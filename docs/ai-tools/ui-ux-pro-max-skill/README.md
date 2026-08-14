@@ -83,9 +83,9 @@ For Shopify-specific execution steps, see `SHOPIFY_WORKFLOW.md`.
 
 | Field | Value |
 |---|---|
-| Repository | `https://github.com/piranavakanandigitweblanka-lgtm/aios-piranav` |
-| Branch | `master` |
-| Path in repo | `Documents/piranav_aios/docs/ai-tools/ui-ux-pro-max-skill/` |
+| Repository | `https://github.com/piranavakanandigitweblanka-lgtm/piranav_aios` |
+| Branch | `main` |
+| Path in repo | `docs/ai-tools/ui-ux-pro-max-skill/` |
 
 ---
 
