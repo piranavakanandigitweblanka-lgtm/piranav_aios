@@ -133,6 +133,23 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+---
+
+### 2026-08-14 — CPPC_30 XML Feed Fix (Recovery Closure)
+
+**Context:** CPPC_30 Google Merchant Center feed reported an XML formatting error (Line 20, Column 127) on upload 2026-08-14. Fix was applied in-session. GMC approval confirmed by Piranav. AIOS closure was not written at session end. This entry is a recovery closure written in a subsequent session. No production changes were made in the recovery session.
+
+**Evidence file:** `evidence/fixes/cppc30-xml-feed-fix-2026-08-14.md`  
+**Capability file:** `capability/piranav/shopify-xml-feed-debugging-2026-08-14.md`
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| CPPC30-XML-2026-08-14 | Fix XML formatting error in CPPC_30 Google Shopping feed — `image_url: width: 800` generates `&`-containing URLs outside CDATA | `shopify_projects/ledsone-uk-theme/templates/page.Top Selling Lights On Sale-feed.liquid` (PENDING — file in Downloads only) | `evidence/fixes/cppc30-xml-feed-fix-2026-08-14.md` | NONE — not committed | NO | Fixed file not committed to AIOS theme; no GMC approval screenshot saved; no XML validator output | (1) Commit `google-feed-fixed.liquid` into AIOS theme as `page.Top Selling Lights On Sale-feed.liquid`; (2) Save GMC approval screenshot | PARTIAL |
+
+**Session Result: PARTIAL** — Fix applied and GMC approval confirmed by Piranav (stated). Evidence file and capability file created. Fixed template not yet in AIOS git history. No screenshot proof of GMC approval.
+
+---
+
 ## Pre-2026-06-25 Closure Status
 
 Work performed before 2026-06-25 is documented in Desktop daily logs but does NOT have formal closure entries here. These sessions are considered LEGACY — not failed, but outside the closure authority of this file.
