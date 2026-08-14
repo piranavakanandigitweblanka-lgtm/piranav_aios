@@ -10,116 +10,105 @@ This document defines the mandatory workflow for every Claude Code session insid
 
 ---
 
-## Why This Exists
-
-Without a consistent session protocol:
-- Work gets done but cannot be queried later
-- Evidence is created in the wrong place
-- Duplicate truth builds silently across sessions
-- Coordinator cannot verify what happened
-
-This document prevents all of that.
-
----
-
-## Business / Operational Question Supported
-
-> "Did piranav's session produce queryable, evidence-backed, coordinator-reviewable output that can be safely handed over or audited?"
-
----
-
 ## Role Split
 
 ### GPT is the brain
-- GPT (the coordinator-facing LLM) designs tasks, reviews outputs, approves scope changes, and confirms evidence quality
+- GPT designs tasks, reviews outputs, approves scope changes, and confirms evidence quality
 - GPT does NOT execute file writes, run git commands, or make production changes
-- All GPT decisions that affect scope or evidence must be logged in `handover/README.md`
 
 ### Claude Code is the worker
 - Claude Code reads, writes, and queries files inside `C:\Users\PC\Documents\piranav_aios`
-- Claude Code runs git commands (read-only: status, log, diff; write: only when explicitly instructed to commit)
+- Claude Code runs git commands when Piranav instructs — commit, push, status, log
 - Claude Code does NOT make decisions — it executes approved instructions
-- Claude Code does NOT change files outside `piranav_aios` without written approval logged in `handover/README.md`
+- Claude Code does NOT change files outside `piranav_aios` without Piranav approval
+
+### Piranav is the owner
+- Piranav instructs Claude to commit, push, or deploy
+- Piranav confirms scope changes and approves work before closure is marked PASS
+- Piranav's instruction replaces the old "wait for Varmen" rule
+
+---
+
+## Repository Map
+
+| Folder | GitHub | Notes |
+|---|---|---|
+| `piranav_aios` (main) | https://github.com/piranavakanandigitweblanka-lgtm/piranav_aios | Branch: main |
+| `Staff-requirements-02` | Same repo as above (subfolder) | Same remote |
+| `Staff-requirements` (SR-01) | https://github.com/digitalmarketing69140951-sys/Staff-requirements | Separate repo, separate account |
 
 ---
 
 ## Standing Rules — Always Active
 
-### GPT Prompt Capture Rule (PERMANENT — effective 2026-07-01)
+### 1. GPT Prompt Capture Rule (permanent — effective 2026-07-01)
+Every reusable GPT prompt must be saved to `prompts/` **before** the task is executed.
+- Search `PROMPT_REGISTER.md` first — update existing if equivalent exists
+- Save new prompt → then execute → then update `PROMPT_REGISTER.md`
+- Full rule: `prompts/GPT_CAPTURE_RULE.md`
+- Skip this = **session FAIL**
 
-Every GPT-generated prompt for a reusable task type **must be saved to `prompts/`** before the task is executed.
+### 2. Commit Before Deploy (permanent — added 2026-08-14)
+**Never deploy to Vercel without first committing all changes to git.**
+A manual `vercel --prod` from a stale local copy silently overwrites live production with no error.
+This caused the Staff ID Performance recovery incident (Aug 2026) — code was lost from live and had to be recovered from a Vercel deployment snapshot.
 
-Full rule: `prompts/GPT_CAPTURE_RULE.md`
+### 3. All AIOS Files Must Be Git-Tracked
+After creating any capability, closure, evidence, or validation file — run `git status` and confirm the file is tracked before the session ends. An untracked AIOS file will be lost if the workspace is cleared.
 
-Quick checklist:
-1. Receive GPT prompt → search `PROMPT_REGISTER.md` and `prompts/[category]/`
-2. If equivalent exists → update it (do not duplicate)
-3. If no equivalent → create new file in correct category folder
-4. **Save the prompt file BEFORE running the task**
-5. After task: update `PROMPT_REGISTER.md` and include prompt path in closure report
-
-Failure to save before execution = **session FAIL**.
-
-Exempt: greetings, casual Q&A, one-off explanations.
+### 4. No Duplicate Truth
+Before saving any file, check whether it already exists. If an existing file covers the same content, extend it — do not create a parallel copy. Log confirmed duplicate risks in `duplicate-risk/README.md`.
 
 ---
 
 ## Session Order — Follow Every Time
 
-### Step 1 — Search existing assets first
-Before creating any file, check whether it already exists:
-- Search inside `piranav_aios/` first
-- Check `evidence/README.md` index
-- Check `source-map/README.md`
-- If an existing file can be extended, extend it — do not create a parallel copy
+### Step 1 — Session start checks
+- Read `closure/README.md` — check OPEN items from previous session
+- Run `git status` — identify any untracked or unstaged files left over
+- Report any uncommitted work or blockers before starting new work
 
-**If you skip this step, you risk duplicate truth.**
+### Step 2 — Search existing assets first
+Before creating any file:
+- Search inside `piranav_aios/` for an existing equivalent
+- Check `PROMPT_REGISTER.md` for existing prompt
+- If an existing file can be extended, extend it — do not create a new one
 
-### Step 2 — Confirm scope
-- Confirm the task is inside piranav's assigned boundary
-- If the task requires touching files outside `piranav_aios`, stop and log in `handover/README.md` — wait for Varmen approval before proceeding
-
-### Step 3 — Evidence first
-- Do not mark a task complete until evidence exists
-- Accepted evidence types: see `evidence/README.md`
-- Every completed task must have at least one evidence item before closure
+### Step 3 — Confirm scope
+- Confirm the task is inside the approved boundary
+- If the task requires touching files outside `piranav_aios`, get Piranav approval first
 
 ### Step 4 — Do the work
-- Follow the approved task
-- Write output files inside `piranav_aios/` or the approved scope area
-- Save any Claude-generated output as a `.md` file before the session ends
+- Execute the approved task
+- **Commit code to git before deploying** (Rule 2 above)
+- Save all Claude-generated output as `.md` files before the session ends
 
-### Step 5 — Duplicate truth prevention check
-Before saving any file, ask:
-- Does a file with this content already exist anywhere in the repo?
-- Would saving this file create two sources of truth for the same fact?
-- If YES to either: extend or link the existing file — do not create a new one
+### Step 5 — Evidence
+- Create an evidence file for the work done
+- Create validation notes (browser test results, DB query results, screenshots)
+- Save any GPT review using the template at `evidence/templates/gpt-review-of-claude-output-template.md`
 
-Confirmed duplicate risks are logged in `duplicate-risk/README.md`.
-
-### Step 6 — Daily closure
+### Step 6 — Closure
 Every session must end with a closure entry in `closure/README.md`.
-A session is NOT complete until closure is written.
 
-Required closure fields (see `closure/README.md`):
+Required fields:
 - Requirement ID
+- Task
 - Asset path
 - Evidence path
-- **Prompt file path** (if a GPT prompt was used — see GPT Capture Rule above)
-- GitHub path / commit (if changed)
-- Queryability result YES/NO
+- GitHub path / commit
+- Queryability result YES / NO
 - Blockers
 - Next step
-- PASS / FAIL
+- PASS / FAIL / OPEN
 
 **A session with no closure entry is a FAIL.**
 
 ### Step 7 — Git status check
-Run `git status` before ending every session. Confirm:
-- No unintended files are staged
-- No files outside `piranav_aios` were modified
-
-Do NOT commit unless Varmen has explicitly instructed a commit in this session.
+Before ending:
+- Run `git status` — confirm nothing untracked or unstaged
+- Commit all new AIOS documentation files
+- Push when Piranav instructs
 
 ---
 
@@ -127,20 +116,24 @@ Do NOT commit unless Varmen has explicitly instructed a commit in this session.
 
 If a new developer, agent, or Claude session starts without this context:
 
-1. Read `README.md` first — identity, boundary, and discovery notes
-2. Read this file (`START_HERE.md`) second — workflow protocol
-3. Read `source-map/README.md` — where existing evidence lives
-4. Read `closure/README.md` — what has already been closed
-5. Read `duplicate-risk/README.md` — what duplicate risks are known
-6. Do NOT start writing files until steps 1–5 are complete
-7. If in doubt, stop and ask Varmen before proceeding
+1. Read `README.md` — identity, repo map, boundary
+2. Read this file (`START_HERE.md`) — session protocol
+3. Read `closure/README.md` — what has been completed and what is OPEN
+4. Read `duplicate-risk/README.md` — known duplicate risks
+5. Do NOT start writing files until steps 1–4 are complete
 
 ---
 
-## Source / Evidence Used to Build This File
+## Pass / Fail Rule
 
-- 2026-06-25 discovery scan result (AMBER — empty piranav_aios, existing evidence on Desktop)
-- Varmen coordinator instruction for Mini-AIOS build
+Session **PASSES** if all 7 steps followed, closure written, no untracked AIOS files at end.
+
+Session **FAILS** if:
+- Evidence missing at closure
+- Duplicate truth created
+- Closure not written
+- Code deployed before committing to git
+- AIOS files left untracked at session end
 
 ---
 
@@ -148,37 +141,13 @@ If a new developer, agent, or Claude session starts without this context:
 
 | Role | Name |
 |---|---|
-| Assigned Staff | piranav |
-| Coordinator / Reviewer | Varmen |
-| Last Updated | 2026-06-25 |
+| Staff / Owner | Piranav |
+| Coordinator / Reviewer | GPT (coordinator-facing LLM) |
+| Last Updated | 2026-08-14 |
 
 ---
 
-## Status
+## Extended Workflow Reference
 
-ACTIVE — this protocol applies from 2026-06-25 onwards
-
----
-
-## Pass / Fail Rule
-
-A session PASSES if all 7 steps are followed and closure is written.
-A session FAILS if:
-- Evidence is missing at closure
-- Files outside `piranav_aios` were changed without approval
-- Duplicate truth was created
-- Closure was not written
-
----
-
-## Next Step
-
-On next session: run Step 1 (existing asset search) before doing anything else.
-
----
-
-## Known Limits
-
-- This protocol assumes GPT review is available at session start and end
-- If GPT is unavailable, piranav must still complete closure and flag GPT-review as PENDING in the closure entry
-- This file covers session workflow only — for evidence format rules see `evidence/README.md`
+For the full recommended session workflow including deploy safety rules and GPT review procedure:
+`docs/aios-session-workflow-recommendation-2026-08-14.md`
