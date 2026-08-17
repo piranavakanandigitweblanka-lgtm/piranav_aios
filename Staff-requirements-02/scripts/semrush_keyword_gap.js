@@ -1,0 +1,630 @@
+'use strict';
+/**
+ * SEMrush Keyword Gap Refresh
+ * Writes competitor keyword gaps to semrush_keyword_gap table in Neon DB.
+ * Uses @neondatabase/serverless (HTTP transport) to work through the HTTPS proxy.
+ * Run: node scripts/semrush_keyword_gap.js
+ */
+
+const { neon } = require('@neondatabase/serverless');
+
+const CONN = 'postgresql://neondb_owner:npg_aX4pf0IeqQEC@ep-soft-leaf-zavu7dmm.c-2.eu-west-2.aws.neon.tech/neondb?sslmode=require';
+
+// ─── Ledsone keyword map: keyword → best organic position ───────────────────
+// Sourced from SEMrush resource_organic (uk, top 200 by traffic)
+const ledsoneMap = {
+  'e27 bulb': 6,
+  'wire connectors': 3,
+  'spider lights': 1,
+  'plug in pendant light': 3,
+  'wiring and connectors': 2,
+  'bayonet light bulb': 5,
+  'retro light shades': 2,
+  'b22 bulb': 8,
+  '3 core cable': 6,
+  'spider light fitting': 1,
+  'plug in hanging light fixtures': 2,
+  'white blackboard': 9,
+  'retro lamp shades': 2,
+  'bulbs for dimmers': 2,
+  'what is an e27 bulb': 1,
+  'lamp shade holder': 2,
+  'led rope light fixture': 1,
+  'led transformer 24v': 1,
+  'brackets for ceiling lights': 2,
+  'e27 edison screw bulb': 6,
+  '24v transformer': 2,
+  'plug in hanging pendant lamp': 4,
+  'spider light': 3,
+  'e27 light bulb': 10,
+  'screw light bulbs e27': 7,
+  'hanging lamp plug': 4,
+  '2 core cable': 5,
+  'b22 light bulb': 7,
+  'wall lights': 28,
+  'cage light shade': 1,
+  'white board white': 21,
+  'spider pendant light': 2,
+  'mould resistant shower curtain': 2,
+  'what is e27 bulb': 1,
+  'big bag for laundry': 3,
+  'pendant lamp': 6,
+  'pendant lamp plug': 6,
+  'cage hanging light': 1,
+  'ceiling rose': 23,
+  'vintage e27 light bulbs': 2,
+  'light cage shade': 1,
+  'ceiling hooks for lights': 2,
+  'conduit lighting': 3,
+  'pipe lights': 2,
+  'transformer 12v led': 2,
+  'spider ceiling light': 2,
+  'light pendant holder': 1,
+  'pendant light': 22,
+  '12v transformer': 3,
+  'bayonet mount led bulb': 7,
+  'e27 screw light bulbs': 7,
+  'spider pendant lamp': 2,
+  'bayonet fitting light bulbs': 7,
+  'pendant light with plug in': 2,
+  'pendant light spider': 2,
+  'ceiling hooks for lighting': 6,
+  'led transformers 12v': 1,
+  'edison screw lamp holder': 4,
+  'shower curtain': 33,
+  'plug in hanging light': 6,
+  'bayonet decorative light bulbs': 2,
+  'light bulb with holder': 5,
+  'transformer 24v': 1,
+  'edison screw bulb': 8,
+  'light shades': 21,
+  'bayonet fitting led bulbs': 7,
+  'led transformer 12v': 3,
+  'edison screw e27 lamp': 2,
+  'tape': 25,
+  'e27 lamp base': 3,
+  'hanging lights with plug in': 4,
+  'steampunk wall lights': 1,
+  'shower curtain mould proof': 3,
+  'ceiling bracket light': 2,
+  '12v lighting transformer': 3,
+  'pendant light holder': 1,
+  'rope hanging lamp': 1,
+  'lamp shade holder ring': 2,
+  'led lights bayonet': 7,
+  'covered electrical wire': 3,
+  'pendant plug light': 8,
+  'hanging from chains': 7,
+  'fitting a pendant light': 6,
+  'hanging pendant plug in light': 2,
+  'electrical cable connectors types': 6,
+  'decorative light bulbs bayonet fitting': 3,
+  'power adapter dc 12v': 2,
+  '2 core electrical cable': 5,
+  'spider hanging lights': 1,
+  'bayonet led lamps': 8,
+  'light with plug in': 4,
+  'lampshade pendant lighting': 14,
+  '3 core wire': 5,
+  '12v led lighting transformer': 3,
+  'e27 vintage light bulbs': 2,
+  'e27 bulb base': 2,
+  'spider light pendant': 2,
+  'rope lighting for ceiling': 1,
+  'pendant spider light': 2,
+  'anti mould shower curtain': 7,
+  'bayonet fit led bulbs': 8,
+  '3m double sided tape': 12,
+  'zipper file folder': 3,
+  '240 volt 12 volt dc transformer': 3,
+  'pipework lights': 2,
+  'light bracket for ceiling': 2,
+  'metal black lampshade': 2,
+  'slippers for bathing': 2,
+  'chrome light shade': 2,
+  'light shade cage': 1,
+  '240v to 12 volt converter': 4,
+  'conduit light fittings': 2,
+  '240v to 12v power supply': 2,
+  'electric light bulb fittings': 7,
+  'vintage filament bulbs e27': 2,
+  'hanging lamps with plug': 6,
+  'pendant lights': 24,
+  'weighing machine scale': 16,
+  'hanging pendant plug in lights': 2,
+  'rope ceiling lights': 2,
+  'plug in light fixture': 2,
+  'swag light': 2,
+  'bulb holder screw': 3,
+  '2 core wire': 4,
+  'ceiling light bracket': 7,
+  'light fitting bracket': 4,
+  '12v led light transformer': 3,
+  '3 pendant light': 8,
+  'electrical connectors push fit': 3,
+  'e27 filament light bulb': 5,
+  'mini pendant lamp': 4,
+  'plug for light bulb': 4,
+  '12 volt transformer': 2,
+  'outdoor chandelier': 7,
+  '240v to 12v converter': 2,
+  'pulley pendant light': 2,
+  'mini whiteboard': 26,
+  'dc 5v': 5,
+  'e27 led bulb': 22,
+  'lights that plug in': 12,
+  'vintage glass light shades': 8,
+  'bayonet bulb sizes': 6,
+  '240v to12v transformer': 6,
+  'e27 bulb led filament': 4,
+  'cage lamp pendant': 2,
+  'vintage light bulbs e27': 5,
+  'ceiling hooks for lamps': 5,
+  'd.c 5v': 3,
+  'retro e27 bulb': 2,
+  'slippery sandals': 4,
+  'light bulb bayonet': 4,
+  '12 volt dc transformer': 2,
+  'rope ceiling light': 3,
+  'ceiling lamp with switch': 2,
+  'sbled light bulb': 13,
+  'vintage led bulbs': 5,
+  'pipe lamp': 2,
+  'b22 bayonet bulb': 6,
+  'waterproof cable connector': 9,
+  'bulb receptacle': 3,
+  'dry erase board': 5,
+  'decorative light bulbs bayonet': 3,
+  'socket with holder': 4,
+  'hanging pendant light with plug': 2,
+  'pendant lamps plug in': 2,
+  'light bracket': 4,
+  'cage for pendant light': 3,
+  'red ceiling light': 6,
+  'crow lamp': 6,
+  'edison screw bulb e27': 9,
+  'types of light fixtures': 3,
+  'e27 light bulb base': 3,
+  'cage lamp shade': 3,
+  'corded pendant lamp': 3,
+  'holder for lamp shade': 3,
+  'led tape light transformer': 4,
+  'small screw bulb': 12,
+};
+
+// Branded terms to exclude (case-insensitive substring match)
+const BRANDED = [
+  'ledhut', 'led hut', 'lumilife',
+  'lightingcompany', 'lighting company', 'thelightingcompany', 'the lighting company', 'the lighting co',
+  'industville', 'industriville', 'industiville', 'industrville', 'industvile',
+  'ledsone', 'ledstone', 'intitle:ledsone',
+];
+
+function isBranded(kw) {
+  const lower = kw.toLowerCase();
+  return BRANDED.some(b => lower.includes(b));
+}
+
+// ─── Competitor keyword data from SEMrush ────────────────────────────────────
+// Format: [keyword, position, volume, traffic, url, keyword_difficulty, intent]
+
+const LEDHUT_KEYWORDS = [
+  ['light bulbs led bulbs', 1, 4400, 1091, 'https://ledhut.co.uk/collections/led-light-bulbs', 30, '1'],
+  ['bulb', 1, 8100, 1069, 'https://ledhut.co.uk/collections/shop-led-bulbs-by-fitting', 35, '1'],
+  ['led spotlights', 1, 3600, 892, 'https://ledhut.co.uk/collections/led-spotlights', 15, '1'],
+  ['gu10 led lights', 1, 2900, 719, 'https://ledhut.co.uk/collections/gu10-led-bulbs', 15, '0'],
+  ['ledowe', 3, 14800, 651, 'https://ledhut.co.uk/collections/led-light-bulbs', 47, '1'],
+  ['gu10', 1, 4400, 580, 'https://ledhut.co.uk/collections/gu10-led-bulbs', 16, '1'],
+  ['e27 bulb', 4, 18100, 543, 'https://ledhut.co.uk/collections/e27-led-bulbs-es', 16, '1'],
+  ['light bulbs', 3, 12100, 532, 'https://ledhut.co.uk/collections/shop-led-bulbs-by-fitting', 38, '1'],
+  ['gu10 bulb', 2, 8100, 526, 'https://ledhut.co.uk/collections/gu10-led-bulbs', 15, '1'],
+  ['led light light bulbs', 1, 3600, 475, 'https://ledhut.co.uk/collections/led-light-bulbs', 28, '1'],
+  ['led hut', 1, 590, 472, 'https://ledhut.co.uk/', 49, '2'],
+  ['led lights and bulbs', 1, 1900, 471, 'https://ledhut.co.uk/collections/led-light-bulbs', 34, '0,1'],
+  ['led light bulbs', 1, 5400, 442, 'https://ledhut.co.uk/collections/led-light-bulbs', 29, '1'],
+  ['led bulbs', 1, 5400, 442, 'https://ledhut.co.uk/collections/led-light-bulbs', 38, '1'],
+  ['led', 6, 18100, 434, 'https://ledhut.co.uk/collections/led-light-bulbs', 47, '1'],
+  ['dimmable light bulbs', 2, 2900, 382, 'https://ledhut.co.uk/collections/dimmable-led-bulbs', 28, '1'],
+  ['gu10 bulbs', 1, 4400, 360, 'https://ledhut.co.uk/collections/gu10-led-bulbs', 16, '1'],
+  ['e27 led bulb', 1, 5400, 351, 'https://ledhut.co.uk/collections/e27-led-bulbs-es', 12, '1'],
+  ['led bulb led', 1, 2400, 316, 'https://ledhut.co.uk/collections/led-light-bulbs', 28, '1'],
+  ['gu10 light bulb', 1, 2400, 316, 'https://ledhut.co.uk/collections/gu10-led-bulbs', 23, '1'],
+  ['ledhut', 1, 390, 312, 'https://ledhut.co.uk/', 50, '2'],
+  ['led lights', 9, 33100, 297, 'https://ledhut.co.uk/', 50, '1'],
+  ['led in bulb', 1, 3600, 295, 'https://ledhut.co.uk/collections/led-light-bulbs', 28, '1'],
+  ['bulbs with led', 1, 3600, 295, 'https://ledhut.co.uk/collections/led-light-bulbs', 29, '1'],
+  ['led bulb and', 1, 3600, 295, 'https://ledhut.co.uk/collections/led-light-bulbs', 27, '1'],
+  ['light with bulb', 3, 12100, 290, 'https://ledhut.co.uk/collections/shop-led-bulbs-by-fitting', 13, '1'],
+  ['flood light lights', 2, 4400, 286, 'https://ledhut.co.uk/collections/led-flood-lights', 20, '1'],
+  ['light bulb', 6, 12100, 266, 'https://ledhut.co.uk/collections/shop-led-bulbs-by-fitting', 30, '3'],
+  ['light bulb fittings', 1, 1000, 248, 'https://ledhut.co.uk/collections/shop-led-bulbs-by-fitting', 15, '1'],
+  ['led bulbs uk', 1, 1000, 248, 'https://ledhut.co.uk/collections/led-light-bulbs', 26, '1'],
+  ['led floodlight', 1, 1000, 248, 'https://ledhut.co.uk/collections/led-flood-lights', 10, '1'],
+  ['led flood light', 1, 1000, 248, 'https://ledhut.co.uk/collections/led-flood-lights', 11, '1'],
+  ['led light', 3, 8100, 243, 'https://ledhut.co.uk/collections/led-light-bulbs', 37, '1'],
+  ['flood lights', 2, 2900, 237, 'https://ledhut.co.uk/collections/led-flood-lights', 12, '1'],
+  ['gu10 led bulbs', 2, 5400, 237, 'https://ledhut.co.uk/collections/gu10-led-bulbs', 17, '1'],
+  ['led bulb led lighting', 1, 3600, 234, 'https://ledhut.co.uk/collections/led-light-bulbs', 35, '1'],
+  ['led lamp light bulb', 1, 3600, 234, 'https://ledhut.co.uk/collections/led-light-bulbs', 22, '1'],
+  ['led bulb bulb', 1, 3600, 234, 'https://ledhut.co.uk/collections/led-light-bulbs', 31, '1'],
+  ['g9 led bulb', 8, 12100, 229, 'https://ledhut.co.uk/collections/led-light-bulbs/g9', 13, '1'],
+  ['led light bulbs uk', 1, 880, 218, 'https://ledhut.co.uk/collections/led-light-bulbs', 19, '0,1'],
+  ['led flood lights', 1, 2400, 196, 'https://ledhut.co.uk/collections/led-flood-lights', 20, '1'],
+  ['led bulb', 1, 2900, 188, 'https://ledhut.co.uk/collections/led-light-bulbs', 28, '1'],
+  ['led lamp bulb', 1, 2900, 188, 'https://ledhut.co.uk/collections/led-light-bulbs', 32, '1'],
+  ['gu10 led bulb', 2, 2900, 188, 'https://ledhut.co.uk/collections/gu10-led-bulbs', 12, '1'],
+  ['commercial led lighting', 1, 720, 178, 'https://ledhut.co.uk/collections/commercial-led-lighting', 11, '0'],
+  ['led floodlights', 1, 720, 178, 'https://ledhut.co.uk/collections/led-flood-lights', 20, '1'],
+  ['led dimmer light bulbs', 1, 720, 178, 'https://ledhut.co.uk/collections/dimmable-led-bulbs', 21, '0'],
+  ['gu10 led light bulbs', 1, 720, 178, 'https://ledhut.co.uk/collections/gu10-led-bulbs', 21, '0'],
+  ['led bayonet lamps', 1, 720, 178, 'https://ledhut.co.uk/collections/b22-led-bulbs-bayonet', 9, '1'],
+  ['led for flood light', 1, 1300, 171, 'https://ledhut.co.uk/collections/led-flood-lights', 15, '1'],
+  ['gu10 led', 1, 1300, 171, 'https://ledhut.co.uk/collections/gu10-led-bulbs', 10, '1'],
+  ['gu10 light bulbs', 2, 1300, 171, 'https://ledhut.co.uk/collections/gu10-led-bulbs', 17, '1'],
+  ['dimmable led bulbs', 1, 1300, 171, 'https://ledhut.co.uk/collections/dimmable-led-bulbs', 19, '1'],
+  ['e27 led lamp bulb', 1, 3600, 158, 'https://ledhut.co.uk/collections/e27-led-bulbs-es', 13, '1'],
+  ['led e27 led', 1, 3600, 158, 'https://ledhut.co.uk/collections/e27-led-bulbs-es', 11, '1'],
+  ['e27', 2, 2400, 156, 'https://ledhut.co.uk/collections/e27-led-bulbs-es', 14, '1'],
+  ['l e d spot light', 2, 1900, 155, 'https://ledhut.co.uk/collections/led-spotlights', 12, '1'],
+  ['e27 bulbs', 2, 1900, 155, 'https://ledhut.co.uk/collections/e27-led-bulbs-es', 16, '1'],
+  ['led gu10 bulb', 1, 590, 146, 'https://ledhut.co.uk/collections/gu10-led-bulbs', 13, '0,1'],
+  ['light bulbs led uk', 1, 590, 146, 'https://ledhut.co.uk/collections/led-light-bulbs', 21, '1'],
+  ['led gu10', 1, 590, 146, 'https://ledhut.co.uk/collections/gu10-led-bulbs', 17, '1'],
+  ['dimmable led light bulbs', 1, 590, 146, 'https://ledhut.co.uk/collections/dimmable-led-bulbs', 21, '1'],
+  ['led flood lights outdoor', 1, 590, 146, 'https://ledhut.co.uk/collections/led-flood-lights', 20, '0,1'],
+  ['dimmer led bulbs', 1, 590, 146, 'https://ledhut.co.uk/collections/dimmable-led-bulbs', 18, '1'],
+  ['lumilife', 1, 170, 136, 'https://ledhut.co.uk/collections/lumilife', 16, '2'],
+  ['led flood light led', 1, 1000, 132, 'https://ledhut.co.uk/collections/led-flood-lights', 19, '1'],
+  ['led gu10 bulbs', 1, 1000, 132, 'https://ledhut.co.uk/collections/gu10-led-bulbs', 22, '1'],
+  ['dimmers and led bulbs', 1, 1000, 132, 'https://ledhut.co.uk/collections/dimmable-led-bulbs', 23, '1'],
+  ['e27 light bulbs led', 1, 1000, 132, 'https://ledhut.co.uk/collections/e27-led-bulbs-es', 10, '1'],
+  ['led spotlight', 2, 1600, 131, 'https://ledhut.co.uk/collections/led-spotlights', 12, '1'],
+  ['cu10 led bulbs', 4, 2900, 127, 'https://ledhut.co.uk/collections/dimmable-led-bulbs/gu10', 18, '1'],
+  ['e27 light bulb', 3, 2900, 127, 'https://ledhut.co.uk/collections/e27-led-bulbs-es', 22, '1'],
+  ['flood light flood light', 2, 3600, 126, 'https://ledhut.co.uk/collections/led-flood-lights', 13, '1'],
+  ['downlight led lamp', 4, 3600, 126, 'https://ledhut.co.uk/collections/led-downlights', 26, '1'],
+  ['lamp led g9', 6, 6600, 125, 'https://ledhut.co.uk/collections/led-light-bulbs/g9', 12, '1'],
+  ['led bulba', 1, 480, 119, 'https://ledhut.co.uk/collections/led-light-bulbs', 28, '0'],
+  ['e27 bulb led warm white', 1, 480, 119, 'https://ledhut.co.uk/collections/e27-led-bulbs-es', 9, '1,3'],
+  ['light bulb led', 1, 480, 119, 'https://ledhut.co.uk/collections/led-light-bulbs', 27, '1'],
+  ['outdoor led flood lights', 1, 480, 119, 'https://ledhut.co.uk/collections/led-flood-lights', 20, '0,1'],
+  ['e27 filament bulb', 1, 480, 119, 'https://ledhut.co.uk/collections/e27-led-filament-bulbs-es', 10, '1'],
+  ['led spot lights', 2, 880, 116, 'https://ledhut.co.uk/collections/led-spotlights', 9, '1'],
+  ['christmas lights 1000 warm white', 1, 880, 116, 'https://ledhut.co.uk/products/treebright-1000-led-christmas-tree-lights-with-timer-25m-white-warm-white', 9, '1,3'],
+  ['led lightbulbs', 1, 880, 116, 'https://ledhut.co.uk/collections/led-light-bulbs', 30, '1'],
+  ['led light bulbs dimmable', 1, 880, 116, 'https://ledhut.co.uk/collections/dimmable-led-bulbs', 13, '1'],
+  ['e27 light bulbs', 1, 880, 116, 'https://ledhut.co.uk/collections/e27-led-bulbs-es', 21, '1'],
+  ['g9 led light bulb', 4, 3600, 108, 'https://ledhut.co.uk/collections/led-light-bulbs/g9', 14, '1'],
+  ['led gu10 led bulbs', 2, 1300, 106, 'https://ledhut.co.uk/collections/gu10-led-bulbs', 8, '1'],
+  ['light bulbs dimming', 2, 2400, 105, 'https://ledhut.co.uk/collections/dimmable-led-bulbs', 22, '1'],
+  ['spotlights with led', 5, 2900, 101, 'https://ledhut.co.uk/collections/led-spotlights', 17, '1'],
+  ['led equivalent of 60w', 1, 390, 96, 'https://ledhut.co.uk/blogs/news/led-equivalent-wattages-against-traditional-lighting', 15, '1'],
+  ['led lamp bulb light', 1, 390, 96, 'https://ledhut.co.uk/collections/led-light-bulbs', 33, '1'],
+  ['led dimmable bulbs', 1, 390, 96, 'https://ledhut.co.uk/collections/dimmable-led-bulbs', 25, '1'],
+  ['e27 es bulb', 1, 720, 95, 'https://ledhut.co.uk/collections/e27-led-bulbs-es', 10, '1'],
+  ['1000 warm white christmas lights', 1, 720, 95, 'https://ledhut.co.uk/products/treebright-1000-led-christmas-tree-lights-with-timer-25m-white-warm-white', 22, '0,1'],
+  ['flood light', 6, 3600, 86, 'https://ledhut.co.uk/collections/led-flood-lights', 16, '1'],
+  ['e14 led light', 4, 3600, 86, 'https://ledhut.co.uk/collections/e14-led-bulbs-ses', 11, '1'],
+  ['led lighting', 5, 3600, 86, 'https://ledhut.co.uk/', 43, '1'],
+  ['led downlight led', 3, 3600, 86, 'https://ledhut.co.uk/collections/led-downlights', 13, '1'],
+];
+
+const LIGHTINGCOMPANY_KEYWORDS = [
+  ['the lighting company', 1, 1300, 1040, 'https://www.lightingcompany.co.uk/', 52, '2'],
+  ['light fixtures', 1, 2900, 719, 'https://www.lightingcompany.co.uk/ceiling-lights-c3', 37, '1'],
+  ['best reading lamps', 8, 33100, 628, 'https://www.lightingcompany.co.uk/table-floor-lamps-c5/reading-craft-lights-c38', 21, '0'],
+  ['lighting uk ceiling', 1, 2400, 595, 'https://www.lightingcompany.co.uk/ceiling-lights-c3', 22, '1'],
+  ['table light shades', 2, 4400, 580, 'https://www.lightingcompany.co.uk/table-floor-lamps-c5/table-lamp-shades-c120', 26, '1'],
+  ['lighting company', 1, 720, 576, 'https://www.lightingcompany.co.uk/', 72, '0'],
+  ['the lighting company uk', 1, 720, 576, 'https://www.lightingcompany.co.uk/', 34, '2'],
+  ['light fitting ceiling', 2, 3600, 475, 'https://www.lightingcompany.co.uk/ceiling-lights-c3', 28, '0'],
+  ['chandelier in a bedroom', 1, 1900, 471, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/chandeliers-c18/bedroom-lights-guest-room-and-hotel-bedroom-lights-t127', 11, '1'],
+  ['chandelier light', 3, 6600, 429, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/chandeliers-c18', 26, '1'],
+  ['chandelier in the bedroom', 1, 1600, 396, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/chandeliers-c18/bedroom-lights-guest-room-and-hotel-bedroom-lights-t127', 11, '1'],
+  ['lights and bulb', 1, 4400, 360, 'https://www.lightingcompany.co.uk/light-bulbs-c95', 36, '0'],
+  ['light fixture', 1, 1300, 322, 'https://www.lightingcompany.co.uk/ceiling-lights-c3', 40, '1,3'],
+  ['cream lampshade', 1, 1300, 322, 'https://www.lightingcompany.co.uk/table-floor-lamps-c5/table-lamp-shades-c120/cream-and-ivory-t209', 13, '1'],
+  ['chandeliers in the bedroom', 1, 2400, 316, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/chandeliers-c18/bedroom-lights-guest-room-and-hotel-bedroom-lights-t127', 11, '1'],
+  ['bathroom light fixtures', 2, 2400, 316, 'https://www.lightingcompany.co.uk/bathroom-lights-c1', 27, '1'],
+  ['households outdoor lights advice', 1, 4400, 286, 'https://www.lightingcompany.co.uk/blog/the-definitive-guide-to-outdoor-lights/', 23, '1'],
+  ['light fitting', 2, 4400, 286, 'https://www.lightingcompany.co.uk/ceiling-lights-c3', 38, '1'],
+  ['bathroom mirror lights', 2, 1900, 250, 'https://www.lightingcompany.co.uk/bathroom-lights-c1/mirror-lights-c87', 15, '1'],
+  ['lighting fixtures', 2, 1900, 250, 'https://www.lightingcompany.co.uk/ceiling-lights-c3', 34, '1'],
+  ['floor lamp shades', 2, 1900, 250, 'https://www.lightingcompany.co.uk/table-floor-lamps-c5/floor-lamp-shades-c323', 13, '1'],
+  ['large ceiling lights', 1, 1000, 248, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/extra-large-and-oversized-ceiling-lights-c125', 14, '0'],
+  ['bathroom chandeliers', 1, 1000, 248, 'https://www.lightingcompany.co.uk/bathroom-lights-c1/bathroom-chandeliers-ip44-c75', 13, '0'],
+  ['floor lamp with gold', 2, 3600, 234, 'https://www.lightingcompany.co.uk/table-floor-lamps-c5/gold-antique-gold-t46', 13, '1'],
+  ['ceiling lights uk', 4, 3600, 234, 'https://www.lightingcompany.co.uk/ceiling-lights-c3', 25, '1'],
+  ['glass lamp shades for ceiling lights', 1, 880, 218, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/easy-fit-ceiling-lights-and-shades-c33/glass-t20', 9, '0'],
+  ['light fittings uk', 2, 1600, 211, 'https://www.lightingcompany.co.uk/ceiling-lights-c3', 34, '1'],
+  ['light fixtures for a bathroom', 1, 1600, 211, 'https://www.lightingcompany.co.uk/bathroom-lights-c1', 22, '1'],
+  ['lighting light fixture', 2, 2400, 196, 'https://www.lightingcompany.co.uk/ceiling-lights-c3', 30, '1'],
+  ['ceiling light', 10, 27100, 189, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/easy-fit-ceiling-lights-and-shades-c33', 27, '1'],
+  ['chandeliers for sale', 1, 720, 178, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/chandeliers-c18', 22, '3'],
+  ['ceiling light fixtures uk', 2, 1300, 171, 'https://www.lightingcompany.co.uk/ceiling-lights-c3', 22, '1'],
+  ['lighting company uk', 1, 210, 168, 'https://www.lightingcompany.co.uk/', 69, '0'],
+  ['lighting and sconces', 3, 2400, 156, 'https://www.lightingcompany.co.uk/wall-lights-c15', 22, '1'],
+  ['glass bulb shades', 4, 2400, 156, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/easy-fit-ceiling-lights-and-shades-c33/glass-t20', 12, '1'],
+  ['antique brass ceiling lights', 4, 2400, 156, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/brass-antique-aged-brass-t21', 16, '0'],
+  ['kitchen with pendant lighting', 4, 2400, 156, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/pendant-lights-c8', 12, '1'],
+  ['ceiling lights united kingdom', 3, 2400, 156, 'https://www.lightingcompany.co.uk/ceiling-lights-c3', 23, '1'],
+  ['rustic ceiling lights', 1, 590, 146, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/rustic-lighting-c29', 9, '1,3'],
+  ['touch table lamps for bedroom', 1, 590, 146, 'https://www.lightingcompany.co.uk/table-floor-lamps-c5/touch-lamps-c126', 12, '0'],
+  ['lamp shades table lamps uk', 1, 590, 146, 'https://www.lightingcompany.co.uk/table-floor-lamps-c5/table-lamp-shades-c120', 12, '0'],
+  ['living room pendant light', 1, 590, 146, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/pendant-lights-c8/lounge-and-living-room-lights-t125', 12, '1'],
+  ['bathroom lights over mirror', 1, 590, 146, 'https://www.lightingcompany.co.uk/bathroom-lights-c1/mirror-lights-c87', 16, '0,1'],
+  ['glass ceiling light shades', 1, 590, 146, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/easy-fit-ceiling-lights-and-shades-c33/glass-t20', 11, '1'],
+  ['over mirror bathroom light', 1, 590, 146, 'https://www.lightingcompany.co.uk/bathroom-lights-c1/mirror-lights-c87', 16, '1'],
+  ['thelightingcompany', 1, 170, 136, 'https://www.lightingcompany.co.uk/', 21, '2'],
+  ['waterproof bathroom ceiling lights', 2, 1000, 132, 'https://www.lightingcompany.co.uk/bathroom-lights-c1/modern-bathroom-lighting-c2', 16, '0'],
+  ['green ceiling light', 2, 1000, 132, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/green-and-verdigris-t33', 12, '0'],
+  ['chrome ceiling lights', 2, 1000, 132, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/chrome-t45', 13, '0'],
+  ['dining room ceiling lights', 2, 1600, 131, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/modern-ceiling-lighting-c7/dining-room-lighting-t126', 13, '0'],
+  ['chandelier crystal chandeliers', 2, 1600, 131, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/chandeliers-c18/crystal-t1', 16, '0'],
+  ['lamp shades for table', 8, 5400, 129, 'https://www.lightingcompany.co.uk/table-floor-lamps-c5/table-lamp-shades-c120', 19, '1'],
+  ['lampshade pendant lighting', 3, 2900, 127, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/easy-fit-ceiling-lights-and-shades-c33', 18, '0'],
+  ['lighting shop', 4, 2900, 127, 'https://www.lightingcompany.co.uk/', 67, '0'],
+  ['chandelier lights', 4, 3600, 126, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/chandeliers-c18', 23, '3'],
+  ['fit a light', 3, 6600, 125, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/easy-to-install-lighting-t252', 22, '1'],
+  ['wall light fixture with switch', 2, 1900, 123, 'https://www.lightingcompany.co.uk/wall-lights-c15/switched-wall-lights-c189', 11, '1'],
+  ['table lighting uk', 3, 1900, 123, 'https://www.lightingcompany.co.uk/table-floor-lamps-c5/table-lamps-c127', 16, '1'],
+  ['british table lamps', 4, 1900, 123, 'https://www.lightingcompany.co.uk/table-floor-lamps-c5/british-made-in-uk-lighting-t23', 9, '0'],
+  ['lights for the mirror', 1, 1900, 123, 'https://www.lightingcompany.co.uk/bathroom-lights-c1/mirror-lights-c87', 12, '1'],
+  ['bedroom chandelier', 3, 1900, 123, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/chandeliers-c18/bedroom-lights-guest-room-and-hotel-bedroom-lights-t127', 14, '1'],
+  ['bedroom chandeliers', 1, 480, 119, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/chandeliers-c18/bedroom-lights-guest-room-and-hotel-bedroom-lights-t127', 8, '0'],
+  ['ceiling light fixture uk', 1, 480, 119, 'https://www.lightingcompany.co.uk/ceiling-lights-c3', 22, '1'],
+  ['victorian wall lights', 1, 480, 119, 'https://www.lightingcompany.co.uk/wall-lights-c15/period-wall-lights-c45', 9, '1,3'],
+  ['chandelier sale', 1, 480, 119, 'https://www.lightingcompany.co.uk/sale/ceiling-lights-c3/chandeliers-c18/crystal-t1', 22, '3'],
+  ['table lampshades for living room', 1, 480, 119, 'https://www.lightingcompany.co.uk/table-floor-lamps-c5/table-lamp-shades-c120/lounge-and-living-room-lights-t125', 7, '1'],
+  ['ceiling light sloped ceiling', 1, 480, 119, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/sloping-ceiling-lights-c209', 5, '1'],
+  ['restaurant lighting', 1, 480, 119, 'https://www.lightingcompany.co.uk/hospitality-leisure-c94/restaurant-lighting-c114', 12, '1'],
+  ['victorian chandelier', 1, 480, 119, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/chandeliers-c18/victorian-edwardian-lights-t22', 11, '1'],
+  ['art deco light shades', 1, 480, 119, 'https://www.lightingcompany.co.uk/art-nouveau-art-deco-lighting-t32', 9, '1'],
+  ['cream table lampshades', 1, 480, 119, 'https://www.lightingcompany.co.uk/table-floor-lamps-c5/table-lamp-shades-c120/cream-and-ivory-t209', 10, '1'],
+  ['glass ceiling lamp shades', 1, 880, 116, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/easy-fit-ceiling-lights-and-shades-c33/glass-t20', 14, '0'],
+  ['large chandeliers', 2, 880, 116, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/chandeliers-c18/large-chandeliers-60cm-and-over-in-diameter-c273', 13, '1'],
+  ['chandelier in a bathroom', 1, 880, 116, 'https://www.lightingcompany.co.uk/bathroom-lights-c1/bathroom-chandeliers-ip44-c75', 13, '1'],
+  ['glass lamp shade', 2, 880, 116, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/easy-fit-ceiling-lights-and-shades-c33/glass-t20', 11, '0,1'],
+  ['copper ceiling light', 2, 880, 116, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/copper-t77', 16, '1'],
+  ['washroom mirror lights', 2, 880, 116, 'https://www.lightingcompany.co.uk/bathroom-lights-c1/mirror-lights-c87', 9, '0'],
+  ['small chandelier', 1, 880, 116, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/chandeliers-c18/small-chandeliers-less-than-40cm-diameter-c271', 12, '0'],
+  ['white light shade ceiling', 1, 880, 116, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/easy-fit-ceiling-lights-and-shades-c33/white-t41', 22, '0'],
+  ['brass spotlights', 1, 880, 116, 'https://www.lightingcompany.co.uk/spot-lights-c21/brass-antique-aged-brass-t21', 9, '1'],
+  ['bathroom lights uk', 2, 880, 116, 'https://www.lightingcompany.co.uk/bathroom-lights-c1', 25, '1'],
+  ['the lighting co', 1, 140, 112, 'https://www.lightingcompany.co.uk/', 66, '2'],
+  ['the lighting company taunton', 1, 140, 112, 'https://www.lightingcompany.co.uk/', 24, '1,3'],
+  ['cream lamp shades', 2, 1300, 106, 'https://www.lightingcompany.co.uk/table-floor-lamps-c5/table-lamp-shades-c120/cream-and-ivory-t209', 21, '0'],
+  ['floor lamp shade', 2, 1300, 106, 'https://www.lightingcompany.co.uk/table-floor-lamps-c5/floor-lamp-shades-c323', 14, '0'],
+  ['ceiling lamp big', 2, 1300, 106, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/extra-large-and-oversized-ceiling-lights-c125', 22, '1'],
+  ['art deco wall lights', 3, 1300, 106, 'https://www.lightingcompany.co.uk/wall-lights-c15/art-nouveau-art-deco-lighting-t32', 8, '1,3'],
+  ['gold pendant light fixture', 2, 1300, 106, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/pendant-lights-c8/gold-antique-gold-t46', 8, '0'],
+  ['glass light shades', 4, 2400, 105, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/easy-fit-ceiling-lights-and-shades-c33/glass-t20', 21, '1'],
+  ['lightening bulb', 1, 1600, 104, 'https://www.lightingcompany.co.uk/light-bulbs-c95', 16, '1'],
+  ['blue table lamp', 2, 1600, 104, 'https://www.lightingcompany.co.uk/table-floor-lamps-c5/table-lamps-c127/blue-t73', 11, '0'],
+  ['table lamp shades', 8, 5400, 102, 'https://www.lightingcompany.co.uk/table-floor-lamps-c5/table-lamp-shades-c120', 22, '1'],
+  ['ceiling light shades', 9, 5400, 102, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/easy-fit-ceiling-lights-and-shades-c33/lounge-and-living-room-lights-t125', 22, '1'],
+  ['chandeliers in gold', 2, 2900, 101, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/chandeliers-c18/gold-antique-gold-t46', 9, '1'],
+  ['ceiling lightshade uk', 1, 390, 96, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/easy-fit-ceiling-lights-and-shades-c33', 24, '0'],
+  ['designer lighting uk', 1, 390, 96, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/designer-lighting-for-ceilings-c4', 26, '0'],
+  ['lights sloped ceilings', 1, 390, 96, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/sloping-ceiling-lights-c209', 9, '1'],
+  ['slope ceiling light fixture', 1, 390, 96, 'https://www.lightingcompany.co.uk/ceiling-lights-c3/sloping-ceiling-lights-c209', 14, '0'],
+  ['cream lamp shades for table lamps', 1, 390, 96, 'https://www.lightingcompany.co.uk/table-floor-lamps-c5/table-lamp-shades-c120/cream-and-ivory-t209', 18, '1,3'],
+];
+
+const INDUSTVILLE_KEYWORDS = [
+  ['industville', 1, 3600, 2880, 'https://www.industville.co.uk/', 27, '2'],
+  ['industville lighting', 1, 1300, 1040, 'https://www.industville.co.uk/', 22, '2'],
+  ['industville uk', 1, 1300, 1040, 'https://www.industville.co.uk/', 21, '2'],
+  ['industville lighting uk', 1, 1300, 1040, 'https://www.industville.co.uk/', 22, '2'],
+  ['pendant lights in the kitchen', 1, 3600, 475, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 16, '1'],
+  ['bar in lights', 1, 1900, 471, 'https://www.industville.co.uk/collections/restaurant-bar-and-coffee-shop-lighting', 11, '1'],
+  ['wall light', 4, 12100, 423, 'https://www.industville.co.uk/collections/wall-lights', 26, '1,3'],
+  ['hall lights', 1, 1600, 396, 'https://www.industville.co.uk/collections/hallway-lights', 16, '0'],
+  ['industrial wall lights', 1, 1300, 322, 'https://www.industville.co.uk/collections/wall-lights', 9, '0'],
+  ['kitchen with pendant lighting', 2, 2400, 316, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 12, '1'],
+  ['industriville', 1, 390, 312, 'https://www.industville.co.uk/', 27, '2'],
+  ['industville lights', 1, 390, 312, 'https://www.industville.co.uk/collections/ceiling-lights', 22, '2,3'],
+  ['bulkhead light', 2, 3600, 295, 'https://www.industville.co.uk/collections/bulkhead-lights', 11, '1'],
+  ['lights for the kitchen island', 2, 3600, 295, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 16, '0,1'],
+  ['industiville', 1, 320, 256, 'https://www.industville.co.uk/', 28, '2'],
+  ['industrial ceiling lights', 1, 1000, 248, 'https://www.industville.co.uk/collections/ceiling-lights', 9, '0'],
+  ['kitchen lights lights', 4, 8100, 243, 'https://www.industville.co.uk/collections/kitchen-lights', 23, '1'],
+  ['industville wall lights', 1, 260, 208, 'https://www.industville.co.uk/collections/wall-lights', 19, '2'],
+  ['industrville', 1, 260, 208, 'https://www.industville.co.uk/', 22, '2'],
+  ['kitchen pendant lighting', 2, 2400, 196, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 13, '0'],
+  ['outside bulkhead lights', 1, 720, 178, 'https://www.industville.co.uk/collections/bulkhead-lights', 13, '0'],
+  ['industrial pendant lighting', 1, 720, 178, 'https://www.industville.co.uk/collections/ceiling-lights', 8, '1'],
+  ['large pendant lighting', 1, 720, 178, 'https://www.industville.co.uk/collections/large-decorative-lights', 9, '0'],
+  ['edison with bulb', 1, 1300, 171, 'https://www.industville.co.uk/collections/led-decorative-light-bulbs', 17, '1'],
+  ['edison bulb', 1, 1300, 171, 'https://www.industville.co.uk/collections/led-decorative-light-bulbs', 12, '1'],
+  ['vintage light wall', 1, 1300, 171, 'https://www.industville.co.uk/collections/wall-lights', 9, '1'],
+  ['hallway light', 3, 2400, 156, 'https://www.industville.co.uk/collections/hallway-lights', 15, '1'],
+  ['industrial lighting wall lights', 1, 590, 146, 'https://www.industville.co.uk/collections/wall-lights', 13, '1'],
+  ['retro filament bulbs', 2, 1000, 132, 'https://www.industville.co.uk/collections/led-decorative-light-bulbs', 12, '1'],
+  ['hanging kitchen lights', 2, 1000, 132, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 21, '0'],
+  ['vintage light bulbs', 2, 1000, 132, 'https://www.industville.co.uk/collections/led-decorative-light-bulbs', 9, '1'],
+  ['giant ceiling light', 1, 1000, 132, 'https://www.industville.co.uk/collections/large-decorative-lights', 11, '0'],
+  ['ceiling industrial lamp', 1, 1000, 132, 'https://www.industville.co.uk/collections/ceiling-lights', 9, '0,1'],
+  ['glass ceiling light', 2, 1600, 131, 'https://www.industville.co.uk/collections/glass-lights', 10, '1'],
+  ['bedroom lighting ideas', 5, 2900, 127, 'https://www.industville.co.uk/collections/bedroom-lights', 16, '1'],
+  ['industrial lighting', 4, 1900, 123, 'https://www.industville.co.uk/', 15, '0'],
+  ['large pendant light', 1, 480, 119, 'https://www.industville.co.uk/collections/large-decorative-lights', 8, '1'],
+  ['bar lighting', 1, 480, 119, 'https://www.industville.co.uk/collections/restaurant-bar-and-coffee-shop-lighting', 10, '1'],
+  ['edison light bulb', 1, 880, 116, 'https://www.industville.co.uk/collections/led-decorative-light-bulbs', 16, '1'],
+  ['wall lights vintage', 1, 880, 116, 'https://www.industville.co.uk/collections/wall-lights', 9, '1'],
+  ['hanging light pendants for kitchen', 3, 3600, 108, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 16, '1'],
+  ['bulkhead lights', 2, 1300, 106, 'https://www.industville.co.uk/collections/bulkhead-lights', 17, '1,3'],
+  ['wall sconces wall sconces', 5, 4400, 105, 'https://www.industville.co.uk/collections/wall-lights', 19, '1'],
+  ['hanging kitchen island lighting', 3, 2400, 105, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 12, '1'],
+  ['kitchen pendant lights', 4, 1600, 104, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 19, '0'],
+  ['semi flush mount ceiling light', 3, 1600, 104, 'https://www.industville.co.uk/collections/low-ceiling-lights', 9, '0'],
+  ['glass lights', 1, 390, 96, 'https://www.industville.co.uk/collections/glass-lights', 9, '1'],
+  ['pendant kitchen lights', 2, 720, 95, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 17, '0'],
+  ['bulkhead lights outdoor', 1, 720, 95, 'https://www.industville.co.uk/collections/bulkhead-lights', 14, '1'],
+  ['kitchen island lighting ideas', 2, 720, 95, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 17, '1'],
+  ['edison bulbs', 1, 720, 95, 'https://www.industville.co.uk/collections/led-decorative-light-bulbs', 17, '1'],
+  ['industvile', 1, 110, 88, 'https://www.industville.co.uk/', 23, '2'],
+  ['lighting ideas for the bedroom', 5, 2900, 87, 'https://www.industville.co.uk/collections/bedroom-lights', 23, '1'],
+  ['brass light fittings', 3, 1300, 84, 'https://www.industville.co.uk/collections/brass-lights', 9, '0'],
+  ['bulkhead', 6, 4400, 83, 'https://www.industville.co.uk/collections/bulkhead-lights', 22, '1'],
+  ['waterproof bathroom ceiling lights', 3, 1000, 82, 'https://www.industville.co.uk/collections/bathroom-lights', 16, '0'],
+  ['metal lamp shades', 3, 1000, 82, 'https://www.industville.co.uk/collections/lighting-shades-and-lampshades', 20, '1'],
+  ['bulb holder with bulb', 1, 1000, 82, 'https://www.industville.co.uk/collections/light-bulb-holders', 13, '1'],
+  ['glass ceiling lights', 2, 1000, 82, 'https://www.industville.co.uk/collections/glass-lights', 10, '0'],
+  ['hanging kitchen lights pendant', 2, 1000, 82, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 16, '1'],
+  ['wall industrial lights', 2, 1000, 82, 'https://www.industville.co.uk/collections/wall-lights', 9, '1'],
+  ['edison e27 bulb', 1, 320, 79, 'https://www.industville.co.uk/collections/led-decorative-light-bulbs', 15, '0,1'],
+  ['alabaster light', 1, 320, 79, 'https://www.industville.co.uk/collections/alabaster-lighting', 10, '1,3'],
+  ['e27 edison bulb', 1, 320, 79, 'https://www.industville.co.uk/collections/led-decorative-light-bulbs', 15, '1'],
+  ['bulkhead outdoor lights', 1, 320, 79, 'https://www.industville.co.uk/collections/bulkhead-lights', 16, '0'],
+  ['cottage ceiling light', 1, 320, 79, 'https://www.industville.co.uk/collections/cottage-ceiling-lights-wall-sconces', 7, '1'],
+  ['large pendant lights', 1, 320, 79, 'https://www.industville.co.uk/collections/large-decorative-lights', 9, '0'],
+  ['massive pendant light', 1, 320, 79, 'https://www.industville.co.uk/collections/large-decorative-lights', 8, '0'],
+  ['brass lights', 2, 590, 77, 'https://www.industville.co.uk/collections/brass-lights', 16, '1'],
+  ['kitchen pendant light', 2, 590, 77, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 17, '0'],
+  ['outdoor bulkhead lights', 1, 590, 77, 'https://www.industville.co.uk/collections/bulkhead-lights', 16, '1'],
+  ['industville rugs', 1, 90, 72, 'https://www.industville.co.uk/collections/homeware', 20, '1,3'],
+  ['outdoor bulkhead light', 2, 880, 72, 'https://www.industville.co.uk/collections/bulkhead-lights', 16, '1'],
+  ['kitchen pendant lights island', 4, 3600, 68, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 11, '1'],
+  ['kitchen island lights', 5, 1900, 66, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 18, '0,1'],
+  ['contemporary lounge lights', 3, 1000, 65, 'https://www.industville.co.uk/collections/living-room-lights', 16, '1'],
+  ['retro wall lights', 3, 1000, 65, 'https://www.industville.co.uk/collections/wall-lights', 9, '1,3'],
+  ['retro incandescent light bulbs', 3, 1000, 65, 'https://www.industville.co.uk/collections/led-decorative-light-bulbs', 29, '1'],
+  ['brass metal pendant light', 1, 1000, 65, 'https://www.industville.co.uk/collections/metal-decorative-lights', 11, '1'],
+  ['pendant lamp kitchen island', 3, 1000, 65, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 9, '1'],
+  ['vintage light bulb lights', 3, 1000, 65, 'https://www.industville.co.uk/collections/led-decorative-light-bulbs', 8, '1'],
+  ['industrial kitchen lighting', 1, 260, 64, 'https://www.industville.co.uk/collections/kitchen-lights', 10, '0'],
+  ['wall lights industrial', 1, 260, 64, 'https://www.industville.co.uk/collections/wall-lights', 8, '1'],
+  ['industrial pendant lights', 1, 260, 64, 'https://www.industville.co.uk/collections/ceiling-lights', 8, '0'],
+  ['alabaster pendant light', 1, 260, 64, 'https://www.industville.co.uk/products/alabaster-slope-pendant-light-8-inch-brass', 7, '1,3'],
+  ['industrial light shade', 1, 480, 63, 'https://www.industville.co.uk/collections/lighting-shades-and-lampshades', 12, '1'],
+  ['hallway lamp', 2, 720, 59, 'https://www.industville.co.uk/collections/hallway-lights', 12, '1'],
+  ['kitchen hanging lights', 3, 720, 59, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 21, '0'],
+  ['exterior bulkhead lights', 2, 720, 59, 'https://www.industville.co.uk/collections/bulkhead-lights', 13, '0'],
+  ['over kitchen island pendant lights', 3, 720, 59, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 9, '1'],
+  ['brass light', 2, 720, 59, 'https://www.industville.co.uk/collections/brass-lights', 11, '1,3'],
+  ['50 small bathroom ideas', 2, 720, 59, 'https://www.industville.co.uk/blogs/news/50-small-bathroom-ideas-that-increase-space', 47, '1'],
+  ['bulk head light', 2, 880, 57, 'https://www.industville.co.uk/collections/bulkhead-lights', 16, '1'],
+  ['pendant light fixtures glass', 5, 2400, 57, 'https://www.industville.co.uk/collections/glass-lights', 14, '1'],
+  ['vintage wall lights', 4, 1300, 57, 'https://www.industville.co.uk/collections/wall-lights', 8, '0,1'],
+  ['bronze ceiling light', 2, 880, 57, 'https://www.industville.co.uk/collections/bronze-lights', 9, '1'],
+  ['hanging lights for kitchen', 2, 880, 57, 'https://www.industville.co.uk/collections/kitchen-island-lighting', 22, '0'],
+  ['industrial light fixtures', 1, 210, 52, 'https://www.industville.co.uk/collections/ceiling-lights', 7, '1'],
+  ['decorative led bulbs', 1, 210, 52, 'https://www.industville.co.uk/collections/led-decorative-light-bulbs', 14, '1'],
+  ['cottage lighting', 1, 210, 52, 'https://www.industville.co.uk/collections/cottage-ceiling-lights-wall-sconces', 9, '1'],
+];
+
+// ─── Gap computation ─────────────────────────────────────────────────────────
+function buildGaps(domain, keywords) {
+  const gaps = [];
+  for (const [kw, pos, vol, traffic, url, kd, intent] of keywords) {
+    // Only top-10 competitor positions
+    if (pos > 10) continue;
+    // Exclude branded terms
+    if (isBranded(kw)) continue;
+    // Get ledsone position (null = not ranking)
+    const ledsonePos = ledsoneMap[kw] !== undefined ? ledsoneMap[kw] : null;
+    // Gap: ledsone not ranking OR ranking > 20
+    if (ledsonePos !== null && ledsonePos <= 20) continue;
+    const oppScore = Math.round(vol * (10 / pos) * 100) / 100;
+    gaps.push({ kw, pos, vol, traffic, url, kd, intent, ledsonePos, oppScore, domain });
+  }
+  // Sort by opportunity_score DESC, take top 50
+  gaps.sort((a, b) => b.oppScore - a.oppScore);
+  return gaps.slice(0, 50);
+}
+
+// ─── Main ─────────────────────────────────────────────────────────────────────
+async function main() {
+  // Use Neon's HTTP-based serverless driver (works through HTTPS proxy)
+  const sql = neon(CONN);
+
+  // Ensure table exists
+  await sql`
+    CREATE TABLE IF NOT EXISTS semrush_keyword_gap (
+      id SERIAL PRIMARY KEY,
+      keyword TEXT NOT NULL,
+      competitor_domain TEXT NOT NULL,
+      competitor_position INT,
+      volume INT,
+      competitor_traffic INT,
+      competitor_url TEXT,
+      keyword_difficulty NUMERIC,
+      intent TEXT,
+      ledsone_position INT,
+      opportunity_score NUMERIC,
+      snapshot_date DATE DEFAULT CURRENT_DATE,
+      UNIQUE(keyword, competitor_domain)
+    )
+  `;
+  console.log('✓ Table ready');
+
+  const competitorData = [
+    { domain: 'ledhut.co.uk',          keywords: LEDHUT_KEYWORDS },
+    { domain: 'lightingcompany.co.uk', keywords: LIGHTINGCOMPANY_KEYWORDS },
+    { domain: 'industville.co.uk',     keywords: INDUSTVILLE_KEYWORDS },
+  ];
+
+  let totalInserted = 0;
+  const errors = [];
+
+  for (const { domain, keywords } of competitorData) {
+    // Full refresh for this competitor
+    const delResult = await sql`DELETE FROM semrush_keyword_gap WHERE competitor_domain = ${domain}`;
+    console.log(`\n[${domain}] Deleted existing rows (full refresh)`);
+
+    const gaps = buildGaps(domain, keywords);
+    console.log(`[${domain}] Gap keywords found: ${gaps.length}`);
+
+    let inserted = 0;
+    for (const g of gaps) {
+      try {
+        await sql`
+          INSERT INTO semrush_keyword_gap
+            (keyword, competitor_domain, competitor_position, volume, competitor_traffic,
+             competitor_url, keyword_difficulty, intent, ledsone_position, opportunity_score, snapshot_date)
+          VALUES (
+            ${g.kw}, ${g.domain}, ${g.pos}, ${g.vol}, ${g.traffic},
+            ${g.url}, ${g.kd}, ${g.intent}, ${g.ledsonePos}, ${g.oppScore}, CURRENT_DATE
+          )
+          ON CONFLICT (keyword, competitor_domain) DO UPDATE SET
+            competitor_position  = EXCLUDED.competitor_position,
+            volume               = EXCLUDED.volume,
+            competitor_traffic   = EXCLUDED.competitor_traffic,
+            competitor_url       = EXCLUDED.competitor_url,
+            keyword_difficulty   = EXCLUDED.keyword_difficulty,
+            intent               = EXCLUDED.intent,
+            ledsone_position     = EXCLUDED.ledsone_position,
+            opportunity_score    = EXCLUDED.opportunity_score,
+            snapshot_date        = CURRENT_DATE
+        `;
+        inserted++;
+      } catch (err) {
+        errors.push(`[${domain}] ${g.kw}: ${err.message}`);
+      }
+    }
+
+    console.log(`[${domain}] Inserted/updated: ${inserted} rows`);
+    totalInserted += inserted;
+
+    // Top 3
+    console.log(`[${domain}] Top 3 opportunities:`);
+    gaps.slice(0, 3).forEach((g, i) => {
+      console.log(`  ${i+1}. "${g.kw}" — score ${g.oppScore.toLocaleString()} (vol ${g.vol}, competitor pos ${g.pos})`);
+    });
+  }
+
+  console.log(`\n═══════════════════════════════════════`);
+  console.log(`Total rows inserted/updated: ${totalInserted}`);
+  if (errors.length) {
+    console.log(`Errors (${errors.length}):`);
+    errors.forEach(e => console.log('  ✗', e));
+  } else {
+    console.log('No errors.');
+  }
+}
+
+main().catch(err => {
+  console.error('Fatal error:', err);
+  process.exit(1);
+});
