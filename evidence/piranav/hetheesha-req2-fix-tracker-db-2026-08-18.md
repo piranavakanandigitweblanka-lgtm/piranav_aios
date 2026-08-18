@@ -1,7 +1,7 @@
-# Evidence — Hetheesha Req 2 Fix Tracker — DB Migration
+# Evidence — Hetheesha Fix Tracker — DB Migration + Req 1 Bulk Load Fix
 
 **Date:** 2026-08-18
-**Task:** Migrate Req 2 Fix Tracker from localStorage to Neon DB, add drawer UI, bulk-set correct fix dates, fix tab refresh bug
+**Task:** Migrate Req 2 Fix Tracker from localStorage to Neon DB, add drawer UI, bulk-set correct fix dates, fix tab refresh bug, fix Req 1 fix tracker "Not set" dates caused by 200 simultaneous API requests
 **Prepared by:** Piranav (AIOS)
 
 ---
@@ -76,6 +76,34 @@ Production alias: `https://dm-dashboard.vintageinterior.co.uk`
 | Drawer overlay showed inline everywhere | `#r2FxOverlay` / `#r2FxDrawer` had no CSS — class-based selector instead of ID | Added ID-specific `position:fixed` CSS for both r2 elements |
 | Tab refresh always returned to tab 1 | Hash restoration IIFE ran before `showTab()` was defined in next `<script>` block | Moved IIFE to after `showTab()` definition |
 | Wrong fix dates (Jul 06 set initially) | Bulk script ran before user confirmed correct dates | Re-ran with correct dates: Aug 13 (has_faq), Aug 17 (seo_title, seo_desc) |
+| Req 1 Fixed tab showing "Not set" on some entries | `trk_fetchAllDB()` fired 200 simultaneous API requests — many timed out silently | Replaced with single `fix-load-all` bulk endpoint (1 DB call returns all 200 entries) |
+
+---
+
+## Req 1 Bulk Load Fix — Additional Evidence
+
+### Root Cause Verified
+- DB confirmed: all 200 Req 1 entries have `fix_date` set (0 missing)
+- Frontend confirmed: `trk_fetchAllDB()` used `Promise.all` on 200 individual fetch calls with no batching — race/timeout caused silent failures
+
+### Fix Applied
+**API:** Added `handleHetheeshaFixLoadAll()` → `GET fix-load-all`
+```
+Returns: { ok: true, entries: { "handle|issue_type": { fix_started, fix_date, notes } } }
+```
+
+**Frontend:** `trk_fetchAllDB()` rewritten — 200 requests → 1 request
+
+### Verified Live
+```
+GET /api/members-api?member=hetheesha&type=fix-load-all
+fix-load-all ok: true  entries: 200  with fix_date: 200
+```
+
+### Deploy
+- Vercel URL: digital-marketing-member-pages-9tqh1d6uj.vercel.app
+- Status: READY
+- Alias: https://dm-dashboard.vintageinterior.co.uk
 
 ---
 

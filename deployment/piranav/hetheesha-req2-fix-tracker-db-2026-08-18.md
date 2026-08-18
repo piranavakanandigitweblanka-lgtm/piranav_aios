@@ -36,5 +36,12 @@
 
 ---
 
+### Deploy 4 — Req 1 Bulk Load Fix
+- **Vercel URL:** digital-marketing-member-pages-9tqh1d6uj.vercel.app
+- **Status:** READY
+- **Changes:** Added `fix-load-all` API endpoint; `trk_fetchAllDB()` rewritten from 200 parallel requests to 1 bulk fetch
+
+---
+
 ## Final Alias
 `https://dm-dashboard.vintageinterior.co.uk` → digital-marketing-member-pages-52yxss3nw.vercel.app

@@ -1,10 +1,10 @@
 # Capability Record — Hetheesha Req 2 Fix Tracker DB Migration
 
-- **Title:** Req 2 Collection Fix Tracker — localStorage → Neon DB Migration + Drawer UI
+- **Title:** Hetheesha Fix Tracker — Req 2 DB Migration + Req 1 Bulk Load Fix
 - **Date:** 2026-08-18
 - **Member:** Piranav
 - **Team:** Digital Marketing Dashboard
-- **Task:** Migrate fix date storage from browser localStorage to Neon DB, add edit drawer, bulk-set historical dates, fix tab persistence bug
+- **Task:** Migrate fix date storage from browser localStorage to Neon DB, add edit drawer, bulk-set historical dates, fix tab persistence bug, fix Req 1 "Not set" dates caused by 200 simultaneous API requests
 - **Evidence:** evidence/piranav/hetheesha-req2-fix-tracker-db-2026-08-18.md
 - **Prompt:** prompts/hetheesha/req2-fix-tracker-db-migration-2026-08-18.md
 - **Status:** PASS
@@ -42,6 +42,13 @@
 - Bug: IIFE that reads `location.hash` and calls `showTab()` must run AFTER `showTab()` is defined
 - If they're in separate `<script>` blocks, put IIFE after the function — not before
 - Pattern: always define functions before IIFEs that call them in multi-script-block pages
+
+### 8 — Single Bulk-Load Endpoint vs 200 Individual Requests
+- `trk_fetchAllDB()` was firing `Promise.all` on 200 simultaneous fetch calls — no batching, no retry
+- Many requests timed out silently → rows showed "Not set" in UI despite dates being in DB
+- Fix: added `fix-load-all` endpoint (1 DB query, returns all entries as flat object)
+- Frontend: `trk_fetchAllDB()` rewritten to 1 fetch call
+- Pattern: **any tracker with >20 rows must use a bulk-load endpoint — never individual per-row fetches**
 
 ### 7 — Bulk API Script for Fix Date Correction
 - Node.js `fetch` script: GET tracker entries → POST fix dates in batches of 10 with 300ms delay

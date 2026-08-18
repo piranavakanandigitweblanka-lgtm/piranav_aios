@@ -43,4 +43,17 @@ Response:
 
 ---
 
+---
+
+## Req 1 Bulk Load Fix — Additional Checks
+
+| # | Check | Result |
+|---|---|---|
+| 13 | DB: all 82 fixed Req 1 entries have fix_date set | PASS |
+| 14 | `fix-load-all` endpoint returns 200 entries, all with fix_date | PASS |
+| 15 | Frontend `trk_fetchAllDB()` rewritten to single fetch — no more 200 simultaneous calls | PASS |
+| 16 | Deploy READY: digital-marketing-member-pages-9tqh1d6uj.vercel.app | PASS |
+
+---
+
 ## Overall Status: PASS

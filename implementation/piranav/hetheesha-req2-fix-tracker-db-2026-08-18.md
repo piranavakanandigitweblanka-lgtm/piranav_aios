@@ -103,6 +103,31 @@ CREATE TABLE IF NOT EXISTS public.hetheesha_fix_tracker_r2 (
 
 ---
 
+## Req 1 Bulk Load Fix
+
+### Problem
+`trk_fetchAllDB()` fired `Promise.all` on 200 simultaneous individual API requests. Many timed out silently → "Not set" shown in Fixed tab despite dates being in DB.
+
+### Fix — API (`members-api.js`)
+Added `handleHetheeshaFixLoadAll()` routed as `fix-load-all`:
+```js
+// Single DB query — returns all hetheesha_fix_tracker rows as flat object
+// { "product_handle|issue_type": { fix_started, fix_date, notes } }
+```
+
+### Fix — Frontend (`hetheesha.html`)
+```js
+// BEFORE: 200 simultaneous requests
+await Promise.all(toFetch.map(async ({h,iss}) => { fetch(...) }));
+
+// AFTER: 1 request
+const r = await fetch('/api/members-api?member=hetheesha&type=fix-load-all');
+const d = await r.json();
+if (d.ok && d.entries) Object.assign(results, d.entries);
+```
+
+---
+
 ## Bulk Date Script
 
 ```js

@@ -16,7 +16,7 @@
 | Solution | Neon DB table + 2 API endpoints + drawer UI + bulk date set |
 | Entries in DB | 109 (53 Aug-13, 43 Aug-17, 13 null/pending) |
 | Deploys | 3 production Vercel deploys |
-| Bugs fixed | 3 (overlay CSS, tab refresh, wrong initial bulk date) |
+| Bugs fixed | 4 (overlay CSS, tab refresh, wrong initial bulk date, Req 1 bulk load race) |
 | Status | CLOSED — PASS |
 
 ---
@@ -43,6 +43,7 @@
 2. **CSS ID specificity** — class-based selectors do nothing when only ID selectors define `position:fixed`
 3. **Script block order** — IIFEs must run after the functions they call are defined
 4. **localStorage is not AIOS-grade storage** — any tracker needing bulk ops or cross-device persistence must use DB
+5. **Never Promise.all on >20 individual API fetches** — silent timeouts cause "Not set" display bugs; always use a single bulk endpoint instead
 
 ---
 
