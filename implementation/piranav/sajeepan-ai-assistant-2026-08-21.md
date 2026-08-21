@@ -86,8 +86,54 @@ const aiText = rawText.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
 
 ---
 
+## Chat History Persistence — Phase 2
+
+### New DB table (auto-created on first use)
+
+```sql
+CREATE TABLE IF NOT EXISTS sajeepan_ai_chat (
+  id          SERIAL PRIMARY KEY,
+  session_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  role        TEXT NOT NULL,   -- 'user' or 'assistant'
+  content     TEXT NOT NULL,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+```
+
+Previous-day rows are deleted on each `ai-chat-history` fetch.
+
+### New functions in `members-api.js`
+
+- `getSjChatClient()` — creates a Client from `SJ_CHAT_DB_URL`, connects, auto-creates table
+- `handleSajeepanChatHistory(req, res)` — GET today's messages, clean old rows
+- `handleSajeepanChatSave(req, res)` — POST one message (role + content)
+
+### New routes (early-exit before `DATABASE_URL` connect)
+
+```js
+if (type === 'ai-chat-history') return await handleSajeepanChatHistory(req, res);
+if (type === 'ai-chat-save')    return await handleSajeepanChatSave(req, res);
+```
+
+### Groq resilience
+
+- `AbortController` with 20s timeout per model — prevents indefinite hangs
+- Empty-content check — skips models returning blank response, falls through to next
+- Model order changed: `qwen/qwen3.6-27b` first, `openai/gpt-oss-20b` dropped (returns empty)
+
+### Frontend changes
+
+- `prefetchHistory()` — runs in parallel with brief fetch on open
+- If history arrives first and session exists → shows it, sets `briefLoaded = true`, brief result ignored
+- If brief arrives first (no history today) → shows new brief as before
+- `saveMsg(role, content)` — fire-and-forget POST after each message sent/received
+- Frontend timeout increased 55s → 90s
+
+---
+
 ## Environment Variables Required
 
 | Variable | Where | Value |
 |---|---|---|
 | `GROQ_API_KEY` | Vercel → Production | `gsk_...` from console.groq.com |
+| `SJ_CHAT_DB_URL` | Vercel → Production | Neon connection string for chat table |

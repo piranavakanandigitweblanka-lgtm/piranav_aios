@@ -34,11 +34,21 @@ Build a floating AI chat widget on `pages/sajeepan.html` that:
 
 ---
 
+## Phase 2 — Chat History Persistence
+
+> "ok now there the chat can be store in my database. today only."
+
+Store each message in Neon PostgreSQL so Sajeepan can close/refresh the dashboard and resume his session. Approved scope:
+- Table in `SJ_CHAT_DB_URL` Neon DB
+- Today-only retention — auto-delete previous days
+- Parallel history+brief fetch on open — no added latency
+
 ## API Key Setup
 
 - Provider: Groq (console.groq.com) — free tier, no credit card
-- Env var: `GROQ_API_KEY` in Vercel Production
-- Models tried (in fallback order): `qwen/qwen3.6-27b` → `groq/compound` → `openai/gpt-oss-120b` → `openai/gpt-oss-20b`
+- Env vars: `GROQ_API_KEY`, `SJ_CHAT_DB_URL` in Vercel Production
+- Model chain: `qwen/qwen3.6-27b` → `groq/compound` → `openai/gpt-oss-120b`
+- `openai/gpt-oss-20b` — removed, returns empty content
 
 ---
 

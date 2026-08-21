@@ -10,8 +10,8 @@
 
 | File | Change |
 |---|---|
-| `Staff-requirements/api/members-api.js` | Added `handleSajeepanAiChat()` function + `ai-chat` route |
-| `Staff-requirements/pages/sajeepan.html` | Added floating chat button + panel UI + JS widget |
+| `Staff-requirements/api/members-api.js` | Added `handleSajeepanAiChat()`, `handleSajeepanChatHistory()`, `handleSajeepanChatSave()`, `getSjChatClient()` |
+| `Staff-requirements/pages/sajeepan.html` | Added floating chat button + panel UI + JS widget + session restore |
 
 ---
 
@@ -45,9 +45,11 @@ Body: { message?: string, history?: [{role, content}] }
 
 - **Provider:** Groq (free tier)
 - **Env var:** `GROQ_API_KEY` (Vercel Production)
-- **Model fallback chain:** `qwen/qwen3.6-27b` → `groq/compound` → `openai/gpt-oss-120b` → `openai/gpt-oss-20b`
+- **Model fallback chain:** `qwen/qwen3.6-27b` → `groq/compound` → `openai/gpt-oss-120b`
 - **Thinking mode disabled:** `reasoning_effort: 'none'` on qwen model
 - **Think tag stripping:** `rawText.replace(/<think>[\s\S]*?<\/think>/gi, '')`
+- **Per-model timeout:** `AbortController` hard-kills each attempt after 20s
+- **Empty content guard:** skips model if `choices[0].message.content` is blank
 
 ---
 
@@ -69,6 +71,10 @@ Body: { message?: string, history?: [{role, content}] }
 | `8849f76` | fix: parallel queries + frontend timeout |
 | `d1c67d2` | fix: compress prompt to fit token limit |
 | `3d8162b` | fix: disable Qwen thinking, action-only output |
+| `2768892` | feat(sajeepan): persist AI chat history in Neon DB (today-only) |
+| `b0d58b1` | fix(sajeepan): parallel history+brief fetch, 90s timeout |
+| `6be9140` | fix(sajeepan): 20s AbortController per Groq model, max_tokens 400 |
+| `9381148` | fix(sajeepan): qwen3 back as primary, skip models returning empty content |
 
 ---
 
@@ -81,3 +87,6 @@ Body: { message?: string, history?: [{role, content}] }
 | 413 token limit | Full prompt too large for free models | Compressed to pipe-delimited compact format |
 | Thinking output visible | Qwen3 model emits `<think>` blocks | `reasoning_effort:'none'` + regex strip |
 | Stuck loading spinner | Sequential DB queries timing out | Parallel `Promise.all` + 55s frontend timeout |
+| Timeout message on open | History fetch ran before brief — total time exceeded 55s | Parallel history+brief fetch; timeout raised to 90s |
+| No response generated | `openai/gpt-oss-20b` returns 200 OK with empty content | Empty-content guard added; model removed from chain |
+| Groq fetch hangs indefinitely | No timeout on `fetch()` call | `AbortController` with 20s per model |

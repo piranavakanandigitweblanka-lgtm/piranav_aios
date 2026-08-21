@@ -42,6 +42,8 @@
 2. Ask follow-up questions: "which campaign should I pause?", "what negatives should I add?"
 3. Click ↻ Refresh anytime to regenerate the brief with latest data
 4. All advice references real campaign names, product titles, £ spend, % ROAS
+5. Close browser or refresh page → chat session restored automatically (today only)
+6. Session history saves to Neon DB — each message persisted as it is sent
 
 ---
 
@@ -54,6 +56,10 @@
 | Free LLM token limits are tight | Use compact pipe-delimited format, not verbose prose |
 | Qwen3 emits `<think>` blocks | Disable with `reasoning_effort:'none'` + regex strip |
 | Sequential DB queries cause timeouts | Always use `Promise.all` for independent queries |
+| Sequential history→brief fetch doubles total time | Run in parallel; let faster one win |
+| Groq `fetch()` with no timeout hangs indefinitely | Always add `AbortController` with per-model timeout |
+| Some Groq models return 200 OK with empty content | Check `choices[0].message.content` before accepting; fall through if empty |
+| `openai/gpt-oss-20b` returns empty content | Removed from model chain — do not use |
 
 ---
 

@@ -21,8 +21,9 @@ git push origin main
 | Variable | Environment | Added |
 |---|---|---|
 | `GROQ_API_KEY` | Production | 2026-08-21 |
+| `SJ_CHAT_DB_URL` | Production | 2026-08-21 |
 
-Added via Vercel Dashboard → Settings → Environment Variables.
+Added via `vercel env add` CLI.
 
 ---
 
@@ -44,6 +45,10 @@ Added via Vercel Dashboard → Settings → Environment Variables.
 | `8849f76` | fix(sajeepan): parallel queries + frontend timeout + better errors |
 | `d1c67d2` | fix(sajeepan): compress AI prompt to fit token limit |
 | `3d8162b` | fix(sajeepan): disable Qwen thinking, action-only output format |
+| `2768892` | feat(sajeepan): persist AI chat history in Neon DB (today-only) |
+| `b0d58b1` | fix(sajeepan): parallel history+brief fetch, 90s timeout |
+| `6be9140` | fix(sajeepan): 20s AbortController per Groq model, max_tokens 400 |
+| `9381148` | fix(sajeepan): qwen3 back as primary, skip models returning empty content |
 
 ---
 

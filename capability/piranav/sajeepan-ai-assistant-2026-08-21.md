@@ -31,11 +31,22 @@
 - Action-only output format (numbered, specific, no preamble)
 - Priority hierarchy enforced in prompt: OOS > drops > waste > feed
 
-### 5. Zero Infrastructure Addition
+### 5. Chat History Persistence (Neon DB)
+- `sajeepan_ai_chat` table auto-created on first use via `CREATE TABLE IF NOT EXISTS`
+- Today-only retention — previous days purged automatically on each history fetch
+- Two new API routes inside existing `members-api.js`: `ai-chat-history` (GET) and `ai-chat-save` (POST)
+- Parallel fetch on open — history and brief race; history wins if session exists, saving full brief generation time
+- Each message (user + assistant) saved to DB as it is sent/received
+
+### 6. Groq Resilience
+- `AbortController` per model attempt — hard timeout of 20s per model, prevents indefinite hangs
+- Empty-content check — skips models that respond 200 OK but return blank content
+- Model order: `qwen/qwen3.6-27b` (confirmed working) → `groq/compound` → `openai/gpt-oss-120b`
+
+### 7. Zero Infrastructure Addition
 - No new Vercel function (stays within 12-function Hobby limit)
 - No new npm packages
-- No new DB tables
-- One new env var (`GROQ_API_KEY`)
+- Two new env vars: `GROQ_API_KEY`, `SJ_CHAT_DB_URL`
 
 ---
 
@@ -61,5 +72,6 @@ Estimated time to replicate for another staff member: **1–2 hours**
 |---|---|
 | Groq API | Free (14,400 req/day limit) |
 | Vercel compute | Within existing plan |
-| DB queries | Read-only, no extra cost |
+| DB queries | Read-only + small chat writes, no extra cost |
+| Neon chat storage | Same DB instance, no extra cost |
 | **Total** | **£0/month** |

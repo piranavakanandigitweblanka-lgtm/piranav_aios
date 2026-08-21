@@ -38,12 +38,30 @@
 
 ---
 
+## Phase 2 Checklist — Chat History Persistence
+
+| # | Check | Result |
+|---|---|---|
+| 16 | `sajeepan_ai_chat` table auto-created on first use | PASS |
+| 17 | `ai-chat-history` route returns today's messages | PASS |
+| 18 | `ai-chat-save` route persists role + content to DB | PASS |
+| 19 | Previous days' rows deleted on history fetch | PASS |
+| 20 | Panel open → restores today's session without regenerating brief | PASS |
+| 21 | History and brief fetch run in parallel (no sequential delay) | PASS |
+| 22 | `SJ_CHAT_DB_URL` added to Vercel Production | PASS |
+| 23 | AbortController 20s timeout per Groq model — no infinite hangs | PASS |
+| 24 | Empty-content models skipped, falls through to next in chain | PASS |
+| 25 | Frontend timeout increased to 90s | PASS |
+
+---
+
 ## Known Limitations
 
 | Item | Status |
 |---|---|
 | `google_ads.search_terms` table may not exist in DB — returns empty silently | Acceptable |
 | Feed query (Req 4) catches on error — returns empty silently | Acceptable |
-| Chat history limited to last 6 messages (3 exchanges) | By design — token limit |
+| Chat history limited to last 6 messages (3 exchanges) sent to AI | By design — token limit |
 | AI cannot make changes in Google Ads — advisory only | By design |
 | Groq free tier: 14,400 req/day limit | Sufficient for 1 staff member |
+| `openai/gpt-oss-20b` returns empty content — dropped from model chain | Known, removed |
