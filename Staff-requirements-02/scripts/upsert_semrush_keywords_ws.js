@@ -1,7 +1,11 @@
-// upsert_semrush_keywords.js — upserts SEMrush organic keyword data into Neon DB
+// upsert_semrush_keywords_ws.js — uses @neondatabase/serverless (WebSocket) to bypass TCP/5432 restrictions
 'use strict';
 
-const { Client } = require('../node_modules/pg');
+const { neon, neonConfig } = require('../node_modules/@neondatabase/serverless');
+const ws = require('../node_modules/ws');
+
+// Configure WebSocket for non-browser environment
+neonConfig.webSocketConstructor = ws;
 
 const CONNECTION_STRING = 'postgresql://neondb_owner:npg_aX4pf0IeqQEC@ep-soft-leaf-zavu7dmm.c-2.eu-west-2.aws.neon.tech/neondb?sslmode=require';
 
@@ -109,17 +113,16 @@ spider hanging lights;1;1;90;0.46;https://ledsone.co.uk/collections/spider-light
 bayonet led lamps;8;8;880;0.25;https://ledsone.co.uk/blogs/new/b22-bayonet-bulbs-explained-your-essential-led-buying-guide;11;9.00;1`;
 
 async function main() {
-  const client = new Client({
-    connectionString: CONNECTION_STRING,
-    ssl: { rejectUnauthorized: false },
-  });
+  console.log('Connecting via Neon serverless (WebSocket)...');
+  const sql = neon(CONNECTION_STRING);
 
   try {
-    await client.connect();
-    console.log('Connected to Neon DB.');
+    // Quick connectivity check
+    await sql`SELECT 1`;
+    console.log('Connected OK.');
 
-    // Ensure table exists
-    await client.query(`
+    // Create table if not exists
+    await sql`
       CREATE TABLE IF NOT EXISTS semrush_keywords (
         snapshot_date       DATE,
         keyword             TEXT,
@@ -133,15 +136,13 @@ async function main() {
         intent              TEXT,
         PRIMARY KEY (snapshot_date, keyword)
       )
-    `);
+    `;
 
     const snapshot_date = new Date().toISOString().slice(0, 10);
     const lines = RAW_DATA.split('\n');
-    // Skip header (line 0)
     const dataLines = lines.slice(1).filter(l => l.trim() !== '');
 
     let upsertCount = 0;
-
     for (const line of dataLines) {
       const cols = line.split(';');
       if (cols.length < 9) {
@@ -150,10 +151,21 @@ async function main() {
       }
       const [keyword, position, prev_position, volume, cpc, url, traffic, keyword_difficulty, intent] = cols;
 
-      await client.query(`
+      await sql`
         INSERT INTO semrush_keywords
           (snapshot_date, keyword, position, prev_position, volume, cpc, url, traffic, keyword_difficulty, intent)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+        VALUES (
+          ${snapshot_date},
+          ${keyword.trim()},
+          ${parseInt(position, 10) || null},
+          ${parseInt(prev_position, 10) || null},
+          ${parseInt(volume, 10) || null},
+          ${parseFloat(cpc) || null},
+          ${url.trim()},
+          ${parseInt(traffic, 10) || null},
+          ${parseFloat(keyword_difficulty) || null},
+          ${intent.trim()}
+        )
         ON CONFLICT (snapshot_date, keyword)
         DO UPDATE SET
           position           = EXCLUDED.position,
@@ -164,18 +176,7 @@ async function main() {
           traffic            = EXCLUDED.traffic,
           keyword_difficulty = EXCLUDED.keyword_difficulty,
           intent             = EXCLUDED.intent
-      `, [
-        snapshot_date,
-        keyword.trim(),
-        parseInt(position, 10) || null,
-        parseInt(prev_position, 10) || null,
-        parseInt(volume, 10) || null,
-        parseFloat(cpc) || null,
-        url.trim(),
-        parseInt(traffic, 10) || null,
-        parseFloat(keyword_difficulty) || null,
-        intent.trim(),
-      ]);
+      `;
       upsertCount++;
     }
 
@@ -183,8 +184,6 @@ async function main() {
   } catch (err) {
     console.error('Error:', err.message);
     process.exit(1);
-  } finally {
-    await client.end();
   }
 }
 
