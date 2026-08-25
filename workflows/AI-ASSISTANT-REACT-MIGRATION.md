@@ -367,9 +367,12 @@ export default function TheekshyDashboard() {
 ## Step 8 — Environment Variables (same as now — nothing new)
 
 ```env
-GROQ_API_KEY=gsk_...
+GROQ_API_KEY=gsk_...               # all 12 staff (Groq chain + preference analysis)
+NVIDIA_API_KEY=nvapi-...           # Muguntha only (NVIDIA NIM, falls back to Groq if missing)
 DATABASE_URL=postgresql://...      # business data — Google Ads, Shopify, merchant products
-SJ_CHAT_DB_URL=postgresql://...    # chat history — all 11 *_ai_chat tables
+SJ_CHAT_DB_URL=postgresql://...    # chat history — all 12 *_ai_chat tables (incl. muguntha_ai_chat)
+FEED_TRACKER_DB_URL=postgresql://... # requirement trackers — Muguntha AI only
+EOD_GITHUB_TOKEN=ghp_...           # GitHub PAT — Muguntha EOD checks only
 ```
 
 ---
@@ -379,12 +382,18 @@ SJ_CHAT_DB_URL=postgresql://...    # chat history — all 11 *_ai_chat tables
 | Part | Current | React + Server | Changes? |
 |------|---------|----------------|----------|
 | Groq model chain | `lib/groq.js` | `lib/groq.js` (copied) | No |
+| NVIDIA model | `lib/nvidia.js` (Muguntha only) | `lib/nvidia.js` (copied) | No |
 | SQL queries | Inside handler functions | Same SQL, same `Promise.all` | No |
 | Campaign IDs | Scattered in 2 files | `staffConfig.js` (centralised) | Structure only |
 | Chat DB tables | `SJ_CHAT_DB_URL` | Same DB, same tables | No |
+| Chat table role values | `user`, `assistant` | `user`, `assistant`, `preference` | Add preference |
 | Daily reset logic | `session_date = CURRENT_DATE` | Same filter | No |
+| Session restore | Parallel (race condition risk) | Async/await sequential | Fix on port |
+| Preference learning | `analyseAndSavePreference()` per handler | Port to `server/lib/preference.js` | Centralise |
+| System prompt structure | INSTRUCTIONS only | URGENCY RANKING + BEHAVIOUR RULES + emoji flags | Port as-is |
+| Time-aware greeting | `new Date().getHours()` per handler | Same — compute server-side | No |
 | pg.Pool | Created per request | Created once at server start | Better |
-| Widget JS | Copy-pasted in 11 HTML files | One React component | Much better |
+| Widget JS | Copy-pasted in 12 HTML files | One React component | Much better |
 | Adding new staff | Edit 2 API files + 1 HTML file | Add 1 entry to staffConfig.js | Much better |
 
 ---
@@ -412,9 +421,14 @@ Total: one focused day per section, or two days end-to-end.
 
 1. **Always use `pg.Pool`, never `pg.Client`** — AI handlers run parallel queries with `Promise.all`. `pg.Client` crashes on concurrent queries.
 2. **Daily reset is automatic** — filter chat history by `session_date = CURRENT_DATE`. No cron job needed.
-3. **Session restore runs in parallel** — check history at the same time as fetching the brief. If history exists, skip the brief.
+3. **Session restore is async/await sequential** — await the history check first. If history exists, return immediately — do NOT fire the AI call. See Section 20 of `AI-ASSISTANT-WORKFLOW.md` for the correct pattern.
 4. **Thasitha uses dynamic campaign query** — `WHERE group_name = 'Thasi'`, not a hard-coded ID array. Keep this pattern — it auto-picks new campaigns.
 5. **Kamsi has extra body fields** — `metaSummary` and `prioritySummary` must be passed in the fetch body from the Kamsi page component.
+6. **Chat table has 3 role values** — `user`, `assistant`, and `preference`. The preference row is written by the preference learning system on new-day detection. When reading history to restore a session, filter to `role IN ('user', 'assistant')` only — exclude preference rows from the chat display.
+7. **Preference learning must be ported** — the `analyseAndSavePreference` + `getLatestPreference` helpers must be included in the React server. On new-day detection (today's DB empty), run the analysis before building the system prompt. Inject result as `LEARNED FROM PREVIOUS SESSIONS` block.
+8. **System prompts include urgency ranking + behaviour rules** — every staff prompt now has URGENCY RANKING, BEHAVIOUR RULES, emoji priority flags (🔴🟡🟢), and a follow-up rule (end with one clear action). Port these from the current `members-api.js` / `requirement.js` — do not use the old plain INSTRUCTIONS format.
+9. **Time-aware greeting** — never hardcode "Good morning". Always compute: `const hr = new Date().getHours(); const greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';` server-side before building the system prompt.
+10. **Muguntha uses NVIDIA, not Groq** — `lib/nvidia.js` with `callNvidiaAI()`. Falls back to Groq if `NVIDIA_API_KEY` not set. Her preference analysis also uses NVIDIA (not Groq).
 
 ---
 
@@ -424,5 +438,5 @@ Full workflow documentation: `workflows/AI-ASSISTANT-WORKFLOW.md`
 
 ---
 
-*Last updated: 2026-08-25*
+*Last updated: 2026-08-25 (updated — preference learning, urgency ranking, behaviour rules, time-aware greeting)*
 *Built by: Piranav (AIOS Architect) + Claude Sonnet 4.6*
