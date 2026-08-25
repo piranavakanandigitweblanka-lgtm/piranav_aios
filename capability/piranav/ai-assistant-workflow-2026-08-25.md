@@ -51,6 +51,36 @@ Chat history filtered by `session_date = CURRENT_DATE`. Every new day = new task
 
 If staff reopens the panel on the same day, `prefetchHistory()` runs in parallel with the brief fetch. If today's history exists in DB, conversation is restored with "Session restored" message — no repeated brief.
 
+### Preference Learning (added 2026-08-25)
+
+All 12 AI assistants (11 staff + Muguntha) now learn from daily chat history:
+
+1. New day detected (today's DB empty, yesterday has rows)
+2. Yesterday's `role='user'` messages read from chat table
+3. Sent to AI for pattern analysis — what did they always drill into?
+4. Result saved as `role='preference'` in same table (no new table needed)
+5. Next day's system prompt includes `LEARNED FROM PREVIOUS SESSIONS` block
+6. AI personalises task card based on learned patterns
+
+**Analysis model:** Groq (qwen3-32b) for all staff. NVIDIA Nemotron for Muguntha.
+**Silent fail:** if analysis errors, AI works normally with standard prompt.
+**Accumulates over time:** preference row from most recent day always wins.
+
+### Prompt Intelligence (added 2026-08-25)
+
+All 12 system prompts upgraded with:
+- **URGENCY RANKING** — role-specific priority order (e.g. OOS > ROAS drop for Ads staff; revenue product + declining page for SEO staff)
+- **BEHAVIOUR RULES** — no hallucination, no filler phrases, always name specific person/metric
+- **Emoji priority flags** — 🔴 critical/high, 🟡 medium, 🟢 low on opening task card
+- **Follow-up rule** — every response ends with one clear action to take right now
+
+### Time-Aware Greeting (added 2026-08-25)
+
+All 12 AI assistants (HTML widget + API system prompt) now use time-aware greeting:
+- Before noon → "Good morning [Name]!"
+- 12pm–5pm → "Good afternoon [Name]!"
+- After 5pm → "Good evening [Name]!"
+
 ### Widget UI (Unified — All 11 Staff)
 
 | Element | Spec |
