@@ -96,10 +96,10 @@ If a problem is fixed (e.g. a product was paused), it won't appear in tomorrow's
 
 ## 4. AI Model & API
 
-### Provider
+### Default Provider — Groq (10 staff)
 **Groq API** — fast inference, free tier available
 
-### Model Chain (tries in order until one responds)
+### Groq Model Chain (tries in order until one responds)
 ```
 1st choice:  qwen/qwen3-32b        ← primary (most capable)
 2nd choice:  llama3-70b-8192       ← fallback
@@ -120,9 +120,27 @@ const groqResult = await callGroqAI(messages);
 // { ok: false, error: 'error message' }
 ```
 
-### Environment Variable Required
+### Premium Provider — NVIDIA NIM (Muguntha only)
+**NVIDIA Nemotron-3-Ultra-550B-A55B** — 561B parameters, 1M context window, reasoning/thinking mode.
+
+Used for Muguntha's management AI because her system prompt is large (7-day EOD + revenue + staff perf data). Lives in **`lib/nvidia.js`**.
+
+```js
+// lib/nvidia.js
+const result = await callNvidiaAI(messages, maxTokens);
+// Falls back to callGroqAI() automatically if NVIDIA fails or key not set
+
+// Strips <think>...</think> blocks from response before returning
 ```
-GROQ_API_KEY=gsk_...
+
+NVIDIA NIM endpoint: `https://integrate.api.nvidia.com/v1/chat/completions`
+Model ID: `nvidia/nemotron-3-ultra-550b-a55b`
+Thinking mode: `chat_template_kwargs: { enable_thinking: true }`
+
+### Environment Variables Required
+```
+GROQ_API_KEY=gsk_...          ← all 11 staff (Groq chain)
+NVIDIA_API_KEY=nvapi-...      ← Muguntha only (NVIDIA NIM, falls back to Groq if missing)
 ```
 
 ---
@@ -148,11 +166,36 @@ All 11 tables:
 `sajeepan_ai_chat`, `dilaksi_ai_chat`, `theekshy_ai_chat`, `thivajini_ai_chat`,
 `jefri_ai_chat`, `thasitha_ai_chat`, `mahima_ai_chat`
 
-### Session Restore Behaviour
-When staff reopens the panel on the same day, the widget runs `prefetchHistory()` in parallel with the brief API call. If history already exists in the DB, it restores the conversation and shows:
+### Session Restore Behaviour — Correct Pattern (async/await sequential)
+
+`aiLoadBrief` must **await the history check first** before firing any AI call. This prevents race conditions when the same user opens multiple browser tabs.
+
+```js
+// CORRECT — history check first, AI call only if DB is empty
+window.aiLoadBrief = async function() {
+  // 1. Await history check
+  const histData = await fetch('...ai-chat-history').then(r => r.json());
+  if (histData.messages.length > 0) {
+    // Restore from DB — no AI call needed
+    renderHistory(histData.messages);
+    return; // ← STOP HERE
+  }
+  // 2. DB empty — fire the AI call
+  const data = await fetch('...ai-chat', { body: JSON.stringify({ history: [] }) }).then(r => r.json());
+  renderBrief(data.message);
+};
+
+// WRONG — parallel approach causes multi-browser race condition
+prefetchHistory();                    // async, not awaited
+fetch('...ai-chat', { history: [] }) // fires simultaneously ← BUG
+```
+
+If history exists the widget shows:
 > 💬 *Session restored. Ask me anything.*
 
 This means the AI **never re-runs the daily brief** if the conversation was already started today — it continues from where it left off.
+
+> **Note:** Muguntha's widget uses the correct async/await pattern (fixed 2026-08-25). The other 10 staff widgets still use the older parallel approach — they work in single-browser usage but have a latent race condition in multi-browser scenarios. Backport pending.
 
 ---
 
@@ -522,7 +565,9 @@ These data sources are live/external-only and cannot be summarised in the AI pro
 | Sukirtha | Req 2 (Low CTR ledsone.de), Req 3 (GA4) | ledsone.de GSC not in DB; GA4 is live API |
 | Hetheesha | Req 3, 4, 5 | Shopify live API only |
 | Dilaksi | Req 4 (Content Gap) | Per-keyword Semrush live lookup — no DB summary |
-| Muguntha | All | Admin dashboard — AI not built yet (backlog) |
+| Muguntha | UK Shopify refunds | Shopify Admin API only — not in DB |
+| Muguntha | Germany Sales Decline detail | Static snapshot — not queryable for AI context |
+| Muguntha | Staff ID perf for Theekshy/Thivajini/Hetheesha/Sukirtha | No entries in `data/staff-ids.js` for these members |
 | Piranav | All | Admin dashboard — AI not built yet (backlog) |
 
 ---
@@ -536,6 +581,8 @@ These data sources are live/external-only and cannot be summarised in the AI pro
 | Kamsi AI handler crashed on load | `pg.Client` used with `Promise.all` (6 simultaneous queries) → `"client is already executing a query"` | Switched to `pg.Pool` with `max: 3` |
 | Jefri/Thasitha/Mahima: `Pool is not defined` | `Pool` was only declared inside nested IIFEs in `requirement.js`, not at module top level | Added `Pool` to the top-level `require('pg')` on line 7: `const { Client, Pool } = require('pg')` |
 | Sajeepan duplicate widget | Added a second AI widget without checking one already existed | Removed duplicate immediately |
+| Muguntha: multi-browser — question shows, no response | `prefetchHistory()` and brief AI call ran in parallel. Browser B started a 10-second NVIDIA call even when DB history existed. Its `.finally` reset `isLoading=false` mid-send, corrupting the send lock — next question fired but response couldn't write back cleanly | Rewrote `aiLoadBrief` as `async function` — awaits history check first, returns immediately if DB has messages, only fires AI call when DB is empty |
+| Muguntha: AI answered "I don't have yesterday's data" | EOD fetch only checked today — no historical data passed to AI | Extended to 7-day range: 14 staff × 7 days = 98 parallel GitHub API calls in one `Promise.all` |
 
 ---
 
@@ -589,9 +636,117 @@ These are populated earlier in the page by the normal Kamsi dashboard data load.
 
 | Variable | Used For |
 |----------|---------|
-| `GROQ_API_KEY` | Groq AI model API calls (`lib/groq.js`) |
-| `SJ_CHAT_DB_URL` | Chat history storage — all 11 staff `*_ai_chat` tables |
-| `DATABASE_URL` | Business data — Google Ads, orders, GSC, merchant products |
+| `GROQ_API_KEY` | Groq AI model API calls (`lib/groq.js`) — all 11 staff |
+| `NVIDIA_API_KEY` | NVIDIA NIM API (`lib/nvidia.js`) — Muguntha only, falls back to Groq if missing |
+| `SJ_CHAT_DB_URL` | Chat history storage — all 11+ staff `*_ai_chat` tables |
+| `DATABASE_URL` | Business data — Google Ads, orders, GSC, merchant products, listings |
+| `FEED_TRACKER_DB_URL` / `AUTH_DATABASE_URL` | Requirement trackers — hetheesha_fix_tracker, feed_optimization_tracker, jefri_req6_tracker |
+| `EOD_GITHUB_TOKEN` | GitHub API PAT — reads EOD report files from `digitalmarketing69140951-sys/eod-reports` |
+
+---
+
+## 19. Muguntha Management AI — Architecture
+
+Muguntha is a **full admin / team manager**, not a campaign manager. Her AI is built differently from all other staff assistants.
+
+### Data Fetched Per Request (one parallel batch)
+
+```
+Promise.all([
+  // Tier 1 — People & Operations
+  14 staff × 7 days = 98 GitHub API calls (EOD submissions),
+  AUTH DB: hetheesha_fix_tracker (Req1),
+  AUTH DB: hetheesha_fix_tracker_r2 (Req2),
+  AUTH DB: feed_optimization_tracker (Sajeepan Req4),
+  AUTH DB: jefri_req6_tracker (Jefri Req6),
+
+  // Tier 2 — Business Health
+  DATABASE_URL: UK revenue today/yday/7d-avg/30d-avg (sub_source_id=233),
+  DATABASE_URL: DE revenue today/yday/7d-avg/30d-avg (sub_source_id=108),
+  DATABASE_URL: 2026 New Listings count (listings.shopify_listings, tag=2026New),
+
+  // Tier 3 — Staff Accountability
+  DATABASE_URL: Kamsi staff ID perf (30d revenue + dead stock),
+  DATABASE_URL: Dilaksi staff ID perf,
+  DATABASE_URL: Sajeepan staff ID perf,
+  DATABASE_URL: Jakshan staff ID perf,
+  DATABASE_URL: Sonya staff ID perf,
+  DATABASE_URL: Mahima staff ID perf,
+])
+```
+
+~104 parallel I/O calls resolved before the AI call.
+
+### EOD GitHub Path
+```
+GET https://api.github.com/repos/digitalmarketing69140951-sys/eod-reports/contents/eods/{Name}/{YYYY-MM-DD}.md
+Authorization: Bearer {EOD_GITHUB_TOKEN}
+HTTP 200 = submitted | HTTP 404 = not submitted
+```
+
+14 staff names: Kuberan, Piranav, Mahima, Sonya, Kamsi, Hetheesha, Dilaksi, Sukirtha, Theekshy, Thivagini, Jefri, Sajeepan, Jakshan, Thasitha
+
+### DB Connections Used
+
+| Connection | What |
+|------------|------|
+| `DATABASE_URL` | Business data (orders, listings, staff ID perf) |
+| `FEED_TRACKER_DB_URL` \|\| `AUTH_DATABASE_URL` | Requirement tracker tables |
+| `SJ_CHAT_DB_URL` | Chat history (`muguntha_ai_chat` table) |
+
+### Routes (all in `api/muguntha.js` via `?action=` routing)
+
+| Action | Purpose |
+|--------|---------|
+| `?action=ai-chat` | Main AI call (brief or follow-up) |
+| `?action=ai-chat-history` | Fetch today's chat history |
+| `?action=ai-chat-save` | Save one message to DB |
+| `?action=ai-chat-clear` | Clear today's session |
+
+---
+
+## 20. Multi-Browser Race Condition — Fix Pattern
+
+**Problem** (latent in all 11 widgets, fixed in Muguntha's on 2026-08-25):
+
+When a staff member opens the same dashboard in two browser tabs:
+1. Both call `aiLoadBrief()` simultaneously
+2. Both fire `prefetchHistory()` + AI brief call in parallel
+3. Browser B's AI brief call (10 seconds) finishes → `.finally: isLoading = false`
+4. This resets the lock while Browser B's `aiSend` is still in flight
+5. Result: question message appears, thinking spinner disappears, no bot response shown
+
+**Fix — async/await sequential pattern:**
+
+```js
+// CORRECT (Muguntha's widget)
+window.aiLoadBrief = async function() {
+  if (isLoading) return;
+  isLoading = true;
+
+  // Step 1: await history check
+  try {
+    const histData = await fetch('...ai-chat-history').then(r => r.json());
+    if (histData.ok && histData.messages.length > 0) {
+      renderHistory(histData.messages);
+      briefLoaded = true; isLoading = false; sendBtn.disabled = false;
+      return; // ← bail out — no AI call needed
+    }
+  } catch (e) {}
+
+  // Step 2: only reaches here if DB is empty — fire AI call
+  try {
+    const data = await fetch('...ai-chat', { body: '{"history":[]}' }).then(r => r.json());
+    renderBrief(data.message);
+    briefLoaded = true;
+  } catch (e) {
+    showErrorMessage();
+  }
+  isLoading = false;
+};
+```
+
+**Backport status:** Only Muguntha's widget uses this pattern. The other 10 staff widgets still use `prefetchHistory()` parallel approach — safe for single-browser but should be updated.
 
 ---
 
