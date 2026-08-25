@@ -155,16 +155,21 @@ NVIDIA_API_KEY=nvapi-...      ← Muguntha only (NVIDIA NIM, falls back to Groq 
 CREATE TABLE IF NOT EXISTS jefri_ai_chat (
   id           SERIAL PRIMARY KEY,
   session_date DATE        NOT NULL DEFAULT CURRENT_DATE,
-  role         TEXT        NOT NULL,   -- 'user' or 'assistant'
+  role         TEXT        NOT NULL,   -- 'user', 'assistant', or 'preference'
   content      TEXT        NOT NULL,
   created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 ```
 
-All 11 tables:
+**Role values:**
+- `user` — staff member's question
+- `assistant` — AI response
+- `preference` — daily learned pattern summary (written by preference learning system, see Section 22)
+
+All 12 tables (11 staff + Muguntha):
 `kamsi_ai_chat`, `sukirtha_ai_chat`, `hetheesha_ai_chat`, `sonya_ai_chat`,
 `sajeepan_ai_chat`, `dilaksi_ai_chat`, `theekshy_ai_chat`, `thivajini_ai_chat`,
-`jefri_ai_chat`, `thasitha_ai_chat`, `mahima_ai_chat`
+`jefri_ai_chat`, `thasitha_ai_chat`, `mahima_ai_chat`, `muguntha_ai_chat`
 
 ### Session Restore Behaviour — Correct Pattern (async/await sequential)
 
@@ -747,6 +752,154 @@ window.aiLoadBrief = async function() {
 ```
 
 **Backport status:** Only Muguntha's widget uses this pattern. The other 10 staff widgets still use `prefetchHistory()` parallel approach — safe for single-browser but should be updated.
+
+---
+
+## 21. Prompt Intelligence Upgrade — All 12 AI Assistants (2026-08-25)
+
+All 12 system prompts (11 staff + Muguntha) were upgraded with the following structure additions:
+
+### URGENCY RANKING
+Each staff AI now has a numbered priority order tailored to their role. Added before INSTRUCTIONS in every system prompt.
+
+| Staff | #1 Urgency Signal |
+|-------|-------------------|
+| Sajeepan, Theekshy, Thivajini, Jefri, Thasitha, Mahima | OOS products still spending budget |
+| Sonya | ROAS drop vs prior period |
+| Hetheesha | High-revenue product + open tracker fix + low GSC impressions |
+| Sukirtha | Products dropped to zero sales this month |
+| Kamsi | Top-revenue product appearing in declining pages |
+| Dilaksi | High-traffic pages with engagement rate below 20% |
+| Muguntha | Staff missing EOD 2+ days in a row |
+
+### BEHAVIOUR RULES
+Added to every system prompt:
+- Never say "I don't have that data" — all data is in the prompt, use it
+- Never hallucinate numbers — only use exact figures from the data above
+- Never use filler phrases ("Great question!", "Certainly!", "Of course!")
+- Always name the specific person/campaign/product/metric — never be vague
+- Keep responses short and direct
+
+### OPENING FORMAT — Emoji Priority Flags
+Task card now uses emoji flags:
+- 🔴 Critical/High urgency
+- 🟡 Medium urgency
+- 🟢 Low urgency
+
+### FOLLOW-UP FORMAT
+Every follow-up response now ends with **one clear action** the staff member can take immediately.
+
+### Time-Aware Greeting
+Replaced hardcoded "Good morning" across all 12 AI assistants:
+
+```js
+// Client-side (HTML widget loading message)
+var _hr = new Date().getHours();
+var _greet = _hr < 12 ? 'Good morning' : _hr < 17 ? 'Good afternoon' : 'Good evening';
+
+// Server-side (API system prompt)
+const _hr = new Date().getHours();
+const greeting = _hr < 12 ? 'Good morning' : _hr < 17 ? 'Good afternoon' : 'Good evening';
+```
+
+Applied to: 12 HTML pages + `members-api.js` (6 prompts) + `requirement.js` (4 prompts) + `muguntha.js` (1 prompt).
+
+---
+
+## 22. Preference Learning System — All 12 AI Assistants (2026-08-25)
+
+### What It Does
+
+Every day, when a staff member opens the dashboard for the first time (new day detected), the AI:
+1. Reads yesterday's `role='user'` messages from the chat table
+2. Sends them to an AI model for pattern analysis
+3. Saves the result as a `role='preference'` row in the same table
+4. Fetches the most recent preference row
+5. Injects it into today's system prompt as a `LEARNED FROM PREVIOUS SESSIONS` block
+
+The AI learns what each staff member always drills into and personalises the task card accordingly. Over time, the opening brief gets shorter because the AI pre-surfaces what the staff member would ask anyway.
+
+### DB Storage — No New Table
+
+Reuses existing `*_ai_chat` tables. A new `role` value is added:
+
+| Role | Meaning |
+|------|---------|
+| `user` | Staff member's question (existing) |
+| `assistant` | AI response (existing) |
+| `preference` | Daily learned pattern summary (new) |
+
+```sql
+-- Example preference row saved after analysis
+INSERT INTO kamsi_ai_chat (session_date, role, content)
+VALUES ('2026-08-25', 'preference',
+  '- Kamsi always drills into declining pages first — lead with full click detail
+   - She always asks about quick win pages — include in brief
+   - She focuses on specific page handles, not general summaries');
+```
+
+### Shared Helper Functions
+
+Added to `members-api.js` and `requirement.js`:
+
+```js
+// Analyses yesterday's user messages and saves preference
+async function analyseAndSavePreference(pool, tableName)
+
+// Fetches the most recent preference row
+async function getLatestPreference(pool, tableName)
+```
+
+Added to `muguntha.js` (standalone, uses NVIDIA):
+```js
+async function analyseMugunthaPreference(client)
+async function getMugunthaPreference(client)
+```
+
+### Injection Into System Prompt
+
+```js
+// Before INSTRUCTIONS block in every system prompt:
+${learnedPreference ? `LEARNED FROM PREVIOUS SESSIONS (use this to personalise today's task card):\n${learnedPreference}\n\n` : ''}INSTRUCTIONS:
+```
+
+### Analysis Model
+
+| Staff | Model |
+|-------|-------|
+| All 11 staff | Groq `qwen/qwen3-32b` |
+| Muguntha | NVIDIA Nemotron-3-Ultra-550B (consistent with her primary model) |
+
+### Silent Fail
+
+If analysis errors, `learnedPreference = null` — AI works normally with standard prompt. No user-facing impact.
+
+### Coverage
+
+All 12 AI assistants confirmed:
+
+| File | Staff | Status |
+|------|-------|--------|
+| `muguntha.js` | Muguntha | ✅ |
+| `members-api.js` | Sajeepan, Hetheesha, Sonya, Sukirtha, Kamsi, Theekshy, Thivajini | ✅ |
+| `requirement.js` | Dilaksi, Jefri, Thasitha, Mahima | ✅ |
+
+### Day-by-Day Example (Kamsi)
+
+```
+Day 1: No preference — standard prompt, standard task card
+       Kamsi asks: "declining pages detail", "quick wins", "show all declining"
+       → 3 user messages saved in kamsi_ai_chat
+
+Day 2: New day detected →
+       AI analyses: "Kamsi drills into declining pages first, wants quick wins in brief"
+       → saved as role='preference'
+       → injected into system prompt
+       → task card now leads with full declining page detail + quick wins pre-listed
+
+Day 5+: Task card is personalised to exactly what Kamsi always wants
+        She types less — AI already surfaces what she'd ask
+```
 
 ---
 
