@@ -126,3 +126,51 @@ If analysis errors for any reason, `learnedPreference = null` and AI works norma
 | `8e4422f` | Kamsi system prompt upgrade |
 | `b8936f9` | Preference learning — all 11 staff (members-api.js + requirement.js) |
 | `43dc3f8` | Preference learning — Muguntha (muguntha.js) |
+| `23c0108` | Sajeepan skill profile — sajeepan.json created + wired into members-api.js |
+
+---
+
+## 4. Staff Skill Profile System (2026-08-27)
+
+### What Was Built
+
+A permanent structured knowledge base per staff member, stored as JSON in `staff_profiles/`. Loaded at request time and injected into the AI system prompt.
+
+### File Added
+
+```
+Staff-requirements/staff_profiles/sajeepan.json
+```
+
+Contains 8 sections: identity, daily routine, core skills, decision authority, working style, thresholds, knowledge gaps, patterns (auto).
+
+### Code Added in `members-api.js` (Sajeepan handler)
+
+```js
+let sajeepanProfile = null;
+try { sajeepanProfile = require('../staff_profiles/sajeepan.json'); } catch (e) { /* silent */ }
+
+const profileBlock = sajeepanProfile ? `STAFF PROFILE (how Sajeepan works):
+Operating principle: ...
+Problem approach: ...
+Speed of action: ...
+Decision authority: decides alone / escalates to Muguntha
+ROAS benchmark: ...
+Knowledge gaps: ...
+Markets not owned: ...
+Backup/intern note: guide the user to follow Sajeepan's working pattern exactly.` : '';
+```
+
+Injected before INSTRUCTIONS in system prompt:
+```js
+${profileBlock ? `${profileBlock}\n\n` : ''}${learnedPreference ? `LEARNED FROM PREVIOUS SESSIONS:\n${learnedPreference}\n\n` : ''}INSTRUCTIONS:
+```
+
+### Silent Fail
+
+If JSON file missing, `profileBlock = ''` — AI works normally. No user-facing impact.
+
+### Remaining Work
+
+11 staff profiles still to be collected and wired:
+Sonya (awaiting Muguntha threshold confirmation), Hetheesha, Sukirtha, Kamsi, Theekshy, Thivajini, Jefri, Thasitha, Mahima, Dilaksi, Muguntha.

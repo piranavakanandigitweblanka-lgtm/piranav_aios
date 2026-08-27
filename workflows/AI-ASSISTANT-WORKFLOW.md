@@ -903,5 +903,113 @@ Day 5+: Task card is personalised to exactly what Kamsi always wants
 
 ---
 
-*Last updated: 2026-08-25*
+## 23. Staff Skill Profile System (2026-08-27)
+
+### What It Is
+
+A permanent, structured knowledge file for each staff member. Stored as JSON in `staff_profiles/`. Loaded into the AI system prompt so the AI understands not just the live data — but **who the person is, how they work, and what decisions they can make alone**.
+
+### Why It Exists
+
+Two reasons:
+1. **Personalisation** — AI guides each person based on their actual working style and decision authority, not generic advice
+2. **Backup/intern coverage** — when a staff member is away, the AI already knows their full working pattern and can guide a backup or intern to work exactly the same way
+
+### File Location
+
+```
+Staff-requirements/
+  staff_profiles/
+    sajeepan.json    ← done 2026-08-27
+    sonya.json       ← pending Muguntha threshold confirmation
+    hetheesha.json   ← pending
+    ... (12 total — one per staff)
+```
+
+### Profile Structure (8 Sections)
+
+| Section | Contents |
+|---------|----------|
+| `section1_identity` | Name, role title, market owned, reporting to |
+| `section2_daily_routine` | Morning checks, priorities, EOD checklist |
+| `section3_core_skills` | Tools expert in, confident without guidance, strongest area |
+| `section4_decision_authority` | Decides alone / escalates to Muguntha / never decides |
+| `section5_working_style` | Operating principle, problem approach, speed of action, communication |
+| `section6_thresholds` | ROAS benchmark, scaling rule, KPIs (Ads); impressions threshold, priority pages (SEO) |
+| `section7_knowledge_gaps` | Less confident in, markets/tools not owned |
+| `section8_patterns` | Auto-filled from chat history — do not edit manually |
+
+### How It Is Loaded (members-api.js pattern)
+
+```js
+let sajeepanProfile = null;
+try { sajeepanProfile = require('../staff_profiles/sajeepan.json'); } catch (e) { /* silent */ }
+
+const profileBlock = sajeepanProfile ? `STAFF PROFILE (how Sajeepan works):
+Operating principle: ${sajeepanProfile.section5_working_style.operating_principle}
+Problem approach: ${sajeepanProfile.section5_working_style.problem_approach}
+Speed of action: ${sajeepanProfile.section5_working_style.speed_of_action}
+Decision authority:
+- Decides alone: ${sajeepanProfile.section4_decision_authority.decides_alone.join(', ')}
+- Escalates to Muguntha: ${sajeepanProfile.section4_decision_authority.escalates_to_muguntha.join(', ')}
+ROAS benchmark: ${sajeepanProfile.section6_thresholds.roas_benchmark}
+Knowledge gaps (give more explanation): [list]
+Markets not owned (never suggest actions): [list]
+Backup/intern note: If this is not Sajeepan, guide the user to follow his standard working pattern exactly.` : '';
+```
+
+Injected into system prompt before INSTRUCTIONS:
+```js
+${profileBlock ? `${profileBlock}\n\n` : ''}${learnedPreference ? `LEARNED FROM PREVIOUS SESSIONS:\n${learnedPreference}\n\n` : ''}INSTRUCTIONS:
+```
+
+### Silent Fail
+
+If the JSON file is missing or unreadable, `profileBlock = ''` — AI works normally with standard prompt. No user-facing impact.
+
+### Backup/Intern Mode
+
+When a backup or intern opens a staff member's dashboard, the AI:
+- Already knows the staff member's operating principle and decision boundaries
+- Guides the backup to follow the exact same working pattern
+- Tells them what to escalate to Muguntha vs what to action alone
+- Never suggests actions on markets the staff member doesn't own
+
+### Profile Sources
+
+| Source | Who provides | Effort |
+|--------|-------------|--------|
+| Daily chat history | Auto (already in DB) | Zero |
+| EOD reports | Auto (already in GitHub) | Zero |
+| Manager knowledge | Piranav/Muguntha write once | ~15 min per staff |
+| Staff self-assessment (5 questions) | Optional, each staff fills once | ~5 min per staff |
+
+### Section 6 Variations by Role Type
+
+| Role type | Staff | Section 6 fields |
+|-----------|-------|-----------------|
+| Ads | Sajeepan, Sonya, Theekshy, Thivajini, Jefri, Thasitha, Mahima | ROAS benchmark, scaling rule, OOS days, daily KPIs |
+| SEO | Kamsi, Sukirtha, Hetheesha, Dilaksi | Impressions drop threshold, priority pages, fix tracker target, daily KPIs |
+| Admin | Muguntha | EOD miss tolerance, staff review frequency, revenue drop threshold, daily KPIs |
+
+### Coverage Status
+
+| Staff | Profile | Wired in API | Status |
+|-------|---------|-------------|--------|
+| Sajeepan | `sajeepan.json` | `members-api.js` | ✅ Live |
+| Sonya | pending | — | ⏳ Awaiting Muguntha threshold confirmation |
+| Hetheesha | pending | — | ⏳ Profile not yet collected |
+| Sukirtha | pending | — | ⏳ Profile not yet collected |
+| Kamsi | pending | — | ⏳ Profile not yet collected |
+| Theekshy | pending | — | ⏳ Profile not yet collected |
+| Thivajini | pending | — | ⏳ Profile not yet collected |
+| Jefri | pending | — | ⏳ Profile not yet collected |
+| Thasitha | pending | — | ⏳ Profile not yet collected |
+| Mahima | pending | — | ⏳ Profile not yet collected |
+| Dilaksi | pending | — | ⏳ Profile not yet collected |
+| Muguntha | pending | — | ⏳ Profile not yet collected |
+
+---
+
+*Last updated: 2026-08-27*
 *Built by: Piranav (AIOS Architect) + Claude Sonnet 4.6*

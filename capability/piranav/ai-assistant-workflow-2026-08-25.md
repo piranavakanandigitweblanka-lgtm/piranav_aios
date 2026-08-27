@@ -111,6 +111,22 @@ Tables are auto-created on first use — no manual DB setup needed.
 4. Copy widget HTML from any current staff page — change only: member name, API URLs, hint text
 5. Never create a new file in `api/` — Vercel 12-function limit already reached
 
+### Staff Skill Profile System (added 2026-08-27)
+
+Each staff member now has a permanent JSON skill profile in `Staff-requirements/staff_profiles/`. The AI loads this on every request and uses it to:
+
+- Guide each person based on their actual working style and decision authority
+- Tell the AI what they can decide alone vs escalate to Muguntha
+- Give more explanation on topics they are less confident in
+- Never suggest actions on markets they don't own
+- Guide a backup or intern to work exactly the way the staff member would
+
+**Profile structure:** 8 sections — identity, daily routine, core skills, decision authority, working style, thresholds, knowledge gaps, patterns (auto-learned).
+
+**Current status:** Sajeepan live (`sajeepan.json` wired into `members-api.js`). Remaining 11 profiles to be collected and wired in.
+
+**Backup/intern mode:** When a staff member is away, the AI already has their full working knowledge loaded — the backup follows the AI's guidance and works exactly the same way.
+
 ### Full Documentation
 
-`C:\Users\PC\Downloads\AI-ASSISTANT-WORKFLOW.md` — 18 sections covering model chain, two-stage flow, daily reset, session restore, DB connections, system prompt structure, all API routes, widget UI spec, how to add new staff, bugs fixed, and known data gaps.
+`workflows/AI-ASSISTANT-WORKFLOW.md` — 23 sections covering model chain, two-stage flow, daily reset, session restore, DB connections, system prompt structure, all API routes, widget UI spec, how to add new staff, bugs fixed, prompt intelligence upgrade, preference learning, and staff skill profiles.
