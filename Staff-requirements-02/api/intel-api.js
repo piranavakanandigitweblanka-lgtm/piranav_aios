@@ -1266,11 +1266,72 @@ async function handleUkBundle(client, res) {
   });
 }
 
+const WLG_SKUS = [
+  'WLGA110E27BM','WLGA400E27BM','WLGB500E27BM','WLGCH73E27BM','WLGCH85E27BM',
+  'WLGG105E27BM','WLGG375E27BM','WLGG975E27BM','WLGI350E27BM','WLGM108E27BM',
+  'WLGM110E27BM','WLGM115E27BM','WLGM47E27BM','WLGM53E27BM','WLGN275E27BM',
+  'WLGR53E27BM','WLGS110E27BM','WLGV480E27BM','WLGV800E27BM'
+];
+
+async function handleWlgSales(client, res) {
+  const placeholders = WLG_SKUS.map((_, i) => `$${i + 1}`).join(',');
+  const { rows } = await client.query(`
+    SELECT
+      ii.real_sku                                      AS sku,
+      DATE_TRUNC('month', o.order_date)::date          AS month,
+      src.source_name                                  AS channel,
+      ss.name                                          AS account,
+      SUM(ii.real_qty::int)                            AS qty_sold,
+      COUNT(DISTINCT o.id)::int                        AS orders
+    FROM order_management.orders o
+    JOIN order_management.order_item_info ii ON ii.order_id = o.id
+    JOIN order_management.sub_source ss      ON ss.id = o.sub_source_id
+    JOIN order_management.source src         ON src.id = ss.source_id
+    WHERE o.market_place = '10'
+      AND o.status NOT IN ('CANCELLED','REFUNDED')
+      AND ii.real_sku IN (${placeholders})
+    GROUP BY ii.real_sku, DATE_TRUNC('month', o.order_date), src.source_name, ss.name
+    ORDER BY ii.real_sku, month DESC, qty_sold DESC
+  `, WLG_SKUS);
+
+  // Build per-SKU summary
+  const skuMap = {};
+  WLG_SKUS.forEach(s => { skuMap[s] = { sku: s, total_qty: 0, total_orders: 0, channels: new Set(), months: [] }; });
+  rows.forEach(r => {
+    const s = skuMap[r.sku];
+    s.total_qty    += parseInt(r.qty_sold, 10);
+    s.total_orders += parseInt(r.orders, 10);
+    s.channels.add(r.channel);
+    s.months.push({ month: r.month, channel: r.channel, account: r.account, qty_sold: parseInt(r.qty_sold, 10), orders: parseInt(r.orders, 10) });
+  });
+
+  const summary = Object.values(skuMap).map(s => ({
+    sku: s.sku,
+    total_qty: s.total_qty,
+    total_orders: s.total_orders,
+    channels: [...s.channels],
+    has_sales: s.total_qty > 0,
+    months: s.months,
+  }));
+
+  const totalQty    = summary.reduce((a, s) => a + s.total_qty, 0);
+  const totalOrders = summary.reduce((a, s) => a + s.total_orders, 0);
+  const activeSKUs  = summary.filter(s => s.has_sales).length;
+  const zeroSKUs    = summary.filter(s => !s.has_sales).length;
+
+  return res.status(200).json({
+    ok: true,
+    refreshed_at: new Date().toISOString(),
+    kpi: { totalQty, totalOrders, activeSKUs, zeroSKUs, totalSKUs: WLG_SKUS.length },
+    skus: summary,
+  });
+}
+
 async function handleGermany(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   const type = req.query.type;
-  if (!type) return res.status(400).json({ ok: false, error: 'Missing ?type= (marketplace-gap | uk-bundle)' });
-  if (!['marketplace-gap', 'uk-bundle'].includes(type)) {
+  if (!type) return res.status(400).json({ ok: false, error: 'Missing ?type= (marketplace-gap | uk-bundle | wlg-sales)' });
+  if (!['marketplace-gap', 'uk-bundle', 'wlg-sales'].includes(type)) {
     return res.status(400).json({ ok: false, error: `Unknown type: ${type}` });
   }
   if (!process.env.DATABASE_URL) return res.status(500).json({ ok: false, error: 'DATABASE_URL not configured' });
@@ -1279,6 +1340,7 @@ async function handleGermany(req, res) {
     await client.connect();
     if (type === 'marketplace-gap') return await handleMarketplaceGap(client, req, res);
     if (type === 'uk-bundle')       return await handleUkBundle(client, res);
+    if (type === 'wlg-sales')       return await handleWlgSales(client, res);
   } catch (err) {
     return res.status(500).json({ ok: false, error: err.message });
   } finally {

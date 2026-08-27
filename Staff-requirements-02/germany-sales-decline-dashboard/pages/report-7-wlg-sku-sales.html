@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report 7 — WLG SKU Germany Sales</title>
+<style>
+:root{--navy:#0c1a30;--navy-2:#13284a;--ink:#1a2233;--muted:#5b6577;--line:#e3e7ee;--bg:#f4f6f9;--card:#ffffff;--gold:#b98b1e;--gold-soft:#faf3e0;--accent:#1f5eff;--accent-soft:#eaf0ff;--red:#b91c1c;--red-soft:#fff5f5;--warn:#d97706;--warn-soft:#fffbeb;--good:#0a7d4f;--good-soft:#e5f5ee;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;}
+.topbar{height:5px;background:linear-gradient(90deg,var(--navy) 0%,var(--navy-2) 40%,var(--gold) 100%);}
+.masthead{background:var(--card);padding:20px 32px;border-bottom:1px solid var(--line);box-shadow:0 1px 4px rgba(12,26,48,.05);}
+.masthead .inner{max-width:1440px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:20px;}
+.mark{width:40px;height:40px;background:var(--navy);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#e8d59a;flex:none;border:1.5px solid var(--gold);}
+.headtxt{flex:1;min-width:220px;}
+.kicker{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+.masthead h1{font-size:18px;font-weight:700;color:var(--navy);}
+.masthead .lede{font-size:12px;color:var(--muted);margin-top:2px;font-style:italic;}
+.statrow{display:flex;flex-wrap:wrap;gap:0;border-left:1px solid var(--line);padding-left:24px;}
+.stat{padding:0 20px;border-right:1px solid var(--line);}
+.stat:last-child{border-right:none;padding-right:0;}
+.stat .v{font-size:19px;font-weight:700;color:var(--navy);}
+.stat .l{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:2px;}
+.page{max-width:1440px;margin:0 auto;padding:24px 32px 48px;}
+.tbar{font-size:11px;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 14px;margin-bottom:18px;}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px;}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;}
+.kpi .kv{font-size:24px;font-weight:700;color:var(--navy);}
+.kpi .kl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:3px;}
+.kpi.good .kv{color:var(--good);}
+.kpi.warn .kv{color:var(--red);}
+.kpi.hi .kv{color:var(--accent);}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
+.filters{display:flex;flex-wrap:wrap;gap:6px;flex:1;}
+.fpill{font-size:11px;font-weight:700;border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:5px 13px;cursor:pointer;color:var(--muted);transition:all .15s;white-space:nowrap;}
+.fpill:hover{border-color:var(--navy);color:var(--navy);}
+.fpill.active{background:var(--navy);color:#e8d59a;border-color:var(--navy);}
+.search-wrap{position:relative;}
+.search-wrap input{font-size:12px;padding:7px 12px 7px 30px;border:1.5px solid var(--line);border-radius:8px;width:200px;outline:none;background:var(--card);color:var(--ink);}
+.search-wrap input:focus{border-color:var(--accent);}
+.search-wrap::before{content:"\2315";position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;}
+.tbl-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+th{background:var(--bg);padding:10px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);border-bottom:1px solid var(--line);white-space:nowrap;}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f8f9fc;}
+.sku-code{font-family:monospace;font-weight:700;font-size:12px;color:var(--navy);}
+.zero-row td{opacity:.55;}
+.badge-active{background:var(--good-soft);color:var(--good);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;}
+.badge-zero{background:var(--red-soft);color:var(--red);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;}
+.ch-tag{display:inline-block;font-size:10px;font-weight:700;border-radius:4px;padding:2px 7px;margin:1px 2px;}
+.ch-ebay{background:#fff3e0;color:#e65100;}
+.ch-shopify{background:var(--good-soft);color:var(--good);}
+.ch-amazon{background:var(--accent-soft);color:var(--accent);}
+.detail-wrap{margin-top:6px;}
+.detail-row{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:11px;color:var(--muted);margin-bottom:3px;}
+.detail-row .month-lbl{font-weight:600;color:var(--ink);min-width:70px;}
+.detail-row .acc-lbl{font-style:italic;}
+.qty-num{font-weight:700;color:var(--navy);font-size:13px;}
+.pager{display:flex;align-items:center;justify-content:space-between;margin-top:14px;flex-wrap:wrap;gap:8px;}
+.pager-info{font-size:12px;color:var(--muted);}
+.pager-btns{display:flex;gap:6px;}
+.pager-btns button{font-size:12px;font-weight:600;padding:6px 14px;border:1.5px solid var(--line);border-radius:7px;background:var(--card);cursor:pointer;color:var(--navy);}
+.pager-btns button:disabled{opacity:.4;cursor:default;}
+.pager-btns button:not(:disabled):hover{background:var(--navy);color:#e8d59a;border-color:var(--navy);}
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--navy);text-decoration:none;background:var(--card);border:1.5px solid var(--line);border-radius:8px;padding:6px 14px;margin-bottom:18px;transition:border-color .15s;}
+.back-btn:hover{border-color:var(--gold);color:var(--gold);}
+.csv-btn{font-size:11px;font-weight:700;padding:6px 14px;border:1.5px solid var(--accent);border-radius:8px;background:var(--accent-soft);color:var(--accent);cursor:pointer;white-space:nowrap;}
+.csv-btn:hover{background:var(--accent);color:#fff;}
+.sec-title{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--navy-2);margin:22px 0 12px;display:flex;align-items:center;gap:12px;}
+.sec-title::after{content:"";flex:1;height:1px;background:var(--line);}
+.loading{text-align:center;padding:48px;color:var(--muted);font-size:13px;}
+.err-box{background:var(--red-soft);border:1px solid #fca5a5;border-radius:10px;padding:14px 18px;color:var(--red);font-size:13px;margin-bottom:18px;}
+footer.site{max-width:1440px;margin:0 auto;padding:20px 32px 36px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;}
+@media(max-width:640px){.masthead{padding:14px;}.page{padding:16px 12px 40px;}.search-wrap input{width:100%;}}
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<div class="masthead">
+  <div class="inner">
+    <div class="mark">R7</div>
+    <div class="headtxt">
+      <div class="kicker">Germany Sales Decline Dashboard</div>
+      <h1>WLG SKU — Germany Sales History</h1>
+      <div class="lede">19 WLG E27 SKUs · Live sales data from Germany (Amazon, eBay, Shopify) · Auto-refresh every 5s</div>
+    </div>
+    <div class="statrow">
+      <div class="stat"><div class="v" id="hd-total-qty">—</div><div class="l">Total Qty Sold</div></div>
+      <div class="stat"><div class="v" id="hd-active">—</div><div class="l">Active SKUs</div></div>
+      <div class="stat"><div class="v" id="hd-zero">—</div><div class="l">Zero Sales</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+  <div id="err-box" class="err-box" style="display:none;"></div>
+  <div class="tbar" id="tbar">Loading live data…</div>
+
+  <!-- KPI -->
+  <div class="kpi-row">
+    <div class="kpi good"><div class="kv" id="kpi-active">—</div><div class="kl">Active SKUs</div></div>
+    <div class="kpi warn"><div class="kv" id="kpi-zero">—</div><div class="kl">Zero Sales SKUs</div></div>
+    <div class="kpi"><div class="kv" id="kpi-qty">—</div><div class="kl">Total Qty Sold (DE)</div></div>
+    <div class="kpi hi"><div class="kv" id="kpi-orders">—</div><div class="kl">Total Orders (DE)</div></div>
+    <div class="kpi"><div class="kv">19</div><div class="kl">Total SKUs Tracked</div></div>
+  </div>
+
+  <a href="../index.html" class="back-btn">← Back to Hub</a>
+
+  <div class="sec-title">Sales by SKU</div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="filters">
+      <button class="fpill active" onclick="setFilter('all',this)">All SKUs</button>
+      <button class="fpill" onclick="setFilter('active',this)">✓ Has Sales</button>
+      <button class="fpill" onclick="setFilter('zero',this)">✗ Zero Sales</button>
+      <button class="fpill" onclick="setFilter('ebay',this)">eBay</button>
+      <button class="fpill" onclick="setFilter('shopify',this)">Shopify</button>
+      <button class="fpill" onclick="setFilter('amazon',this)">Amazon</button>
+    </div>
+    <div class="search-wrap">
+      <input type="text" id="search" placeholder="Search SKU…" oninput="onSearch(this.value)">
+    </div>
+    <button class="csv-btn" onclick="exportCSV()">⬇ Export CSV</button>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>SKU</th>
+          <th>Status</th>
+          <th>Total Qty (DE)</th>
+          <th>Total Orders</th>
+          <th>Channels</th>
+          <th>Monthly Breakdown</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"><tr><td colspan="7" class="loading">Loading…</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="pager">
+    <div class="pager-info" id="pager-info"></div>
+    <div class="pager-btns">
+      <button id="btn-prev" onclick="changePage(-1)" disabled>← Prev</button>
+      <button id="btn-next" onclick="changePage(1)" disabled>Next →</button>
+    </div>
+  </div>
+</div>
+
+<footer class="site">Germany Sales Decline Dashboard · Report 7 — WLG SKU Sales · Live data · Auto-refresh 5s</footer>
+
+<script>
+const API = '/api/intel-api?service=germany&type=wlg-sales';
+const PAGE_SIZE = 19; // show all 19 on one page
+
+var DATA      = [];
+var filtered  = [];
+var page      = 0;
+var filterMode = 'all';
+var searchTerm = '';
+
+function setFilter(mode, el) {
+  filterMode = mode;
+  document.querySelectorAll('.fpill').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  applyFilter();
+}
+
+function onSearch(val) {
+  searchTerm = val.toLowerCase().trim();
+  applyFilter();
+}
+
+function applyFilter() {
+  filtered = DATA.filter(function(s) {
+    var matchSearch = !searchTerm || s.sku.toLowerCase().indexOf(searchTerm) !== -1;
+    var matchFilter = true;
+    if (filterMode === 'active')  matchFilter = s.has_sales;
+    if (filterMode === 'zero')    matchFilter = !s.has_sales;
+    if (filterMode === 'ebay')    matchFilter = s.channels.indexOf('EBAY') !== -1;
+    if (filterMode === 'shopify') matchFilter = s.channels.indexOf('SHOPIFY') !== -1;
+    if (filterMode === 'amazon')  matchFilter = s.channels.indexOf('AMAZON') !== -1;
+    return matchSearch && matchFilter;
+  });
+  page = 0;
+  renderTable();
+}
+
+function fmtMonth(iso) {
+  var d = new Date(iso);
+  return d.toLocaleString('en-GB',{month:'short',year:'numeric'});
+}
+
+function chTag(ch) {
+  var cls = ch === 'EBAY' ? 'ch-ebay' : ch === 'SHOPIFY' ? 'ch-shopify' : 'ch-amazon';
+  return '<span class="ch-tag '+cls+'">'+ch+'</span>';
+}
+
+function renderTable() {
+  var tbody = document.getElementById('tbody');
+  var start = page * PAGE_SIZE;
+  var slice = filtered.slice(start, start + PAGE_SIZE);
+
+  if (slice.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" class="loading">No SKUs match the current filter.</td></tr>';
+    document.getElementById('pager-info').textContent = '0 SKUs';
+    document.getElementById('btn-prev').disabled = true;
+    document.getElementById('btn-next').disabled = true;
+    return;
+  }
+
+  var html = '';
+  slice.forEach(function(s, idx) {
+    var rowClass = s.has_sales ? '' : ' class="zero-row"';
+    var status = s.has_sales
+      ? '<span class="badge-active">✓ Active</span>'
+      : '<span class="badge-zero">✗ No Sales</span>';
+
+    var chHtml = s.channels.length
+      ? s.channels.map(chTag).join('')
+      : '<span style="color:var(--muted);font-size:11px;">—</span>';
+
+    var detailHtml = '';
+    if (s.months && s.months.length) {
+      detailHtml = '<div class="detail-wrap">';
+      s.months.forEach(function(m) {
+        detailHtml += '<div class="detail-row">'
+          + '<span class="month-lbl">'+fmtMonth(m.month)+'</span>'
+          + chTag(m.channel)
+          + '<span class="acc-lbl">'+m.account+'</span>'
+          + '<span style="margin-left:6px;"><span class="qty-num">'+m.qty_sold+'</span> <span style="font-size:10px;color:var(--muted);">units · '+m.orders+' order'+(m.orders!==1?'s':'')+'</span></span>'
+          + '</div>';
+      });
+      detailHtml += '</div>';
+    } else {
+      detailHtml = '<span style="font-size:11px;color:var(--muted);">No Germany orders recorded</span>';
+    }
+
+    html += '<tr'+rowClass+'>'
+      + '<td style="color:var(--muted);font-size:11px;">'+(start+idx+1)+'</td>'
+      + '<td><span class="sku-code">'+s.sku+'</span></td>'
+      + '<td>'+status+'</td>'
+      + '<td><span style="font-size:16px;font-weight:700;color:var(--navy);">'+(s.total_qty||'0')+'</span></td>'
+      + '<td>'+(s.total_orders||'0')+'</td>'
+      + '<td>'+chHtml+'</td>'
+      + '<td>'+detailHtml+'</td>'
+      + '</tr>';
+  });
+  tbody.innerHTML = html;
+
+  var total = filtered.length;
+  var pages = Math.ceil(total / PAGE_SIZE);
+  document.getElementById('pager-info').textContent = 'Showing '+(start+1)+'–'+Math.min(start+PAGE_SIZE, total)+' of '+total+' SKUs';
+  document.getElementById('btn-prev').disabled = page === 0;
+  document.getElementById('btn-next').disabled = page >= pages - 1;
+}
+
+function changePage(dir) {
+  page += dir;
+  renderTable();
+}
+
+function updateKPI(kpi) {
+  document.getElementById('kpi-active').textContent  = kpi.activeSKUs;
+  document.getElementById('kpi-zero').textContent    = kpi.zeroSKUs;
+  document.getElementById('kpi-qty').textContent     = kpi.totalQty;
+  document.getElementById('kpi-orders').textContent  = kpi.totalOrders;
+  document.getElementById('hd-total-qty').textContent = kpi.totalQty;
+  document.getElementById('hd-active').textContent   = kpi.activeSKUs;
+  document.getElementById('hd-zero').textContent     = kpi.zeroSKUs;
+}
+
+function exportCSV() {
+  var rows = [['SKU','Status','Total Qty','Total Orders','Channels','Month','Channel','Account','Qty','Orders']];
+  DATA.forEach(function(s) {
+    if (s.months && s.months.length) {
+      s.months.forEach(function(m) {
+        rows.push([s.sku, s.has_sales?'Active':'Zero', s.total_qty, s.total_orders, s.channels.join('|'), fmtMonth(m.month), m.channel, m.account, m.qty_sold, m.orders]);
+      });
+    } else {
+      rows.push([s.sku,'Zero',0,0,'','','','','','']);
+    }
+  });
+  var csv = rows.map(function(r){ return r.map(function(v){ return '"'+String(v).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
+  var a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download = 'wlg-sku-germany-sales.csv';
+  a.click();
+}
+
+function poll() {
+  fetch(API)
+    .then(function(r){ return r.json(); })
+    .then(function(json) {
+      if (!json.ok) {
+        document.getElementById('err-box').style.display = 'block';
+        document.getElementById('err-box').textContent = 'API error: ' + (json.error || 'unknown');
+        return;
+      }
+      document.getElementById('err-box').style.display = 'none';
+      document.getElementById('tbar').textContent = 'Live data · Last refreshed: ' + new Date(json.refreshed_at).toLocaleTimeString();
+      DATA = json.skus || [];
+      updateKPI(json.kpi);
+      applyFilter();
+    })
+    .catch(function(e) {
+      document.getElementById('tbar').textContent = 'Connection error — retrying…';
+    });
+}
+
+poll();
+setInterval(poll, 5000);
+</script>
+</body>
+</html>
