@@ -123,7 +123,7 @@ Each staff member now has a permanent JSON skill profile in `Staff-requirements/
 
 **Profile structure:** 8 sections — identity, daily routine, core skills, decision authority, working style, thresholds, knowledge gaps, patterns (auto-learned).
 
-**Current status:** Sajeepan live (`sajeepan.json` wired into `members-api.js`). Remaining 11 profiles to be collected and wired in.
+**Current status (2026-08-28):** 4 profiles live — Sajeepan, Hetheesha, Thivajini (`members-api.js`), Thasitha (`requirement.js`). Sonya awaiting Muguntha threshold confirmation. Remaining 7 profiles not yet collected.
 
 **Backup/intern mode:** When a staff member is away, the AI already has their full working knowledge loaded — the backup follows the AI's guidance and works exactly the same way.
 

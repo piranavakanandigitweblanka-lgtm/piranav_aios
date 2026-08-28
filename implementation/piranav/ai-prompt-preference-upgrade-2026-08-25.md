@@ -127,6 +127,8 @@ If analysis errors for any reason, `learnedPreference = null` and AI works norma
 | `b8936f9` | Preference learning — all 11 staff (members-api.js + requirement.js) |
 | `43dc3f8` | Preference learning — Muguntha (muguntha.js) |
 | `23c0108` | Sajeepan skill profile — sajeepan.json created + wired into members-api.js |
+| `6846ded` | Hetheesha + Thivajini skill profiles — JSON files created + wired into members-api.js |
+| `fc81f04` | Thasitha skill profile — thasitha.json created + wired into requirement.js |
 
 ---
 
@@ -172,5 +174,6 @@ If JSON file missing, `profileBlock = ''` — AI works normally. No user-facing 
 
 ### Remaining Work
 
-11 staff profiles still to be collected and wired:
-Sonya (awaiting Muguntha threshold confirmation), Hetheesha, Sukirtha, Kamsi, Theekshy, Thivajini, Jefri, Thasitha, Mahima, Dilaksi, Muguntha.
+8 staff profiles still pending:
+- Sonya — awaiting Muguntha threshold confirmation (ROAS scaling, budget limit, OOS days)
+- Not yet collected: Sukirtha, Kamsi, Theekshy, Jefri, Mahima, Dilaksi, Muguntha

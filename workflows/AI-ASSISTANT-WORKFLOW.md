@@ -920,9 +920,11 @@ Two reasons:
 ```
 Staff-requirements/
   staff_profiles/
-    sajeepan.json    ← done 2026-08-27
+    sajeepan.json    ← live 2026-08-27
+    hetheesha.json   ← live 2026-08-28
+    thivajini.json   ← live 2026-08-28
+    thasitha.json    ← live 2026-08-28
     sonya.json       ← pending Muguntha threshold confirmation
-    hetheesha.json   ← pending
     ... (12 total — one per staff)
 ```
 
@@ -997,14 +999,14 @@ When a backup or intern opens a staff member's dashboard, the AI:
 | Staff | Profile | Wired in API | Status |
 |-------|---------|-------------|--------|
 | Sajeepan | `sajeepan.json` | `members-api.js` | ✅ Live |
+| Hetheesha | `hetheesha.json` | `members-api.js` | ✅ Live |
+| Thivajini | `thivajini.json` | `members-api.js` | ✅ Live |
+| Thasitha | `thasitha.json` | `requirement.js` | ✅ Live |
 | Sonya | pending | — | ⏳ Awaiting Muguntha threshold confirmation |
-| Hetheesha | pending | — | ⏳ Profile not yet collected |
 | Sukirtha | pending | — | ⏳ Profile not yet collected |
 | Kamsi | pending | — | ⏳ Profile not yet collected |
 | Theekshy | pending | — | ⏳ Profile not yet collected |
-| Thivajini | pending | — | ⏳ Profile not yet collected |
 | Jefri | pending | — | ⏳ Profile not yet collected |
-| Thasitha | pending | — | ⏳ Profile not yet collected |
 | Mahima | pending | — | ⏳ Profile not yet collected |
 | Dilaksi | pending | — | ⏳ Profile not yet collected |
 | Muguntha | pending | — | ⏳ Profile not yet collected |
