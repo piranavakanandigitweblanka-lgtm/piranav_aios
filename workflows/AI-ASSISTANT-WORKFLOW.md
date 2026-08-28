@@ -96,51 +96,50 @@ If a problem is fixed (e.g. a product was paused), it won't appear in tomorrow's
 
 ## 4. AI Model & API
 
-### Default Provider — Groq (10 staff)
+### Default Provider — Groq (all 11 staff)
 **Groq API** — fast inference, free tier available
 
-### Groq Model Chain (tries in order until one responds)
+### Full Model Fallback Chain (tries in order until one responds)
 ```
-1st choice:  qwen/qwen3-32b        ← primary (most capable)
-2nd choice:  llama3-70b-8192       ← fallback
-3rd choice:  llama-3.1-8b-instant  ← fallback
-4th choice:  gemma2-9b-it          ← last resort
+1st:  qwen/qwen3.6-27b         (Groq — primary, most capable)
+2nd:  llama3-70b-8192          (Groq — fallback 1)
+3rd:  llama-3.1-8b-instant     (Groq — fallback 2)
+4th:  gemma2-9b-it             (Groq — fallback 3)
+5th:  z-ai/glm-5.2:free        (OpenRouter — fallback 4, 256K context)
+6th:  nvidia/nemotron-550b     (NVIDIA NIM — final fallback, 561B)
+❌    show error message        (only if all 6 fail)
 ```
 
-The model chain lives in **`lib/groq.js`**. `callGroqAI()` handles fallback silently — if the primary model fails or rate-limits, it tries the next one automatically.
+The chain lives in **`lib/groq.js`**. `callGroqAI()` handles all fallbacks silently — staff never see a model switch. Every model receives the identical system prompt, so the purpose, data, and task card format are always preserved regardless of which model answers.
+
+**Key principle:** the system prompt is built by your code before any model is called. Switching models only changes who delivers the answer — never what they are asked or what data they see.
 
 ### `callGroqAI()` Function Signature
 ```js
 // lib/groq.js
-const groqResult = await callGroqAI(messages);
-// messages = [{ role: 'system', content: '...' }, { role: 'user', content: '...' }, ...]
-
+const groqResult = await callGroqAI(messages, maxTokens);
 // Returns:
 // { ok: true,  text: 'AI response text' }
 // { ok: false, error: 'error message' }
 ```
 
-### Premium Provider — NVIDIA NIM (Muguntha only)
+### Premium Provider — NVIDIA NIM (Muguntha primary + global final fallback)
 **NVIDIA Nemotron-3-Ultra-550B-A55B** — 561B parameters, 1M context window, reasoning/thinking mode.
 
-Used for Muguntha's management AI because her system prompt is large (7-day EOD + revenue + staff perf data). Lives in **`lib/nvidia.js`**.
+- **Muguntha:** primary model (large prompt — 7-day EOD + revenue + staff performance data)
+- **All 11 staff:** 6th fallback via `callGroqAI()` if Groq + OpenRouter both fail
 
-```js
-// lib/nvidia.js
-const result = await callNvidiaAI(messages, maxTokens);
-// Falls back to callGroqAI() automatically if NVIDIA fails or key not set
+Lives in **`lib/nvidia.js`**. Falls back to `callGroqAI()` if NVIDIA fails or key not set.
 
-// Strips <think>...</think> blocks from response before returning
-```
-
-NVIDIA NIM endpoint: `https://integrate.api.nvidia.com/v1/chat/completions`
-Model ID: `nvidia/nemotron-3-ultra-550b-a55b`
-Thinking mode: `chat_template_kwargs: { enable_thinking: true }`
+### OpenRouter Provider — GLM-5.2 (5th fallback)
+**Z.ai GLM-5.2:free** — 256K context, 128 tps, free tier via Decart (99.44% uptime).
+Lives in **`lib/openrouter.js`**. Called automatically by `callGroqAI()` after all 4 Groq models fail.
 
 ### Environment Variables Required
 ```
 GROQ_API_KEY=gsk_...          ← all 11 staff (Groq chain)
-NVIDIA_API_KEY=nvapi-...      ← Muguntha only (NVIDIA NIM, falls back to Groq if missing)
+NVIDIA_API_KEY=nvapi-...      ← Muguntha primary + global final fallback
+OPENROUTER_API_KEY=sk-or-...  ← GLM-5.2 fallback (5th in chain)
 ```
 
 ---
@@ -867,7 +866,7 @@ ${learnedPreference ? `LEARNED FROM PREVIOUS SESSIONS (use this to personalise t
 
 | Staff | Model |
 |-------|-------|
-| All 11 staff | Groq `qwen/qwen3-32b` |
+| All 11 staff | Groq `qwen/qwen3.6-27b` (with full 6-model fallback chain) |
 | Muguntha | NVIDIA Nemotron-3-Ultra-550B (consistent with her primary model) |
 
 ### Silent Fail
@@ -1013,5 +1012,125 @@ When a backup or intern opens a staff member's dashboard, the AI:
 
 ---
 
-*Last updated: 2026-08-27*
+## 24. Action Confirmation Tracking — Gap 2 (2026-08-28)
+
+### What It Does
+
+After the AI gives a task in the FOLLOW-UP stage, staff can reply with a single word to confirm or skip. The AI detects it and saves to the chat DB.
+
+### Detection Pattern
+
+```js
+const _isDone = /^(done|✅|completed?|actioned?)$/i.test(userMessage);
+const _isSkip = /^(skip(ped)?|not today|ignore)$/i.test(userMessage);
+```
+
+### DB Storage
+
+No new table. Reuses existing `*_ai_chat` tables with two new role values:
+
+```
+role = 'action_confirmed'  → staff replied "done" / "actioned" / "✅"
+role = 'action_skipped'    → staff replied "skip" / "not today" / "ignore"
+```
+
+Saved via `saveActionConfirmation(dbUrl, tableName, role, lastAiMessage)` helper in both `members-api.js` and `requirement.js`.
+
+### FOLLOW-UP Prompt Change
+
+Every follow-up response now ends with:
+> "Reply **done** when complete, or **skip** if not actioning this today."
+
+### Muguntha Action Digest
+
+Muguntha's AI now queries all 11 staff chat tables on open and shows a daily summary:
+
+```
+STAFF ACTION DIGEST (today):
+Sajeepan — 2 actioned ✅, 1 skipped ⏭️
+Hetheesha — opened but no actions confirmed ⚠️
+Thivajini — dashboard not opened today
+...
+```
+
+This gives Muguntha full visibility of which staff are acting on AI recommendations each day.
+
+### Coverage
+
+Applied to all 12 handlers:
+- `members-api.js` — Sajeepan, Hetheesha, Sonya, Sukirtha, Kamsi, Theekshy, Thivajini
+- `requirement.js` — Dilaksi, Jefri, Thasitha, Mahima
+- `muguntha.js` — digest block queries all 11 staff tables
+
+---
+
+## 25. Guided Hint Prompts — Gap 3 (2026-08-28)
+
+### What It Does
+
+Every AI assistant now shows role-specific hints to guide staff on what to ask next. Applied in two places:
+
+### 1. System Prompt — Opening Task Card
+
+A `💬 Ask me:` line is appended to every OPENING task card:
+
+| Role | Hint shown |
+|------|-----------|
+| Ads staff (Sajeepan, Sonya, Theekshy, Thivajini, Jefri, Thasitha, Mahima) | `💬 Ask me: "Why did ROAS drop?" / "Which products should I pause?"` |
+| SEO staff (Hetheesha, Kamsi, Sukirtha, Dilaksi) | `💬 Ask me: "Why did impressions drop?" / "Which pages should I fix?"` |
+| Muguntha | `💬 Ask me: "Who missed EOD this week?" / "Which staff needs attention today?" / "Show me revenue breakdown."` |
+
+### 2. HTML Textarea Placeholder
+
+All 12 staff dashboard pages have role-specific placeholder text in the AI input box:
+
+| Role | Placeholder |
+|------|------------|
+| Ads (7 staff) | `Try: "Why did ROAS drop?" or "Which products should I pause?"` |
+| SEO (4 staff) | `Try: "Why did impressions drop?" or "Which pages should I fix?"` |
+| Muguntha | `Try: "Who missed EOD?" or "Show revenue breakdown."` |
+
+### Files Changed
+
+- `api/members-api.js` — hint lines in 7 system prompts
+- `api/requirement.js` — hint lines in 4 system prompts
+- `api/muguntha.js` — hint line in Muguntha system prompt
+- `pages/*.html` — all 12 staff HTML pages (textarea placeholder)
+
+---
+
+## 26. Reliability Fixes (2026-08-28)
+
+### Fix 1 — Preference Learning Timeout
+
+**Problem:** On a new day, the AI handler runs preference analysis (a Groq call) before the main task card Groq call. If Groq is slow, both calls in sequence could exceed the browser's 90-second timeout — causing "📡 Looks like we lost the signal!" error.
+
+**Fix:** Wrapped `analyseAndSavePreference()` in `Promise.race()` with a 15-second hard cap across all 12 handlers:
+
+```js
+await Promise.race([
+  analyseAndSavePreference(_prefPool, 'sajeepan_ai_chat'),
+  new Promise((_, rej) => setTimeout(() => rej(new Error('pref timeout')), 15000))
+]);
+```
+
+If preference analysis doesn't finish in 15 seconds, it's skipped silently. The task card loads normally without learned preference for that day. No user-facing impact.
+
+**Applied to:** all 12 handlers (`members-api.js` x7, `requirement.js` x4, `muguntha.js` x1)
+
+### Fix 2 — Extended Model Fallback Chain
+
+**Problem:** If all 4 Groq models fail simultaneously (Groq outage), staff AI goes completely dead.
+
+**Fix:** Added 2 additional fallbacks in `lib/groq.js`:
+- **5th:** OpenRouter GLM-5.2:free (`lib/openrouter.js`) — 256K context, free tier
+- **6th:** NVIDIA NIM nemotron-550b (`lib/nvidia.js`) — 561B parameters, already in system
+
+Full chain: Groq x4 → OpenRouter → NVIDIA → error message.
+
+**Key design principle:** the system prompt is fully built before any model is called. Switching models only changes who delivers the answer — the data, format, urgency ranking, and staff profile are always preserved.
+
+---
+
+*Last updated: 2026-08-28*
 *Built by: Piranav (AIOS Architect) + Claude Sonnet 4.6*
