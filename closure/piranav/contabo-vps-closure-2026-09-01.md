@@ -24,6 +24,13 @@ All 15 staff accounts are active. Database is an exact copy of local dev. Backen
 
 ---
 
+## Updates — 2026-09-02
+
+- Kamsi AI daily brief built and deployed — `/api/kamsi/ai/` live
+- Dilaksi AI daily brief built and deployed — `/api/dilaksi/ai/` live
+- pgAdmin remote access configured — PostgreSQL now accepts external connections from Windows PC
+- Skill profiles read from `C:\Users\PC\Downloads\skill\` for Kamsi and Dilaksi
+
 ## Pending (Not Blocking)
 
 | Item | Priority | Notes |
