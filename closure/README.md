@@ -178,6 +178,21 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-09-03 — DM Dashboard: Task Verification + Gemini Multi-Key Fallback
+
+**Context:** Two major DM Dashboard backend/frontend builds deployed to Contabo VPS (158.220.99.127, port 8499). Plus model fix and AIOS documentation.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-TASKVERIFY-2026-09-03 | Staff task verification system — required completion note + Google Ads auto-verify via `google_ads_change_events` + Muguntha approve/reject in TeamTaskMonitor | `dm-dashboard/backend/app/ai_shared.py`, `task_log.py`, `frontend/src/components/DailyBriefWidget.jsx`, `MyTaskLog.jsx`, `admin/pages/TeamTaskMonitor.jsx` | `capability/piranav/task-verification-2026-09-03.md` | `116ca5c` (piranav_aios capability doc) | YES | None | Add key 3 when Piranav provides third Google account | PASS |
+| DM-GEMINI-FALLBACK-2026-09-03 | Gemini multi-key fallback — `call_gemini()` cycles through GEMINI_API_KEY/_2/_3 on 429 quota exhaustion | `dm-dashboard/backend/app/ai_shared.py` | `capability/piranav/gemini-multi-key-fallback-2026-09-03.md` | `eb60cc6` (dm-dashboard repo) | YES | Key 3 not yet provided — slot ready in code | Piranav to provide 3rd API key when available | PASS |
+| DM-MODEL-FIX-2026-09-03 | Revert Gemini model from `gemini-2.0-flash` (retired/404) to `gemini-3.6-flash` | `dm-dashboard/backend/app/ai_shared.py` | Server log: no 502/404 Gemini errors after restart. Kamsi AI brief working. | `528f6ab` (dm-dashboard repo) | YES | None | None | PASS |
+| AIOS-CAP-2026-09-03 | Write AIOS capability docs for task verification + Gemini fallback + commit to piranav_aios | `capability/piranav/task-verification-2026-09-03.md`, `capability/piranav/gemini-multi-key-fallback-2026-09-03.md` | This closure entry | Pending push | YES | None | Push after closure written | PASS |
+
+**Session Result: PASS** — Task verification live, Gemini fallback live, model fix live, all AIOS docs written. Key 3 slot open.
+
+---
+
 ## Pre-2026-06-25 Closure Status
 
 Work performed before 2026-06-25 is documented in Desktop daily logs but does NOT have formal closure entries here. These sessions are considered LEGACY — not failed, but outside the closure authority of this file.
