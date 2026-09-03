@@ -9,7 +9,7 @@
 | Staff / Team Name | piranav |
 | Assigned Subfolder | `C:\Users\PC\Documents\piranav_aios` |
 | Parent Domain | Website Tec team |
-| Coordinator | Varmen |
+| Coordinator | Piranav (self-coordinated) |
 | GitHub Repository | https://github.com/piranavakanandigitweblanka-lgtm/piranav_aios |
 | Git Remote (verified 2026-08-14) | `https://github.com/piranavakanandigitweblanka-lgtm/piranav_aios.git` |
 | Local Path | `C:\Users\PC\Documents\piranav_aios` |
@@ -43,7 +43,7 @@ This folder establishes the minimum queryable, evidence-backed, safe workspace.
 
 ## Boundary Rule
 
-**Work only inside `C:\Users\PC\Documents\piranav_aios` unless Varmen has given written approval to operate elsewhere.**
+**Work only inside `C:\Users\PC\Documents\piranav_aios` unless Piranav has given approval to operate elsewhere.**
 
 Any exception must be documented in `handover/README.md` before the out-of-scope action is taken.
 
@@ -86,7 +86,7 @@ C:\Users\PC\Desktop\Website technical - piranav\
 
 This evidence is tracked in the parent git repo (`C:\Users\PC`) under the remote `aios-piranav`.
 
-**This evidence has NOT been copied or moved into `piranav_aios` as part of this build.** Copying without approval would create duplicate truth. Indexing and linking will be performed in a separate authorised session after Varmen confirms the approach.
+**This evidence has NOT been copied or moved into `piranav_aios` as part of this build.** Copying without approval would create duplicate truth. Indexing and linking will be performed in a separate authorised session when Piranav confirms the approach.
 
 ---
 
@@ -106,7 +106,7 @@ Three confirmed duplicate files were found outside `piranav_aios` during discove
 | Role | Name |
 |---|---|
 | Assigned Staff | piranav |
-| Coordinator / Reviewer | Varmen |
+| Coordinator / Reviewer | Piranav (self-coordinated) |
 | Parent Domain | Website Tec team |
 
 ---
@@ -128,9 +128,9 @@ This workspace FAILS review if:
 
 ## Next Step
 
-1. Varmen to confirm: is `piranav_aios` or `aios-piranav` the canonical GitHub repo name?
+1. Repo name confirmed as `piranav_aios` (verified 2026-08-14).
 2. Run first evidence-indexing session to link existing `Desktop/Website technical - piranav/` daily logs into `evidence/` and `closure/`
-3. Remove confirmed duplicate files in a single clean-up commit (requires Varmen approval)
+3. Remove confirmed duplicate files in a single clean-up commit (requires Piranav approval)
 
 ---
 
