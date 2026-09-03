@@ -236,6 +236,25 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-09-03 — AIOS PARTIAL Closure Resolution (Doc Creation Session)
+
+**Context:** Worked through OPEN/PARTIAL backlog from previous sessions. All Group A (server actions) and B3 (eod-ads.html) confirmed already done. Created 6 missing capability docs. B4 deferred (file in Downloads). D items remain blocked on Piranav input.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SAJEEPAN-R3-CAP-2026-09-03 | Create capability doc for Sajeepan R3 — Revenue Protection & PPC Actions (8 queries, ROAS bands, OOS override) | `capability/sajeepan/requirement-3-2026-08-11.md` | Commit `b74a7a2` | `b74a7a2` | YES | None | GPT review | PASS |
+| PIRANAV-AUTH-CAP-2026-09-03 | Create capability doc for DB-backed auth system — Neon table schema, page_key model, admin unlock | `capability/piranav/auth-system-2026-08-10.md` | Commit `b74a7a2` | `b74a7a2` | YES | None | GPT review | PASS |
+| PIRANAV-API-CAP-2026-09-03 | Create capability doc for API consolidation — 11→3 functions, Vercel limit, routing pattern | `capability/piranav/api-consolidation-2026-08-10.md` | Commit `b74a7a2` | `b74a7a2` | YES | None | Fix stale sajeepan workflow doc | PASS |
+| PIRANAV-STAFFIDPERF-CAP-2026-09-03 | Create capability doc for Staff ID Performance — 5-tab SPA + full recovery incident | `capability/piranav/staff-id-performance-2026-08-14.md` | Commit `b74a7a2` | `b74a7a2` | YES | None | GPT review | PASS |
+| PIRANAV-SR01-OVW-2026-09-03 | Create SR-01 workstream overview doc — all pages, APIs, git push instructions | `docs/dashboards/architecture/sr01-workstream-overview.md` | Commit `b74a7a2` | `b74a7a2` | YES | SR-01 Vercel URL not confirmed | Piranav to confirm deployment URL | PASS |
+| PIRANAV-SEO-AUG07-CAP-2026-09-03 | Extend SEO capability doc with Aug 7 reactive week selector + 26-week history table | `capability/piranav/seo-dashboard-2026-08-03.md` | Commit `b74a7a2` | `b74a7a2` | YES | None | None | PASS |
+| AIOS-GROUP-A-VERIFY-2026-09-03 | Verified A1 (NVIDIA key) + A2 (server restart) + B3 (eod-ads.html) already done — no action needed | N/A | Piranav confirmed in session | N/A | YES | None | None | PASS |
+| CPPC30-B4-DEFERRED-2026-09-03 | B4 — Liquid feed template commit deferred — file needs to be located in Downloads | N/A | N/A | N/A | YES | File in Downloads — not yet committed | Locate google-feed-fixed.liquid and commit | OPEN |
+
+**Session Result: PASS** — 6 capability docs created and committed (`b74a7a2`). All actionable PARTIAL items resolved. B4 deferred. D group blocked on Piranav input.
+
+---
+
 ## Pre-2026-06-25 Closure Status
 
 Work performed before 2026-06-25 is documented in Desktop daily logs but does NOT have formal closure entries here. These sessions are considered LEGACY — not failed, but outside the closure authority of this file.
