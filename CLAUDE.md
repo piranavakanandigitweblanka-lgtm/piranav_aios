@@ -61,6 +61,21 @@ Each project has its own separate git remote. Never run `git push` from the wron
 **Before any `git push` — confirm which directory you are in and which remote it points to.**
 Run `git remote -v` if unsure. Never push dm-dashboard or Staff-requirements changes from the `piranav_aios` root.
 
+### Rule 6 — Always Tell Piranav Which GitHub Account to Select
+Before every `git push`, Claude must tell Piranav exactly which GitHub account to select in the Windows credential popup.
+
+| Project | Push from | GitHub Account to Select |
+|---|---|---|
+| AIOS docs + Staff-requirements-02 | `piranav_aios/` | `piranavakanandigitweblanka-lgtm` |
+| dm-dashboard | `piranav_aios/dm-dashboard/` | `websitetecteam-arch` |
+| Staff-requirements (SR-01) | `piranav_aios/Staff-requirements/` | `digitalmarketing69140951-sys` |
+| Shopify themes | Shopify CLI only — no git push | N/A |
+
+**Format to use before every push:**
+> "Pushing [project] — select **[account name]** in the GitHub account popup."
+
+Never run `git push` and leave Piranav to guess the account. Always say it first.
+
 ---
 
 ## Session Order — Follow Every Time
