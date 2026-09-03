@@ -1,0 +1,132 @@
+Rank,SKU,Type,Shopify_UK_Orders_DB,Amazon_UK_Orders_DB,eBay_UK_Orders_DB,Total_Marketplace_Orders,Original_Shopify_Listing_Status,Original_Amazon_Revenue,Original_eBay_Revenue,Priority,Note
+18,LDSG95DIE2743PK,Single,0,33,1,34,Not listed on Shopify UK,£714.87,£24.29,EXTREME,Top PMax candidate — list on Shopify first
+24,LDSG95DIE2745PK,Single,0,18,2,20,"Listed, not selling",£566.06,£111.87,EXTREME,Draft listing — activate then PMax
+52,LDMST64B2286PK,Single,0,16,3,19,"Listed, not selling",£364.35,£68.64,EXTREME,Draft listing only — activate then PMax
+45,WLRPE27BM,Single,0,3,12,15,"Listed, not selling",£66.21,£389.16,HIGH,Strong eBay demand
+61,LDMC35E144APK,Single,0,13,1,14,Not listed on Shopify UK,£368.36,£29.89,HIGH,Not listed — priority to list
+116,ENC9103,Single,0,12,0,12,"Listed, not selling",£197.47,£62.67,HIGH,Amazon demand — activate listing
+42,12RPIP454002,Single,0,8,4,12,Not listed on Shopify UK,£368.06,£118.73,HIGH,Not listed — priority to list
+30,12IP20400,Single,0,0,9,9,"Listed, not selling",£199.90,£430.27,HIGH,Strong eBay demand
+17,PLHIRR,Single,0,6,3,9,"Listed, not selling",£380.57,£371.34,HIGH,Selling on both marketplaces
+82,LDSG95DIE274APK,Single,0,6,1,7,Not listed on Shopify UK,£293.45,£48.89,HIGH,Not listed — priority to list
+100,ENC641,Single,0,6,1,7,Not listed on Shopify UK,£234.99,£58.29,HIGH,Not listed — priority to list
+135,ENC678,Single,0,6,1,7,"Listed, not selling",£184.50,£47.07,HIGH,Listed but not selling — PMax
+181,ENC903,Single,0,6,1,7,"Listed, not selling",£152.23,£21.79,HIGH,Amazon dominant
+217,LHXSHE27WH3PK,Single,0,6,1,7,Not listed on Shopify UK,£126.51,£19.52,HIGH,Not listed — priority to list
+176,PLTEBM,Single,0,6,1,7,"Listed, not selling",£144.33,£35.88,HIGH,Was selling all-time but 0 in period
+67,ENC285,Single,0,2,5,7,"Listed, not selling",£206.73,£184.28,HIGH,Draft listing — activate then PMax
+129,LDMT45E2745PK,Single,0,3,8,11,Not listed on Shopify UK,£73.87,£166.24,HIGH,Strong eBay demand — not listed
+185,LDSHEAE2743PK,Single,0,7,1,8,"Listed, not selling",£146.30,£22.89,HIGH,Amazon demand confirmed
+80,WLRPE27BM2PK,Single,0,2,4,6,"Listed, not selling",£36.19,£309.94,HIGH,Strong eBay demand
+170,WCCYSP160WH2PK,Single,0,0,6,6,Not listed on Shopify UK,£76.94,£110.63,MEDIUM,eBay demand — not listed
+85,PLADRR,Single,0,4,1,5,"Listed, not selling",£297.50,£38.24,MEDIUM,Amazon demand — listed not selling
+198,PHSF1BRTCO3PK,Single,0,4,1,5,Not listed on Shopify UK,£135.29,£22.99,MEDIUM,Not listed
+161,LSMCP1ULMC,Single,0,4,1,5,"Listed, not selling",£122.67,£75.78,MEDIUM,Amazon demand
+294,CL3RBKAPK,Single,0,4,2,6,"Listed, not selling",£69.67,£20.12,MEDIUM,Marketplace demand confirmed
+273,CL3RIVAPK,Single,0,4,1,5,"Listed, not selling",£81.46,£19.99,MEDIUM,Amazon demand
+250,TPOS1PRBSQ,Single,0,5,0,5,"Listed, not selling",£100.67,£15.10,MEDIUM,Amazon demand
+253,ENC3291,Single,0,1,4,5,"Listed, not selling",£22.89,£91.47,MEDIUM,eBay dominant
+374,ENC9257,Single,0,1,1,2,Not listed on Shopify UK,£21.68,£36.60,LOW,Not listed
+447,LSWE315BU,Single,0,1,1,2,"Listed, not selling",£27.19,£11.99,LOW,Low priority
+352,ENC64,Single,0,1,2,3,"Listed, not selling",£25.69,£40.39,LOW,Low demand
+296,ENC9723,Single,0,1,2,3,Not listed on Shopify UK,£32.89,£56.14,LOW,Not listed
+274,ENC1315,Single,0,1,0,1,"Listed, not selling",£53.78,£45.58,LOW,Low demand
+270,ENC1522,Single,0,3,1,4,Not listed on Shopify UK,£53.89,£49.89,MEDIUM,Not listed — some demand
+303,CL3RBWAPK,Single,0,2,1,3,"Listed, not selling",£65.89,£19.99,LOW,Low demand
+243,LDMST64B224APK,Single,0,1,3,4,Not listed on Shopify UK,£22.99,£97.32,MEDIUM,New listing (2026-08-17) — monitor
+113,LSMCSQWYBL,Single,0,0,1,1,"Listed, not selling",£250.24,£23.89,LOW,Draft listing only
+345,ENC1483,Single,0,1,1,2,Not listed on Shopify UK,£22.89,£46.52,LOW,Not listed
+292,PLWCBC,Single,0,0,0,0,"Listed, not selling",£68.67,£21.89,LOW,No marketplace demand in period
+265,ENC1808,Single,0,0,0,0,Not listed on Shopify UK,£65.67,£40.78,LOW,No marketplace demand in period
+328,ENC8896,Single,0,0,0,0,"Listed, not selling",£26.99,£48.07,LOW,No marketplace demand in period
+314,ENC4319,Single,0,0,0,0,"Listed, not selling",£47.89,£34.69,LOW,No marketplace demand in period
+317,ENC4372,Single,0,1,1,2,"Listed, not selling",£40.69,£41.30,LOW,Low demand
+360,ENC8191,Single,0,0,0,0,"Listed, not selling",£21.89,£41.78,LOW,No marketplace demand in period
+245,ENC8893,Single,0,0,0,0,"Listed, not selling",£71.67,£48.21,LOW,No marketplace demand in period
+368,ENC9164,Single,0,0,0,0,Not listed on Shopify UK,£41.78,£19.89,LOW,No marketplace demand in period
+111,CRSF2003CO+PHHN1PBRCO3PK+LSGG200AR3PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£212.97,£63.89,REVIEW,Bundle — verify as Shopify product
+32,CRFF500CH+WCCY1ROCH3PK+LDMT45E2743PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£466.01,£109.48,REVIEW,Bundle — verify as Shopify product
+7,PHUH1HETBM2PK+LSHM400HE2PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,"£1,177.60",£53.26,REVIEW,Bundle — verify as Shopify product
+12,LSHM400HE2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£800.04,£47.40,REVIEW,Bundle — verify as Shopify product
+56,CRFF500CH+WCCY1ROCH3PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£312.64,£96.58,REVIEW,Bundle — verify as Shopify product
+298,WCCYSQCH2PK+LDMT45E2742PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£43.89,£43.89,REVIEW,Bundle — verify as Shopify product
+102,LSMCP1ULMC+ICST64E27,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£212.38,£79.74,REVIEW,Bundle — verify as Shopify product
+46,LSMCSQWYBL2PK+RPM40WH2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£412.80,£39.89,REVIEW,Bundle — verify as Shopify product
+59,LSCY290GY3PK+RPR44WH3PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£367.71,£38.79,REVIEW,Bundle — verify as Shopify product
+21,LSHM400HE+RPR44WH,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,"£1,844.24",£45.78,REVIEW,Bundle — verify as Shopify product. Component LSHM400HE has demand
+178,CRFF500BM+WCSN1BM3PK+LDST45E2743PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£37.89,£139.51,REVIEW,Bundle — verify as Shopify product
+330,LSMS320BI3PK+RPR44WH3PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£37.69,£36.77,REVIEW,Bundle — verify as Shopify product
+213,CRSF2003BC+PHSH1PBRYB3PK+LSDO210BC3PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£112.87,£35.90,REVIEW,Bundle — verify as Shopify product
+179,CRSF2003BM+PHHN1PBRGD3PK+LSDO210BI3PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£70.95,£104.08,REVIEW,Bundle — verify as Shopify product
+153,CRSF2003BM+PHRB1PBR40BM3PK+LSBS160GR3PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£105.67,£103.56,REVIEW,Bundle — verify as Shopify product
+144,LSTF400WH2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£191.88,£28.89,REVIEW,Bundle — verify as Shopify product
+343,CRFF500BM+WCSC1BM3PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£31.89,£37.88,REVIEW,Bundle — verify as Shopify product
+151,PHCT1BMRBM+PHBA1BMRBM+LSYG410YE,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£159.40,£52.98,REVIEW,Bundle — verify as Shopify product
+239,LSEL400OR2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£95.57,£26.87,REVIEW,Bundle — verify as Shopify product
+40,LSCY210BG3PK+RPR44WH3PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£470.44,£23.89,REVIEW,Bundle — verify as Shopify product
+133,PHTT1PBR3BM+LSWT300BM+ICST64E27603PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£93.87,£139.00,REVIEW,Bundle — verify as Shopify product
+66,LSEL400GY2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£277.71,£113.84,REVIEW,Bundle — verify as Shopify product
+10,LSCYRO300WH2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£854.67,£68.05,REVIEW,Bundle — verify as Shopify product
+301,PSOS2HERBM2PK+ICST64E272PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£59.78,£27.89,REVIEW,Bundle — verify as Shopify product
+22,WCDCBM4PK+RPR44WH4PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£665.34,£27.50,REVIEW,Bundle — verify as Shopify product
+114,CRFF500BM+PHNW1RBM3PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£231.12,£37.49,REVIEW,Bundle — verify as Shopify product
+311,CRSF100GB+LHNSE27GB+LSRP260GB,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£57.78,£25.29,REVIEW,Bundle — verify as Shopify product
+11,LSCYRO300GD2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£861.10,£43.04,REVIEW,Bundle — verify as Shopify product
+123,LSCY290NB2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£197.03,£53.38,REVIEW,Bundle — verify as Shopify product
+201,CRSF100CH+PHCHPCRCH+LSCY290CH,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£111.56,£43.30,REVIEW,Bundle — verify as Shopify product
+50,LSMS320WH2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£408.60,£25.48,REVIEW,Bundle — verify as Shopify product
+232,CRFF100GB2PK+LHNSE27GB2PK+ICST64E272PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£107.22,£22.39,REVIEW,Bundle — verify as Shopify product
+47,LSCY290BI2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£427.74,£23.40,REVIEW,Bundle — verify as Shopify product
+132,CRSF100BM2PK+PHRYWP1RBM2PK+ICST64E272PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£211.82,£22.89,REVIEW,Bundle — verify as Shopify product
+406,CRFF500BM+PHBK1PBRBA3PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£26.39,£24.89,REVIEW,Bundle — verify as Shopify product
+83,LSMCSPMSMC+RPM40WH,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£261.90,£77.45,REVIEW,Bundle — verify as Shopify product
+15,LSCYRO200GD2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£706.03,£78.67,REVIEW,Bundle — verify as Shopify product
+75,WSDM240BM+WCBNBM2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£51.98,£306.15,REVIEW,Bundle — verify as Shopify product
+134,LSGL15014CL3PK+RPM40WH3PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£207.12,£24.60,REVIEW,Bundle — verify as Shopify product
+23,LSMS320BI2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£641.23,£46.30,REVIEW,Bundle — verify as Shopify product
+25,LSMS320GY2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£613.34,£49.78,REVIEW,Bundle — verify as Shopify product
+9,LSMCSPFLMC+RPR44WH,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£911.01,£21.84,REVIEW,Bundle — verify as Shopify product
+13,LSCYRO200WH2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£703.89,£93.82,REVIEW,Bundle — verify as Shopify product
+20,LSCYRO200BM2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£702.70,£24.89,REVIEW,Bundle — verify as Shopify product
+218,CRSF100GB+PHMU1PBRGB+LSDM220GB,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£99.96,£45.78,REVIEW,Bundle — verify as Shopify product
+90,CRFF100YB2PK+LHNSE27YB2PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£248.90,£77.69,REVIEW,Bundle — verify as Shopify product
+155,CRSF100BM+PHCHPBRGB+LSCY290GB,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£124.45,£82.40,REVIEW,Bundle — verify as Shopify product
+284,PHTT1PBR3BM+LSWT300BM,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£74.67,£20.36,REVIEW,Bundle — verify as Shopify product
+347,WLRPE27BM+LDMA60E274WW,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£24.89,£43.48,REVIEW,Bundle — verify as Shopify product
+142,LSMCSPFLMC+RPM40WH,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£197.35,£23.89,REVIEW,Bundle — verify as Shopify product
+204,CRSF100CO+PHMU1PBRCO+LSDM220CO,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£122.95,£30.52,REVIEW,Bundle — verify as Shopify product
+145,PLTTBC+LSTF40BC,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£196.12,£23.88,REVIEW,Bundle — verify as Shopify product
+166,CRSF100SN+PHCHPCRSN+LSCY290SN,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£169.23,£21.29,REVIEW,Bundle — verify as Shopify product
+215,CRSF100YB+PHMU1PBRYB+LSDM220YB,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£71.97,£76.30,REVIEW,Bundle — verify as Shopify product
+58,LSMCSQWYBL+RPM40WH,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£191.12,£217.35,REVIEW,Bundle — verify as Shopify product
+432,LSCY210BC2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£23.89,£18.89,REVIEW,Bundle — verify as Shopify product
+8,WCDCBM3PK+RPR44WH3PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£999.90,£23.65,REVIEW,Bundle — verify as Shopify product
+342,TPHTTN2PBRBM+LSGLBC160AR+LDMST64E274,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£47.48,£22.49,REVIEW,Bundle — verify as Shopify product
+427,CRFF108GB4PK+HK10GB4PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£23.59,£20.59,REVIEW,Bundle — verify as Shopify product
+64,WCDTRO3PK+RPR44WH3PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£329.26,£64.50,REVIEW,Bundle — verify as Shopify product
+86,CRSF100BB+PHCH1PBRBB+LSCY290BB,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£117.05,£215.74,REVIEW,Bundle — verify as Shopify product
+49,CRFF100GB2PK+LHNSE27GB2PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£419.82,£16.89,REVIEW,Bundle — verify as Shopify product
+68,CRFF100SN2PK+LHNSE27SN2PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£371.57,£16.89,REVIEW,Bundle — verify as Shopify product
+192,CRSF100BM+PHHN1PBRGD+LSDO210BG,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£69.17,£95.34,REVIEW,Bundle — verify as Shopify product
+29,WCBTC140FG2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£595.14,£39.70,REVIEW,Bundle — verify as Shopify product
+258,CRSF100CO+PHSH1PBRCO+LSDM220CO+LDWWE2715,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£91.56,£18.96,REVIEW,Bundle — verify as Shopify product
+415,PHUH2HETBM+SPHEBM+WCSPROCO+ICST64E27,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£22.89,£23.89,REVIEW,Bundle — verify as Shopify product. Component PHUH2HETBM has demand
+26,LSCYRO120WH2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£594.64,£54.99,REVIEW,Bundle — verify as Shopify product
+33,LSMCSPSQMC+RPM40WH,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£498.86,£72.56,REVIEW,Bundle — verify as Shopify product
+259,WSFH1BMYB+PSDS2RBR+SCRN70BM+LSFT220YE,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£89.59,£20.57,REVIEW,Bundle — verify as Shopify product
+140,WCFRBM+ICST64E2740,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£111.65,£112.02,REVIEW,Bundle — verify as Shopify product. Component WCFRBM has demand
+51,CRSF100BC+PHCH1PBRBC+LSCY290BC,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£331.69,£102.00,REVIEW,Bundle — verify as Shopify product
+27,LSCY210BG2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£594.02,£49.74,REVIEW,Bundle — verify as Shopify product
+19,LSCYRO120BM2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£678.59,£53.83,REVIEW,Bundle — verify as Shopify product
+309,CRSF100BM+LHNSE27YB+LSDM220GS+ICST64E27,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£43.78,£39.60,REVIEW,Bundle — verify as Shopify product
+169,CRSF2003BM+PHNW1RBM3PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£127.27,£61.45,REVIEW,Bundle — verify as Shopify product
+14,PLTTBC+LSFT220BC,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£739.35,£46.09,REVIEW,Bundle — verify as Shopify product
+241,CRSF100BM+LHNSE27YB+SCRN70BM+LSFT220GS,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£104.45,£16.49,REVIEW,Bundle — verify as Shopify product
+433,BLBB1GU225+LDGU10CD5,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£20.79,£21.89,REVIEW,Bundle — verify as Shopify product
+6,LSHM300HE+RPR44WH,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,"£1,224.69",£20.89,REVIEW,Bundle — verify as Shopify product. Component LSHM300HE has demand
+281,CRFF500BC+PHWL1PBRBC3PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£20.74,£75.78,REVIEW,Bundle — verify as Shopify product
+97,WCBTC120FG2PK+RPR44WH2PK,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£289.66,£17.76,REVIEW,Bundle — verify as Shopify product
+226,PLTYBC+ICST64E27,Bundle,0,N/A,N/A,N/A,Not listed on Shopify UK,£103.43,£31.52,REVIEW,Bundle — verify as Shopify product
+36,LSMCSQWYRE+RPM40WH,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£391.89,£157.74,REVIEW,Bundle — verify as Shopify product
+87,LSGLULCL2PK+RPM40WH2PK,Bundle,0,N/A,N/A,N/A,"Listed, not selling",£242.57,£90.13,REVIEW,Bundle — verify as Shopify product
+3,CRSF100BM+PHCH1BMRBM+LSCY290BM,Bundle,0,N/A,N/A,N/A,"Listed, not selling","£1,707.63",£102.75,REVIEW,Bundle — verify as Shopify product. Highest revenue bundle in CSV
