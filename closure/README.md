@@ -193,6 +193,24 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-09-03 — DM Dashboard: AI Fallback Chain Fix (Groq + NVIDIA NIM + Think Block Strip)
+
+**Trigger:** Live server showing `Groq 400: llama-3.1-70b-versatile decommissioned` — AI assistant completely broken.
+
+| Req ID | Task | Asset | Evidence | Commit | Queryable | Blockers | Next Step | Status |
+|---|---|---|---|---|---|---|---|---|
+| DM-GROQ-FIX-2026-09-03 | Fix Groq model — switched from decommissioned `llama-3.1-70b-versatile` to `qwen/qwen3.6-27b` (confirmed available via Groq /v1/models API) | `dm-dashboard/backend/app/ai_shared.py` | Server curl: `"ok":true` after merge | dm-dashboard `main` (multiple commits) | YES | None | None | PASS |
+| DM-NVIDIA-FALLBACK-2026-09-03 | Add NVIDIA NIM as 3rd fallback — `meta/llama-3.3-70b-instruct` via `https://integrate.api.nvidia.com/v1/chat/completions` | `dm-dashboard/backend/app/ai_shared.py` | `capability/piranav/ai-fallback-chain-nvidia-2026-09-03.md` | dm-dashboard `main` | YES | `NVIDIA_API_KEY` must be added to server `.env` manually | Add key to server .env then restart | PASS |
+| DM-THINK-STRIP-2026-09-03 | Strip `<think>...</think>` reasoning blocks from NVIDIA NIM responses before returning to frontend | `dm-dashboard/backend/app/ai_shared.py` — `_call_nvidia()` uses `re.sub(r"<think>.*?</think>\s*", "", text, flags=re.DOTALL)` | Server curl showed clean output after merge `7137f01` | dm-dashboard `main` `7137f01` | YES | Server needs `git pull && systemctl restart dm-dashboard` after latest merge | Run restart on server | PASS |
+| AIOS-CAP-NVIDIA-2026-09-03 | Write capability doc for AI fallback chain (Groq fix + NVIDIA + think strip) | `capability/piranav/ai-fallback-chain-nvidia-2026-09-03.md` | This closure entry | piranav_aios — pending commit | YES | None | Commit + push piranav_aios | PASS |
+
+**Session Result: PASS** — AI assistant fixed, 3-provider fallback chain live (Gemini → Groq qwen → NVIDIA NIM), think blocks stripped, capability doc written.
+
+**Pending server action:** `cd /var/www/dashboard-dm && git pull origin main && systemctl restart dm-dashboard` — needed for think-block strip fix.
+**Pending AIOS action:** Add NVIDIA_API_KEY to server `.env`.
+
+---
+
 ## Pre-2026-06-25 Closure Status
 
 Work performed before 2026-06-25 is documented in Desktop daily logs but does NOT have formal closure entries here. These sessions are considered LEGACY — not failed, but outside the closure authority of this file.
