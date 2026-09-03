@@ -150,6 +150,18 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-09-03 — AIOS Untracked File Commit (Session Housekeeping)
+
+**Context:** CYBUG session start checks identified 37 untracked AIOS files across capability, closure, deployment, evidence, implementation, validation, prompts, reports, and new Shopify liquid/json files. All were staged and committed in a single housekeeping commit, then pushed to origin/main.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-HOUSEKEEPING-2026-09-03 | Commit 37 untracked AIOS files — capability/closure/deployment/evidence/implementation/validation/prompts/reports + new Shopify liquid files | Multiple — see commit `379c7dd` | `git show 379c7dd --stat` | `379c7dd` (pushed to origin/main) | YES | None | None | PASS |
+
+**Session Result: PASS** — All untracked AIOS files now committed and pushed. 22 modified Shopify theme files (ledsone-uk, ledsone-fr, electricalsone) remain uncommitted — not AIOS docs, deferred to Piranav instruction.
+
+---
+
 ## Pre-2026-06-25 Closure Status
 
 Work performed before 2026-06-25 is documented in Desktop daily logs but does NOT have formal closure entries here. These sessions are considered LEGACY — not failed, but outside the closure authority of this file.
