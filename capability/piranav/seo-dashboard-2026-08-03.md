@@ -77,3 +77,37 @@ All data modules in one `api/seo.js`, routed by `?module=` param. Modules: `gsc`
 - Auto-generated alerts reduce weekly review time — issues surface without manual analysis
 - Weekly cloud agents ensure SEMrush data is always ≤7 days old without manual refresh
 - Backlinks health chart enables early detection of authority loss before it impacts rankings
+
+---
+
+## Aug 7 Enhancement — Reactive Week Selector + Full 26-Week History
+**Date:** 2026-08-07 | **Commit:** `6e94b70` | **Status:** PASS
+
+### What Was Added
+
+| Feature | Description |
+|---|---|
+| `window._renderWeekly(ci, pi)` | Replaces static `curW/prevW` render with a parameterised renderer — any two weeks can be compared |
+| Current Week `<select>` | Dropdown populated from all 26 available weeks in the dataset |
+| Compare Week `<select>` | Second dropdown for the comparison week |
+| Instant re-render | Changing either dropdown re-renders the dashboard with no additional API call — data pre-loaded |
+| All Weeks history table | Collapsible table showing all 26 weeks newest-first |
+| Week highlight badges | CURRENT badge (blue) and COMPARE badge (grey) in the history table rows |
+| Partial week warning | Follows whichever week is selected as "current" — warns if data is incomplete |
+
+### What Was NOT Changed
+- Executive Insights — remain pinned to latest two weeks (intentional)
+- WoW Alerts — remain pinned to latest two weeks (intentional)
+- All API calls — no new endpoints; data for all 26 weeks was already returned by the existing API
+
+### Change Scale
+`+213 lines, -108 lines` in `Staff-requirements-02/pages/seo.html`
+
+### How the Week Selector Works
+1. On page load, all 26 weeks of data are fetched from the API and stored in `window._weeklyData`
+2. Both `<select>` dropdowns are populated with week labels (newest first)
+3. Defaults: Current Week = week index 0 (latest), Compare Week = week index 1 (previous)
+4. On dropdown change: `window._renderWeekly(currentIndex, compareIndex)` is called — re-renders all weekly panels with the selected weeks
+
+### Business Value
+Management can now select any historical week for comparison (e.g. comparing current week vs same week last quarter) without needing a new data pull. The 26-week history table gives a quick trend view without opening a separate report.
