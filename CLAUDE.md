@@ -48,6 +48,19 @@ After creating any capability, closure, evidence, or validation file — run `gi
 ### Rule 4 — No Duplicate Truth
 Before saving any file, search `piranav_aios/` for an existing equivalent. If one exists, extend it. Do not create a parallel copy. Log confirmed risks in `duplicate-risk/README.md`.
 
+### Rule 5 — Push to the Correct Repo Per Project
+Each project has its own separate git remote. Never run `git push` from the wrong directory.
+
+| Project | Directory to run git from | Remote |
+|---|---|---|
+| AIOS docs (evidence, closure, capability, prompts) | `piranav_aios/` | `piranavakanandigitweblanka-lgtm/piranav_aios` |
+| dm-dashboard | `piranav_aios/dm-dashboard/` | `websitetecteam-arch/dm-dashboard` |
+| Staff-requirements (SR-01) | `piranav_aios/Staff-requirements/` | `digitalmarketing69140951-sys/Staff-requirements` |
+| Staff-requirements-02 | `piranav_aios/` (subfolder of main repo) | `piranavakanandigitweblanka-lgtm/piranav_aios` |
+
+**Before any `git push` — confirm which directory you are in and which remote it points to.**
+Run `git remote -v` if unsure. Never push dm-dashboard or Staff-requirements changes from the `piranav_aios` root.
+
 ---
 
 ## Session Order — Follow Every Time
