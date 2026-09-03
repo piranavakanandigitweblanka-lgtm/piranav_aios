@@ -221,6 +221,21 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-09-03 — DM Dashboard: Jefri AI Widget + My Tasks AI Brief + Groq Model Fix
+
+| Req ID | Task | Asset | Evidence | Commit | Queryable | Blockers | Next Step | Status |
+|---|---|---|---|---|---|---|---|---|
+| DM-JEFRI-AI-2026-09-03 | Add DailyBriefWidget to Jefri dashboard — was missing | `frontend/src/jefri/JefriLayout.jsx` | `git show c5a0e00` | `c5a0e00` (dm-dashboard) | YES | None | None | PASS |
+| DM-ORPHAN-2026-09-03 | Delete orphan AiAssistant.jsx — replaced by DailyBriefWidget | `frontend/src/jefri/pages/AiAssistant.jsx` (deleted) | `git show e5e7c39` | `e5e7c39` (dm-dashboard) | YES | None | None | PASS |
+| DM-PROMPT-2026-09-03 | Update AI brief prompt across 11 staff files — full action detail, remove "which task?" | `backend/app/*_ai.py` (11 files) | `git show 3eec0c9` | `3eec0c9` (dm-dashboard) | YES | None | None | PASS |
+| DM-MYTASKS-2026-09-03 | Add AiBriefPanel to My Tasks page — auto-loads full brief on open | `frontend/src/components/MyTaskLog.jsx` | `git show 6e33301` | `6e33301` (dm-dashboard) | YES | None | None | PASS |
+| DM-THINK-2026-09-03 | Fix unclosed think block strip — Groq model outputs think with no closing tag | `backend/app/ai_shared.py`, `MyTaskLog.jsx`, `DailyBriefWidget.jsx` | `git show 3433676` | `3433676` (dm-dashboard) | YES | None | None | PASS |
+| DM-GROQ-MODEL-2026-09-03 | Switch Groq model to openai/gpt-oss-120b — only non-think model on this API key | `backend/app/ai_shared.py` | `git show 4161993` | `4161993` (dm-dashboard) | YES | None | None | PASS |
+
+**Session Result: PASS** — Jefri AI widget live, My Tasks page shows full AI brief for all 11 staff, think block issue resolved.
+
+---
+
 ## Pre-2026-06-25 Closure Status
 
 Work performed before 2026-06-25 is documented in Desktop daily logs but does NOT have formal closure entries here. These sessions are considered LEGACY — not failed, but outside the closure authority of this file.
