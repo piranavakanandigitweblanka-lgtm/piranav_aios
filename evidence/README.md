@@ -90,14 +90,14 @@ These are reference pointers only. Do not duplicate this content.
 | 2026-06-23 | `Desktop/Website technical - piranav/2026-06-23/` | Daily log, search intent design, AI advisor design, SEO improvements |
 | 2026-06-24 | `Desktop/Website technical - piranav/2026-06-24/` | Daily log, predictive search fix, 404 redesign, GMC fix, search input fix |
 
-Linking these into the Evidence Index above requires a separate authorised session (Varmen approval required).
+Linking these into the Evidence Index above requires a separate authorised session (Piranav approval required).
 
 ---
 
 ## Source / Evidence Used to Build This File
 
 - 2026-06-25 discovery scan — file inventory of `Desktop/Website technical - piranav/`
-- Varmen coordinator instruction for Mini-AIOS build
+- Piranav coordinator instruction for Mini-AIOS build
 
 ---
 
@@ -106,7 +106,7 @@ Linking these into the Evidence Index above requires a separate authorised sessi
 | Role | Name |
 |---|---|
 | Assigned Staff | piranav |
-| Coordinator / Reviewer | Varmen |
+| Coordinator / Reviewer | Piranav |
 | Last Updated | 2026-06-25 |
 
 ---
@@ -126,7 +126,7 @@ Evidence FAILS if: a closure entry exists with no matching evidence item in this
 
 ## Next Step
 
-1. Varmen to confirm back-linking approach for pre-existing evidence
+1. Piranav to confirm back-linking approach for pre-existing evidence
 2. Run evidence-linking session to populate the index table with 2026-06-09 through 2026-06-24 entries
 
 ---

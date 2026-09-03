@@ -9,7 +9,7 @@ Daily Session Closure
 Generate a complete, formatted closure entry for the current session that meets the PASS standard — listing every task completed, its evidence path, queryability result, and next step. No task may be closed without this entry.
 
 ## Business Question
-> "Did every task completed in this session produce a queryable, evidence-backed closure entry that Varmen can review without asking piranav for context?"
+> "Did every task completed in this session produce a queryable, evidence-backed closure entry that Piranav can review without asking piranav for context?"
 
 ## When to Use
 - At the end of every working session, without exception

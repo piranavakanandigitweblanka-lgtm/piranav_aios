@@ -10,7 +10,7 @@ This is the single authoritative daily closure record for piranav's Mini-AIOS wo
 
 ## Why This Exists
 
-A task without a closure entry is invisible to the next session, to Varmen, and to any audit. The closure log makes all completed work queryable, traceable, and reviewable in one place.
+A task without a closure entry is invisible to the next session, to Piranav, and to any audit. The closure log makes all completed work queryable, traceable, and reviewable in one place.
 
 Desktop daily log files (`Desktop/Website technical - piranav/YYYY-MM-DD/YYYY-MM-DD.md`) remain as narrative session records but are NOT the closure authority. This file is.
 
@@ -26,7 +26,7 @@ Desktop daily log files (`Desktop/Website technical - piranav/YYYY-MM-DD/YYYY-MM
 
 1. Every task — documentation, code, investigation, or fix — must have one closure row before the session ends.
 2. A row is PASS only when evidence exists AND is linked. A row without an evidence path is automatically FAIL.
-3. If a task cannot be closed (blocked, incomplete, waiting on Varmen), it must still have a row — mark it OPEN with a blocker description.
+3. If a task cannot be closed (blocked, incomplete, waiting on Piranav), it must still have a row — mark it OPEN with a blocker description.
 4. Queryability result (YES/NO) means: can this closure entry be found and understood by a new session reading only the files in `piranav_aios/`?
 5. Do NOT close tasks that have a FAIL validation result — open a follow-up task instead.
 
@@ -177,7 +177,7 @@ Back-filling legacy closure entries for sessions 2026-06-09 through 2026-06-24 r
 ## Source / Evidence Used to Build This File
 
 - 2026-06-25 discovery scan — confirmed existing session structure
-- Varmen coordinator instruction for Mini-AIOS build
+- Piranav self-coordinated Mini-AIOS build
 
 ---
 
@@ -186,7 +186,7 @@ Back-filling legacy closure entries for sessions 2026-06-09 through 2026-06-24 r
 | Role | Name |
 |---|---|
 | Assigned Staff | piranav |
-| Coordinator / Reviewer | Varmen |
+| Coordinator / Reviewer | Piranav (self-coordinated) |
 | Last Updated | 2026-06-25 |
 
 ---
@@ -208,7 +208,7 @@ Closure FAILS if: any task is completed without a row, any PASS row has no evide
 
 Next session must:
 1. Read this file first
-2. Check OPEN items (AIOS-STARTER-007, AIOS-STARTER-008) for Varmen response
+2. Check OPEN items (AIOS-STARTER-007, AIOS-STARTER-008) for Piranav response
 3. Add new closure rows for any work done in that session
 
 ---

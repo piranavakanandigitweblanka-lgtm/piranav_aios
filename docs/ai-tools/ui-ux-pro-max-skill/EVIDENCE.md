@@ -15,7 +15,7 @@ This file records all evidence for the integration and use of the UI UX Pro Max 
 | Event | UI UX Pro Max Skill integrated into AIOS |
 | Date | 2026-06-26 |
 | Performed By | piranav (Claude Code) |
-| Approved By | Varmen (per task instruction) |
+| Approved By | Piranav (per task instruction) |
 | Evidence Type | Evidence markdown (this file + folder creation) |
 | Evidence Path | `docs/ai-tools/ui-ux-pro-max-skill/` |
 | Status | PASS — folder created, 7 markdown files written, PowerPoint copied |
@@ -85,7 +85,7 @@ A new duplicate risk was identified and must be logged in `duplicate-risk/README
 | Role | Name |
 |---|---|
 | Authored | piranav |
-| Reviewer | Varmen |
+| Reviewer | Piranav |
 | Last Updated | 2026-06-26 |
 
 ---

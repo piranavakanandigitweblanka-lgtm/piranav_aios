@@ -30,11 +30,11 @@ Before opening any files, confirm:
 | Question | Where to Find Answer |
 |---|---|
 | Which store? | `source-map/README.md` → Shopify Store Map |
-| What is the problem? | Closure entry from previous session, or Varmen's instruction |
+| What is the problem? | Closure entry from previous session, or Piranav's instruction |
 | Which domain does it fall under? | `ARCHITECTURE.md` → Domain Map |
 | What is the importance score? | `ARCHITECTURE.md` → Domain Map or source guide |
 
-Only proceed if the task is inside piranav's boundary. Out-of-scope tasks require Varmen approval logged in `handover/README.md`.
+Only proceed if the task is inside piranav's boundary. Out-of-scope tasks require Piranav approval logged in `handover/README.md`.
 
 ---
 
@@ -51,8 +51,8 @@ Store-specific commands:
 | Store | CLI Command |
 |---|---|
 | LEDsone (UK) | `shopify theme pull --store ledsone.myshopify.com` |
-| Electricalsone | Confirm domain with Varmen — see `source-map/README.md` |
-| Blueskytechco | Confirm domain with Varmen — see `source-map/README.md` |
+| Electricalsone | Confirm domain with Piranav — see `source-map/README.md` |
+| Blueskytechco | Confirm domain with Piranav — see `source-map/README.md` |
 
 **Always pull before editing.** Never edit the local theme snapshot without verifying it is up to date.
 
@@ -245,7 +245,7 @@ Only push after validation is complete and evidence is written:
 shopify theme push --store ledsone.myshopify.com
 ```
 
-Do NOT push directly to the live theme without Varmen approval. Use a development theme for testing:
+Do NOT push directly to the live theme without Piranav approval. Use a development theme for testing:
 
 ```bash
 shopify theme push --store ledsone.myshopify.com --development
@@ -258,5 +258,5 @@ shopify theme push --store ledsone.myshopify.com --development
 | Role | Name |
 |---|---|
 | Authored | piranav |
-| Reviewer | Varmen |
+| Reviewer | Piranav |
 | Last Updated | 2026-06-26 |

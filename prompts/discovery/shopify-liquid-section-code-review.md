@@ -9,7 +9,7 @@ Shopify Liquid Section Code Review
 Full code review of a single Shopify Liquid section or snippet — covering feature validation, security audit, schema review, and risk register. Produces a structured report that can be filed as evidence.
 
 ## Business Question
-> "Does this Liquid section behave as designed, contain no security vulnerabilities, and have a complete schema — and can Varmen verify this without re-reading the file?"
+> "Does this Liquid section behave as designed, contain no security vulnerabilities, and have a complete schema — and can Piranav verify this without re-reading the file?"
 
 ## When to Use
 - Any time a new or modified `.liquid` file is handed over for review

@@ -1,17 +1,24 @@
-{% if product.metafields.custom.faq_schema != blank %}
+{% liquid
+  assign faq_schema = blank
+  if template contains 'product' and product.metafields.custom.faq_schema != blank
+    assign faq_schema = product.metafields.custom.faq_schema
+  elsif template contains 'collection' and collection.metafields.custom.faq_schema != blank
+    assign faq_schema = collection.metafields.custom.faq_schema
+  endif
+%}
+
+{% if faq_schema != blank %}
   <!-- Output the schema for Google/SEO -->
-  {{ product.metafields.custom.faq_schema }}
+  {{ faq_schema }}
 
   <!-- Container where the Accordion UI will be injected -->
   <div id="custom-faq-ui-container-{{ section.id }}"></div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Find all JSON-LD scripts on the page
       const schemaScripts = document.querySelectorAll('script[type="application/ld+json"]');
       let faqList = null;
-      
-      // Loop through to find the FAQPage schema
+
       schemaScripts.forEach(function(script) {
         try {
           const json = JSON.parse(script.textContent);
@@ -23,14 +30,13 @@
         }
       });
 
-      // If FAQ data exists, build the HTML
       if (faqList && faqList.length > 0) {
         const container = document.getElementById('custom-faq-ui-container-{{ section.id }}');
-        
-        if(container) {
+
+        if (container) {
           let html = '<div class="product-faq-wrapper" style="margin-top: 2rem;">';
           html += '<h2 class="h2" style="margin-bottom: 1rem; text-align: center;">Frequently Asked Questions</h2>';
-          
+
           faqList.forEach(function(item) {
             if (item['@type'] === 'Question' && item.acceptedAnswer) {
               html += `
@@ -45,7 +51,7 @@
               `;
             }
           });
-          
+
           html += '</div>';
           container.innerHTML = html;
         }

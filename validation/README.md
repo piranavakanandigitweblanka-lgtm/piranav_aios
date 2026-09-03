@@ -22,7 +22,7 @@ Without validation reports, evidence only proves a change was made — not that 
 
 ## Business / Operational Question Supported
 
-> "Did the change produce the expected result, and can Varmen verify that without re-running the task themselves?"
+> "Did the change produce the expected result, and can Piranav verify that without re-running the task themselves?"
 
 ---
 
@@ -70,7 +70,7 @@ List any related areas checked for unintended side effects.
 PASS / FAIL
 
 ## Reviewer
-Varmen
+Piranav
 
 ## Notes
 Any caveats, monitoring requirements, or follow-up needed.
@@ -108,7 +108,7 @@ Formal linking of these into this folder's index requires a separate authorised 
 ## Source / Evidence Used to Build This File
 
 - 2026-06-25 discovery scan — identified existing fix/validation reports in Desktop path
-- Varmen coordinator instruction for Mini-AIOS build
+- Piranav coordinator instruction for Mini-AIOS build
 
 ---
 
@@ -117,14 +117,14 @@ Formal linking of these into this folder's index requires a separate authorised 
 | Role | Name |
 |---|---|
 | Assigned Staff | piranav |
-| Coordinator / Reviewer | Varmen |
+| Coordinator / Reviewer | Piranav |
 | Last Updated | 2026-06-25 |
 
 ---
 
 ## Status
 
-STARTER — folder and index created. No formal validation reports exist yet inside this folder. Back-linking of pre-existing reports pending Varmen approval.
+STARTER — folder and index created. No formal validation reports exist yet inside this folder. Back-linking of pre-existing reports pending Piranav approval.
 
 ---
 

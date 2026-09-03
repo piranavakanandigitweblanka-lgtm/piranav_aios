@@ -18,7 +18,7 @@ Structured layout audit across the three core Shopify page types — homepage, c
 - After a major theme update that may have disabled sections
 
 ## Pre-conditions
-- At least 2 benchmark store URLs must be agreed with Varmen before starting
+- At least 2 benchmark store URLs must be agreed with Piranav before starting
 - Theme export must be available locally (pull with `shopify theme pull` if needed)
 - Check `evidence/audits/` — confirm no layout audit for this store in the last 60 days
 

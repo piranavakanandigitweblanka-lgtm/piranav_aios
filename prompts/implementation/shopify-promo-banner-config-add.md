@@ -19,7 +19,7 @@ Add a new collection handle to the `var CONFIG` object inside a quantity-unlock 
 ## Pre-conditions
 - The new collection must already exist in Shopify Admin with the correct handle
 - The discount code must be confirmed and active in Shopify Admin
-- The quantity threshold (minimum quantity to unlock) must be agreed with Varmen
+- The quantity threshold (minimum quantity to unlock) must be agreed with Piranav
 - The snippet file (`snippets/pk-discount-banner.liquid` or equivalent) must be read before editing
 - `evidence/fixes/` must be checked — confirm the collection is not already registered
 
@@ -49,7 +49,7 @@ Step 2 — DUPLICATE CHECK
 Is [COLLECTION HANDLE] already in the CONFIG? If YES, stop and report — do not add a duplicate.
 
 Step 3 — CONFLICT CHECK
-Is [DISCOUNT CODE] already used for a different collection? Report it but proceed unless Varmen has said to stop.
+Is [DISCOUNT CODE] already used for a different collection? Report it but proceed unless Piranav has said to stop.
 
 Step 4 — ADD ENTRY
 Add the new entry to the CONFIG object in the same format as existing entries.

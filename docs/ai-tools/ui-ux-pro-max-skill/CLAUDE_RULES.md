@@ -4,7 +4,7 @@
 
 ## Purpose of This File
 
-These rules govern how Claude Code must behave when applying the UI UX Pro Max Skill inside a piranav Mini-AIOS session. They are mandatory. They cannot be overridden by chat instructions from piranav — only Varmen can update these rules.
+These rules govern how Claude Code must behave when applying the UI UX Pro Max Skill inside a piranav Mini-AIOS session. They are mandatory. They cannot be overridden by chat instructions from piranav — only Piranav can update these rules.
 
 ---
 
@@ -22,7 +22,7 @@ Before applying any fix from this skill, Claude Code must:
 
 ## Rule 2 — Score Before Prioritising
 
-When multiple tasks are available, Claude Code must prioritise by importance score (descending, 25 → 18). If Varmen has specified a different priority order in a session instruction, follow that order and log it in the closure entry.
+When multiple tasks are available, Claude Code must prioritise by importance score (descending, 25 → 18). If Piranav has specified a different priority order in a session instruction, follow that order and log it in the closure entry.
 
 Never self-select a lower-scored task over a 25/25 task without documented justification.
 
@@ -78,13 +78,13 @@ The source guide (`shopify_seo_ui_ux_guide.md`) is not to be copied, paraphrased
 
 ## Rule 8 — Domain Boundaries
 
-Each task belongs to exactly one domain. Do not combine domain work into a single task closure entry unless Varmen has explicitly approved a multi-domain sprint. This prevents audit trail confusion.
+Each task belongs to exactly one domain. Do not combine domain work into a single task closure entry unless Piranav has explicitly approved a multi-domain sprint. This prevents audit trail confusion.
 
 ---
 
 ## Rule 9 — Importance Score Must Be Stated in Evidence
 
-Every evidence file must state the importance score of the task applied (e.g., `Importance Score: 25/25 — Critical`). This lets Varmen verify priority decisions without re-reading the source guide.
+Every evidence file must state the importance score of the task applied (e.g., `Importance Score: 25/25 — Critical`). This lets Piranav verify priority decisions without re-reading the source guide.
 
 ---
 
@@ -94,7 +94,7 @@ If the skill's tutorial or checklist requires accessing a file or store that is 
 
 1. Stop.
 2. Log the out-of-scope requirement in `handover/README.md`.
-3. Wait for Varmen approval before proceeding.
+3. Wait for Piranav approval before proceeding.
 
 ---
 
@@ -111,7 +111,7 @@ Use `ARCHITECTURE.md` and `shopify_seo_ui_ux_guide.md` for all queryable content
 
 ## Rule 12 — Version Drift Alert
 
-If piranav or Varmen updates the source guide (`shopify_seo_ui_ux_guide.md`) without bumping the version in `CHANGELOG.md`, Claude Code must flag the drift in the next session's closure entry and prompt for a version bump.
+If piranav or Piranav updates the source guide (`shopify_seo_ui_ux_guide.md`) without bumping the version in `CHANGELOG.md`, Claude Code must flag the drift in the next session's closure entry and prompt for a version bump.
 
 Symptom: source guide has a different modification date than the `CHANGELOG.md` last-updated entry.
 
@@ -141,6 +141,6 @@ Symptom: source guide has a different modification date than the `CHANGELOG.md` 
 | Role | Name |
 |---|---|
 | Authored | piranav |
-| Reviewer | Varmen |
+| Reviewer | Piranav |
 | Last Updated | 2026-06-26 |
 | Rule Count | 12 |

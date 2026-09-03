@@ -6,7 +6,7 @@
 
 The UI UX Pro Max Skill is a structured, queryable knowledge base of Shopify SEO and UI/UX best practices integrated into piranav's Mini-AIOS workspace. It gives Claude Code and human reviewers a single, scored reference for every Shopify front-end task — from crawl error fixes to accessibility improvements — eliminating the need to re-derive standards from scratch each session.
 
-This is a **read-and-apply** asset. Claude Code queries it when auditing or fixing a Shopify theme. Varmen references it when reviewing piranav's output quality.
+This is a **read-and-apply** asset. Claude Code queries it when auditing or fixing a Shopify theme. Piranav references it when reviewing piranav's output quality.
 
 ---
 
@@ -21,7 +21,7 @@ This is a **read-and-apply** asset. Claude Code queries it when auditing or fixi
 | Version | 1.0.0 |
 | Status | ACTIVE |
 | Owner | piranav |
-| Reviewer | Varmen |
+| Reviewer | Piranav |
 | Integrated | 2026-06-26 |
 
 ---
@@ -102,7 +102,7 @@ For Shopify-specific execution steps, see `SHOPIFY_WORKFLOW.md`.
 
 1. Add evidence entries to `EVIDENCE.md` after first application in a live Shopify session.
 2. Link this skill to the relevant closure entry each time it is applied.
-3. Varmen to review and confirm PASS status on first use.
+3. Piranav to review and confirm PASS status on first use.
 4. If the source guide is updated, bump the version in `CHANGELOG.md`.
 
 ---

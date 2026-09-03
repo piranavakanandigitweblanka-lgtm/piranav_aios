@@ -39,7 +39,7 @@ Test-Path "C:\Users\PC\Desktop\shopify_seo_ui_ux_guide.md"
 
 Expected output: `True`
 
-If `False`: the source guide is missing. Do not proceed. Log the blocker in the session's closure entry and notify Varmen.
+If `False`: the source guide is missing. Do not proceed. Log the blocker in the session's closure entry and notify Piranav.
 
 ---
 
@@ -128,5 +128,5 @@ Every session that applies this skill must:
 | Role | Name |
 |---|---|
 | Installed By | piranav |
-| Reviewer | Varmen |
+| Reviewer | Piranav |
 | Install Date | 2026-06-26 |

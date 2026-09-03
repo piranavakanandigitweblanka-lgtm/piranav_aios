@@ -186,16 +186,16 @@ input[type="email"]#NewsletterForm--footer:focus{
 	box-shadow: 0 0 5px 2pxba(var(--color-foreground),.15);
 }
 .newsletter__subscribe--button {
-    background: rgba(var(--color-base-accent-2));
-    color: rgba(var(--color-base-solid-button-labels));
+ background:#151b27;
+    color: white;
     height: 92%;
     border-radius: 0 22px 22px 0;
     right: 2px;
     padding: 0 12px;
 }
 .newsletter__subscribe--button:hover {
-    background: rgba(var(--color-button),var(--alpha-button-background));
-    color: rgb(var(--color-button-text)) !important;
+    background:#151b27;
+    color: white !important;
 }
 .footer{
 	position: relative;

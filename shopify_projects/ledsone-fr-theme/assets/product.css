@@ -618,7 +618,8 @@ i.spr-icon.spr-icon-star-half-alt {
 
 .bls__grid.bls__product-style-2 .bls__product-icon {
   box-shadow: var(--bls-box-shadow);
-  pointer-events: visible;
+  /* pointer-events: visible; */
+  pointer-events: auto;
 }
 
 .bls__grid.bls__product-style-2 .bls__product-icon:hover {
@@ -630,7 +631,7 @@ i.spr-icon.spr-icon-star-half-alt {
   background-color: transparent;
   text-transform: capitalize;
   font-weight: var(--base-font-weight);
-  pointer-events: none;
+  /* pointer-events: none; */
 }
 
 .bls__grid.bls__product-style-2 .bls__product-addtocart .btn-secondary .add-cart {
@@ -640,7 +641,8 @@ i.spr-icon.spr-icon-star-half-alt {
 @media (min-width: 992px) {
 
   .bls__grid.bls__product-style-2 .bls__product-action {
-    right: 0;
+    /* right: 0; */
+     right: -1.5rem;
     top: 1.5rem;
     bottom: auto;
   }

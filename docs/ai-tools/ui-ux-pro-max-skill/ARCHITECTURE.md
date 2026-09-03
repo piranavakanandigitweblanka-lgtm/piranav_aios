@@ -167,5 +167,5 @@ The source guide is the single source of truth for checklists and tutorials. Thi
 | Role | Name |
 |---|---|
 | Authored | piranav |
-| Reviewer | Varmen |
+| Reviewer | Piranav |
 | Last Updated | 2026-06-26 |

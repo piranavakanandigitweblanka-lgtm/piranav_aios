@@ -6,7 +6,7 @@
 **Audit Type:** Discovery only — no theme files modified, no production changes made
 **Business Question:** "What UI improvements are still pending on ledsone.co.uk that could increase usability, trust, product discovery and conversion?"
 **Status:** PASS
-**Reviewer — Coordinator:** Varmen
+**Reviewer — Coordinator:** Piranav
 **Technical Reviewer:** Sajeesan
 **Queryability Reviewer:** Tamil Selvan
 **Business Validator:** Domain Owner
@@ -605,7 +605,7 @@ A single, reusable, evidence-backed, queryable UI/UX audit asset exists inside t
 ## Next Action
 
 1. **Technical Reviewer (Sajeesan):** Verify H3 pricing inversion — check `sections/main-product.liquid` price block logic to confirm if bug is code or data.
-2. **Coordinator (Varmen):** Select implementation batch from H1–H11 findings. Recommend starting with H4 (scarcity threshold), H6 (star display), H7 (£0 price guard), H8 (hero headline), H9 (popup delay) — all Low-Medium complexity.
+2. **Coordinator (Piranav):** Select implementation batch from H1–H11 findings. Recommend starting with H4 (scarcity threshold), H6 (star display), H7 (£0 price guard), H8 (hero headline), H9 (popup delay) — all Low-Medium complexity.
 3. **Domain Owner:** Confirm which BNPL provider (M10) is available in the Shopify store account before development begins.
 4. **Piranav:** Bulk fix vendor name inconsistency (H11) and product title model codes (H10) via Shopify Admin bulk editor — these are data fixes, not code.
 

@@ -28,7 +28,7 @@ PATCH — wording corrections, typo fixes, path updates, evidence log entries
 
 **Type:** Initial integration  
 **Author:** piranav  
-**Reviewer:** Varmen (pending — AMBER)  
+**Reviewer:** Piranav (pending — AMBER)  
 **Status:** ACTIVE
 
 **Changes:**
@@ -48,7 +48,7 @@ PATCH — wording corrections, typo fixes, path updates, evidence log entries
 - Source guide last-modified date at integration: 2026-06-26 (date confirmed by file system)
 
 **Known gaps at v1.0.0:**
-- Varmen review not yet completed — AMBER status
+- Piranav review not yet completed — AMBER status
 - Shopify Plus-specific content not covered
 - No skill usage evidence yet — first live session pending
 
@@ -61,7 +61,7 @@ PATCH — wording corrections, typo fixes, path updates, evidence log entries
 
 **Type:** [patch / minor / major]
 **Author:** piranav
-**Reviewer:** Varmen
+**Reviewer:** Piranav
 **Status:** [ACTIVE / DRAFT / DEPRECATED]
 
 **Changes:**
@@ -99,6 +99,6 @@ A new version entry is required when any of the following occur:
 | Role | Name |
 |---|---|
 | Maintained By | piranav |
-| Reviewer | Varmen |
+| Reviewer | Piranav |
 | Current Version | 1.0.0 |
 | Last Updated | 2026-06-26 |

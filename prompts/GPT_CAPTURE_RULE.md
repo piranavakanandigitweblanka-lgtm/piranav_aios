@@ -1,7 +1,7 @@
 # GPT Prompt Capture Rule — PERMANENT AIOS STANDING RULE
 
 **Effective:** 2026-07-01
-**Authority:** Varmen (coordinator instruction)
+**Authority:** Piranav (coordinator instruction)
 **Applies to:** Every Claude Code session inside `piranav_aios` from 2026-07-01 onwards
 
 ---
@@ -149,6 +149,6 @@ This rule extends the existing workflow in `START_HERE.md`:
 | Role | Name |
 |---|---|
 | Assigned Staff | piranav |
-| Coordinator / Reviewer | Varmen |
+| Coordinator / Reviewer | Piranav |
 | Rule Established | 2026-07-01 |
-| Review Cycle | Every 30 days or on Varmen instruction |
+| Review Cycle | Every 30 days or on Piranav instruction |

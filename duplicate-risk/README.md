@@ -15,7 +15,7 @@ Duplicate truth is the most common failure mode in multi-session, multi-agent wo
 - A workflow doc is renamed instead of updated, leaving the old copy active
 - A daily log format is defined in two places, drifting apart over time
 
-This register makes duplicate risk visible and trackable so that Varmen can review and authorise cleanup before it compounds.
+This register makes duplicate risk visible and trackable so that Piranav can review and authorise cleanup before it compounds.
 
 ---
 
@@ -27,7 +27,7 @@ This register makes duplicate risk visible and trackable so that Varmen can revi
 
 ## Confirmed Duplicate Risks (Found During 2026-06-25 Discovery Scan)
 
-These duplicates exist OUTSIDE `piranav_aios` and are NOT cleaned up in this build. Cleanup requires Varmen approval and a separate commit.
+These duplicates exist OUTSIDE `piranav_aios` and are NOT cleaned up in this build. Cleanup requires Piranav approval and a separate commit.
 
 | # | Duplicate File A | Duplicate File B | Overlap | Risk Level | Status | Recommendation |
 |---|---|---|---|---|---|---|
@@ -65,7 +65,7 @@ These risks do NOT exist yet but will arise if the wrong approach is taken when 
 ## Cleanup Authorisation Requirement
 
 Cleaning confirmed duplicates (DR-001, DR-002, DR-003) requires:
-1. Written approval from Varmen
+1. Written approval from Piranav
 2. An out-of-scope approval record in `handover/README.md` (these files are outside `piranav_aios`)
 3. A single git commit that removes all three duplicates together, with a clear commit message
 
@@ -94,7 +94,7 @@ Cleaning confirmed duplicates (DR-001, DR-002, DR-003) requires:
 ## Source / Evidence Used to Build This File
 
 - 2026-06-25 discovery scan — identified DR-001, DR-002, DR-003 from `git ls-files` output
-- Varmen coordinator instruction for Mini-AIOS build
+- Piranav coordinator instruction for Mini-AIOS build
 
 ---
 
@@ -103,14 +103,14 @@ Cleaning confirmed duplicates (DR-001, DR-002, DR-003) requires:
 | Role | Name |
 |---|---|
 | Assigned Staff | piranav |
-| Coordinator / Reviewer | Varmen |
+| Coordinator / Reviewer | Piranav |
 | Last Updated | 2026-06-25 |
 
 ---
 
 ## Status
 
-ACTIVE — 3 confirmed duplicate risks open (DR-001, DR-002, DR-003). Cleanup pending Varmen approval and out-of-scope authorisation.
+ACTIVE — 3 confirmed duplicate risks open (DR-001, DR-002, DR-003). Cleanup pending Piranav approval and out-of-scope authorisation.
 
 ---
 
@@ -123,7 +123,7 @@ Duplicate risk FAILS if: a session introduces a new duplicate without logging it
 
 ## Next Step
 
-1. Varmen to review DR-001, DR-002, DR-003 and confirm cleanup approval
+1. Piranav to review DR-001, DR-002, DR-003 and confirm cleanup approval
 2. Once approved, add out-of-scope approval record in `handover/README.md`
 3. Execute cleanup in a single commit
 

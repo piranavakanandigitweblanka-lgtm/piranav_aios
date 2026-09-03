@@ -1,0 +1,112 @@
+mutation {
+  p62: productUpdate(product: { id: "gid://shopify/Product/14934638199170", metafields: [
+      { namespace: "custom", key: "core", value: "[\"Easy Fit\"]" }
+      { namespace: "custom", key: "bulb_shapes", value: "[\"Cone\"]" }
+      { namespace: "custom", key: "height", value: "[\"80\"]" }
+      { namespace: "custom", key: "size", value: "[\"220\"]" }
+      { namespace: "custom", key: "hole_diameter", value: "[\"40\"]" }
+      { namespace: "custom", key: "model", value: "[\"Metal\"]" }
+      { namespace: "custom", key: "colour", value: "[\"Black\"]" }
+      { namespace: "custom", key: "holder_", value: "[\"E27\"]" }
+      { namespace: "custom", key: "style", value: "[\"Vintage Industrial\"]" }
+    ] }) { product { id } userErrors { field message } }
+  p63: productUpdate(product: { id: "gid://shopify/Product/14934663922050", metafields: [
+      { namespace: "custom", key: "core", value: "[\"N/A\"]" }
+      { namespace: "custom", key: "bulb_shapes", value: "[\"Mosque\"]" }
+      { namespace: "custom", key: "height", value: "[\"210\"]" }
+      { namespace: "custom", key: "size", value: "[\"315\"]" }
+      { namespace: "custom", key: "hole_diameter", value: "[\"10\"]" }
+      { namespace: "custom", key: "model", value: "[\"Metal\"]" }
+      { namespace: "custom", key: "colour", value: "[\"Blue\"]" }
+      { namespace: "custom", key: "holder_", value: "[\"E27\"]" }
+      { namespace: "custom", key: "style", value: "[\"Vintage Industrial\"]" }
+    ] }) { product { id } userErrors { field message } }
+  p64: productUpdate(product: { id: "gid://shopify/Product/15260005171586", metafields: [
+      { namespace: "custom", key: "core", value: "[\"Easy Fit\"]" }
+      { namespace: "custom", key: "bulb_shapes", value: "[\"Bowl\"]" }
+      { namespace: "custom", key: "height", value: "[\"90\"]" }
+      { namespace: "custom", key: "size", value: "[\"245\"]" }
+      { namespace: "custom", key: "hole_diameter", value: "[\"40\"]" }
+      { namespace: "custom", key: "model", value: "[\"Glass\"]" }
+      { namespace: "custom", key: "colour", value: "[\"Green\"]" }
+      { namespace: "custom", key: "holder_", value: "[\"E27\"]" }
+      { namespace: "custom", key: "style", value: "[\"Contemporary Art Deco Glass\"]" }
+    ] }) { product { id } userErrors { field message } }
+  p65: productUpdate(product: { id: "gid://shopify/Product/15260812935554", metafields: [
+      { namespace: "custom", key: "core", value: "[\"Easy Fit\"]" }
+      { namespace: "custom", key: "bulb_shapes", value: "[\"Curvey\"]" }
+      { namespace: "custom", key: "height", value: "[\"170\"]" }
+      { namespace: "custom", key: "size", value: "[\"290\"]" }
+      { namespace: "custom", key: "hole_diameter", value: "[\"40\"]" }
+      { namespace: "custom", key: "model", value: "[\"Metal\"]" }
+      { namespace: "custom", key: "colour", value: "[\"Blue\"]" }
+      { namespace: "custom", key: "holder_", value: "[\"E27\"]" }
+      { namespace: "custom", key: "style", value: "[\"Vintage Industrial\"]" }
+    ] }) { product { id } userErrors { field message } }
+  p66: productUpdate(product: { id: "gid://shopify/Product/15260848062850", metafields: [
+      { namespace: "custom", key: "core", value: "[\"Easy Fit\"]" }
+      { namespace: "custom", key: "bulb_shapes", value: "[\"Curvey\"]" }
+      { namespace: "custom", key: "height", value: "[\"170\"]" }
+      { namespace: "custom", key: "size", value: "[\"290\"]" }
+      { namespace: "custom", key: "hole_diameter", value: "[\"40\"]" }
+      { namespace: "custom", key: "model", value: "[\"Metal\"]" }
+      { namespace: "custom", key: "colour", value: "[\"Cyan Blue\"]" }
+      { namespace: "custom", key: "holder_", value: "[\"E27\"]" }
+      { namespace: "custom", key: "style", value: "[\"Vintage Industrial\"]" }
+    ] }) { product { id } userErrors { field message } }
+  p67: productUpdate(product: { id: "gid://shopify/Product/15260934177154", metafields: [
+      { namespace: "custom", key: "core", value: "[\"Easy Fit\"]" }
+      { namespace: "custom", key: "bulb_shapes", value: "[\"Tapered Cone\"]" }
+      { namespace: "custom", key: "height", value: "[\"145\"]" }
+      { namespace: "custom", key: "size", value: "[\"160\"]" }
+      { namespace: "custom", key: "hole_diameter", value: "[\"40\"]" }
+      { namespace: "custom", key: "model", value: "[\"Glass\"]" }
+      { namespace: "custom", key: "colour", value: "[\"Silver / Chrome\"]" }
+      { namespace: "custom", key: "holder_", value: "[\"E27\"]" }
+      { namespace: "custom", key: "style", value: "[\"Contemporary Art Deco Glass\"]" }
+    ] }) { product { id } userErrors { field message } }
+  p68: productUpdate(product: { id: "gid://shopify/Product/15260936831362", metafields: [
+      { namespace: "custom", key: "core", value: "[\"Easy Fit\"]" }
+      { namespace: "custom", key: "bulb_shapes", value: "[\"Stripped\"]" }
+      { namespace: "custom", key: "height", value: "[\"95\"]" }
+      { namespace: "custom", key: "size", value: "[\"120\"]" }
+      { namespace: "custom", key: "hole_diameter", value: "[\"40\"]" }
+      { namespace: "custom", key: "model", value: "[\"Glass\"]" }
+      { namespace: "custom", key: "colour", value: "[\"Clear / Transparent\"]" }
+      { namespace: "custom", key: "holder_", value: "[\"E27\"]" }
+      { namespace: "custom", key: "style", value: "[\"Contemporary Art Deco Glass\"]" }
+    ] }) { product { id } userErrors { field message } }
+  p69: productUpdate(product: { id: "gid://shopify/Product/15263658180994", metafields: [
+      { namespace: "custom", key: "core", value: "[\"Easy Fit\"]" }
+      { namespace: "custom", key: "bulb_shapes", value: "[\"Dome\"]" }
+      { namespace: "custom", key: "height", value: "[\"110\"]" }
+      { namespace: "custom", key: "size", value: "[\"200\"]" }
+      { namespace: "custom", key: "hole_diameter", value: "[\"40\"]" }
+      { namespace: "custom", key: "model", value: "[\"Glass\"]" }
+      { namespace: "custom", key: "colour", value: "[\"White & Warm Amber\"]" }
+      { namespace: "custom", key: "holder_", value: "[\"E27\"]" }
+      { namespace: "custom", key: "style", value: "[\"Contemporary Art Deco Glass\"]" }
+    ] }) { product { id } userErrors { field message } }
+  p70: productUpdate(product: { id: "gid://shopify/Product/15263751340418", metafields: [
+      { namespace: "custom", key: "core", value: "[\"Easy Fit\"]" }
+      { namespace: "custom", key: "bulb_shapes", value: "[\"Temple Dome\"]" }
+      { namespace: "custom", key: "height", value: "[\"135\"]" }
+      { namespace: "custom", key: "size", value: "[\"320\"]" }
+      { namespace: "custom", key: "hole_diameter", value: "[\"40\"]" }
+      { namespace: "custom", key: "model", value: "[\"Metal\"]" }
+      { namespace: "custom", key: "colour", value: "[\"Green\"]" }
+      { namespace: "custom", key: "holder_", value: "[\"E27\"]" }
+      { namespace: "custom", key: "style", value: "[\"Vintage Industrial\"]" }
+    ] }) { product { id } userErrors { field message } }
+  p71: productUpdate(product: { id: "gid://shopify/Product/15269014962562", metafields: [
+      { namespace: "custom", key: "core", value: "[\"Easy Fit\"]" }
+      { namespace: "custom", key: "bulb_shapes", value: "[\"Bell Jar\"]" }
+      { namespace: "custom", key: "height", value: "[\"155\"]" }
+      { namespace: "custom", key: "size", value: "[\"145\"]" }
+      { namespace: "custom", key: "hole_diameter", value: "[\"40\"]" }
+      { namespace: "custom", key: "model", value: "[\"Glass\"]" }
+      { namespace: "custom", key: "colour", value: "[\"Amber / Warm Tone\"]" }
+      { namespace: "custom", key: "holder_", value: "[\"E27\"]" }
+      { namespace: "custom", key: "style", value: "[\"Contemporary Art Deco Glass\"]" }
+    ] }) { product { id } userErrors { field message } }
+}

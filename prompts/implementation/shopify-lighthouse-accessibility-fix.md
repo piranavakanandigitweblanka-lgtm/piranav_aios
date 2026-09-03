@@ -9,7 +9,7 @@ Shopify Lighthouse Accessibility Fix
 Resolve a specific Lighthouse accessibility failure in a Shopify theme — covering contrast, touch targets, aria-labels, link text, viewport zoom, and focus states. One prompt run = one Lighthouse audit item. Produces a targeted fix with evidence.
 
 ## Business Question
-> "Which exact lines in which files caused this Lighthouse accessibility failure, what is the minimum change required to fix it, and can Varmen verify the fix without re-running Lighthouse?"
+> "Which exact lines in which files caused this Lighthouse accessibility failure, what is the minimum change required to fix it, and can Piranav verify the fix without re-running Lighthouse?"
 
 ## When to Use
 - Lighthouse Accessibility score below 100

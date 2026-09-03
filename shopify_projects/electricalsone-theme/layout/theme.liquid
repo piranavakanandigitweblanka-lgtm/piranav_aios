@@ -41,66 +41,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
     {%- endunless -%}
 
-    {% comment %}
-    <script type="application/ld+json">
-{
-  "@context": "https://schema.org/",
-  "@type": "Product",
-  "name": "{{ product.title }}",
-  "image": "{{ Shop.url }}{{ product.featured_image }}",
-  "description": "{{ product.description | strip_html }}",
-  "sku": "{{ product.sku }}",
-  "brand": {
-    "@type": "Brand",
-    "name": "{{ product.vendor }}"
-  },
-  "offers": {
-    "@type": "Offer",
-    "price": "{{ product.price }}",
-    "priceCurrency": "{{ Shop.currency }}",
-    "availability": "{{ product.available ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
-    "url": "{{ product.url }}"
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "{{ product.rating }}",
-    "reviewCount": "{{ product.reviews.size }}"
-  }
-}
-</script>
-   {% endcomment %}
-
-   <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Electricalsone UK",
-  "url": "https://electricalsone.co.uk",
-  "logo": "https://electricalsone.co.uk/cdn/shop/files/Untitled-1_9ce19315-7729-4497-bf38-0839c125564d_200x.png",
-  "description": "UK's largest wholesale supplier of LED lights, bulbs, cables, lamp holders, ceiling roses, LED drivers and lighting components. CE and UKCA compliant.",
-  "email": "admin@electricalsone.co.uk",
-  "telephone": "+442477220687",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Unit 3, Marshbrook Close, Aldermans Green Industrial Estate",
-    "addressLocality": "West Midlands",
-    "postalCode": "CV2 2NW",
-    "addressCountry": "GB"
-  },
-  "sameAs": [
-    "https://www.linkedin.com/in/sales-electricalsone-b09b32266/",
-    "https://www.tiktok.com/@electricalsone_uk"
-  ],
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "telephone": "+442477220687",
-    "contactType": "customer service",
-    "areaServed": "GB",
-    "availableLanguage": "English"
-  }
-}
-</script>
-
       <!-- srsltid parameter -->
     <script>
       const currentURL = new URL(window.location);

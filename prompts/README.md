@@ -25,7 +25,7 @@ Without standard prompts:
 - Evidence format varies, making it unqueryable
 - Duplicate truth is more likely (same task prompted differently produces parallel outputs)
 
-Standard prompts ensure every session produces output in the same format, with the same evidence fields, ready for Varmen review.
+Standard prompts ensure every session produces output in the same format, with the same evidence fields, ready for Piranav review.
 
 ---
 
@@ -130,7 +130,7 @@ All prompts are also indexed in `PROMPT_REGISTER.md` at the root of `piranav_aio
 
 - 2026-06-25 discovery scan — identified recurring task types from existing session logs
 - 2026-07-01 prompt recovery session — 10 sessions (2026-06-09 to 2026-06-24) audited; 21 capability patterns identified; 10 prompt templates created
-- Varmen coordinator instruction for Mini-AIOS build
+- Piranav coordinator instruction for Mini-AIOS build
 
 ---
 
@@ -139,7 +139,7 @@ All prompts are also indexed in `PROMPT_REGISTER.md` at the root of `piranav_aio
 | Role | Name |
 |---|---|
 | Assigned Staff | piranav |
-| Coordinator / Reviewer | Varmen |
+| Coordinator / Reviewer | Piranav |
 | Last Updated | 2026-07-01 |
 
 ---
@@ -161,4 +161,4 @@ Prompts FAIL review if: a recurring task was run without an existing template AN
 
 - Templates were reverse-engineered from session outputs — not from actual ChatGPT conversation history (not accessible)
 - `shopify-cli-theme-workflow.md` is a procedural guide, not a full template — needs a `## Prompt Text` block added to meet the format standard
-- Prompt templates have not yet been formally reviewed by Varmen — status is ACTIVE but Varmen review is pending
+- Prompt templates have not yet been formally reviewed by Piranav — status is ACTIVE but Piranav review is pending

@@ -914,24 +914,26 @@ style="background-color: #151b27;
         "url": {{ request.origin | append: variant.url | json }}
       }{% unless forloop.last %},{% endunless %}
     {% endfor %}
-  ],
-  {% if product.metafields.spr.reviews %}
-    {% assign rating_value = product.metafields.spr.reviews | split: '"ratingValue": "' | last | split: '"' | first | plus: 0 %}
-    {% assign review_count = product.metafields.spr.reviews | split: '"reviewCount": "' | last | split: '"' | first | plus: 0 %}
-    {% if review_count > 0 %}
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": {{ rating_value | json }},
-        "ratingCount": {{ review_count | json }}
-      }
-    {% endif %}
-  {% else %}
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": 4.5,
-      "ratingCount": 10
-    }
-  {% endif %}
+  ]
+  {%- liquid
+    assign ld_rating_value = 0
+    assign ld_review_count = 0
+    if product.metafields.reviews.rating.value != blank
+      assign ld_rating_value = product.metafields.reviews.rating.value.rating
+      assign ld_review_count = product.metafields.reviews.rating_count | plus: 0
+    elsif product.metafields.spr.reviews
+      assign ld_rating_value = product.metafields.spr.reviews | split: '"ratingValue": "' | last | split: '"' | first | plus: 0
+      assign ld_review_count = product.metafields.spr.reviews | split: '"reviewCount": "' | last | split: '"' | first | plus: 0
+    endif
+  -%}
+  {%- if ld_review_count > 0 -%}
+  ,
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": {{ ld_rating_value | json }},
+    "ratingCount": {{ ld_review_count | json }}
+  }
+  {%- endif -%}
 }
 </script>
                       

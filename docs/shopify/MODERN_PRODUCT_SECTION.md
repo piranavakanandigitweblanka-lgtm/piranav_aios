@@ -15,7 +15,7 @@
 | Architecture | Custom Web Component (vanilla JS) + Shopify Liquid + inline CSS |
 | Created | 2026-06-26 |
 | Documented By | Claude Code / piranav AIOS session |
-| Reviewer | Varmen |
+| Reviewer | Piranav |
 
 ---
 
