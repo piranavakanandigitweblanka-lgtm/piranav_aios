@@ -308,6 +308,29 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-09-04 — Clickable Task Items + Professional Priority Icons (Session 4)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-UI-2026-09-04-01 | Add inline SVG priority icons (High/Medium/Low) to DailyBriefWidget — replace emoji in task buttons | `frontend/src/components/DailyBriefWidget.jsx` | grep confirms `t.emoji` removed; `PRIORITY_ICON_CONFIG` present; icons driven by `task.priority` value | Pending commit | YES | Live test required | Deploy + verify icons render in task buttons | PASS (static) |
+| DM-UI-2026-09-04-02 | Add `BriefRenderer` to MyTaskLog AiBriefPanel — replace raw `<pre>` with emoji→icon line renderer | `frontend/src/components/MyTaskLog.jsx` | `BriefRenderer` confirmed present; `BRIEF_EMOJI_RE` pattern confirmed | Pending commit | YES | Live test required | Deploy + verify brief panel renders icons | PASS (static) |
+| DM-UI-2026-09-04-03 | Add priority icon to TaskCard in MyTaskLog alongside priority pill | `frontend/src/components/MyTaskLog.jsx` | `PriorityIcon[task.priority]` confirmed in TaskCard render | Pending commit | YES | Live test required | Deploy + verify task cards show icons | PASS (static) |
+| DM-UI-2026-09-04-04 | Make TaskDetailTable URL columns clickable — links use verified backend URLs only | `frontend/src/components/MyTaskLog.jsx` | `URL_COLUMNS` Set confirmed; `val.startsWith('/')` guard confirmed; `rel="noopener noreferrer"` confirmed | Pending commit | YES | Live test required | Deploy + verify Kamsi links open ledsone.co.uk | NOT VERIFIED |
+| DM-UI-2026-09-04-05 | Add `STAFF_URL_BASE` domain map — thread `urlBase` from MyTaskLog → TodayTab → HistoryTab → TaskCard → TaskDetailTable | `frontend/src/components/MyTaskLog.jsx` | `STAFF_URL_BASE` confirmed; `urlBase` prop threaded through all components | Pending commit | YES | Live test required | Verify Sukirtha links open ledsone.de | PASS (static) |
+| DM-UI-2026-09-04-06 | Add `_build_brief_data()` to `sukirtha_ai.py` — return verified GSC + Shopify URLs in `/brief` response | `backend/app/sukirtha_ai.py` | ast.parse PASS; `brief_data` confirmed in response (grep); URL source: GSC + Shopify DB | Pending commit | YES | Live test required | Deploy + verify Sukirtha table links render | NOT VERIFIED |
+| DM-UI-2026-09-04-07 | Create AIOS capability doc for Clickable Task Items + Priority Icons | `capability/piranav/clickable-task-items-priority-icons-2026-09-04.md` | File created; covers discovery, implementation, staff coverage, validation, limitations | Pending commit | YES | None | None | PASS |
+
+**Session Result: NOT VERIFIED — Live validation required**
+- Static validation: ALL PASS (syntax, grep checks, no external library added)
+- Priority icons: ALL 11 staff (driven by existing `priority` value — no AI involvement)
+- Clickable URLs: Kamsi + Sukirtha only (verified URLs confirmed in data pipeline)
+- No URL invented, no URL constructed from AI output or product ID
+- Git commit and push pending Piranav instruction
+- Push from `piranav_aios/dm-dashboard/` (piranv-work branch) — select **websitetecteam-arch**
+- Push AIOS docs from `piranav_aios/` — select **piranavakanandigitweblanka-lgtm**
+
+---
+
 ## Pre-2026-06-25 Closure Status
 
 Work performed before 2026-06-25 is documented in Desktop daily logs but does NOT have formal closure entries here. These sessions are considered LEGACY — not failed, but outside the closure authority of this file.
