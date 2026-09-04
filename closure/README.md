@@ -386,3 +386,12 @@ Next session must:
 
 - Pre-2026-06-25 sessions are not covered — evidence for those sessions must be queried via `Desktop/Website technical - piranav/` daily logs
 - Queryability is assessed for `piranav_aios/` scope only — a new developer without access to Desktop/ would not have full context until the evidence-linking session runs
+
+---
+
+### 2026-09-04 — dm-dashboard Phase 2B + 2C: AI Validation Gate + Persistence Boundary
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-AI-2026-09-04-2B | Create programmatic hallucination validator (Phase 2B) — prevent unverified AI tasks reaching persistence | `backend/app/ai_validator.py` | 39/39 tests pass (`backend/tests/test_ai_validator.py`); all 12 /brief routes use `validated_brief_call`; build clean | `websitetecteam-arch/dm-dashboard` commit `97134f8` branch `piranv-work` | YES | NONE | Deploy via Dev Tunnel and open a staff brief to confirm live validation | PASS |
+| DM-AI-2026-09-04-2C | Server-side persistence gate (Phase 2C) — backend cache enforces validation, frontend cannot bypass | `backend/app/ai_validator.py`, `backend/app/task_log.py`, `frontend/src/components/DailyBriefWidget.jsx` | 17/17 Phase 2C tests pass (`backend/tests/test_ai_validator_phase2c.py`); `select_task()` 422 on unvalidated task confirmed; `is_task_validated()` reads server memory only; build clean | `websitetecteam-arch/dm-dashboard` commit `97134f8` branch `piranv-work` | YES | Multi-worker caveat noted (not relevant for Dev Tunnel single-process) | Deploy + verify task buttons disabled in degraded mode | PASS |
