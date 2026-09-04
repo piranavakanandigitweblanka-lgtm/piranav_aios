@@ -255,6 +255,59 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-09-04 — Actionable AI Task Brief (Item-Level Detail in Task Log)
+
+**Context:** Extended the existing DailyBriefWidget + MyTaskLog task workflow so that when a staff member selects a task, the full multi-line block (title + `→` action steps with exact items/metrics) is stored in `staff_task_log` and displayed with proper formatting in MyTaskLog. No backend changes, no schema changes, no new files — 2 frontend files edited.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-AITASK-2026-09-04-01 | Change `parseTasks()` in DailyBriefWidget to capture full multi-line task blocks (title + → bullets) | `frontend/src/components/DailyBriefWidget.jsx` | `capability/piranav/actionable-ai-task-brief-2026-09-04.md` | Pending commit | YES | None | Commit + push dm-dashboard | PASS |
+| DM-AITASK-2026-09-04-02 | Add `whiteSpace: pre-wrap` to TaskCard in MyTaskLog so → action steps render on separate lines | `frontend/src/components/MyTaskLog.jsx` | `capability/piranav/actionable-ai-task-brief-2026-09-04.md` | Pending commit | YES | None | Commit + push dm-dashboard | PASS |
+| DM-AITASK-2026-09-04-CAP | Write capability doc — item-level data availability per staff, thresholds, architecture | `capability/piranav/actionable-ai-task-brief-2026-09-04.md` | This closure entry | Pending commit | YES | None | Commit + push piranav_aios | PASS |
+
+**Session Result: PASS (Phase 1)** — Multi-line pre-wrap task text implemented. Superseded by Phase 2 below.
+
+---
+
+### 2026-09-04 — Actionable AI Task Brief Phase 2 — Structured Table in MyTaskLog
+
+**Context:** Extended Phase 1. Added `task_detail` JSON column to `staff_task_log`. Kamsi's `/brief` endpoint now returns structured item rows (`brief_data`). DailyBriefWidget matches selected task to detail category and logs structured rows. MyTaskLog TaskCard renders a real `<table>` with columns (Page / CTR / Impressions / Type / Suggested Action for low-CTR; Product / URL / Action for missing meta).
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-AITASK2-2026-09-04-01 | Add `task_detail TEXT` column to `staff_task_log` via `ensure_task_log_table` | `backend/app/ai_shared.py` | This closure entry | Pending commit | YES | None | Commit + push dm-dashboard | PASS |
+| DM-AITASK2-2026-09-04-02 | Add `task_detail` to `TaskSelectRequest` + store/return in select/today/history endpoints | `backend/app/task_log.py` | This closure entry | Pending commit | YES | None | Commit + push dm-dashboard | PASS |
+| DM-AITASK2-2026-09-04-03 | Add `_build_brief_data()` to `kamsi_ai.py` — returns structured low_ctr + missing_meta rows; `/brief` now returns `brief_data` | `backend/app/kamsi_ai.py` | This closure entry | Pending commit | YES | Kamsi only — other staff need equivalent (OPEN) | Commit + push dm-dashboard | PASS |
+| DM-AITASK2-2026-09-04-04 | DailyBriefWidget stores `brief_data`, `matchTaskDetail()` matches task title to detail category, sends `task_detail` JSON to `/select` | `frontend/src/components/DailyBriefWidget.jsx` | This closure entry | Pending commit | YES | None | Commit + push dm-dashboard | PASS |
+| DM-AITASK2-2026-09-04-05 | MyTaskLog TaskCard: `parseTaskDetail()` + `<TaskDetailTable>` renders real HTML table with correct columns from `task_detail` JSON | `frontend/src/components/MyTaskLog.jsx` | This closure entry | Pending commit | YES | None | Commit + push dm-dashboard | PASS |
+
+**Session Result: NOT CLOSED** — Implementation complete. Live validation and git commit/push pending Piranav instruction. Kamsi has full table support. Other 10 staff have table display infrastructure but no `brief_data` returned yet from their `/brief` endpoints (OPEN).
+
+---
+
+### 2026-09-04 — Staff Skill Integration (Session 3)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-SKILL-2026-09-04-01 | Create JSON profiles for Kamsi, Sonya, Theekshy, Dilaksi | `backend/app/staff_profiles/kamsi.json`, `sonya.json`, `theekshy.json`, `dilaksi.json` | All 4 files parse clean (json.load verified); section3 populated for all 4 | Pending commit | YES | None | Commit + push dm-dashboard | PASS |
+| DM-SKILL-2026-09-04-02 | Add `load_staff_profile()` and `build_skill_block()` shared utilities to `ai_shared.py` | `backend/app/ai_shared.py` | ast.parse PASS; build_skill_block verified for all 11 profiles (552–1131 chars each) | Pending commit | YES | None | None | PASS |
+| DM-SKILL-2026-09-04-03 | Remove hardcoded inline profile from `kamsi_ai.py`; load from `kamsi.json` | `backend/app/kamsi_ai.py` | grep confirms no hardcoded STAFF PROFILE block remains; JSON loading and _build_profile_block() added | Pending commit | YES | Live test required | Deploy + verify Kamsi brief loads correct data | NOT CLOSED |
+| DM-SKILL-2026-09-04-04 | Add JSON loading + skill block to sonya_ai.py, theekshy_ai.py, dilaksi_ai.py | 3 AI files | ast.parse PASS for all 3; URGENCY ORDER preserved; no hardcoded profile remains | Pending commit | YES | Live test required | Deploy + verify each brief loads | NOT CLOSED |
+| DM-SKILL-2026-09-04-05 | Remove Sonya escalation path from theekshy_ai.py; use Muguntha-direct | `backend/app/theekshy_ai.py` | grep for "sonya" in theekshy_ai.py returns empty; confirmed 3 references removed | Pending commit | YES | Live test required | Verify Theekshy brief says Muguntha only | NOT CLOSED |
+| DM-SKILL-2026-09-04-06 | Extend all 7 existing JSON staff files to read section3 via build_skill_block | All 7 `_ai.py` files | Regression check: URGENCY ORDER + profile_fn + skill + no_hardcoded = PASS for all 11 files | Pending commit | YES | Live test required | Deploy + verify briefs unchanged for existing staff | NOT CLOSED |
+| DM-SKILL-2026-09-04-07 | Create AIOS capability doc for Staff Skill-Aware AI Task Framing | `capability/piranav/staff-skill-aware-ai-task-framing-2026-09-04.md` | File created; covers architecture, implementation, validation, limitations | Pending commit | YES | None | None | PASS |
+
+**Session Result: NOT CLOSED — Live Validation Required**
+- Static validation: ALL PASS (syntax, JSON parse, skill block output, regression checks)
+- Live validation: NOT COMPLETED — requires server deployment
+- Git commit pending Piranav instruction
+- Push from `piranav_aios/dm-dashboard/` — select **websitetecteam-arch** account
+- Push AIOS docs from `piranav_aios/` — select **piranavakanandigitweblanka-lgtm** account
+
+**To extend to other staff:** Add `_build_brief_data()` equivalent to each `{staff}_ai.py` and return `brief_data` from their `/brief` endpoint. The frontend and DB infrastructure is already in place for all staff.
+
+---
+
 ## Pre-2026-06-25 Closure Status
 
 Work performed before 2026-06-25 is documented in Desktop daily logs but does NOT have formal closure entries here. These sessions are considered LEGACY — not failed, but outside the closure authority of this file.
