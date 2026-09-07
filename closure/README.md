@@ -433,3 +433,23 @@ Next session must:
 **Group C Result: COMPLETE** — Sukirtha (`e1dc274`) + Kamsi (`b812ec7`) both on `piranv-work`. Deploy both together.
 
 **Server deploy (both):** `cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- backend/app/sukirtha_ai.py backend/app/kamsi_ai.py && systemctl restart dm-dashboard`
+
+---
+
+### 2026-09-07 — DM Dashboard: All Groups A/B/D/E — AI Brief Quality Pass
+
+**Context:** Completed remaining groups from the 11-staff AI brief quality action plan. All changes are prompt/instruction-only — no data schema changes, no new DB queries for A/B/D/E. Pushed all to piranv-work.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-AI-GROUPA-2026-09-07 | WHY spend+conv in task title for Mahima/Jefri/Thasitha/Thivajini/Sajeepan | 5 `*_ai.py` files | `git show 667bdff` — 5 files, 19 ins/14 del | `websitetecteam-arch/dm-dashboard` `667bdff` piranv-work | YES | Deploy pending | Deploy to Contabo | OPEN |
+| DM-AI-GROUPB-2026-09-07 | Sonya market label (UK/US/Electricalsone) in task title; Theekshy action codes → plain English + numbered beginner steps | `sonya_ai.py`, `theekshy_ai.py` | `git show beaaed2` — 2 files, 17 ins/4 del | `websitetecteam-arch/dm-dashboard` `beaaed2` piranv-work | YES | Deploy pending | Deploy to Contabo | OPEN |
+| DM-AI-GROUPD-2026-09-07 | Dilaksi role boundary — explicit block on meta/H1/alt text tasks (Kamsi's scope); urgency order rewritten to collection strategy/linking/blog/GSC | `dilaksi_ai.py` | `git show 46a9e1d` — ROLE BOUNDARY block added | `websitetecteam-arch/dm-dashboard` `46a9e1d` piranv-work | YES | Deploy pending | Deploy to Contabo | OPEN |
+| DM-AI-GROUPE-2026-09-07 | Hetheesha issue_type DB codes → plain English in prompt + brief_data table; action steps now require Shopify Admin click paths | `hetheesha_ai.py` | `git show 46a9e1d` — _ISSUE_LABEL map + _fix_label() added | `websitetecteam-arch/dm-dashboard` `46a9e1d` piranv-work | YES | Deploy pending | Deploy to Contabo | OPEN |
+
+**All Groups Result: COMPLETE on piranv-work** — C (`e1dc274`, `b812ec7`), A (`667bdff`), B (`beaaed2`), D+E (`46a9e1d`). All pushed.
+
+**Full deploy command (all 9 changed files):**
+```
+cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- backend/app/sukirtha_ai.py backend/app/kamsi_ai.py backend/app/mahima_ai.py backend/app/jefri_ai.py backend/app/thasitha_ai.py backend/app/thivajini_ai.py backend/app/sajeepan_ai.py backend/app/sonya_ai.py backend/app/theekshy_ai.py backend/app/dilaksi_ai.py backend/app/hetheesha_ai.py && systemctl restart dm-dashboard
+```
