@@ -453,3 +453,14 @@ Next session must:
 ```
 cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- backend/app/sukirtha_ai.py backend/app/kamsi_ai.py backend/app/mahima_ai.py backend/app/jefri_ai.py backend/app/thasitha_ai.py backend/app/thivajini_ai.py backend/app/sajeepan_ai.py backend/app/sonya_ai.py backend/app/theekshy_ai.py backend/app/dilaksi_ai.py backend/app/hetheesha_ai.py && systemctl restart dm-dashboard
 ```
+
+---
+
+### 2026-09-07 — Uncommitted Changes Commit + Push (End-of-Session Housekeeping)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SHOPIFY-FR-2026-09-07 | Commit + push ledsone-fr theme UI upgrades — bento-grid.liquid (section header/eyebrow/subtitle, card-index CSS var), daily-promotion.liquid, header.liquid | `shopify_projects/ledsone-fr-theme/sections/bento-grid.liquid`, `daily-promotion.liquid`, `snippets/header.liquid` | `git show 54712ba` | `54712ba` (piranav_aios main) | YES | Shopify CLI deploy still needed to push to live store | Run `shopify theme push` for ledsone-fr when ready | PASS |
+| DM-SUBMODULE-2026-09-07 | Update dm-dashboard submodule pointer to current piranv-work HEAD (30 commits ahead of main) | `dm-dashboard` (submodule ref) | `git show 54712ba` | `54712ba` (piranav_aios main) | YES | piranv-work not yet merged to dm-dashboard main | Merge piranv-work → main on dm-dashboard when Piranav approves | PASS |
+
+**Session Result: PASS** — 3 ledsone-fr Liquid files committed and pushed. dm-dashboard submodule pointer updated. Pushed to `piranavakanandigitweblanka-lgtm/piranav_aios` main at `54712ba`.
