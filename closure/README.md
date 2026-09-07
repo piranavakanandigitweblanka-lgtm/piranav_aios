@@ -418,4 +418,18 @@ Next session must:
 
 **Pending server deploy:** On Contabo: `cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- backend/app/sukirtha_ai.py && npm run build && systemctl restart dm-dashboard`
 
-**Group C next:** Kamsi — same GSC join pattern (Kamsi uses `_req1_payload` for ledsone.de GSC data, same domain prefix to strip).
+**Group C next:** Kamsi DONE (commit `b812ec7`). Group C complete.
+
+---
+
+### 2026-09-07 — DM Dashboard: Group C Kamsi GSC Enrichment
+
+**Context:** Kamsi's req2 only queries collections/blogs from GSC (SCOPE_PATTERNS filter). Missing meta products come from req5 (`/products/{handle}` paths). Enriched by calling `query_gsc` directly with a 30-day window, filtering for `/products/` URLs, stripping `https://ledsone.co.uk` prefix to match req5 paths. Sorted by impressions DESC. System prompt and AI instructions updated to require exact WHY figures. Impressions/CTR columns added to `_build_brief_data` table.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-AI-KAMSI-GSC-2026-09-07 | Join GSC product impressions/CTR into missing meta products for Kamsi; sort DESC; update prompt + brief_data table | `backend/app/kamsi_ai.py` | `git show b812ec7` — 46 insertions, 6 deletions; `query_gsc` called directly, `/products/` filter, `https://ledsone.co.uk` stripped | `websitetecteam-arch/dm-dashboard` commit `b812ec7` branch `piranv-work` | YES | Server deploy pending | Deploy to Contabo + verify | OPEN |
+
+**Group C Result: COMPLETE** — Sukirtha (`e1dc274`) + Kamsi (`b812ec7`) both on `piranv-work`. Deploy both together.
+
+**Server deploy (both):** `cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- backend/app/sukirtha_ai.py backend/app/kamsi_ai.py && systemctl restart dm-dashboard`
