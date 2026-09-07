@@ -400,3 +400,22 @@ Next session must:
 | DM-DEPLOY-2026-09-06 | Deploy all fixes to Contabo server — git fetch, checkout fixed files, npm build, systemctl restart | Contabo `/var/www/dashboard-dm` | `systemctl status dm-dashboard` → `active (running)`; all staff task select returns `{"ok":true}` | Server `main` at `676b50b` | YES | Server git history messy (diverged merges) — clean up next session | None | PASS |
 
 **Session Result: PASS** — All 5 bugs fixed and deployed. Backend `active (running)` on Contabo. All 12 staff can select tasks without 500 errors. AI brief renders formatted tasks in widget and My Task Log.
+
+---
+
+### 2026-09-07 — DM Dashboard: AI Brief Quality — Group C (Sukirtha GSC Enrichment)
+
+**Context:** Implemented the GSC data join for Sukirtha's missing meta products. Previously missing meta tasks had no WHY signal — staff saw only "Missing" status with no reason to prioritise one product over another. Now `_gather_data()` calls `_req1_payload` once, builds a GSC path lookup (stripping `https://ledsone.de` domain to match `/products/...` req6 format), enriches each missing meta product with impressions/CTR/position, sorts DESC by impressions. System prompt and AI instructions updated to require exact figures in the WHY action step. NVIDIA NIM model updated from retired `meta/llama-3.1-70b-instruct` to `meta/llama-3.3-70b-instruct`. Also completed in previous session context (same branch push): fixed item_id missing from waste_products/oos_spending for Mahima/Jefri/Thasitha/Thivajini (candidate_not_found validator bug); added top_campaign correlated subquery to waste queries for 4 staff; added campaign name to brief instructions.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-AI-SUKIRTHA-GSC-2026-09-07 | Join GSC impressions/CTR/position into missing meta products; sort by impressions DESC; update prompt to show numbers and require WHY figures | `backend/app/sukirtha_ai.py` | `git show e1dc274` — 39 insertions, 6 deletions; gsc_by_path lookup built from `_req1_payload` pages, enriched into missing_meta_products list | `websitetecteam-arch/dm-dashboard` commit `e1dc274` branch `piranv-work` | YES | Server needs `git pull origin piranv-work && systemctl restart dm-dashboard` on Contabo | Deploy to Contabo + verify brief shows impression numbers | OPEN |
+| DM-AI-NVIDIA-2026-09-07 | Update NVIDIA NIM model from retired `meta/llama-3.1-70b-instruct` to `meta/llama-3.3-70b-instruct` | `backend/app/ai_shared.py` | Previous session commit — model confirmed updated | `websitetecteam-arch/dm-dashboard` piranv-work | YES | None | None | PASS |
+| DM-AI-VALIDATOR-ITEMID-2026-09-07 | Add `item_id` to waste_products + oos_spending dicts for Mahima/Jefri/Thasitha/Thivajini — fixes candidate_not_found validator 422 blocking task select | 4 `*_ai.py` files | Previous session — item_id now present, validator uses `item_id:{vid}` key | `websitetecteam-arch/dm-dashboard` piranv-work | YES | None | None | PASS |
+| DM-AI-CAMPAIGN-2026-09-07 | Add top_campaign correlated subquery to waste query for Mahima/Jefri/Thasitha/Thivajini; instruct AI to name exact campaign in pause tasks | 4 `*_ai.py` files | Previous session — `top_campaign` field present in waste_products; prompt instruction added | `websitetecteam-arch/dm-dashboard` piranv-work | YES | None | None | PASS |
+
+**Session Result: PASS (code committed + pushed)** — Sukirtha GSC enrichment on piranv-work at `e1dc274`. All other fixes verified. Deploy to Contabo pending Piranav instruction.
+
+**Pending server deploy:** On Contabo: `cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- backend/app/sukirtha_ai.py && npm run build && systemctl restart dm-dashboard`
+
+**Group C next:** Kamsi — same GSC join pattern (Kamsi uses `_req1_payload` for ledsone.de GSC data, same domain prefix to strip).
