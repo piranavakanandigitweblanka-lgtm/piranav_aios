@@ -57,6 +57,15 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 
+### 2026-09-08 — ledsone-uk Snippet UI Theme Fix
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| LEDSONE-2026-09-08-001 | Retheme offerbaner.liquid — yellow Bootstrap alert → ledsone navy #012f6d, GeneralSans font, 5px radius, SVG copy button, remove console.logs | shopify_projects/ledsone-uk-theme/snippets/offerbaner.liquid | File updated in session | uncommitted | YES | NONE | Push via Shopify CLI when ready | PASS |
+| LEDSONE-2026-09-08-002 | Retheme pk-discount-banner.liquid — green #28a745 + yellow → navy #012f6d, GeneralSans, 5px radius, navy copy buttons, remove emojis | shopify_projects/ledsone-uk-theme/snippets/pk-discount-banner.liquid | File updated in session | uncommitted | YES | NONE | Push via Shopify CLI when ready | PASS |
+| LEDSONE-2026-09-08-003 | Retheme offerpop.liquid — dark glass toast #1a1a1a + orange → white flat toast, navy #012f6d, GeneralSans, SVG icons, 8px radius | shopify_projects/ledsone-uk-theme/snippets/offerpop.liquid | File updated in session | uncommitted | YES | NONE | Push via Shopify CLI when ready | PASS |
+| LEDSONE-2026-09-08-004 | Fix promo banner HTML block — remove glass/blur, flat ledsone theme, mobile single-row thin strip, navy 30px pill button | Delivered in conversation — paste into section | Reviewed in conversation | N/A | YES | NONE | NONE | PASS |
+
 ---
 
 ## Closure Log
