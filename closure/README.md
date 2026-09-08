@@ -464,3 +464,27 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 | DM-SUBMODULE-2026-09-07 | Update dm-dashboard submodule pointer to current piranv-work HEAD (30 commits ahead of main) | `dm-dashboard` (submodule ref) | `git show 54712ba` | `54712ba` (piranav_aios main) | YES | piranv-work not yet merged to dm-dashboard main | Merge piranv-work → main on dm-dashboard when Piranav approves | PASS |
 
 **Session Result: PASS** — 3 ledsone-fr Liquid files committed and pushed. dm-dashboard submodule pointer updated. Pushed to `piranavakanandigitweblanka-lgtm/piranav_aios` main at `54712ba`.
+
+---
+
+### 2026-09-08 — DM Dashboard: piranv-work Deploy to Contabo (Sajeepan AI Brief Fix)
+
+**Context:** Sajeepan's AI brief was not showing on the My Tasks page. Root cause: `sajeepan_ai.py` on the server (main branch) had been partially updated to use `validated_brief_call` which returns JSON format, but the frontend (`DailyBriefWidget.jsx`) still had the old emoji-only parser with no JSON support. Also, `SajeepanDailyTaskPage.jsx` only existed on `piranv-work` — the server had the old layout using `DailyBriefWidget` + `MyTaskLog`. Full piranv-work deploy applied: 6 frontend files + 14 backend files checked out from `origin/piranv-work`, frontend rebuilt, service restarted.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-DEPLOY-2026-09-08 | Deploy piranv-work to Contabo — 6 frontend files (SajeepanDailyTaskPage, SajeepanLayout, KamsiDailyTaskPage, KamsiLayout, DailyBriefWidget, MyTaskLog) + 14 backend files (all AI brief quality + auth + task_log + ai_shared + ai_validator) | Contabo `/var/www/dashboard-dm` | `systemctl status dm-dashboard` → `active (running)` port 8499; `npm run build` → `✓ built in 655ms` | `origin/piranv-work` HEAD `da14e1f` checked out to server | YES | piranv-work still not merged to dm-dashboard main — server diverged from main | Merge piranv-work → main on dm-dashboard repo when Piranav approves | PASS |
+
+**Session Result: PASS** — All piranv-work changes deployed. Backend active (running). Sajeepan's My Tasks page now uses `SajeepanDailyTaskPage` with JSON brief parser. All 11 staff AI brief quality improvements live.
+
+---
+
+### 2026-09-08 — Sajeepan AI Brief Emoji Regex Fix
+
+**Root cause:** `parseBriefTasks()` in `SajeepanDailyTaskPage.jsx` used `/^([🔴🟡🟢])\s*(\d+)[.)]\s*(.+)/` without the `u` (unicode) flag. Without `/u`, emoji in character classes are treated as surrogate pairs — the regex matched only the high surrogate, then `\s*` failed on the low surrogate, causing no tasks to parse. Brief returned `[]` → "No brief yet today" despite valid history in DB.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-EMOJI-REGEX-2026-09-08 | Add `/u` unicode flag to emoji regex in `parseBriefTasks` — fixes "No brief yet today" on Sajeepan's My Tasks page | `frontend/src/sajeepan/pages/SajeepanDailyTaskPage.jsx` line 59 | Piranav confirmed "dashboard working now" after deploy | `websitetecteam-arch/dm-dashboard` commit `5c1e86b` piranv-work | YES | None | None | PASS |
+
+**Session Result: PASS** — One-character fix (`/u` flag). Brief now parses emoji-format tasks correctly. Deployed to Contabo and confirmed working by Piranav.
