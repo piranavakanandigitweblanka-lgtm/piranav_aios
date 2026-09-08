@@ -488,3 +488,15 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 | DM-EMOJI-REGEX-2026-09-08 | Add `/u` unicode flag to emoji regex in `parseBriefTasks` — fixes "No brief yet today" on Sajeepan's My Tasks page | `frontend/src/sajeepan/pages/SajeepanDailyTaskPage.jsx` line 59 | Piranav confirmed "dashboard working now" after deploy | `websitetecteam-arch/dm-dashboard` commit `5c1e86b` piranv-work | YES | None | None | PASS |
 
 **Session Result: PASS** — One-character fix (`/u` flag). Brief now parses emoji-format tasks correctly. Deployed to Contabo and confirmed working by Piranav.
+
+---
+
+### 2026-09-08 — Kamsi AI Brief Emoji Regex Fix
+
+**Root cause:** Same surrogate-pair bug as Sajeepan — `parseBriefTasks()` in `KamsiDailyTaskPage.jsx` missing `/u` flag.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-KAMSI-REGEX-2026-09-08 | Add `/u` unicode flag to emoji regex in `KamsiDailyTaskPage.jsx` | `frontend/src/kamsi/pages/KamsiDailyTaskPage.jsx` line 59 | Piranav confirmed "ok now working" | `websitetecteam-arch/dm-dashboard` commit `6e9629b` piranv-work | YES | None | None | PASS |
+
+**Session Result: PASS** — Deployed to Contabo, confirmed working.
