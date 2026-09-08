@@ -500,3 +500,15 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 | DM-KAMSI-REGEX-2026-09-08 | Add `/u` unicode flag to emoji regex in `KamsiDailyTaskPage.jsx` | `frontend/src/kamsi/pages/KamsiDailyTaskPage.jsx` line 59 | Piranav confirmed "ok now working" | `websitetecteam-arch/dm-dashboard` commit `6e9629b` piranv-work | YES | None | None | PASS |
 
 **Session Result: PASS** — Deployed to Contabo, confirmed working.
+
+---
+
+### 2026-09-08 — Sajeepan Brief Exclusion (7-day done window)
+
+**What was built:** Before generating Sajeepan's AI brief, the system now queries `staff_task_log` for candidate_ids he marked `done` in the last 7 days. Those ids are removed from the candidate registry before the AI prompt is built — and listed in an EXCLUDED block so the AI is explicitly told not to re-assign them. The frontend now also stores `candidate_id` inside `task_detail` JSON at selection time so the exclusion query has the data it needs.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-BRIEF-EXCL-2026-09-08 | Prevent brief re-assigning done products/campaigns/terms for 7 days | `backend/app/sajeepan_ai.py` (`_get_done_candidate_ids`), `backend/app/ai_validator.py` (`build_candidate_registry` exclude_ids param, `validated_brief_call` exclude_ids param), `frontend/src/sajeepan/pages/SajeepanDailyTaskPage.jsx` (candidate_id in task_detail) | Piranav confirmed Contabo deploy done — `websitetecteam-arch/dm-dashboard` commit `da5bffa` piranv-work | `websitetecteam-arch/dm-dashboard` commit `da5bffa` piranv-work | YES | candidate_id data only accumulates from today forward (old done tasks have no candidate_id in task_detail) | Extend same pattern to Kamsi if needed | PASS |
+
+**Session Result: PASS** — Deployed to Contabo. Brief will not repeat actioned items for 7 days. New done tasks from today onwards will populate the exclusion window.
