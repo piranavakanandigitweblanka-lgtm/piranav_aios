@@ -579,12 +579,18 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 
 ---
 
-### 2026-09-09 — Admin: Regenerate Sajeepan Today's Brief (Phase 1 + Root Cause Fix)
+### 2026-09-09 — Admin: Regenerate Sajeepan Today's Brief (Phase 1 + 3 Bug Fixes)
 
-**What was built:** Admin-only endpoint `POST /api/sajeepan/ai/admin/regenerate-brief`. New `verify_admin_token()` in auth.py. Regenerate button inside SajeepanDailyTaskPage (admin-only, via user prop from existing View-As flow). Background 30s polling + update banner. Root cause fix: `if (firstAI && !force)` → `if (firstAI)` — eliminates duplicate AI generation on `loadBrief(true)`. Task state (staff_task_log) preserved; chat table cleared and replaced. 20/20 code-path tests pass. Pushed to websitetecteam-arch/dm-dashboard piranv-work.
+**What was built:** Admin-only endpoint `POST /api/sajeepan/ai/admin/regenerate-brief`. New `verify_admin_token()` in auth.py. Regenerate button inside SajeepanDailyTaskPage (admin-only, via user prop from existing View-As flow). Background 30s polling + update banner. Task state (staff_task_log) preserved; chat table cleared and replaced.
+
+**Three bugs fixed in this session:**
+1. **Bug 1 + 2 (64356b7) — Duplicate AI generation:** `if (firstAI && !force)` → `if (firstAI)`. Eliminated second AI pipeline call on `loadBrief(true)`. Also fixed: AI Chat and Today's Tasks now both update from the same single `/history` response after regen.
+2. **Bug 3 (4f2c7c3) — Auto-selection false positive:** After regen, new brief tasks 1–5 shared task numbers with old selected tasks, causing false "✅ Selected" display. Fixed by matching `isSelected` against `candidate_id` (stable identifier) instead of `task.number` (positional, always 1–5).
+
+**25/25 code verification checks pass** (full local code audit completed in session).
 
 | Req ID | Task | Asset Path | Evidence Path | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|
-| DM-ADMIN-REGEN-2026-09-09 | Admin-triggered Sajeepan brief regeneration — server-side auth, task preservation, 7-day exclusion, frontend cache invalidation, auto-update without F5, single generation pipeline | `backend/app/auth.py`, `backend/app/sajeepan_ai.py`, `frontend/src/sajeepan/SajeepanLayout.jsx`, `frontend/src/sajeepan/pages/SajeepanDailyTaskPage.jsx` | `capability/sajeepan/admin-brief-regeneration-2026-09-09.md`, 20/20 code-path tests pass, commits 60eb8b8 + 3472513 + 64356b7 pushed | YES | Live two-session browser test not yet performed | Deploy to Contabo, then live two-session verification | PARTIALLY VERIFIED |
+| DM-ADMIN-REGEN-2026-09-09 | Admin-triggered Sajeepan brief regeneration + 3 bug fixes (duplicate gen, AI/Tasks divergence, auto-selection false positive) | `backend/app/auth.py`, `backend/app/sajeepan_ai.py`, `frontend/src/sajeepan/SajeepanLayout.jsx`, `frontend/src/sajeepan/pages/SajeepanDailyTaskPage.jsx` | `capability/sajeepan/admin-brief-regeneration-2026-09-09.md`, 25/25 code verification checks pass, commits 60eb8b8 + 3472513 + 64356b7 + 4f2c7c3 pushed to piranv-work | YES | (1) Contabo deploy pending — local dist bundle STALE, must run deploy.sh on server; (2) Live two-session browser test not yet performed | (1) Run `bash /var/www/dashboard-dm/deploy.sh` on Contabo; (2) Two-session live test | PASS (code) — PENDING deploy + live test |
 
-**Session Result: PARTIALLY VERIFIED** — All three commits pushed to piranv-work. Code-path analysis and 20/20 tests pass. Capability doc updated to correct architecture. Live two-session browser test required to confirm full end-to-end behavior.
+**Session Result: PASS (code verified)** — All 4 commits pushed to `websitetecteam-arch/dm-dashboard` piranv-work. 25/25 code verification checks pass. Capability doc updated to include auto-selection fix and 4f2c7c3. Local dist bundle is stale — production correctness requires Contabo deploy.sh to be run after last push. Live two-session browser test not yet performed.

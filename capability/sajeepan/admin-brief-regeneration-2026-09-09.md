@@ -242,5 +242,21 @@ No schema changes.
 | `60eb8b8` | feat(sajeepan): admin regenerate brief — correct location (My Tasks page) |
 | `3472513` | feat(sajeepan): live brief update detection + UX gap fixes |
 | `64356b7` | fix(sajeepan): loadBrief(true) no longer triggers duplicate AI generation |
+| `4f2c7c3` | fix(sajeepan): match isSelected by candidate_id not task_number |
 
 Branch: `piranv-work` — remote: `websitetecteam-arch/dm-dashboard`
+
+---
+
+## Auto-Selection Fix (commit 4f2c7c3)
+
+**Bug:** After admin regen, tasks 1–5 in the new brief shared the same integer task numbers as the old brief. `isSelected = selectedNums.has(task.number)` was true for any new task whose number happened to match an already-selected task number — even if they referred to completely different candidates. Sajeepan saw new brief tasks marked as "✅ Selected" that he had never selected.
+
+**Root cause:** `task.number` is always 1–5 in every brief — it is positional, not a stable identifier across briefs.
+
+**Fix:** `isSelected` now uses `candidate_id` as the stable match key:
+```javascript
+const taskCandId  = candidateIds?.[task.number] || task.candidate_id
+const isSelected  = taskCandId ? selectedCandIds.has(taskCandId) : selectedNums.has(task.number)
+```
+`selectedCandIds` is a Set derived from `task_detail.candidate_id` on each selected task row. A new brief task only shows "✅ Selected" when its `candidate_id` matches a genuinely selected candidate. Fallback to `task_number` matching only applies for legacy tasks where `candidate_id` is absent.
