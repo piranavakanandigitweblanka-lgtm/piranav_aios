@@ -57,6 +57,15 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 
+### 2026-09-09 — Sajeepan R3 Gap Repair (Fix 1 + Fix 2)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-SJ-R3-2026-09-09-001 | Fix 1: Close zero-conv dead zone — conv=0, spend £5–£9.99 where cost >= product price was wrongly falling to `exclude` band instead of `zero-low` | dm-dashboard/backend/app/sajeepan.py lines 558–561 | Verified via spec Sj R3.xlsx + diff `50a38c7` | `50a38c7` on websitetecteam-arch/dm-dashboard piranv-work | YES | NONE | Fix 3: check DB for limitation_reason column | PASS |
+| DM-SJ-R3-2026-09-09-002 | Fix 2: Add urgent OOS flag — `urgent: True` when OOS product still has cost/imps/clicks > 0, signals ads still burning budget post-OOS | dm-dashboard/backend/app/sajeepan.py lines 499–508 | Verified via spec Sj R3.xlsx + diff `50a38c7` | `50a38c7` on websitetecteam-arch/dm-dashboard piranv-work | YES | NONE | Frontend needs to read urgent flag and show red badge | PASS |
+
+---
+
 ### 2026-09-08 — ledsone-uk Snippet UI Theme Fix
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
