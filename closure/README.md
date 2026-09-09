@@ -63,6 +63,7 @@ Or as a table when multiple tasks exist in one session:
 |---|---|---|---|---|---|---|---|---|
 | DM-SJ-R3-2026-09-09-001 | Fix 1: Close zero-conv dead zone — conv=0, spend £5–£9.99 where cost >= product price was wrongly falling to `exclude` band instead of `zero-low` | dm-dashboard/backend/app/sajeepan.py lines 558–561 | Verified via spec Sj R3.xlsx + diff `50a38c7` | `50a38c7` on websitetecteam-arch/dm-dashboard piranv-work | YES | NONE | Fix 3: check DB for limitation_reason column | PASS |
 | DM-SJ-R3-2026-09-09-002 | Fix 2: Add urgent OOS flag — `urgent: True` when OOS product still has cost/imps/clicks > 0, signals ads still burning budget post-OOS | dm-dashboard/backend/app/sajeepan.py lines 499–508 | Verified via spec Sj R3.xlsx + diff `50a38c7` | `50a38c7` on websitetecteam-arch/dm-dashboard piranv-work | YES | NONE | Frontend needs to read urgent flag and show red badge | PASS |
+| DM-SJ-R3-2026-09-09-003 | Fix 3A: Add budget_status + bidding_strategy_type to limited_campaigns response + limitation_reason: null placeholder. DB has no primary_status_reasons column — Option B (ingestion pipeline change) tracked as separate gap | dm-dashboard/backend/app/sajeepan.py lines 384–518 | DB verified — no limitation_reason column in google_ads.campaigns. Diff `5a86719` | `5a86719` on websitetecteam-arch/dm-dashboard piranv-work | YES | Option B needs ingestion pipeline change — separate task | Add primary_status_reasons to Google Ads sync pipeline | PASS |
 
 ---
 
