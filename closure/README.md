@@ -532,15 +532,15 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 
 | Req ID | Task | Asset Path | Evidence Path | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|
-| DM-GAP-G01-2026-09-09 | R4 item-level candidates — feed_level1/level2 registered in candidate registry | `sajeepan_ai.py` (_gather_data, _build_system_prompt, _build_brief_data), `ai_validator.py` (build_candidate_registry, _reg_product) | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Awaiting deploy | Deploy to Contabo after Piranav approves | OPEN |
-| DM-GAP-G02-2026-09-09 | candidate_id end-to-end — parseBriefTasks extracts it, candidateIds state maps it, handleSelect uses it | `SajeepanDailyTaskPage.jsx` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Awaiting deploy | Deploy to Contabo after Piranav approves | OPEN |
-| DM-GAP-G03-2026-09-09 | Backend-controlled priority — _calc_backend_priority(), registry stores backend_priority, validator checks it | `ai_validator.py` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Awaiting deploy | Deploy to Contabo after Piranav approves | OPEN |
-| DM-GAP-G04-2026-09-09 | R2 budget_waste + cross_platform added to AI prompt and registry | `sajeepan_ai.py`, `ai_validator.py` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Awaiting deploy | Deploy | OPEN |
-| DM-GAP-G05-2026-09-09 | R3 limited_campaigns + drops added to AI prompt and registry | `sajeepan_ai.py`, `ai_validator.py` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Awaiting deploy | Deploy | OPEN |
-| DM-GAP-G07-2026-09-09 | auto_verify_task: sajeepan falls through to feed_optimization_tracker check | `ai_shared.py` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Awaiting deploy | Deploy | OPEN |
-| DM-GAP-G08-2026-09-09 | matchTable() now recognises feed_level1 and budget_waste tables | `SajeepanDailyTaskPage.jsx` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Awaiting deploy | Deploy | OPEN |
+| DM-GAP-G01-2026-09-09 | R4 item-level candidates — feed_level1/level2 registered in candidate registry | `sajeepan_ai.py` (_gather_data, _build_system_prompt, _build_brief_data), `ai_validator.py` (build_candidate_registry, _reg_product) | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Deploy to Contabo pending | Deploy to Contabo | PASS |
+| DM-GAP-G02-2026-09-09 | candidate_id end-to-end — parseBriefTasks extracts it, candidateIds state maps it, handleSelect uses it | `SajeepanDailyTaskPage.jsx` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Deploy to Contabo pending | Deploy to Contabo | PASS |
+| DM-GAP-G03-2026-09-09 | Backend-controlled priority — _calc_backend_priority(), registry stores backend_priority, validator checks it | `ai_validator.py` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Deploy to Contabo pending | Deploy to Contabo | PASS |
+| DM-GAP-G04-2026-09-09 | R2 budget_waste + cross_platform added to AI prompt and registry | `sajeepan_ai.py`, `ai_validator.py` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Deploy to Contabo pending | Deploy to Contabo | PASS |
+| DM-GAP-G05-2026-09-09 | R3 limited_campaigns + drops added to AI prompt and registry | `sajeepan_ai.py`, `ai_validator.py` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Deploy to Contabo pending | Deploy to Contabo | PASS |
+| DM-GAP-G07-2026-09-09 | auto_verify_task: sajeepan falls through to feed_optimization_tracker check | `ai_shared.py` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Deploy to Contabo pending | Deploy to Contabo | PASS |
+| DM-GAP-G08-2026-09-09 | matchTable() now recognises feed_level1 and budget_waste tables | `SajeepanDailyTaskPage.jsx` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Deploy to Contabo pending | Deploy to Contabo | PASS |
 
-**Session Result: OPEN** — All code changes made on piranv-work branch. Awaiting Piranav instruction to commit and deploy to Contabo. Next session: commit → push → checkout to server → rebuild → restart.
+**Session Result: PASS** — Committed `fe3433b` on `websitetecteam-arch/dm-dashboard` piranv-work. Pushed. Deploy to Contabo pending.
 
 ---
 
@@ -550,9 +550,9 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 
 | Req ID | Task | Asset Path | Evidence Path | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|
-| DM-PRIORITY-FIX-2026-09-09 | Remove undocumented £20 cost split and -20% ROAS change threshold from `_calc_backend_priority()` | `backend/app/ai_validator.py` (`_calc_backend_priority`) | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` (Priority Rule Correction section) | YES | Awaiting deploy | Commit with gap repair batch, deploy to Contabo | OPEN |
+| DM-PRIORITY-FIX-2026-09-09 | Remove undocumented £20 cost split and -20% ROAS change threshold from `_calc_backend_priority()` | `backend/app/ai_validator.py` (`_calc_backend_priority`) | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` (Priority Rule Correction section) | YES | Deploy to Contabo pending | Deploy to Contabo | PASS |
 
-**Session Result: OPEN** — Code corrected, 11/11 validation tests pass. Not yet committed or deployed.
+**Session Result: PASS** — Committed `fe3433b` on `websitetecteam-arch/dm-dashboard` piranv-work. Pushed.
 
 ---
 
@@ -562,6 +562,6 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 
 | Req ID | Task | Asset Path | Evidence Path | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|
-| DM-BOT-P1-2026-09-09 | Sajeepan Bot Phase 1 — deterministic decision engine, `/api/sajeepan/bot/queue`, Bot Queue frontend panel | `backend/app/sajeepan_bot.py`, `backend/app/main.py`, `frontend/src/sajeepan/pages/SajeepanDailyTaskPage.jsx` | `capability/sajeepan/bot-phase1-2026-09-09.md`, 24/24 tests pass | YES | Awaiting deploy | Commit all changes (gap repair + priority fix + bot phase 1) in single batch → deploy to Contabo | OPEN |
+| DM-BOT-P1-2026-09-09 | Sajeepan Bot Phase 1 — deterministic decision engine, `/api/sajeepan/bot/queue`, Bot Queue frontend panel | `backend/app/sajeepan_bot.py`, `backend/app/main.py`, `frontend/src/sajeepan/pages/SajeepanDailyTaskPage.jsx` | `capability/sajeepan/bot-phase1-2026-09-09.md`, 24/24 tests pass | YES | Deploy to Contabo pending | Deploy to Contabo | PASS |
 
-**Session Result: OPEN** — Local code complete. 24/24 tests pass. Awaiting Piranav commit and deploy instruction.
+**Session Result: PASS** — Committed `fe3433b` on `websitetecteam-arch/dm-dashboard` piranv-work. Pushed. Deploy to Contabo pending.
