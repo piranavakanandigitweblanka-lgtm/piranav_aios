@@ -565,3 +565,15 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 | DM-BOT-P1-2026-09-09 | Sajeepan Bot Phase 1 — deterministic decision engine, `/api/sajeepan/bot/queue`, Bot Queue frontend panel | `backend/app/sajeepan_bot.py`, `backend/app/main.py`, `frontend/src/sajeepan/pages/SajeepanDailyTaskPage.jsx` | `capability/sajeepan/bot-phase1-2026-09-09.md`, 24/24 tests pass | YES | Deploy to Contabo pending | Deploy to Contabo | PASS |
 
 **Session Result: PASS** — Committed `fe3433b`, pushed, deployed to Contabo 2026-09-09 07:50:55 CEST. Service active, startup complete.
+
+---
+
+### 2026-09-09 — Admin: Regenerate Sajeepan Today's Brief (Phase 1 + Root Cause Fix)
+
+**What was built:** Admin-only endpoint `POST /api/sajeepan/ai/admin/regenerate-brief`. New `verify_admin_token()` in auth.py. Regenerate button inside SajeepanDailyTaskPage (admin-only, via user prop from existing View-As flow). Background 30s polling + update banner. Root cause fix: `if (firstAI && !force)` → `if (firstAI)` — eliminates duplicate AI generation on `loadBrief(true)`. Task state (staff_task_log) preserved; chat table cleared and replaced. 20/20 code-path tests pass. Pushed to websitetecteam-arch/dm-dashboard piranv-work.
+
+| Req ID | Task | Asset Path | Evidence Path | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|
+| DM-ADMIN-REGEN-2026-09-09 | Admin-triggered Sajeepan brief regeneration — server-side auth, task preservation, 7-day exclusion, frontend cache invalidation, auto-update without F5, single generation pipeline | `backend/app/auth.py`, `backend/app/sajeepan_ai.py`, `frontend/src/sajeepan/SajeepanLayout.jsx`, `frontend/src/sajeepan/pages/SajeepanDailyTaskPage.jsx` | `capability/sajeepan/admin-brief-regeneration-2026-09-09.md`, 20/20 code-path tests pass, commits 60eb8b8 + 3472513 + 64356b7 pushed | YES | Live two-session browser test not yet performed | Deploy to Contabo, then live two-session verification | PARTIALLY VERIFIED |
+
+**Session Result: PARTIALLY VERIFIED** — All three commits pushed to piranv-work. Code-path analysis and 20/20 tests pass. Capability doc updated to correct architecture. Live two-session browser test required to confirm full end-to-end behavior.
