@@ -521,3 +521,47 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 | DM-BRIEF-EXCL-2026-09-08 | Prevent brief re-assigning done products/campaigns/terms for 7 days | `backend/app/sajeepan_ai.py` (`_get_done_candidate_ids`), `backend/app/ai_validator.py` (`build_candidate_registry` exclude_ids param, `validated_brief_call` exclude_ids param), `frontend/src/sajeepan/pages/SajeepanDailyTaskPage.jsx` (candidate_id in task_detail) | Piranav confirmed Contabo deploy done — `websitetecteam-arch/dm-dashboard` commit `da5bffa` piranv-work | `websitetecteam-arch/dm-dashboard` commit `da5bffa` piranv-work | YES | candidate_id data only accumulates from today forward (old done tasks have no candidate_id in task_detail) | Extend same pattern to Kamsi if needed | PASS |
 
 **Session Result: PASS** — Deployed to Contabo. Brief will not repeat actioned items for 7 days. New done tasks from today onwards will populate the exclusion window.
+
+---
+
+### 2026-09-09 — Sajeepan AI Assistant Full Gap Repair (G01–G08)
+
+**What was repaired:** 16-phase gap audit identified 12 gaps (G01–G12). This session resolved G01–G08 through code changes. DT-001 contradiction (closure claimed PASS for candidate_id fix, but code reality showed it was always null) was confirmed and resolved.
+
+**Root cause of DT-001:** commit `da5bffa` added `candidate_id: task.candidate_id || null` to `handleSelect` but `parseBriefTasks()` only extracted `{number, priority, title, actions}` — never `candidate_id`. So `task.candidate_id` was always `undefined` → always `null` in task_detail. The exclusion system had no data to exclude. This closure supersedes the premature PASS in DM-BRIEF-EXCL-2026-09-08.
+
+| Req ID | Task | Asset Path | Evidence Path | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|
+| DM-GAP-G01-2026-09-09 | R4 item-level candidates — feed_level1/level2 registered in candidate registry | `sajeepan_ai.py` (_gather_data, _build_system_prompt, _build_brief_data), `ai_validator.py` (build_candidate_registry, _reg_product) | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Awaiting deploy | Deploy to Contabo after Piranav approves | OPEN |
+| DM-GAP-G02-2026-09-09 | candidate_id end-to-end — parseBriefTasks extracts it, candidateIds state maps it, handleSelect uses it | `SajeepanDailyTaskPage.jsx` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Awaiting deploy | Deploy to Contabo after Piranav approves | OPEN |
+| DM-GAP-G03-2026-09-09 | Backend-controlled priority — _calc_backend_priority(), registry stores backend_priority, validator checks it | `ai_validator.py` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Awaiting deploy | Deploy to Contabo after Piranav approves | OPEN |
+| DM-GAP-G04-2026-09-09 | R2 budget_waste + cross_platform added to AI prompt and registry | `sajeepan_ai.py`, `ai_validator.py` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Awaiting deploy | Deploy | OPEN |
+| DM-GAP-G05-2026-09-09 | R3 limited_campaigns + drops added to AI prompt and registry | `sajeepan_ai.py`, `ai_validator.py` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Awaiting deploy | Deploy | OPEN |
+| DM-GAP-G07-2026-09-09 | auto_verify_task: sajeepan falls through to feed_optimization_tracker check | `ai_shared.py` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Awaiting deploy | Deploy | OPEN |
+| DM-GAP-G08-2026-09-09 | matchTable() now recognises feed_level1 and budget_waste tables | `SajeepanDailyTaskPage.jsx` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Awaiting deploy | Deploy | OPEN |
+
+**Session Result: OPEN** — All code changes made on piranv-work branch. Awaiting Piranav instruction to commit and deploy to Contabo. Next session: commit → push → checkout to server → rebuild → restart.
+
+---
+
+### 2026-09-09 — Priority Rule Correction (GPT Governance Review)
+
+**What was corrected:** GPT governance review identified two undocumented priority thresholds in `_calc_backend_priority()`. Both removed. All waste and ROAS-comparison candidates now return `medium` unconditionally. Three documented `high` rules (oos_still_spending, feed_level1, sudden_drop) unchanged.
+
+| Req ID | Task | Asset Path | Evidence Path | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|
+| DM-PRIORITY-FIX-2026-09-09 | Remove undocumented £20 cost split and -20% ROAS change threshold from `_calc_backend_priority()` | `backend/app/ai_validator.py` (`_calc_backend_priority`) | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` (Priority Rule Correction section) | YES | Awaiting deploy | Commit with gap repair batch, deploy to Contabo | OPEN |
+
+**Session Result: OPEN** — Code corrected, 11/11 validation tests pass. Not yet committed or deployed.
+
+---
+
+### 2026-09-09 — Sajeepan Bot Phase 1: Deterministic Decision Engine
+
+**What was built:** New `sajeepan_bot.py` module adds a deterministic action queue that runs without any AI model call. Reuses existing R1/R2/R3/R4 data, candidate registry, backend priority, and 7-day done exclusion. New endpoint: `GET /api/sajeepan/bot/queue`. Frontend: Bot Queue collapsible panel added to `SajeepanDailyTaskPage.jsx`. Existing AI brief and chat routes completely unchanged.
+
+| Req ID | Task | Asset Path | Evidence Path | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|
+| DM-BOT-P1-2026-09-09 | Sajeepan Bot Phase 1 — deterministic decision engine, `/api/sajeepan/bot/queue`, Bot Queue frontend panel | `backend/app/sajeepan_bot.py`, `backend/app/main.py`, `frontend/src/sajeepan/pages/SajeepanDailyTaskPage.jsx` | `capability/sajeepan/bot-phase1-2026-09-09.md`, 24/24 tests pass | YES | Awaiting deploy | Commit all changes (gap repair + priority fix + bot phase 1) in single batch → deploy to Contabo | OPEN |
+
+**Session Result: OPEN** — Local code complete. 24/24 tests pass. Awaiting Piranav commit and deploy instruction.
