@@ -540,7 +540,7 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 | DM-GAP-G07-2026-09-09 | auto_verify_task: sajeepan falls through to feed_optimization_tracker check | `ai_shared.py` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Deploy to Contabo pending | Deploy to Contabo | PASS |
 | DM-GAP-G08-2026-09-09 | matchTable() now recognises feed_level1 and budget_waste tables | `SajeepanDailyTaskPage.jsx` | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` | YES | Deploy to Contabo pending | Deploy to Contabo | PASS |
 
-**Session Result: PASS** — Committed `fe3433b` on `websitetecteam-arch/dm-dashboard` piranv-work. Pushed. Deploy to Contabo pending.
+**Session Result: PASS** — Committed `fe3433b`, pushed, deployed to Contabo 2026-09-09 07:50:55 CEST. Service active, `200 OK` on `/api/task-log/today` confirmed.
 
 ---
 
@@ -552,7 +552,7 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 |---|---|---|---|---|---|---|---|
 | DM-PRIORITY-FIX-2026-09-09 | Remove undocumented £20 cost split and -20% ROAS change threshold from `_calc_backend_priority()` | `backend/app/ai_validator.py` (`_calc_backend_priority`) | `evidence/sajeepan/ai-assistant-gap-repair-2026-09-09.md` (Priority Rule Correction section) | YES | Deploy to Contabo pending | Deploy to Contabo | PASS |
 
-**Session Result: PASS** — Committed `fe3433b` on `websitetecteam-arch/dm-dashboard` piranv-work. Pushed.
+**Session Result: PASS** — Committed `fe3433b`, pushed, deployed to Contabo 2026-09-09 07:50:55 CEST.
 
 ---
 
@@ -564,4 +564,4 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 |---|---|---|---|---|---|---|---|
 | DM-BOT-P1-2026-09-09 | Sajeepan Bot Phase 1 — deterministic decision engine, `/api/sajeepan/bot/queue`, Bot Queue frontend panel | `backend/app/sajeepan_bot.py`, `backend/app/main.py`, `frontend/src/sajeepan/pages/SajeepanDailyTaskPage.jsx` | `capability/sajeepan/bot-phase1-2026-09-09.md`, 24/24 tests pass | YES | Deploy to Contabo pending | Deploy to Contabo | PASS |
 
-**Session Result: PASS** — Committed `fe3433b` on `websitetecteam-arch/dm-dashboard` piranv-work. Pushed. Deploy to Contabo pending.
+**Session Result: PASS** — Committed `fe3433b`, pushed, deployed to Contabo 2026-09-09 07:50:55 CEST. Service active, startup complete.
