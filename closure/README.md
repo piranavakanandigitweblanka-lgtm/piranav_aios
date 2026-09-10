@@ -57,6 +57,14 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 
+### 2026-09-10 — Sajeepan R3 Full Field Parity Pass
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-SJ-R3-2026-09-10-001 | R3 full field parity pass — one-pass build of all available missing fields: OOS bestsellers add sku+roas; limited_campaigns add roas_l; drops add campaign_status+revenue_at_risk; missing_from_google add title/revenue/stock/merchant_availability; roas_products add merchant_availability/feed_issues/campaign_name; new morning_risk.disapprovals section from merchant_products item_level_issues; dup_titles + dup_merchant now populated from merchant_products joins (were empty). google_ads.merchant_products confirmed 717k rows — outdated comment removed. Result: ~85% spec sheet parity. | dm-dashboard/backend/app/sajeepan.py | Spec Sj R3.xlsx verified field by field prior session. DB query confirmed merchant_products 717,066 rows. LOWER() join pattern confirmed. Commit 831c825 | 831c825 on websitetecteam-arch/dm-dashboard piranv-work | YES | Frontend not updated — new fields exist in API but not displayed yet. Fix 3B (primary_status_reasons ingestion) deferred. | Update frontend React components to read: urgent badge, low_stock badge, qty, merchant_availability, feed_issues, roas on OOS cards, roas_l on limited, revenue_at_risk on drops, disapprovals section | PASS |
+
+---
+
 ### 2026-09-09 — Sajeepan R3 Gap Repair (Fix 1 + Fix 2)
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
