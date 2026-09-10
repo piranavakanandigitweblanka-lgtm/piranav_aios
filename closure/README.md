@@ -57,6 +57,14 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 
+### 2026-09-10 — Scope Audit (OPEN — deferred)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-SCOPE-2026-09-10-001 | Scope audit complete — confirmed KAMSI_PRODUCT_IDS_UK and DILAKSI_PRODUCT_IDS_UK exist in sales.py as the canonical allocation. All 6 Kamsi reqs + Dilaksi reqs + both AI briefs are unscoped (show full store data). Fix deferred — need collection-to-person mapping for Req2 (Low CTR pages). | dm-dashboard/backend/app/sales.py (lines 3466, 2930) | Audit complete in session. No code changed. | N/A | YES | Piranav to confirm collection allocation for Kamsi vs Dilaksi before building filter | Use KAMSI_PRODUCT_IDS_UK to filter Req1/Req5/Req6/AI brief. Derive collection list from product IDs for Req2. | OPEN |
+
+---
+
 ### 2026-09-10 — Kamsi Full Pipeline Parity with Sajeepan
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
