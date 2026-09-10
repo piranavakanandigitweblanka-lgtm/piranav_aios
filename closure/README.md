@@ -57,6 +57,14 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 
+### 2026-09-10 — Sajeepan R3 Frontend UI Update
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-SJ-R3-2026-09-10-002 | R3 frontend update — ProductActionDashboard.jsx updated to display all new backend fields: OOS table adds SKU/ROAS/Urgent badge; Limited adds roas_l/budget_status/bidding_strategy_type chips; Drops adds campaign_status badge + revenue_at_risk chip; Missing from Google adds title/revenue/stock/merchant_availability; NEW Disapprovals section with issue codes + CSV; ROAS table adds qty/low_stock warning/merchant_availability/feed_issues badge; low-stock band added to BAND_META; dup_titles + dup_merchant now show live data replacing hardcoded "not available". Section D updated to remove now-working items. | dm-dashboard/frontend/src/sajeepan/pages/ProductActionDashboard.jsx | Diff 0bdc952 — 216 insertions / 65 deletions | 0bdc952 on websitetecteam-arch/dm-dashboard piranv-work | YES | Requires git pull + server restart on Contabo to go live | Pull on Contabo and restart frontend (npm run build or vite preview) | PASS |
+
+---
+
 ### 2026-09-10 — Sajeepan R3 Full Field Parity Pass
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
