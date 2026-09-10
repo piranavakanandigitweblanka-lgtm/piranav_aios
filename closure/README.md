@@ -57,6 +57,15 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 
+### 2026-09-10 — Kamsi Full Pipeline Parity with Sajeepan
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-KM-PIPE-2026-09-10-001 | Kamsi backend pipeline parity — added _last_regeneration_ts global, regenerated_at to /history, _get_done_candidate_ids() with 7-day exclusion, exclude_ids passed to validated_brief_call in /brief, and full POST /admin/regenerate-brief endpoint (admin/dev only, preserves task log). | dm-dashboard/backend/app/kamsi_ai.py | 100 insertions. Commit 1d954d3 | 1d954d3 on websitetecteam-arch/dm-dashboard piranv-work | YES | None | Pull on Contabo + restart backend | PASS |
+| DM-KM-PIPE-2026-09-10-002 | Kamsi frontend pipeline parity — added localStorage brief cache with server-side freshness check, 30s background polling for regenerated_at with update banner, admin Regenerate Brief button with confirm dialog (admin/dev role only). user prop wired from KamsiLayout. | dm-dashboard/frontend/src/kamsi/pages/KamsiDailyTaskPage.jsx, dm-dashboard/frontend/src/kamsi/KamsiLayout.jsx | 215 insertions. Same commit 1d954d3 | 1d954d3 on websitetecteam-arch/dm-dashboard piranv-work | YES | None | Pull on Contabo + rebuild frontend | PASS |
+
+---
+
 ### 2026-09-10 — Kamsi AI Chat Frontend + Backend Gap Fix
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
