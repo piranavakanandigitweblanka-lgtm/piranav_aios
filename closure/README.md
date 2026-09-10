@@ -57,6 +57,15 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 
+### 2026-09-10 — Kamsi AI Chat Frontend + Backend Gap Fix
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-KM-AI-2026-09-10-001 | Kamsi AI backend gap fix — extended _gather_data() in kamsi_ai.py to add GA4 organic data (req3), duplicate SKU/price data (req6), and SEO priority data (req4). Updated _build_system_prompt() with Morning Search Health + Catalog SEO Health sections. Updated _build_brief_data() with dup_sku and seo_priority sections. | dm-dashboard/backend/app/kamsi_ai.py | 3 missing data sources identified vs KAMSI.txt skill file. Diff commit 4bc35b4 | 4bc35b4 on websitetecteam-arch/dm-dashboard piranv-work | YES | None | Verify brief output contains SEO priority and dup SKU data | PASS |
+| DM-KM-AI-2026-09-10-002 | Kamsi AI chat frontend — added ChatPanel component, chat state (chatMessages/chatSending/chatPrefill), handleChat calling /api/kamsi/ai/chat, "Ask AI about this task" button in SelectedTaskRow expanded section, AI CHAT section at page bottom. Wired chatRef scroll-to. KamsiLayout already had the page registered. | dm-dashboard/frontend/src/kamsi/pages/KamsiDailyTaskPage.jsx | 143 insertions. Commit 4960f57 | 4960f57 on websitetecteam-arch/dm-dashboard piranv-work | YES | Requires git pull + build on Contabo to go live | Pull on Contabo and rebuild frontend | PASS |
+
+---
+
 ### 2026-09-10 — Sajeepan R3 Frontend UI Update
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
