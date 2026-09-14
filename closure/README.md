@@ -636,3 +636,13 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 | DM-ADMIN-REGEN-2026-09-09 | Admin-triggered Sajeepan brief regeneration + 3 bug fixes (duplicate gen, AI/Tasks divergence, auto-selection false positive) | `backend/app/auth.py`, `backend/app/sajeepan_ai.py`, `frontend/src/sajeepan/SajeepanLayout.jsx`, `frontend/src/sajeepan/pages/SajeepanDailyTaskPage.jsx` | `capability/sajeepan/admin-brief-regeneration-2026-09-09.md`, 25/25 code verification checks pass, commits 60eb8b8 + 3472513 + 64356b7 + 4f2c7c3 pushed to piranv-work | YES | (1) Contabo deploy pending — local dist bundle STALE, must run deploy.sh on server; (2) Live two-session browser test not yet performed | (1) Run `bash /var/www/dashboard-dm/deploy.sh` on Contabo; (2) Two-session live test | PASS (code) — PENDING deploy + live test |
 
 **Session Result: PASS (code verified)** — All 4 commits pushed to `websitetecteam-arch/dm-dashboard` piranv-work. 25/25 code verification checks pass. Capability doc updated to include auto-selection fix and 4f2c7c3. Local dist bundle is stale — production correctness requires Contabo deploy.sh to be run after last push. Live two-session browser test not yet performed.
+
+---
+
+### 2026-09-14 — Scheduled: SEMrush → Neon DB Keyword Sync
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SEO-SYNC-2026-09-14-001 | Fetch top 100 organic keywords for ledsone.co.uk from SEMrush and upsert into Neon DB (semrush_keywords table) | Staff-requirements-02/ (Node.js upsert script — not yet created) | Scheduled task log — SEMrush API call returned: insufficient API units | N/A — no code change made | YES | SEMrush account has 0 API units available. No data fetched, no DB write performed. | Visit https://www.semrush.com/mcp-access to top up API units, then re-run this scheduled task. | FAIL (blocked — SEMrush API units exhausted) |
+
+**Session Result: FAIL (blocked)** — The SEMrush `resource_organic` report call for `ledsone.co.uk` was refused: account has insufficient API units. Neon DB connection string and Staff-requirements-02 Node.js dependencies (pg installed) are confirmed ready. No data was written to the database. Piranav notified via push notification. No files created or changed. No git commit needed this session.
