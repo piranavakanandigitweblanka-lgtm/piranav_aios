@@ -650,3 +650,17 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 | SEO-SEMRUSH-REFRESH-2026-09-14 | Weekly SEMrush domain overview upsert → semrush_history (ledsone.co.uk) | `Staff-requirements-02/` (no file written — task blocked) | This closure entry (two sessions both blocked) | NO | PRIMARY: SEMrush API units exhausted — both sessions received "not enough API units". Visit https://www.semrush.com/mcp-access to top up. SECONDARY (remote container only): NEON_DATABASE_URL env var not exported and no `.env.local` in Staff-requirements-02/; `node_modules/pg` not installed. These may be present in local/Vercel environment. | (1) Top up SEMrush API units at https://www.semrush.com/mcp-access — this unblocks both sessions; (2) For remote trigger: add NEON_DATABASE_URL to trigger environment config and add `npm install` setup step | BLOCKED |
 
 **Session Result: BLOCKED** — Two scheduled sessions both confirmed: SEMrush account has 0 API units available. No data fetched or written. Piranav notified via push notification. Resolve SEMrush API units first — that is the single root blocker affecting all environments.
+
+---
+
+### 2026-09-14 — Scheduled: SEMrush Backlinks Data Refresh (ledsone.co.uk → semrush_backlinks / semrush_refdomains)
+
+**What was attempted:** Automated scheduled agent fired to fetch SEMrush backlinks overview + top 200 referring domains for ledsone.co.uk and upsert into Neon PostgreSQL `semrush_backlinks` and `semrush_refdomains` tables.
+
+**Result: BLOCKED — SEMrush API units exhausted (3rd consecutive blocked session today).**
+
+| Req ID | Task | Asset Path | Evidence Path | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|
+| SEO-BACKLINKS-REFRESH-2026-09-14 | Scheduled backlinks upsert → semrush_backlinks + semrush_refdomains (ledsone.co.uk, top 200 referring domains) | `Staff-requirements-02/` (no file written — blocked) | This closure entry | NO | SEMrush API units exhausted — `mcp__Semrush__backlinks_research` returned "not enough API units" immediately. Same blocker as two earlier sessions today (SEO-SEMRUSH-REFRESH-2026-09-14). Visit https://www.semrush.com/mcp-access to top up. | Top up SEMrush API units at https://www.semrush.com/mcp-access — all SEMrush scheduled tasks will unblock automatically on next trigger | BLOCKED |
+
+**Session Result: BLOCKED** — 3rd scheduled session today blocked by same SEMrush API unit exhaustion. No data fetched or written. The Node.js upsert script and DB tables are ready to be written once API data is available. Piranav notified via push notification.
