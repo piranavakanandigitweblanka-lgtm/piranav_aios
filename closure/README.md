@@ -641,12 +641,12 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 
 ### 2026-09-14 — Scheduled: SEMrush Weekly Data Refresh (ledsone.co.uk → semrush_history)
 
-**What was attempted:** Automated weekly agent fired to fetch SEMrush domain overview for ledsone.co.uk and upsert into Neon PostgreSQL `semrush_history` table.
+**What was attempted:** Automated weekly agent fired (two separate sessions) to fetch SEMrush domain overview for ledsone.co.uk and upsert into Neon PostgreSQL `semrush_history` table.
 
-**Result: BLOCKED — two hard blockers, no data written.**
+**Result: BLOCKED — SEMrush API units exhausted. No data written.**
 
 | Req ID | Task | Asset Path | Evidence Path | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|
-| SEO-SEMRUSH-REFRESH-2026-09-14 | Weekly SEMrush domain overview upsert → semrush_history (ledsone.co.uk) | `Staff-requirements-02/` (no file written — task blocked) | This closure entry | NO | (1) SEMrush API: insufficient API units — `mcp__Semrush__domain_overview` returned "not enough API units" error. Visit https://www.semrush.com/mcp-access to top up. (2) NEON_DATABASE_URL not present in remote environment — no `.env`/`.env.local` found in `Staff-requirements-02/`, no env var exported. (3) `node_modules/pg` not installed in remote container. | (1) Top up SEMrush API units at https://www.semrush.com/mcp-access; (2) Add NEON_DATABASE_URL to the scheduled trigger environment or commit a `.env.local` (gitignored) to Staff-requirements-02/; (3) Run `npm install` in Staff-requirements-02/ as part of env setup or trigger setup script | BLOCKED |
+| SEO-SEMRUSH-REFRESH-2026-09-14 | Weekly SEMrush domain overview upsert → semrush_history (ledsone.co.uk) | `Staff-requirements-02/` (no file written — task blocked) | This closure entry (two sessions both blocked) | NO | PRIMARY: SEMrush API units exhausted — both sessions received "not enough API units". Visit https://www.semrush.com/mcp-access to top up. SECONDARY (remote container only): NEON_DATABASE_URL env var not exported and no `.env.local` in Staff-requirements-02/; `node_modules/pg` not installed. These may be present in local/Vercel environment. | (1) Top up SEMrush API units at https://www.semrush.com/mcp-access — this unblocks both sessions; (2) For remote trigger: add NEON_DATABASE_URL to trigger environment config and add `npm install` setup step | BLOCKED |
 
-**Session Result: BLOCKED** — Scheduled agent ran but could not complete. No data was written to the database. Piranav must resolve the two environment blockers before re-running.
+**Session Result: BLOCKED** — Two scheduled sessions both confirmed: SEMrush account has 0 API units available. No data fetched or written. Piranav notified via push notification. Resolve SEMrush API units first — that is the single root blocker affecting all environments.
