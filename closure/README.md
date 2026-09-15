@@ -57,6 +57,19 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 
+### 2026-09-15 — Unified Daily Task Hub rollout — all 11 staff + merge conflict resolve
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-DASH-HUB-2026-09-15-001 | Sukirtha unified task hub — SEO · ledsone.de, CTR/Impr metric, matchTable: low_ctr_pages + missing_meta_products, metric fallback from action text | frontend/src/sukirtha/pages/SukirthaDailyTaskPage.jsx, frontend/src/sukirtha/SukirthaLayout.jsx | Commit 8074a25 on websitetecteam-arch/dm-dashboard piranv-work | 8074a25 | YES | Contabo deploy pending | git pull + npm run build --prefix frontend on Contabo | PASS |
+| DM-DASH-HUB-2026-09-15-002 | Thasitha unified task hub — Google Ads · ledsone.de, ROAS/Cost metric (€), matchTable: oos_spending + waste_products + campaigns + waste_keywords | frontend/src/thasitha/pages/ThasithaDailyTaskPage.jsx, frontend/src/thasitha/ThasithaLayout.jsx | Commit c54eb8c on websitetecteam-arch/dm-dashboard piranv-work | c54eb8c | YES | Contabo deploy pending | git pull + npm run build --prefix frontend on Contabo | PASS |
+| DM-DASH-HUB-2026-09-15-003 | Theekshy unified task hub — Google Ads · ledsone.co.uk, ROAS/Cost metric (£), matchTable: campaign_summary + waste_products + search_term_issues | frontend/src/theekshy/pages/TheekshyDailyTaskPage.jsx, frontend/src/theekshy/TheekshyLayout.jsx | Commit 6eacd4c on websitetecteam-arch/dm-dashboard piranv-work | 6eacd4c | YES | Contabo deploy pending | git pull + npm run build --prefix frontend on Contabo | PASS |
+| DM-DASH-HUB-2026-09-15-004 | Hetheesha unified task hub — SEO · ledsone.fr, Items/Progress metric, matchTable: products + collections (fix tracker), metric fallback: overdue/pending count from action text | frontend/src/hetheesha/pages/HetheeshaDailyTaskPage.jsx, frontend/src/hetheesha/HetheeshaLayout.jsx | Commit 885e3a7 on websitetecteam-arch/dm-dashboard piranv-work | 885e3a7 | YES | Contabo deploy pending | git pull + npm run build --prefix frontend on Contabo | PASS |
+| DM-DASH-HUB-2026-09-15-005 | Thivajini unified task hub — Google Ads · ledsone.fr, ROAS/Cost metric (€), matchTable: campaigns + waste_products + oos_spending + waste_keywords | frontend/src/thivajini/pages/ThivajiniDailyTaskPage.jsx, frontend/src/thivajini/ThivajiniLayout.jsx | Commit 1c2eb49 on websitetecteam-arch/dm-dashboard piranv-work | 1c2eb49 | YES | Contabo deploy pending | git pull + npm run build --prefix frontend on Contabo | PASS |
+| DM-DASH-HUB-2026-09-15-006 | Merge conflict resolve — piranv-work rebased onto updated main (dev-work added ThivajiniReq5/FeedOptimization). Conflict in ThivajiniLayout.jsx resolved: kept ThivajiniReq5 + ThivajiniDailyTaskPage, dropped old DailyBriefWidget/MyTaskLog. Force-pushed with --force-with-lease. | frontend/src/thivajini/ThivajiniLayout.jsx | Commit 1c2eb49 after rebase — piranv-work now clean on top of main | 1c2eb49 | YES | NONE | Merge PR on GitHub then deploy Contabo | PASS |
+
+---
+
 ### 2026-09-15 — Mahima AI Brief Full Extension + Frontend Hub
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
