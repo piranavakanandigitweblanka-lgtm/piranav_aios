@@ -57,6 +57,25 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 
+### 2026-09-15 — Mahima AI Brief Full Extension + Frontend Hub
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-MH-AI-2026-09-15-001 | Mahima AI backend — extended _gather_data() in mahima_ai.py to cover ALL req data sources: poor_roas_products (ROAS <2.5x, cost ≥€10, conv >0), top_roas_products (ROAS ≥4.0x — Scale), low_stock_products (qty 1–10 via listings.shopify_listings, proxy for req2), feed_gap_products (in feed not spending, req5 normalization reused), top_converting_terms (both pmax + campaign ST tables combined UNION). Added _last_regeneration_ts global, regenerated_at on /history, _get_done_candidate_ids() 7-day exclusion, exclude_ids to validated_brief_call, /admin/regenerate-brief endpoint, _build_system_prompt() P1/P2/P3 sections, _build_brief_data() 8 tables. | dm-dashboard/backend/app/mahima_ai.py | Commit d8f50a4 on websitetecteam-arch/dm-dashboard piranv-work (backend pushed prior session) | d8f50a4 on websitetecteam-arch/dm-dashboard piranv-work | YES | Contabo needs git pull + systemctl restart backend | Pull on Contabo: cd dm-dashboard && git pull && systemctl restart dm-dashboard-backend | PASS |
+| DM-MH-AI-2026-09-15-002 | ai_validator.py extended — _calc_backend_priority() added 5 new Mahima business rules (low_stock_spending, poor_roas, not_in_campaign, high_converting_term, scale_opportunity). build_candidate_registry() adds loops for poor_roas_products, top_roas_products, low_stock_products, feed_gap_products, top_converting_terms. Zero impact on other staff — keys absent in their data, rule names never used by others. | dm-dashboard/backend/app/ai_validator.py | Same commit d8f50a4 | d8f50a4 on websitetecteam-arch/dm-dashboard piranv-work | YES | NONE | NONE | PASS |
+| DM-MH-AI-2026-09-15-003 | MahimaDailyTaskPage.jsx built — full KamsiDailyTaskPage pattern adapted for Google Ads: P1/P2/P3 brief cards, Ads-specific matchTable/buildReason/extractMetric, ROAS/Cost metric column, DataTable per task, admin regenerate control, 30s background poll for regenerated_at, inline chat panel. MahimaLayout.jsx updated: DailyBriefWidget replaced with MahimaDailyTaskPage, "AI Tasks" nav tab added. | dm-dashboard/frontend/src/mahima/pages/MahimaDailyTaskPage.jsx, dm-dashboard/frontend/src/mahima/MahimaLayout.jsx | Commit 1de342e on websitetecteam-arch/dm-dashboard piranv-work (1031 insertions) | 1de342e on websitetecteam-arch/dm-dashboard piranv-work | YES | Contabo needs git pull + npm run build frontend | Pull + build on Contabo to go live | PASS |
+
+---
+
+### 2026-09-14 — SEO Skills Tab + SuperSEO Plugin
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-SEO-SKILLS-2026-09-14-001 | SuperSEO plugin installed — 11 Claude Code skills (page-audit, eeat-audit, semantic-gap-analysis, featured-snippet-optimizer, content-brief, write-content, improve-content, keyword-deep-dive, topic-cluster-planning, linkbuilding, expert-interview) copied to ~/.claude/skills/. Deep guide doc created. | docs/superseo-plugin-guide.md | Skills present at ~/.claude/skills/ (ls confirmed). Guide written in session. | N/A (local install) | YES | None | Use skills directly in Claude Code sessions | PASS |
+| DM-SEO-SKILLS-2026-09-14-002 | SEO Skills 7th tab added to SEO Intelligence page — backend: ensure_seo_skills_schema(), 7 new endpoints (/skills/meta, /skills/page-context, /skills/generate-prompt POST, /skills/save-result POST, /skills/results GET, /skills/results/{id} GET/DELETE), seo_skill_results table in app DB; frontend: SkillsTab component with 3-panel layout (page/keyword selector + GSC card, skill button groups, paste+save+history). main.py wired with crash-proof schema init. | dm-dashboard/backend/app/seo_intelligence.py, dm-dashboard/frontend/src/admin/pages/SeoIntelligence.jsx, dm-dashboard/backend/app/main.py | Commit 2965d24 on websitetecteam-arch/dm-dashboard piranv-work (668 insertions) | 2965d24 on websitetecteam-arch/dm-dashboard piranv-work | YES | Needs Contabo pull + restart backend + rebuild frontend | Pull on Contabo + systemctl restart backend + npm run build frontend | PASS |
+
+---
+
 ### 2026-09-10 — Scope Audit (OPEN — deferred)
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
