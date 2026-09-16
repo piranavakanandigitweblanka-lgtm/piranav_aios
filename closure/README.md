@@ -57,6 +57,19 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 
+### 2026-09-16 — Hetheesha Dashboard UX Overhaul — All 5 Requirements + AI Brief
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| HE-UX-2026-09-16-001 | Req 1 (ProductSeoReport) — 3 UX fixes: Action List at top, Fix Tracker always visible (two-column), one-click Done + optimistic badge override, URL-grouped Fixed by You with InlineImpact GSC Before/After | dm-dashboard/frontend/src/hetheesha/pages/ProductSeoReport.jsx | 4 commits pushed to websitetecteam-arch/dm-dashboard piranv-work. Confirmed: markDone(), isFixed(), actionItems useMemo, trkFixedGrouped useMemo, InlineImpact component with 7d/14d/30d window. | Multiple commits on piranv-work, latest before this session: 423bc33 | YES | NONE | Deploy to Contabo: git pull + systemctl restart | PASS |
+| HE-UX-2026-09-16-002 | Req 2 (CollectionPerformance) — same 3 UX fixes as Req 1. Fix key separator :: throughout. InlineImpactR2 calls r2-fix-detail with fix_date as direct query param. Fields: seo_title, seo_desc, has_faq. | dm-dashboard/frontend/src/hetheesha/pages/CollectionPerformance.jsx | Commit 8401b78 on piranv-work | YES | NONE | Deploy to Contabo | PASS |
+| HE-UX-2026-09-16-003 | Req 3 (DuplicatePageAnalysis) — Action List at top only. Missing (priority 1) then Duplicate (priority 2) then Dup Prod Desc (priority 3). Direct Fix on Shopify link per row. No fix tracker (no backend endpoints). | dm-dashboard/frontend/src/hetheesha/pages/DuplicatePageAnalysis.jsx | Commit bdb582a on piranv-work | YES | NONE | Deploy to Contabo | PASS |
+| HE-UX-2026-09-16-004 | Req 4 (HighTrafficStockAlert) — Action List at top. Out of Stock + GSC clicks (red, priority 1) → Low Stock + GSC clicks (amber, priority 2). Sorted by clicks desc. Fix on Shopify link per row. | dm-dashboard/frontend/src/hetheesha/pages/HighTrafficStockAlert.jsx | Commit 399185a on piranv-work | YES | NONE | Deploy to Contabo | PASS |
+| HE-UX-2026-09-16-005 | Req 5 (InternalLinkAudit) — Action List at top. No Internal Links (priority 1 red) → Weak 1-2 links (priority 2 amber). Products before Collections. Add Link → Shopify admin per row. | dm-dashboard/frontend/src/hetheesha/pages/InternalLinkAudit.jsx | Commit 853c5e6 on piranv-work | YES | NONE | Deploy to Contabo | PASS |
+| HE-AI-2026-09-16-006 | AI Brief (hetheesha_ai.py) — added Req 3/4/5 data into _gather_data(), _build_system_prompt(), _build_brief_data(). All 5 requirements now feed the daily brief. New urgency order: overdue fixes → OOS+clicks → due today → missing meta → no internal links → progress. | dm-dashboard/backend/app/hetheesha_ai.py | Commit 696c3ac on piranv-work | YES | NONE | Deploy to Contabo. Hetheesha must click Refresh Brief to regenerate with new data. | PASS |
+
+---
+
 ### 2026-09-16 — Thivajini Req1 Dynamic Campaign System
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
