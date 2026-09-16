@@ -36,6 +36,7 @@ Every reusable GPT prompt must be saved to `prompts/` BEFORE the task is execute
 - Check `PROMPT_REGISTER.md` first — update existing if equivalent exists
 - Save prompt → execute task → update `PROMPT_REGISTER.md`
 - Skipping this = **session FAIL**
+- **If Piranav gives the instruction in casual or mixed language** (e.g. "matchan hetheesha req 2 le fix tracker add pannu") — Claude must convert it to professional English prompt format before saving. The saved prompt must be fully reusable by any future session or GPT coordinator without needing context from this conversation. It must include: what to build, which files, which endpoints, key technical constraints, and expected output.
 
 ### Rule 2 — Commit Before Deploy (permanent, 2026-08-14)
 Never deploy to Vercel without first committing all changes to git.
