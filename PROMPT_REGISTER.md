@@ -43,6 +43,12 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-06-15 | `shopify-seo-13-strategy-audit` | discovery | `prompts/discovery/shopify-seo-strategy-audit.md` | `closure/sessions/2026-06-15.md` | ACTIVE |
 | 2026-06-16 | `shopify-breadcrumb-collection-audit` | discovery | PENDING | `closure/sessions/2026-06-16.md` | PENDING |
 | 2026-09-07 | `seo-keyword-gap-semrush-neon-weekly` | implementation | `prompts/implementation/seo-keyword-gap-semrush-neon-weekly.md` | `closure/sessions/2026-09-07-seo-keyword-gap.md` | ACTIVE |
+| 2026-09-09 | `sajeepan-r3-gap-repair` | implementation | `prompts/sajeepan/r3-gap-repair-prompt.md` | `closure/README.md — 2026-09-09 Sajeepan R3` | ACTIVE |
+| 2026-09-10 | `ai-brief-full-extension-pattern` | implementation | `prompts/implementation/ai-brief-full-extension-pattern.md` | `closure/README.md — 2026-09-10 Kamsi Pipeline Parity` | ACTIVE |
+| 2026-09-14 | `seo-skills-tab-build-prompt` | implementation | `prompts/implementation/seo-skills-tab-build-prompt.md` | `closure/README.md — 2026-09-14 SEO Skills Tab` | ACTIVE |
+| 2026-09-15 | `unified-daily-task-hub-pattern` | implementation | `prompts/implementation/unified-daily-task-hub-pattern.md` | `closure/README.md — 2026-09-15 Unified Task Hub` | ACTIVE |
+| 2026-09-16 | `thivajini-req1-dynamic-campaign` | implementation | `prompts/Thivajini/req1-dynamic-campaign-system-prompt.md` | `closure/README.md — 2026-09-16 Thivajini Req1` | ACTIVE |
+| 2026-09-16 | `sajeepan-title-optimization-audit` | discovery | `prompts/sajeepan/title-optimization-feasibility-audit-prompt.md` | `closure/README.md — 2026-09-16 Sajeepan Audit` | ACTIVE |
 | 2026-09-16 | `ux-fix-tracker-action-list-pattern` | implementation | `prompts/hetheesha/ux-fix-tracker-action-list-pattern.md` | `closure/README.md — 2026-09-16 Hetheesha UX Overhaul` | ACTIVE |
 | 2026-09-16 | `ai-brief-multi-requirement-data-pattern` | implementation | `prompts/hetheesha/ai-brief-multi-requirement-data-pattern.md` | `closure/README.md — 2026-09-16 Hetheesha UX Overhaul` | ACTIVE |
 | 2026-09-08 | `sajeepan-system-workflow-gpt-brief` | reference | `prompts/sajeepan-system-workflow-gpt-brief.md` | N/A | ACTIVE — paste into GPT to brief it on Sajeepan's full system before any review or build task |
