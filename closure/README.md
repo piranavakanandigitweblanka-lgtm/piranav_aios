@@ -57,6 +57,30 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 
+### 2026-09-16 — Thivajini Req1 Dynamic Campaign System
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| TV-REQ1-2026-09-16-001 | Thivajini Req1 — replace hardcoded TV_CAMPAIGNS with dynamic DB query. New Arrivals (24209622904, started 2026-09-02) added. Best Sellers confirmed PAUSED. Future campaigns auto-add/remove via google_ads.campaigns ENABLED filter. | dm-dashboard/backend/app/thivajini.py, dm-dashboard/frontend/src/thivajini/pages/ConversionTracking.jsx | DB evidence: campaign_id 23405519670 last_seen 2026-05-18 (PAUSED), 24209622904 ENABLED 2026-09-02. Snapshot cleared, live data confirmed working. | 7951c09, f687984 on websitetecteam-arch/dm-dashboard piranv-work | YES | NONE | Snapshot auto-regenerates at 5 AM daily | PASS |
+
+---
+
+### 2026-09-16 — Sajeepan Title Optimization Feasibility Audit
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SAJ-LENS-AUDIT-2026-09-16-001 | DM Dashboard briefing for GPT — full tech stack, languages, hosting, git, databases, staff structure, AI system | Conversation output (not saved to file) | sinrasu session briefing delivered verbally | N/A | NO | Brief not saved as .md file — should be written to docs/ if needed for future reference | Save brief as docs/dm-dashboard-gpt-brief.md if reuse needed | PASS |
+| SAJ-LENS-AUDIT-2026-09-16-002 | Sajeepan Title Optimization Feasibility Audit — READ-ONLY discovery of all 29 sajeepan_lens_* backend files, 7 frontend files, 13 DB tables, Shopify integration, AI components, AIOS assets. Full 16-section report produced. | Audit report delivered in session. No file created. | Full audit report in session (PASS verdict). Steps 1–8 EXISTING, Step 9 MANUAL. Scope: SMALL. | N/A | NO | Report not saved as .md file | Save audit report to docs/sajeepan-lens-title-audit-2026-09-16.md | PASS |
+
+**Key findings from audit:**
+- Steps 1–8 of 9-step manual process already built and deployed (sajeepan_lens_* — 29 backend files)
+- Step 9 (UK Search Validation) does not exist — needs new lightweight table + UI + endpoint
+- SAJEEPAN_TITLE_ALT_V2 prompt not registered in PROMPT_REGISTER.md — AIOS Rule 1 violation to resolve next session
+- Shopify title write step not built — write scope must be confirmed before building
+- feed_optimization_tracker already exists — must NOT be duplicated for post-implementation tracking
+
+---
+
 ### 2026-09-15 — Unified Daily Task Hub rollout — all 11 staff + merge conflict resolve
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
@@ -696,3 +720,22 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 | SEO-BACKLINKS-REFRESH-2026-09-14 | Scheduled backlinks upsert → semrush_backlinks + semrush_refdomains (ledsone.co.uk, top 200 referring domains) | `Staff-requirements-02/` (no file written — blocked) | This closure entry | NO | SEMrush API units exhausted — `mcp__Semrush__backlinks_research` returned "not enough API units" immediately. Same blocker as two earlier sessions today (SEO-SEMRUSH-REFRESH-2026-09-14). Visit https://www.semrush.com/mcp-access to top up. | Top up SEMrush API units at https://www.semrush.com/mcp-access — all SEMrush scheduled tasks will unblock automatically on next trigger | BLOCKED |
 
 **Session Result: BLOCKED** — 3rd scheduled session today blocked by same SEMrush API unit exhaustion. No data fetched or written. The Node.js upsert script and DB tables are ready to be written once API data is available. Piranav notified via push notification.
+
+---
+
+### 2026-09-16 — Cloudflare + Shopify Technical Evaluation Report Verification
+
+**What was done:** Piranav provided a PDF document (`Cloudflare_Shopify_Technical_Evaluation_Report.pdf`). Two verification passes were performed: (1) structure and length check — 6 pages, 18 sections, confirmed complete; (2) content accuracy check — key technical claims verified against live 2026 sources via web search.
+
+**Verification findings:**
+- O2O architecture description: CORRECT (confirmed via Cloudflare changelog + community)
+- SSL warning ("do not enable Always Use HTTPS" in O2O): CORRECT (confirmed via wislr.com + Cloudflare community)
+- Pricing (Free $0 / Pro $20-25/mo / Business $200-250/mo): CORRECT (confirmed via 2026 pricing sources)
+- Google Ads / GA4 separation from Cloudflare: CORRECT
+- Minor gap noted: doc does not mention June 2025 automatic O2O onboarding improvement — not wrong, just slightly outdated on the onboarding UX
+
+| Req ID | Task | Asset Path | Evidence Path | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|
+| CF-DOC-VERIFY-2026-09-16 | Verify Cloudflare + Shopify Technical Evaluation Report — structure, length, content accuracy | `C:\Users\PC\Downloads\Cloudflare_Shopify_Technical_Evaluation_Report.pdf` (external, not in repo) | This closure entry + live web sources verified in session | NO | None | Share doc with team if approved by Piranav | PASS |
+
+**Session Result: PASS** — Document is 6 pages, 18 sections, technically accurate. All major claims verified against current 2026 Cloudflare and Shopify documentation. No incorrect statements found. One minor omission (June 2025 automatic O2O onboarding) noted but does not affect document validity.
