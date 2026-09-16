@@ -97,10 +97,21 @@ Never run `git push` and leave Piranav to guess the account. Always say it first
 - Commit to git BEFORE deploying (Rule 2)
 - Save all Claude-generated output as `.md` files before session ends
 
-**Step 5 — Evidence**
-- Create an evidence file for work done
+**Step 5 — Evidence + Capability + Prompts (ALL 3 required)**
+
+Every session must produce ALL 5 asset types before closing:
+
+| Asset | Folder | What to Create |
+|---|---|---|
+| Prompt | `prompts/[staff]/` or `prompts/implementation/` | Reusable prompt pattern used this session |
+| Evidence | `evidence/[staff]/` | What was built, commit hashes, validation notes |
+| Capability | `capability/` | New system capability — what it does, where, how to reuse |
+| Closure | `closure/README.md` | Standard closure row per task |
+| PROMPT_REGISTER | `PROMPT_REGISTER.md` | New prompt rows added |
+
 - Save validation notes (browser results, DB queries, screenshots)
 - Use template at `evidence/templates/gpt-review-of-claude-output-template.md` for GPT reviews
+- If no new reusable prompt exists (e.g. pure investigation), write a note in the closure row explaining why the prompt asset was skipped — do NOT silently skip it
 
 **Step 6 — Closure**
 Write a closure entry in `closure/README.md` with:
@@ -123,6 +134,8 @@ Session **PASSES** if all 7 steps followed, closure written, no untracked AIOS f
 
 Session **FAILS** if:
 - Evidence missing at closure
+- Prompt file not saved before task executed (Rule 1)
+- Capability file not created for new system capability
 - Duplicate truth created
 - Closure entry not written
 - Code deployed before committing to git
