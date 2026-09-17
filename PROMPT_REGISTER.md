@@ -47,6 +47,8 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-09-10 | `ai-brief-full-extension-pattern` | implementation | `prompts/implementation/ai-brief-full-extension-pattern.md` | `closure/README.md — 2026-09-10 Kamsi Pipeline Parity` | ACTIVE |
 | 2026-09-14 | `seo-skills-tab-build-prompt` | implementation | `prompts/implementation/seo-skills-tab-build-prompt.md` | `closure/README.md — 2026-09-14 SEO Skills Tab` | ACTIVE |
 | 2026-09-15 | `unified-daily-task-hub-pattern` | implementation | `prompts/implementation/unified-daily-task-hub-pattern.md` | `closure/README.md — 2026-09-15 Unified Task Hub` | ACTIVE |
+| 2026-09-17 | `sales2026-uk-admin-discovery` | discovery | `prompts/implementation/sales2026-uk-admin-discovery.md` | `closure/README.md — 2026-09-17` | ACTIVE |
+| 2026-09-17 | `sales2026-uk-grand-total-page` | implementation | `prompts/implementation/sales2026-uk-grand-total-page.md` | `closure/README.md — 2026-09-17` | ACTIVE |
 | 2026-09-16 | `thivajini-req1-dynamic-campaign` | implementation | `prompts/Thivajini/req1-dynamic-campaign-system-prompt.md` | `closure/README.md — 2026-09-16 Thivajini Req1` | ACTIVE |
 | 2026-09-16 | `sajeepan-title-optimization-audit` | discovery | `prompts/sajeepan/title-optimization-feasibility-audit-prompt.md` | `closure/README.md — 2026-09-16 Sajeepan Audit` | ACTIVE |
 | 2026-09-16 | `ux-fix-tracker-action-list-pattern` | implementation | `prompts/hetheesha/ux-fix-tracker-action-list-pattern.md` | `closure/README.md — 2026-09-16 Hetheesha UX Overhaul` | ACTIVE |
