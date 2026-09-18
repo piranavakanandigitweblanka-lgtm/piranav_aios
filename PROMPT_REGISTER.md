@@ -53,6 +53,9 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-09-16 | `thivajini-req1-dynamic-campaign` | implementation | `prompts/Thivajini/req1-dynamic-campaign-system-prompt.md` | `closure/README.md — 2026-09-16 Thivajini Req1` | ACTIVE |
 | 2026-09-16 | `sajeepan-title-optimization-audit` | discovery | `prompts/sajeepan/title-optimization-feasibility-audit-prompt.md` | `closure/README.md — 2026-09-16 Sajeepan Audit` | ACTIVE |
 | 2026-09-16 | `ux-fix-tracker-action-list-pattern` | implementation | `prompts/hetheesha/ux-fix-tracker-action-list-pattern.md` | `closure/README.md — 2026-09-16 Hetheesha UX Overhaul` | ACTIVE |
+| 2026-09-18 | `sajeepan-r4-feed-optimization-advanced-filters` | implementation | `prompts/sajeepan/r4-feed-optimization-advanced-filters.md` | `closure/README.md — 2026-09-18` | ACTIVE |
+| 2026-09-18 | `sukirtha-r6-oos-draft-exclusion` | implementation | `prompts/sukirtha/r6-oos-draft-exclusion.md` | `closure/README.md — 2026-09-18` | ACTIVE |
+| 2026-09-18 | `sukirtha-ai-brief-variety-cap` | implementation | `prompts/sukirtha/ai-brief-variety-cap.md` | `closure/README.md — 2026-09-18` | ACTIVE |
 | 2026-09-16 | `ai-brief-multi-requirement-data-pattern` | implementation | `prompts/hetheesha/ai-brief-multi-requirement-data-pattern.md` | `closure/README.md — 2026-09-16 Hetheesha UX Overhaul` | ACTIVE |
 | 2026-09-08 | `sajeepan-system-workflow-gpt-brief` | reference | `prompts/sajeepan-system-workflow-gpt-brief.md` | N/A | ACTIVE — paste into GPT to brief it on Sajeepan's full system before any review or build task |
 | 2026-09-18 | `done-task-exclusion-window-fix` | implementation | `prompts/implementation/done-task-exclusion-window-fix.md` | `closure/README.md — 2026-09-18` | ACTIVE |
