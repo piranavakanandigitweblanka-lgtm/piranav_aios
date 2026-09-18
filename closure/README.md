@@ -107,6 +107,18 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-09-18 — Done-Task 14-Day Fix (All 11 Staff) + Sajeepan Dashboard Corrections + GSC Live Sync
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-AI-2026-09-18-001 | Done-task exclusion window fix — _get_done_candidate_ids() was ignoring the `days` parameter in SQL. Fixed across all 11 staff AI files (sukirtha/dilaksi/hetheesha/jefri/kamsi/mahima/sajeepan/sonya/thasitha/theekshy/thivajini). Tasks marked done >14 days ago now correctly reappear. | dm-dashboard/backend/app/*_ai.py (11 files) | Prompt: prompts/implementation/done-task-exclusion-window-fix.md. Fix: `AND updated_at >= NOW() - INTERVAL '14 days'` added + `days=14` default. | Committed to piranv-work, pushed to websitetecteam-arch/dm-dashboard | YES | NONE | Deploy to Contabo | PASS |
+| DM-SAJ-2026-09-18-002 | Sajeepan R3 — OOS Item ID filter + pagination fix + OOS data accuracy. Changed HAVING filter from conversion_value>0 to cost/clicks/impressions. Added merchant_products availability lookup (primary OOS signal). Backend cap 50→200. variant_id field added to all OOS rows. | dm-dashboard/backend/app/sajeepan.py, frontend/.../ProductActionDashboard.jsx | Prompt: prompts/sajeepan/r3-oos-filter-pagination-fix.md. Evidence: OOS now shows products burning budget with zero revenue. | Committed, pushed to piranv-work | YES | NONE | Test in browser | PASS |
+| DM-SAJ-2026-09-18-003 | Sajeepan PPC + Dup Campaigns — Item ID (variant_id) instead of full item string in PPC, OOS, dup campaign tables. Dup campaigns: CSV download + campaign filter dropdown. Feed Optimization: text search per level + new Optimized Products Data section with search + CSV. | frontend/.../ProductActionDashboard.jsx, frontend/.../FeedOptimization.jsx | Committed, pushed to piranv-work | YES | NONE | Test in browser | PASS |
+| DM-UI-2026-09-18-004 | AI chat placeholder color fix — all 11 staff DailyTaskPage.jsx textarea inputs now have className="dm-chat-input". CSS rule added to dashboard.css (.dm-chat-input::placeholder). Placeholder now visible (#94a3b8 slate). | frontend/src/styles/dashboard.css, 11 DailyTaskPage.jsx files | Committed, pushed to piranv-work | YES | NONE | Deploy to Contabo | PASS |
+| DM-SEO-2026-09-18-005 | GSC Live Sync — replace 50%-sampled pipeline with full 100% GSC API data. New gsc_live_sync.py (schema creation + upsert + scheduler). seo_intelligence.py switched from google_search_console.* to gsc_live.*. Removed all "clicks ≈ 50%" warnings. | dm-dashboard/backend/app/gsc_live_sync.py (new), main.py, seo_intelligence.py | Prompt: prompts/implementation/gsc-live-sync-build.md. Capability: capability/gsc-live-sync-2026-09-18.md. Evidence: evidence/sajeepan/gsc-live-sync-2026-09-18.md | c3075ff on piranv-work, pushed to websitetecteam-arch/dm-dashboard | YES | First sync runs on app restart — gsc_live schema does not exist in prod yet | Deploy to Contabo, then restart backend to trigger first full sync | PASS |
+
+---
+
 ### 2026-09-15 — Mahima AI Brief Full Extension + Frontend Hub
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |

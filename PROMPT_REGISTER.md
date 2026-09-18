@@ -55,6 +55,9 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-09-16 | `ux-fix-tracker-action-list-pattern` | implementation | `prompts/hetheesha/ux-fix-tracker-action-list-pattern.md` | `closure/README.md — 2026-09-16 Hetheesha UX Overhaul` | ACTIVE |
 | 2026-09-16 | `ai-brief-multi-requirement-data-pattern` | implementation | `prompts/hetheesha/ai-brief-multi-requirement-data-pattern.md` | `closure/README.md — 2026-09-16 Hetheesha UX Overhaul` | ACTIVE |
 | 2026-09-08 | `sajeepan-system-workflow-gpt-brief` | reference | `prompts/sajeepan-system-workflow-gpt-brief.md` | N/A | ACTIVE — paste into GPT to brief it on Sajeepan's full system before any review or build task |
+| 2026-09-18 | `done-task-exclusion-window-fix` | implementation | `prompts/implementation/done-task-exclusion-window-fix.md` | `closure/README.md — 2026-09-18` | ACTIVE |
+| 2026-09-18 | `sajeepan-r3-oos-filter-pagination-fix` | implementation | `prompts/sajeepan/r3-oos-filter-pagination-fix.md` | `closure/README.md — 2026-09-18` | ACTIVE |
+| 2026-09-18 | `gsc-live-sync-build` | implementation | `prompts/implementation/gsc-live-sync-build.md` | `closure/README.md — 2026-09-18` | ACTIVE |
 | 2026-06-16 | `shopify-lighthouse-accessibility-fix` | implementation | `prompts/implementation/shopify-lighthouse-accessibility-fix.md` | `closure/sessions/2026-06-16.md` | ACTIVE |
 | 2026-06-17 | `lighthouse-menu-banner-link-discernible-text-fix` | implementation | `prompts/implementation/shopify-lighthouse-accessibility-fix.md` | `closure/sessions/2026-06-17.md` | ACTIVE — covered by lighthouse-accessibility-fix template |
 | 2026-06-17 | `inp-eval-in-scroll-path` | discovery | PENDING | `closure/sessions/2026-06-17.md` | PENDING |
