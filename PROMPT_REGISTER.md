@@ -62,11 +62,13 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-09-18 | `done-task-exclusion-window-fix` | implementation | `prompts/implementation/done-task-exclusion-window-fix.md` | `closure/README.md — 2026-09-18` | ACTIVE |
 | 2026-09-18 | `sajeepan-r3-oos-filter-pagination-fix` | implementation | `prompts/sajeepan/r3-oos-filter-pagination-fix.md` | `closure/README.md — 2026-09-18` | ACTIVE |
 | 2026-09-18 | `gsc-live-sync-build` | implementation | `prompts/implementation/gsc-live-sync-build.md` | `closure/README.md — 2026-09-18` | ACTIVE |
+| 2026-09-21 | `semrush-organic-snapshot-neon-daily` | implementation | `prompts/implementation/semrush-organic-snapshot-neon-daily.md` | `closure/README.md — 2026-09-21 SEMrush Snapshot` | ACTIVE |
 | 2026-06-16 | `shopify-lighthouse-accessibility-fix` | implementation | `prompts/implementation/shopify-lighthouse-accessibility-fix.md` | `closure/sessions/2026-06-16.md` | ACTIVE |
 | 2026-06-17 | `lighthouse-menu-banner-link-discernible-text-fix` | implementation | `prompts/implementation/shopify-lighthouse-accessibility-fix.md` | `closure/sessions/2026-06-17.md` | ACTIVE — covered by lighthouse-accessibility-fix template |
 | 2026-06-17 | `inp-eval-in-scroll-path` | discovery | PENDING | `closure/sessions/2026-06-17.md` | PENDING |
 | 2026-06-17 | `inp-render-blocking-head-script` | implementation | PENDING | `closure/sessions/2026-06-17.md` | PENDING |
 | 2026-06-18 | `promo-banner-config-add-collection` | implementation | `prompts/implementation/shopify-promo-banner-config-add.md` | `closure/sessions/2026-06-18.md` | ACTIVE |
+| 2026-09-21 | `semrush-organic-pages-upsert` | implementation | `prompts/implementation/semrush-organic-pages-upsert.md` | `closure/README.md — 2026-09-21 SEO Organic Pages Scheduled` | ACTIVE |
 | 2026-06-18 | `shopify-cli-theme-workflow` | implementation | `prompts/shopify-cli-theme-workflow.md` | `closure/sessions/2026-06-18.md` | ACTIVE — procedural guide; needs template format upgrade |
 | 2026-06-19 | `shopify-layout-audit-three-page` | discovery | `prompts/discovery/shopify-layout-audit-three-page.md` | `closure/sessions/2026-06-19.md` | ACTIVE |
 | 2026-06-22 | `shopify-mcp-token-expiry-fix` | implementation | PENDING | `closure/sessions/2026-06-22.md` | PENDING |

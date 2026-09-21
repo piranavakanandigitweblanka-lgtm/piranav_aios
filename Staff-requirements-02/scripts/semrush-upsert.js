@@ -4,7 +4,7 @@
  *
  * Usage:  NEON_DATABASE_URL="postgresql://..." node scripts/semrush-upsert.js
  *
- * Data last fetched by scheduled agent: 2026-08-17
+ * Data last fetched by scheduled agent: 2026-09-21
  * SEMrush report: domain_rank, database: uk, target: ledsone.co.uk
  */
 
@@ -17,8 +17,21 @@ if (!CONN) {
   process.exit(1);
 }
 
-// ─── Freshly fetched SEMrush data (2026-08-17) ─────────────────────────────
+// ─── Freshly fetched SEMrush data (2026-09-21) ─────────────────────────────
 const ROWS = [
+  {
+    month:             '2026-09-01',
+    rank:              51406,
+    organic_keywords:  10510,
+    kw_top3:           188,
+    kw_top4_10:        620,
+    kw_top11_20:       1891,
+    kw_top21_100:      7053,   // sum positions_21_30…91_100: 2533+2133+1300+574+317+122+50+24
+    traffic_est:       9555,
+    traffic_cost_gbp:  4276,
+    paid_keywords:     0,
+    paid_traffic:      0,
+  },
   {
     month:             '2026-08-01',
     rank:              49162,
@@ -29,19 +42,6 @@ const ROWS = [
     kw_top21_100:      7532,   // sum positions_21_30…91_100
     traffic_est:       9932,
     traffic_cost_gbp:  4181,
-    paid_keywords:     11,
-    paid_traffic:      110,
-  },
-  {
-    month:             '2026-07-01',
-    rank:              50183,
-    organic_keywords:  11485,
-    kw_top3:           null,   // breakdown not fetched for July
-    kw_top4_10:        null,
-    kw_top11_20:       null,
-    kw_top21_100:      null,
-    traffic_est:       9551,
-    traffic_cost_gbp:  3960,
     paid_keywords:     11,
     paid_traffic:      110,
   },
