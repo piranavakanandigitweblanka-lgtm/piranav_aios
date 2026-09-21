@@ -124,6 +124,16 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-09-21 — Ledsone UK Shopify Listing Exports (3 queries)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SHOP-UK-2026-09-21-001 | Non-sale in-stock active listings (variant level) — 100 results. Filters: active, stock>0, compareAtPrice null, SKU no + except +RPM, no ENC. | exports/ledsone-uk-nonsale-instock-2026-09-21.csv | 100 rows fetched via shopify_client.graphql(store=ledsone_uk). Prompt: prompts/implementation/shopify-uk-nonsale-instock-listing-fetch.md | Untracked — commit pending | YES | NONE | Commit exports + prompts | PASS |
+| SHOP-UK-2026-09-21-002 | Never-sold in-stock active lighting products (product level) — cross-checked 9,894 sold SKUs from all-time order history. 81 lighting products found with zero lifetime sales. ENC excluded, non-lighting types excluded, sorted by stock desc. | exports/ledsone-uk-neversold-lighting-product-level-2026-09-21.csv | 5,044 active products scanned. Prompt updated v3. | Untracked — commit pending | YES | NONE | Commit exports + prompts | PASS |
+| SHOP-UK-2026-09-21-003 | Dormant lighting products — sold before but NOT in last 6 months (since 2026-03-21). 5,117 dormant SKUs identified. 160 lighting products found. Sorted by stock desc. | exports/ledsone-uk-dormant-lighting-2026-09-21.csv | 9,894 ever-sold / 4,777 recently-sold / 5,117 dormant. Prompt: prompts/implementation/shopify-uk-dormant-listing-fetch.md | Untracked — commit pending | YES | NONE | Commit exports + prompts | PASS |
+
+---
+
 ### 2026-09-15 — Mahima AI Brief Full Extension + Frontend Hub
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
