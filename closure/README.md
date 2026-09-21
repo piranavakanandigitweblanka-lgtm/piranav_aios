@@ -155,6 +155,14 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-09-21 — Weekly SEO Keyword Gap Refresh (Scheduled Automated Run)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SEO-GAP-2026-09-21-001 | Weekly SEMrush keyword gap refresh — fetched 200 ledsone + 100×3 competitor keywords, computed 150 gap rows (50 per competitor) with opportunity scores, exported JSON, created DB-write + offline scripts, updated existing prompt | `Staff-requirements-02/scripts/seo-keyword-gap-refresh.js`, `Staff-requirements-02/scripts/seo-gap-export-only.js`, `Staff-requirements-02/data/seo-keyword-gap-2026-09-21.json` | `evidence/piranav/seo-keyword-gap-refresh-2026-09-21.md` | Pending commit/push | YES | Neon DB blocked by remote session egress policy (403 — policy denial on `ep-soft-leaf-zavu7dmm.c-2.eu-west-2.aws.neon.tech:443`) | **Piranav to run locally:** `cd piranav_aios/Staff-requirements-02 && node scripts/seo-keyword-gap-refresh.js` | PARTIAL PASS — SEMrush data fetched, gap analysis complete, JSON saved, DB write needs local run |
+
+---
+
 ### 2026-09-10 — Scope Audit (OPEN — deferred)
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |

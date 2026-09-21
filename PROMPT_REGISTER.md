@@ -42,7 +42,7 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-06-12 | `faq-schema-duplicate-fix` | implementation | PENDING | `closure/sessions/2026-06-12.md` | PENDING |
 | 2026-06-15 | `shopify-seo-13-strategy-audit` | discovery | `prompts/discovery/shopify-seo-strategy-audit.md` | `closure/sessions/2026-06-15.md` | ACTIVE |
 | 2026-06-16 | `shopify-breadcrumb-collection-audit` | discovery | PENDING | `closure/sessions/2026-06-16.md` | PENDING |
-| 2026-09-07 | `seo-keyword-gap-semrush-neon-weekly` | implementation | `prompts/implementation/seo-keyword-gap-semrush-neon-weekly.md` | `closure/sessions/2026-09-07-seo-keyword-gap.md` | ACTIVE |
+| 2026-09-07 | `seo-keyword-gap-semrush-neon-weekly` | implementation | `prompts/implementation/seo-keyword-gap-semrush-neon-weekly.md` | `closure/sessions/2026-09-07-seo-keyword-gap.md` | ACTIVE — updated 2026-09-21 with egress workaround note |
 | 2026-09-09 | `sajeepan-r3-gap-repair` | implementation | `prompts/sajeepan/r3-gap-repair-prompt.md` | `closure/README.md — 2026-09-09 Sajeepan R3` | ACTIVE |
 | 2026-09-10 | `ai-brief-full-extension-pattern` | implementation | `prompts/implementation/ai-brief-full-extension-pattern.md` | `closure/README.md — 2026-09-10 Kamsi Pipeline Parity` | ACTIVE |
 | 2026-09-14 | `seo-skills-tab-build-prompt` | implementation | `prompts/implementation/seo-skills-tab-build-prompt.md` | `closure/README.md — 2026-09-14 SEO Skills Tab` | ACTIVE |
