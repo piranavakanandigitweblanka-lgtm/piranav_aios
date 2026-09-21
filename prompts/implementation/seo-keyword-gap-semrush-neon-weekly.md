@@ -104,3 +104,19 @@ Print total rows inserted per competitor and any errors.
 - Swap `target` and competitor list to run for other domains (ledsone.fr, electricalsone.co.uk)
 - Adjust `display_limit` and top-N cutoff as needed
 - Table is shared; use `competitor_domain` to filter per domain group
+
+---
+
+## Known Issue: Remote Session Egress Block (added 2026-09-21)
+
+Claude Code remote sessions (web/scheduled) cannot connect directly to Neon DB.  
+The Neon host `ep-soft-leaf-zavu7dmm.c-2.eu-west-2.aws.neon.tech:443` is blocked by egress policy (403 — policy denial).
+
+**Workaround:** The weekly script now:
+1. Runs SEMrush data fetch in the remote session ✓
+2. Saves gap analysis to `Staff-requirements-02/data/seo-keyword-gap-YYYY-MM-DD.json` ✓
+3. Commits JSON + scripts to git ✓
+4. **Piranav runs `node scripts/seo-keyword-gap-refresh.js` locally** to push data to Neon
+
+The DB-write script (`seo-keyword-gap-refresh.js`) contains all SEMrush data inline — no API calls needed when running locally.  
+Offline export script: `Staff-requirements-02/scripts/seo-gap-export-only.js`

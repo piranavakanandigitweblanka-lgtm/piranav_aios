@@ -42,11 +42,12 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-06-12 | `faq-schema-duplicate-fix` | implementation | PENDING | `closure/sessions/2026-06-12.md` | PENDING |
 | 2026-06-15 | `shopify-seo-13-strategy-audit` | discovery | `prompts/discovery/shopify-seo-strategy-audit.md` | `closure/sessions/2026-06-15.md` | ACTIVE |
 | 2026-06-16 | `shopify-breadcrumb-collection-audit` | discovery | PENDING | `closure/sessions/2026-06-16.md` | PENDING |
-| 2026-09-07 | `seo-keyword-gap-semrush-neon-weekly` | implementation | `prompts/implementation/seo-keyword-gap-semrush-neon-weekly.md` | `closure/sessions/2026-09-07-seo-keyword-gap.md` | ACTIVE |
+| 2026-09-07 | `seo-keyword-gap-semrush-neon-weekly` | implementation | `prompts/implementation/seo-keyword-gap-semrush-neon-weekly.md` | `closure/sessions/2026-09-07-seo-keyword-gap.md` | ACTIVE — updated 2026-09-21 with egress workaround note |
 | 2026-09-09 | `sajeepan-r3-gap-repair` | implementation | `prompts/sajeepan/r3-gap-repair-prompt.md` | `closure/README.md — 2026-09-09 Sajeepan R3` | ACTIVE |
 | 2026-09-10 | `ai-brief-full-extension-pattern` | implementation | `prompts/implementation/ai-brief-full-extension-pattern.md` | `closure/README.md — 2026-09-10 Kamsi Pipeline Parity` | ACTIVE |
 | 2026-09-14 | `seo-skills-tab-build-prompt` | implementation | `prompts/implementation/seo-skills-tab-build-prompt.md` | `closure/README.md — 2026-09-14 SEO Skills Tab` | ACTIVE |
 | 2026-09-15 | `unified-daily-task-hub-pattern` | implementation | `prompts/implementation/unified-daily-task-hub-pattern.md` | `closure/README.md — 2026-09-15 Unified Task Hub` | ACTIVE |
+| 2026-09-21 | `semrush-backlinks-neon-upsert` | implementation | `prompts/implementation/semrush-backlinks-neon-upsert.md` | `closure/README.md — 2026-09-21 SEO Backlinks Agent` | ACTIVE |
 | 2026-09-17 | `sales2026-uk-admin-discovery` | discovery | `prompts/implementation/sales2026-uk-admin-discovery.md` | `closure/README.md — 2026-09-17` | ACTIVE |
 | 2026-09-17 | `sales2026-uk-grand-total-page` | implementation | `prompts/implementation/sales2026-uk-grand-total-page.md` | `closure/README.md — 2026-09-17` | ACTIVE |
 | 2026-09-17 | `sales2026-total-tab-uk-de-fr` | implementation | `prompts/implementation/sales2026-total-tab-uk-de.md` | `closure/README.md — 2026-09-17` | ACTIVE |
@@ -63,11 +64,13 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-09-18 | `done-task-exclusion-window-fix` | implementation | `prompts/implementation/done-task-exclusion-window-fix.md` | `closure/README.md — 2026-09-18` | ACTIVE |
 | 2026-09-18 | `sajeepan-r3-oos-filter-pagination-fix` | implementation | `prompts/sajeepan/r3-oos-filter-pagination-fix.md` | `closure/README.md — 2026-09-18` | ACTIVE |
 | 2026-09-18 | `gsc-live-sync-build` | implementation | `prompts/implementation/gsc-live-sync-build.md` | `closure/README.md — 2026-09-18` | ACTIVE |
+| 2026-09-21 | `semrush-organic-snapshot-neon-daily` | implementation | `prompts/implementation/semrush-organic-snapshot-neon-daily.md` | `closure/README.md — 2026-09-21 SEMrush Snapshot` | ACTIVE |
 | 2026-06-16 | `shopify-lighthouse-accessibility-fix` | implementation | `prompts/implementation/shopify-lighthouse-accessibility-fix.md` | `closure/sessions/2026-06-16.md` | ACTIVE |
 | 2026-06-17 | `lighthouse-menu-banner-link-discernible-text-fix` | implementation | `prompts/implementation/shopify-lighthouse-accessibility-fix.md` | `closure/sessions/2026-06-17.md` | ACTIVE — covered by lighthouse-accessibility-fix template |
 | 2026-06-17 | `inp-eval-in-scroll-path` | discovery | PENDING | `closure/sessions/2026-06-17.md` | PENDING |
 | 2026-06-17 | `inp-render-blocking-head-script` | implementation | PENDING | `closure/sessions/2026-06-17.md` | PENDING |
 | 2026-06-18 | `promo-banner-config-add-collection` | implementation | `prompts/implementation/shopify-promo-banner-config-add.md` | `closure/sessions/2026-06-18.md` | ACTIVE |
+| 2026-09-21 | `semrush-organic-pages-upsert` | implementation | `prompts/implementation/semrush-organic-pages-upsert.md` | `closure/README.md — 2026-09-21 SEO Organic Pages Scheduled` | ACTIVE |
 | 2026-06-18 | `shopify-cli-theme-workflow` | implementation | `prompts/shopify-cli-theme-workflow.md` | `closure/sessions/2026-06-18.md` | ACTIVE — procedural guide; needs template format upgrade |
 | 2026-06-19 | `shopify-layout-audit-three-page` | discovery | `prompts/discovery/shopify-layout-audit-three-page.md` | `closure/sessions/2026-06-19.md` | ACTIVE |
 | 2026-06-22 | `shopify-mcp-token-expiry-fix` | implementation | PENDING | `closure/sessions/2026-06-22.md` | PENDING |
