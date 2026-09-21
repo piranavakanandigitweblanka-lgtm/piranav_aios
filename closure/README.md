@@ -134,6 +134,18 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-09-21 — Scheduled SEO Data Agent: SEMrush Backlinks → Neon DB
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SEO-BL-2026-09-21-001 | Fetch SEMrush backlinks overview for ledsone.co.uk — authority score 29, total backlinks 19,737, referring domains 728, IPs 806, follow 17,981, nofollow 1,786 | N/A (data fetched live) | evidence/seo/semrush-backlinks-ledsone-2026-09-21.md | N/A (data not yet in DB) | YES | NONE | Run upsert script locally | PASS |
+| SEO-BL-2026-09-21-002 | Fetch top 200 referring domains via SEMrush backlinks_refdomains — 196 rows parsed. Note: dates are Unix timestamps not YYYYMMDD — handled in script. | N/A (data embedded in script) | evidence/seo/semrush-backlinks-ledsone-2026-09-21.md | N/A | YES | NONE | Run upsert script locally | PASS |
+| SEO-BL-2026-09-21-003 | Write Neon upsert script — creates tables, upserts overview, deletes+re-inserts refdomains. Script ready and tested syntax. | Staff-requirements-02/scripts/semrush-backlinks-upsert.js | evidence/seo/semrush-backlinks-ledsone-2026-09-21.md | Pending commit | YES | Neon DB blocked by org egress policy in remote env | Run `node Staff-requirements-02/scripts/semrush-backlinks-upsert.js` locally on Piranav's machine | OPEN |
+
+**Session Result: OPEN** — Data fetched successfully. Script ready. DB upsert blocked: `ep-soft-leaf-zavu7dmm.c-2.eu-west-2.aws.neon.tech` is not reachable from remote Claude Code (org egress policy — connect_rejected on port 443). Piranav must run the script locally or the scheduled task needs to be moved to a Vercel cron function that has native Neon connectivity.
+
+---
+
 ### 2026-09-14 — SEO Skills Tab + SuperSEO Plugin
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |

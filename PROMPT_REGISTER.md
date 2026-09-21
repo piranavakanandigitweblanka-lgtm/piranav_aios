@@ -47,6 +47,7 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-09-10 | `ai-brief-full-extension-pattern` | implementation | `prompts/implementation/ai-brief-full-extension-pattern.md` | `closure/README.md — 2026-09-10 Kamsi Pipeline Parity` | ACTIVE |
 | 2026-09-14 | `seo-skills-tab-build-prompt` | implementation | `prompts/implementation/seo-skills-tab-build-prompt.md` | `closure/README.md — 2026-09-14 SEO Skills Tab` | ACTIVE |
 | 2026-09-15 | `unified-daily-task-hub-pattern` | implementation | `prompts/implementation/unified-daily-task-hub-pattern.md` | `closure/README.md — 2026-09-15 Unified Task Hub` | ACTIVE |
+| 2026-09-21 | `semrush-backlinks-neon-upsert` | implementation | `prompts/implementation/semrush-backlinks-neon-upsert.md` | `closure/README.md — 2026-09-21 SEO Backlinks Agent` | ACTIVE |
 | 2026-09-17 | `sales2026-uk-admin-discovery` | discovery | `prompts/implementation/sales2026-uk-admin-discovery.md` | `closure/README.md — 2026-09-17` | ACTIVE |
 | 2026-09-17 | `sales2026-uk-grand-total-page` | implementation | `prompts/implementation/sales2026-uk-grand-total-page.md` | `closure/README.md — 2026-09-17` | ACTIVE |
 | 2026-09-17 | `sales2026-total-tab-uk-de-fr` | implementation | `prompts/implementation/sales2026-total-tab-uk-de.md` | `closure/README.md — 2026-09-17` | ACTIVE |
