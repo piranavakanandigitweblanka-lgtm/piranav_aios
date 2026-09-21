@@ -782,3 +782,13 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 | CF-DOC-VERIFY-2026-09-16 | Verify Cloudflare + Shopify Technical Evaluation Report — structure, length, content accuracy | `C:\Users\PC\Downloads\Cloudflare_Shopify_Technical_Evaluation_Report.pdf` (external, not in repo) | This closure entry + live web sources verified in session | NO | None | Share doc with team if approved by Piranav | PASS |
 
 **Session Result: PASS** — Document is 6 pages, 18 sections, technically accurate. All major claims verified against current 2026 Cloudflare and Shopify documentation. No incorrect statements found. One minor omission (June 2025 automatic O2O onboarding) noted but does not affect document validity.
+
+---
+
+### 2026-09-21 — Scheduled: SEMrush Organic Keyword Snapshot → Neon DB (BLOCKED)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SEO-SNAP-2026-09-21-001 | Fetch top 100 organic keywords for ledsone.co.uk from SEMrush (UK, traffic_desc) and upsert into `semrush_keywords` table in Neon DB | `Staff-requirements-02/scripts/semrush-upsert.mjs` | `evidence/piranav/semrush-organic-snapshot-2026-09-21.md` | Not committed — blocked before DB write | NO | Neon HTTP endpoint `api.c-2.eu-west-2.aws.neon.tech` is blocked by environment egress policy (403). Port 5432 TCP also blocked. | Piranav must add `api.c-2.eu-west-2.aws.neon.tech` and `ep-soft-leaf-zavu7dmm.c-2.eu-west-2.aws.neon.tech` to environment egress allowlist at https://code.claude.com. Script is ready — will succeed on next run after allowlist fix. | OPEN |
+
+**Session Result: OPEN** — SEMrush data fetched successfully (100 rows). DB write blocked by network egress policy. Script (`semrush-upsert.mjs`), prompt, and evidence files created. Awaiting Piranav to fix egress allowlist.
