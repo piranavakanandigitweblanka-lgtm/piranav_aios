@@ -61,6 +61,7 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-09-18 | `done-task-exclusion-window-fix` | implementation | `prompts/implementation/done-task-exclusion-window-fix.md` | `closure/README.md — 2026-09-18` | ACTIVE |
 | 2026-09-18 | `sajeepan-r3-oos-filter-pagination-fix` | implementation | `prompts/sajeepan/r3-oos-filter-pagination-fix.md` | `closure/README.md — 2026-09-18` | ACTIVE |
 | 2026-09-18 | `gsc-live-sync-build` | implementation | `prompts/implementation/gsc-live-sync-build.md` | `closure/README.md — 2026-09-18` | ACTIVE |
+| 2026-09-21 | `semrush-organic-snapshot-neon-daily` | implementation | `prompts/implementation/semrush-organic-snapshot-neon-daily.md` | `closure/README.md — 2026-09-21 SEMrush Snapshot` | ACTIVE |
 | 2026-06-16 | `shopify-lighthouse-accessibility-fix` | implementation | `prompts/implementation/shopify-lighthouse-accessibility-fix.md` | `closure/sessions/2026-06-16.md` | ACTIVE |
 | 2026-06-17 | `lighthouse-menu-banner-link-discernible-text-fix` | implementation | `prompts/implementation/shopify-lighthouse-accessibility-fix.md` | `closure/sessions/2026-06-17.md` | ACTIVE — covered by lighthouse-accessibility-fix template |
 | 2026-06-17 | `inp-eval-in-scroll-path` | discovery | PENDING | `closure/sessions/2026-06-17.md` | PENDING |
