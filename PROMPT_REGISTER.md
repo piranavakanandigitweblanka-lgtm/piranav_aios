@@ -66,6 +66,7 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-06-17 | `inp-eval-in-scroll-path` | discovery | PENDING | `closure/sessions/2026-06-17.md` | PENDING |
 | 2026-06-17 | `inp-render-blocking-head-script` | implementation | PENDING | `closure/sessions/2026-06-17.md` | PENDING |
 | 2026-06-18 | `promo-banner-config-add-collection` | implementation | `prompts/implementation/shopify-promo-banner-config-add.md` | `closure/sessions/2026-06-18.md` | ACTIVE |
+| 2026-09-21 | `semrush-organic-pages-upsert` | implementation | `prompts/implementation/semrush-organic-pages-upsert.md` | `closure/README.md — 2026-09-21 SEO Organic Pages Scheduled` | ACTIVE |
 | 2026-06-18 | `shopify-cli-theme-workflow` | implementation | `prompts/shopify-cli-theme-workflow.md` | `closure/sessions/2026-06-18.md` | ACTIVE — procedural guide; needs template format upgrade |
 | 2026-06-19 | `shopify-layout-audit-three-page` | discovery | `prompts/discovery/shopify-layout-audit-three-page.md` | `closure/sessions/2026-06-19.md` | ACTIVE |
 | 2026-06-22 | `shopify-mcp-token-expiry-fix` | implementation | PENDING | `closure/sessions/2026-06-22.md` | PENDING |

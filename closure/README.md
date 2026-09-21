@@ -753,6 +753,25 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 
 ---
 
+### 2026-09-21 — Scheduled: SEMrush Organic Pages Refresh (ledsone.co.uk → semrush_pages)
+
+**What was attempted:** Automated scheduled agent fired to fetch top 50 organic pages for ledsone.co.uk from SEMrush and upsert into Neon PostgreSQL `semrush_pages` table.
+
+**Step 1 — SEMrush fetch: SUCCESS.** 50 rows returned. API units consumed: 500. SEMrush API units are no longer exhausted (blocker from 2026-09-14 resolved).
+
+**Step 2 — Neon DB upsert: BLOCKED — Network egress policy.**
+- `pg` driver (TCP port 5432): connection timed out
+- `@neondatabase/serverless` driver (HTTPS): 403 — `Host not in allowlist: api.c-2.eu-west-2.aws.neon.tech`
+- Root cause: Claude Code remote container's network egress policy does not permit outbound connections to Neon EU West 2 endpoint
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SEO-PAGES-REFRESH-2026-09-21 | Scheduled: SEMrush top-50 organic pages → semrush_pages table (ledsone.co.uk) | `Staff-requirements-02/scripts/semrush-pages-upsert.js`, `prompts/implementation/semrush-organic-pages-upsert.md`, `capability/semrush-organic-pages-pipeline-2026-09-21.md` | `evidence/piranav/semrush-organic-pages-fetch-2026-09-21.md` | (pending push — TBD) | NO | Neon DB blocked by egress policy: `api.c-2.eu-west-2.aws.neon.tech` not in allowlist. Add via https://code.claude.com/docs/en/claude-code-on-the-web network settings | (1) Add `*.neon.tech` to remote session egress allowlist; (2) Re-run scheduled task — script and data are ready | BLOCKED |
+
+**Session Result: BLOCKED (new blocker type)** — SEMrush now works (previous API units issue resolved). New blocker: Neon DB host blocked by remote container egress policy. 50 rows of organic page data captured in evidence and script — no data lost. Piranav notified via push notification.
+
+---
+
 ### 2026-09-17 — Sales 2026 UK Grand Total Admin Page
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
