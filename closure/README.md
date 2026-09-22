@@ -173,6 +173,22 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-09-22 — Sales2026 UK Shopify Actuals Tab
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-UK-2026-09-22-001 | Added "Shopify Actuals" tab to ledsone.co.uk Channel Group Summary. New backend endpoint `/api/sales/uk-shopify-actuals` — fetches all non-cancelled, non-test UK orders, aggregates via `_uk_summarize_rows()`, returns gross/net/refunds/discounts/VAT/orders. Frontend: tab switcher in header (Channel Summary / Shopify Actuals), 6 KPI cards, attribution gap comparison panel (Shopify Net vs GA4 attributed total + gap £ and %). Only UK panel gets this tab via `shopifyActualsEndpoint` prop. Build passes clean. | `dm-dashboard/backend/app/sales.py` (new `_build_uk_shopify_actuals_payload` + `/uk-shopify-actuals` endpoint), `dm-dashboard/frontend/src/admin/pages/Sales2026.jsx` (tab switcher + Shopify Actuals tab UI) | Prompt: `prompts/implementation/sales2026-uk-shopify-actuals-tab.md`. Build: `npm run build` ✓ 2.70s, zero errors. | Uncommitted — commit + push to websitetecteam-arch/dm-dashboard piranv-work pending | YES | NONE | Commit to piranv-work, push, deploy to Contabo (git pull + systemctl restart backend + npm run build frontend) | PASS |
+
+---
+
+### 2026-09-22 — Sales2026 UK Shopify Actuals Tab (Full Session)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-UK-2026-09-22-001 | Shopify Actuals tab added to UK Channel Group Summary — new `/api/sales/uk-shopify-actuals` endpoint using ShopifyQL. Queries 2026-01-01 → today, aggregates daily rows into monthly buckets, returns monthlyRows + grandTotal. Frontend: tab switcher (Channel Summary / Shopify Actuals), monthly table with 8 metrics (Gross Sales, Discounts, Sales Reversals, Net Sales, Shipping, Return Fees, Taxes, Total Sales) + Grand Total row. Auto-updates on Refresh. | `dm-dashboard/backend/app/sales.py`, `dm-dashboard/frontend/src/admin/pages/Sales2026.jsx` | Prompt: `prompts/implementation/sales2026-uk-shopify-actuals-tab.md`, `prompts/implementation/sales2026-uk-shopify-actuals-shopifyql.md`. Deployed to Contabo — confirmed working. | `ae3314f`, `6a769ad`, `109e349`, `8b85c4a`, `c2a9d7b`, `6ffd3f8` on websitetecteam-arch/dm-dashboard piranv-work | YES | NONE | NONE | PASS |
+
+---
+
 ### 2026-09-10 — Scope Audit (OPEN — deferred)
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
