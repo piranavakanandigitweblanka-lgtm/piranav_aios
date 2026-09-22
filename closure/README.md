@@ -857,3 +857,20 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 | SEO-SNAP-2026-09-21-001 | Fetch top 100 organic keywords for ledsone.co.uk from SEMrush (UK, traffic_desc) and upsert into `semrush_keywords` table in Neon DB | `Staff-requirements-02/scripts/semrush-upsert.mjs` | `evidence/piranav/semrush-organic-snapshot-2026-09-21.md` | Not committed — blocked before DB write | NO | Neon HTTP endpoint `api.c-2.eu-west-2.aws.neon.tech` is blocked by environment egress policy (403). Port 5432 TCP also blocked. | Piranav must add `api.c-2.eu-west-2.aws.neon.tech` and `ep-soft-leaf-zavu7dmm.c-2.eu-west-2.aws.neon.tech` to environment egress allowlist at https://code.claude.com. Script is ready — will succeed on next run after allowlist fix. | OPEN |
 
 **Session Result: OPEN** — SEMrush data fetched successfully (100 rows). DB write blocked by network egress policy. Script (`semrush-upsert.mjs`), prompt, and evidence files created. Awaiting Piranav to fix egress allowlist.
+
+---
+
+### 2026-09-22 — Mahima AI Brief R2 Removal + Req Label Alignment
+
+**What was done:**
+- Audited Mahima's full AI brief (`mahima_ai.py`) and all 4 requirements (`mahima.py`)
+- Confirmed Mahima does not work on R2 (Stock Management)
+- Removed `low_stock_products` from: `_gather_data()` DB query, system prompt, priority list, `_build_brief_data()`, and `build_candidate_registry()` in `ai_validator.py`
+- Renamed req labels throughout: R3 = Search Terms, R4 = Feed Gap / Product ID Coverage
+- Brief now scoped to R1 (Product Performance), R3 (Search Terms), R4 (Feed Gap) only
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-MH-2026-09-22-001 | Remove R2 (Stock Management) from Mahima AI brief — align brief to R1/R3/R4 only | `dm-dashboard/backend/app/mahima_ai.py`, `dm-dashboard/backend/app/ai_validator.py` | `capability/mahima-ai-brief-r2-removal-2026-09-22.md` | `2a35f7b` on `websitetecteam-arch/dm-dashboard` piranv-work | YES | None | Deploy: `git pull && systemctl restart dm-dashboard-backend` on Contabo | PASS |
+
+**Session Result: PASS** — Mahima AI brief audited and scoped correctly. R2 fully removed. Commit `2a35f7b` pushed.
