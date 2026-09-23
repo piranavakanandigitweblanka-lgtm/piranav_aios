@@ -96,6 +96,7 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-07-01 | `shopify-pdp-gallery-nav-add` | implementation | `prompts/implementation/shopify-pdp-gallery-nav-add.md` | `evidence/shopify/electricalsone/pdp-gallery-nav/2026-07-01_pdp_gallery_nav_closure.md` | ACTIVE |
 | 2026-07-01 | `shopify-pdp-gallery-nav-fix` | implementation | `prompts/implementation/shopify-pdp-gallery-nav-fix.md` | `evidence/shopify/electricalsone/pdp-gallery-nav/2026-07-01_pdp_gallery_nav_closure.md` | ACTIVE |
 | 2026-07-01 | `aios-closure-evidence-template` | documentation | `prompts/documentation/aios-closure-evidence-template.md` | _(standing template — applies to all future closure tasks)_ | ACTIVE |
+| 2026-09-23 | `aios-reference-folder-import` | documentation | `prompts/documentation/aios-reference-folder-import.md` | `closure/README.md` — 2026-09-23 GSC import session | ACTIVE |
 
 ---
 

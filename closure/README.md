@@ -874,3 +874,23 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 | DM-MH-2026-09-22-001 | Remove R2 (Stock Management) from Mahima AI brief — align brief to R1/R3/R4 only | `dm-dashboard/backend/app/mahima_ai.py`, `dm-dashboard/backend/app/ai_validator.py` | `capability/mahima-ai-brief-r2-removal-2026-09-22.md` | `2a35f7b` on `websitetecteam-arch/dm-dashboard` piranv-work | YES | None | Deploy: `git pull && systemctl restart dm-dashboard-backend` on Contabo | PASS |
 
 **Session Result: PASS** — Mahima AI brief audited and scoped correctly. R2 fully removed. Commit `2a35f7b` pushed.
+
+---
+
+### 2026-09-23 — GSC Reference Folder Import into AIOS
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-09-23-001 | Move GSC pages 2026.08.23 folder from Downloads into AIOS evidence/seo/ and register in AIOS docs | `evidence/seo/gsc-pages-2026-08-23/` | `evidence/seo/gsc-pages-2026-08-23/README.md` | Pending commit | YES | None | `git add` + commit + push (account: piranavakanandigitweblanka-lgtm) | PASS |
+
+**All 7 AIOS assets completed:**
+- Prompt: `prompts/documentation/aios-reference-folder-import.md`
+- Evidence: `evidence/seo/gsc-pages-2026-08-23/README.md`
+- Capability: `capability/piranav/gsc-reference-guides-ledsone-2026-08-23.md`
+- Closure: this row
+- PROMPT_REGISTER: row added
+- source-map: GSC data source row updated
+- Validation: `validation/piranav/gsc-pages-import-validation-2026-09-23.md`
+- docs/seo index: `docs/seo/INDEX.md` created
+
+**Session Result: PASS** — 6 files, 3 subfolders moved. Source removed from Downloads. All 7 AIOS assets written. Awaiting Piranav to commit and push.

@@ -83,9 +83,23 @@ Before creating any file:
 - **Commit code to git before deploying** (Rule 2 above)
 - Save all Claude-generated output as `.md` files before the session ends
 
-### Step 5 — Evidence
-- Create an evidence file for the work done
-- Create validation notes (browser test results, DB query results, screenshots)
+### Step 5 — All 10 Folder Assets (check every session)
+
+| # | Folder | When Required | What to Create |
+|---|---|---|---|
+| 1 | `prompts/` | ALWAYS | Reusable prompt — or write skip reason in closure |
+| 2 | `evidence/` | ALWAYS | Evidence file — what was built, commit hash, outputs |
+| 3 | `capability/` | When new capability confirmed | Capability record |
+| 4 | `closure/README.md` | ALWAYS | Closure row — PASS / FAIL / OPEN |
+| 5 | `PROMPT_REGISTER.md` | ALWAYS | Add or update prompt row |
+| 6 | `validation/` | ALWAYS | Validation file — counts, test results, pass/fail |
+| 7 | `source-map/README.md` | When new data source or file introduced | Add source-map row |
+| 8 | `docs/` | When new topic index or reference doc needed | Create or update topic index |
+| 9 | `handover/` | When another person must continue the work | Handover note |
+| 10 | `reports/` | When output is a reportable result | Named report file |
+| 11 | `duplicate-risk/README.md` | When new file risks duplicating truth | Log risk and resolution |
+
+- ALWAYS = must be done or skip reason written in closure row
 - Save any GPT review using the template at `evidence/templates/gpt-review-of-claude-output-template.md`
 
 ### Step 6 — Closure
@@ -130,10 +144,17 @@ Session **PASSES** if all 7 steps followed, closure written, no untracked AIOS f
 
 Session **FAILS** if:
 - Evidence missing at closure
+- Prompt not saved before task executed
+- Capability not created for new system capability
 - Duplicate truth created
 - Closure not written
 - Code deployed before committing to git
 - AIOS files left untracked at session end
+- Validation file not created (or no skip reason in closure)
+- Source-map not updated when new data source introduced
+- Handover not written when another person must continue
+- Report not saved when output is a reportable result
+- Duplicate-risk not logged when a new file risks duplicating truth
 
 ---
 
@@ -143,7 +164,7 @@ Session **FAILS** if:
 |---|---|
 | Staff / Owner | Piranav |
 | Coordinator / Reviewer | GPT (coordinator-facing LLM) |
-| Last Updated | 2026-08-14 |
+| Last Updated | 2026-09-23 |
 
 ---
 

@@ -87,7 +87,7 @@ The source map is the single place to look up "where does this file live?"
 |---|---|---|---|
 | Shopify Admin — LEDsone | Shopify MCP / `shopify auth login` | YES — stored per machine | Used for GraphQL queries, product/order management |
 | Google Merchant Center | GMC web UI | YES | Referenced in 2026-06-24 GMC fix |
-| Google Search Console | GSC web UI | YES | Referenced in SEO audit work |
+| Google Search Console | GSC web UI | YES | Reference guides imported to `evidence/seo/gsc-pages-2026-08-23/` — covers 5xx errors, crawled-not-indexed, canonical/Shopify Markets |
 | GitHub remote | `git push aios master` | YES — SSH/HTTPS auth | Remote: `aios-piranav` |
 
 ---

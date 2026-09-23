@@ -80,10 +80,12 @@ Any caveats, monitoring requirements, or follow-up needed.
 
 ## Validation Rules
 
-1. A validation report is required for any task that changes a production file (Liquid, CSS, JS, JSON config).
-2. A validation report is NOT required for documentation-only changes (e.g., this starter build) — a closure PASS is sufficient.
-3. Validation reports must be linked in the Evidence Index (`evidence/README.md`) before a task is closed.
-4. If a validation result is FAIL, the task must NOT be marked PASS in `closure/README.md`. Open a follow-up task instead.
+1. A validation report is required for **every session** — not just production file changes. (Updated 2026-09-23)
+2. For documentation-only or import tasks: validate file counts, records written, and no unrelated files modified.
+3. For production file changes: validate browser result, DB output, or Shopify preview.
+4. Validation reports must be saved in `validation/piranav/[slug]-validation-YYYY-MM-DD.md`.
+5. If a validation result is FAIL, the task must NOT be marked PASS in `closure/README.md`. Open a follow-up task instead.
+6. If no validation is possible (e.g., external system unavailable), write the reason in the closure row — do NOT silently skip.
 
 ---
 
@@ -118,13 +120,13 @@ Formal linking of these into this folder's index requires a separate authorised 
 |---|---|
 | Assigned Staff | piranav |
 | Coordinator / Reviewer | Piranav |
-| Last Updated | 2026-06-25 |
+| Last Updated | 2026-09-23 |
 
 ---
 
 ## Status
 
-STARTER — folder and index created. No formal validation reports exist yet inside this folder. Back-linking of pre-existing reports pending Piranav approval.
+ACTIVE — validation now required for every session (updated 2026-09-23). Folder contains validation records from 2026-08-18 onwards. Pre-existing Desktop reports not yet formally back-linked.
 
 ---
 

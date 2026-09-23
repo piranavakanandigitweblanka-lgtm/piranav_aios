@@ -98,21 +98,29 @@ Never run `git push` and leave Piranav to guess the account. Always say it first
 - Commit to git BEFORE deploying (Rule 2)
 - Save all Claude-generated output as `.md` files before session ends
 
-**Step 5 — Evidence + Capability + Prompts (ALL 3 required)**
+**Step 5 — All 10 Folder Assets (ALL mandatory or conditional)**
 
-Every session must produce ALL 5 asset types before closing:
+Every session must check all 10 folders before closing.
 
-| Asset | Folder | What to Create |
-|---|---|---|
-| Prompt | `prompts/[staff]/` or `prompts/implementation/` | Reusable prompt pattern used this session |
-| Evidence | `evidence/[staff]/` | What was built, commit hashes, validation notes |
-| Capability | `capability/` | New system capability — what it does, where, how to reuse |
-| Closure | `closure/README.md` | Standard closure row per task |
-| PROMPT_REGISTER | `PROMPT_REGISTER.md` | New prompt rows added |
+| # | Asset | Folder | When Required | What to Create |
+|---|---|---|---|---|
+| 1 | Prompt | `prompts/[category]/` | ALWAYS — every session | Reusable prompt pattern. If no reusable prompt exists, write a skip note in closure row — do NOT silently skip |
+| 2 | Evidence | `evidence/[topic or staff]/` | ALWAYS — every session | What was built, commit hashes, query outputs, screenshots |
+| 3 | Capability | `capability/piranav/` | When a new system capability is created or confirmed | What it does, where it lives, how to reuse |
+| 4 | Closure | `closure/README.md` | ALWAYS — every session | Standard closure row per task — PASS / FAIL / OPEN |
+| 5 | PROMPT_REGISTER | `PROMPT_REGISTER.md` | ALWAYS — every session | New prompt row added or existing row updated |
+| 6 | Validation | `validation/piranav/` | ALWAYS — every session | File counts, test results, browser checks, pass/fail checklist saved as `.md` |
+| 7 | Source-map | `source-map/README.md` | When a new data source, file, or repo is introduced | Add row: path, git tracking status, access method |
+| 8 | Docs | `docs/[topic]/` | When a new topic area, index, or reference document is needed | Topic index or reference doc — update existing index if one exists |
+| 9 | Handover | `handover/piranav/` | When a task involves another person taking over or continuing work | Handover note with context, current state, next steps |
+| 10 | Reports | `reports/[topic or staff]/` | When output is a reportable result (data export, audit, snapshot) | Named report file — do not duplicate existing reports |
+| 11 | Duplicate-risk | `duplicate-risk/README.md` | When a file is created that risks duplicating existing truth | Log the risk, file path, and resolution decision |
 
-- Save validation notes (browser results, DB queries, screenshots)
+**Condition key:**
+- ALWAYS = must be done or a skip reason written in closure
+- When X = only required if that condition applies this session — if condition does not apply, write "N/A — [reason]" in closure row
+
 - Use template at `evidence/templates/gpt-review-of-claude-output-template.md` for GPT reviews
-- If no new reusable prompt exists (e.g. pure investigation), write a note in the closure row explaining why the prompt asset was skipped — do NOT silently skip it
 
 **Step 6 — Closure**
 Write a closure entry in `closure/README.md` with:
@@ -141,17 +149,30 @@ Session **FAILS** if:
 - Closure entry not written
 - Code deployed before committing to git
 - AIOS files left untracked at session end
+- Validation file not created (or no skip reason written in closure)
+- Source-map not updated when a new data source or file was introduced
+- Handover not written when another person must continue the work
+- Report not saved when session output is a reportable result
+- Duplicate-risk not logged when a duplicate-risk file was created
 
 ---
 
 ## Key File Locations
 
-| File | Purpose |
+| Folder / File | Purpose |
 |---|---|
 | `START_HERE.md` | Full session protocol — read if context is unclear |
 | `closure/README.md` | All session closure entries — check at start of every session |
-| `PROMPT_REGISTER.md` | All registered GPT prompts |
-| `duplicate-risk/README.md` | Known duplicate file risks |
+| `PROMPT_REGISTER.md` | All registered GPT prompts — update every session |
+| `prompts/` | Reusable prompt templates by category |
+| `evidence/` | Task evidence by topic or staff — always required |
+| `capability/piranav/` | Confirmed system capabilities — create when new capability found |
+| `validation/piranav/` | Validation records — file counts, test results, pass/fail — always required |
+| `source-map/README.md` | All production file paths, data sources, git tracking status |
+| `docs/` | Reference docs and topic indexes by area (seo, shopify, dashboards, etc.) |
+| `handover/piranav/` | Handover notes when another person must continue a task |
+| `reports/` | Reportable outputs — data exports, audits, snapshots |
+| `duplicate-risk/README.md` | Known duplicate file risks — log when any new file risks duplicating truth |
 | `evidence/templates/` | Evidence and GPT review templates |
 | `docs/aios-session-workflow-recommendation-2026-08-14.md` | Extended workflow reference |
 
