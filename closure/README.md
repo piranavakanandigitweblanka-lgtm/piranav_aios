@@ -894,3 +894,24 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 - docs/seo index: `docs/seo/INDEX.md` created
 
 **Session Result: PASS** — 6 files, 3 subfolders moved. Source removed from Downloads. All 7 AIOS assets written. Awaiting Piranav to commit and push.
+
+---
+
+### 2026-09-23 — DM Campaign Products View — Campaign Filter Dropdown
+
+**What was done:** Added campaign-wise filter dropdown to the Products view in `DmCampaign.jsx`. No backend change needed — `campaignName` already in API response. Found and fixed a bug where `campaign` was missing from the `filtered` useMemo dependency array, causing the filter to not re-compute on change.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-ADMIN-2026-09-23-001 | Add campaign filter dropdown to DM Campaign Products view | `dm-dashboard/frontend/src/admin/pages/DmCampaign.jsx` | `evidence/piranav/dm-campaign-filter-2026-09-23.md` | 2 commits on `websitetecteam-arch/dm-dashboard` piranv-work | YES | None | Deploy: `git pull && npm run build --prefix frontend` on Contabo | PASS |
+
+- Prompt: `prompts/piranav/dm-campaign-filter-dropdown-pattern.md`
+- Validation: `validation/piranav/dm-campaign-filter-2026-09-23.md`
+- Capability: N/A — UI filter pattern, reusable via prompt
+- Source-map: N/A — no new data source
+- Docs: N/A
+- Handover: N/A
+- Reports: N/A
+- Duplicate-risk: N/A
+
+**Session Result: PASS** — Campaign filter built and pushed. useMemo dep bug found and fixed in same session.
