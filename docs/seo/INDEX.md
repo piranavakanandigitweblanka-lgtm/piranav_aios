@@ -22,6 +22,17 @@ Last updated: 2026-09-23
 | `live-seo-fix-tracker-candidate.md` | Live SEO fix tracker design | TBD |
 | `seo-master-dataset-ledsone-2026-07-29.csv` | Master SEO dataset (raw) | 2026-07-29 |
 
+## Homing GmbH — GSC Documentation
+
+| Document | Type | Topic | Date |
+|---|---|---|---|
+| `../../docs/homingmbh/google-search-console/HomingMBH_GSC_Screenshot_Training_SOP.docx` | Screenshot Training SOP | GSC setup + verification + sitemap + URL Inspection — homingmbh.de | 2026-09-24 |
+| `../../docs/homingmbh/google-search-console/README.md` | Index | Homing GmbH GSC documentation overview | 2026-09-24 |
+
+*Note: The above SOP covers Domain property, URL-prefix property, 1&1/IONOS DNS verification, Shopify HTML tag verification, sitemap submission, and URL Inspection for homingmbh.de.*
+
+---
+
 ## Related Capabilities
 
 | Capability | File |

@@ -915,3 +915,70 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 - Duplicate-risk: N/A
 
 **Session Result: PASS** — Campaign filter built and pushed. useMemo dep bug found and fixed in same session.
+
+---
+
+### 2026-09-24 — Sajee Product ID Mapping (New_Product_Assignments sajee.xlsx)
+
+**What was done:** Mapped all 99 products from New_Product_Assignments sajee.xlsx to Shopify UK Product IDs using read-only GraphQL API. 3-pass strategy: (1) primary SKU component, (2) secondary components for composite SKUs, (3) full composite SKU exact match + product-number title search. All 99 rows resolved to MATCHED status.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SJ-PRODMAP-2026-09-24-001 | Map 99 products from sajee Excel to Shopify UK Product IDs | `evidence/piranav/sajee-product-id-mapping-2026-09-24.csv` | `evidence/piranav/sajee-product-id-mapping-2026-09-24.md` | Pending commit | YES | None | Commit files + hand CSV to Piranav/Sajee | PASS |
+
+- Prompt: `prompts/implementation/shopify-sku-product-id-mapping.md`
+- Validation: `validation/piranav/sajee-product-id-mapping-2026-09-24.md`
+- Capability: N/A — reusable via prompt
+- Source-map: N/A — existing ledsone_uk store, already tracked
+- Docs: N/A
+- Handover: N/A
+- Reports: N/A — CSV is the deliverable, filed under evidence
+- Duplicate-risk: GREEN — no duplicate truth risk
+
+**Session Result: PASS** — 99/99 MATCHED. CSV + evidence + prompt + validation saved. Shopify not modified. Credentials not exposed.
+
+---
+
+### 2026-09-24 — Homingmbh.de Shopify Customer Google Sign-In Setup + AIOS Documentation
+
+**What was done:** Documented the completed Homingmbh.de Shopify Customer Accounts Google Sign-In setup in AIOS. Google OAuth is In production. Shopify Google Sign-In is enabled. Storefront shows "Weiter mit Google". Trainee guide added to docs. Credential secured in Git-ignored private/secrets/. .gitignore updated with specific private/secrets/ exclusion.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| HOMINGMBH-GOOGLE-SIGNIN-2026-09-24 | Document completed Homingmbh.de Shopify Customer Google Sign-In + secure credential + trainee guide | `docs/homingmbh/shopify-google-sign-in/` | `evidence/piranav/homingmbh-shopify-google-signin-2026-09-24.md` | Pending commit | YES | None | Commit + push (account: piranavakanandigitweblanka-lgtm) | PASS |
+
+- Prompt: `prompts/implementation/shopify-customer-google-signin.md`
+- Evidence: `evidence/piranav/homingmbh-shopify-google-signin-2026-09-24.md`
+- Validation: `validation/piranav/homingmbh-shopify-google-signin-2026-09-24.md`
+- Capability: `capability/piranav/shopify-customer-google-signin.md`
+- Handover: `handover/piranav/homingmbh-shopify-google-signin-2026-09-24.md`
+- Docs: `docs/homingmbh/shopify-google-sign-in/README.md` + `Homingmbh_Shopify_Google_SignIn_Trainee_Guide.docx`
+- Source-map: N/A — homingmbh.de is an existing project, no new tracked data source
+- Reports: N/A
+- Duplicate-risk: GREEN — no prior Homingmbh Google Sign-In documentation existed
+- Security: Credential at `private/secrets/google-oauth/` — Git-ignored. Client Secret not in any AIOS file.
+
+**Session Result: PASS** — All 10 AIOS folder assets completed. Google Sign-In live. Trainee guide filed. Credential secured. No secret exposed.
+
+---
+
+### 2026-09-24 — Homingmbh.de GSC Screenshot Training SOP — AIOS Documentation Update
+
+**What was done:** Added HomingMBH_GSC_Screenshot_Training_SOP.docx to AIOS under `docs/homingmbh/google-search-console/`. Created client index `docs/homingmbh/README.md`. Updated `docs/seo/INDEX.md` with Homing GmbH GSC section. Documentation-only task — no production systems modified.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| HOMINGMBH-GSC-SOP-2026-09-24 | Add Homing GmbH GSC Screenshot Training SOP to AIOS | `docs/homingmbh/google-search-console/HomingMBH_GSC_Screenshot_Training_SOP.docx` | `evidence/piranav/homingmbh-gsc-sop-2026-09-24.md` | Pending commit | YES | None | Commit + push (account: piranavakanandigitweblanka-lgtm) | PASS |
+
+- Prompt: `prompts/documentation/homingmbh-gsc-sop-aios-update.md`
+- Evidence: `evidence/piranav/homingmbh-gsc-sop-2026-09-24.md`
+- Validation: `validation/piranav/homingmbh-gsc-sop-2026-09-24.md`
+- Capability: N/A — documentation task, reusable via prompt
+- Docs: `docs/homingmbh/google-search-console/README.md` + SOP DOCX + `docs/homingmbh/README.md` (client index created) + `docs/seo/INDEX.md` (updated)
+- Handover: N/A — trainee discoverability via `docs/homingmbh/google-search-console/`
+- Source-map: N/A — no new data source
+- Reports: N/A
+- Duplicate-risk: GREEN — no prior Homingmbh.de GSC SOP existed; LEDSone GSC guides are separate client
+- Security: No credentials stored. SOP is procedure documentation only.
+
+**Session Result: PASS** — SOP filed at correct destination. Client index created. SEO index updated. Source preserved. No production systems modified. No secrets stored.

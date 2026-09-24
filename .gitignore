@@ -6,6 +6,7 @@ source-map/
 .env
 .env.*
 !.env.example
+private/secrets/
 
 # ── Node ───────────────────────────────────────────────────────────
 node_modules/

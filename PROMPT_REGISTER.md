@@ -47,6 +47,7 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-09-10 | `ai-brief-full-extension-pattern` | implementation | `prompts/implementation/ai-brief-full-extension-pattern.md` | `closure/README.md — 2026-09-10 Kamsi Pipeline Parity` | ACTIVE |
 | 2026-09-14 | `seo-skills-tab-build-prompt` | implementation | `prompts/implementation/seo-skills-tab-build-prompt.md` | `closure/README.md — 2026-09-14 SEO Skills Tab` | ACTIVE |
 | 2026-09-15 | `unified-daily-task-hub-pattern` | implementation | `prompts/implementation/unified-daily-task-hub-pattern.md` | `closure/README.md — 2026-09-15 Unified Task Hub` | ACTIVE |
+| 2026-09-24 | `shopify-sku-product-id-mapping` | implementation | `prompts/implementation/shopify-sku-product-id-mapping.md` | `closure/README.md — 2026-09-24 Sajee Product ID Mapping` | ACTIVE |
 | 2026-09-21 | `semrush-backlinks-neon-upsert` | implementation | `prompts/implementation/semrush-backlinks-neon-upsert.md` | `closure/README.md — 2026-09-21 SEO Backlinks Agent` | ACTIVE |
 | 2026-09-17 | `sales2026-uk-admin-discovery` | discovery | `prompts/implementation/sales2026-uk-admin-discovery.md` | `closure/README.md — 2026-09-17` | ACTIVE |
 | 2026-09-17 | `sales2026-uk-grand-total-page` | implementation | `prompts/implementation/sales2026-uk-grand-total-page.md` | `closure/README.md — 2026-09-17` | ACTIVE |
@@ -60,6 +61,8 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-09-23 | `dm-campaign-filter-dropdown-pattern` | implementation | `prompts/piranav/dm-campaign-filter-dropdown-pattern.md` | `closure/README.md — 2026-09-23` | ACTIVE |
 | 2026-09-16 | `ux-fix-tracker-action-list-pattern` | implementation | `prompts/hetheesha/ux-fix-tracker-action-list-pattern.md` | `closure/README.md — 2026-09-16 Hetheesha UX Overhaul` | ACTIVE |
 | 2026-09-18 | `sajeepan-r4-feed-optimization-advanced-filters` | implementation | `prompts/sajeepan/r4-feed-optimization-advanced-filters.md` | `closure/README.md — 2026-09-18` | ACTIVE |
+| 2026-09-24 | `shopify-customer-google-signin` | implementation | `prompts/implementation/shopify-customer-google-signin.md` | `closure/README.md — 2026-09-24 Homingmbh Google Sign-In` | ACTIVE |
+| 2026-09-24 | `client-gsc-sop-aios-update` | documentation | `prompts/documentation/homingmbh-gsc-sop-aios-update.md` | `closure/README.md — 2026-09-24 Homingmbh GSC SOP` | ACTIVE |
 | 2026-09-18 | `sukirtha-r6-oos-draft-exclusion` | implementation | `prompts/sukirtha/r6-oos-draft-exclusion.md` | `closure/README.md — 2026-09-18` | ACTIVE |
 | 2026-09-18 | `sukirtha-ai-brief-variety-cap` | implementation | `prompts/sukirtha/ai-brief-variety-cap.md` | `closure/README.md — 2026-09-18` | ACTIVE |
 | 2026-09-16 | `ai-brief-multi-requirement-data-pattern` | implementation | `prompts/hetheesha/ai-brief-multi-requirement-data-pattern.md` | `closure/README.md — 2026-09-16 Hetheesha UX Overhaul` | ACTIVE |
