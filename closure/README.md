@@ -982,3 +982,70 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 - Security: No credentials stored. SOP is procedure documentation only.
 
 **Session Result: PASS** — SOP filed at correct destination. Client index created. SEO index updated. Source preserved. No production systems modified. No secrets stored.
+
+---
+
+### 2026-09-25 — Sajeepan Non-Sale Product Scope — Full Investigation (Phases 1–4A) + Level 4C Design
+
+**What was done:** Full READ-ONLY investigation of Sajeepan's Google Ads product population. Discovered product ID formats, confirmed 99.95% match rate using Jefri normalization pattern, classified 2,126 products into sale/non-sale groups, investigated 3 open business rule questions (NULL qty, compare_price=0, OOS 25 products), and produced the Level 4C admin page design document. Also produced GPT briefing for dm-dashboard codebase.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SAJE-SCOPE-2026-09-25-PHASES1-4A | Sajeepan Non-Sale Product Scope — Discovery through Business Rule Evidence | `evidence/sajeepan/` | `evidence/sajeepan/sajeepan-nonsale-level4a-business-rule-evidence-2026-09-25.md` | Pending commit | YES | None | Commit + push (account: piranavakanandigitweblanka-lgtm) | PASS |
+| SAJE-SCOPE-2026-09-25-LEVEL4C | Ads Product Scope — System + Page Design (design only, no implementation) | `docs/dm-dashboard/ads-product-scope-level4c-design-2026-09-25.md` | `validation/piranav/sajeepan-ads-scope-level4c-validation-2026-09-25.md` | Pending commit | YES | 5 open decisions require Piranav/GPT sign-off before Level 5 | Get decisions → Level 5 implementation | PASS |
+| DM-GPT-BRIEF-2026-09-25 | DM Dashboard GPT Briefing document | `docs/dm-dashboard/dm-dashboard-gpt-brief-2026-09-25.md` | same file | Pending commit | YES | None | Share with GPT when briefing | PASS |
+
+**10-Folder Asset Check:**
+- Prompt: `prompts/sajeepan/nonsale-product-scope-discovery.md` + `prompts/sajeepan/ads-product-scope-system-page-design.md` — CREATED
+- Evidence: `evidence/sajeepan/sajeepan-nonsale-phase3-704-investigation-2026-09-25.md` + `sajeepan-nonsale-level4a-business-rule-evidence-2026-09-25.md` + 2 CSVs — CREATED
+- Capability: N/A — investigation + design phase; no new system capability built
+- Closure: this entry — DONE
+- PROMPT_REGISTER: 2 new rows added — DONE
+- Validation: `validation/piranav/sajeepan-nonsale-phase3-validation-2026-09-25.md` + `sajeepan-nonsale-level4a-validation-2026-09-25.md` + `sajeepan-ads-scope-level4c-validation-2026-09-25.md` — CREATED
+- Source-map: N/A — all tables (google_ads.product_performance, listings.shopify_listings, google_ads.merchant_products) already in source-map from prior sessions
+- Docs: `docs/dm-dashboard/ads-product-scope-level4c-design-2026-09-25.md` + `docs/dm-dashboard/dm-dashboard-gpt-brief-2026-09-25.md` — CREATED
+- Handover: N/A — no person handover required; open decisions documented in design
+- Reports: N/A — investigation CSVs are evidence, not reports
+- Duplicate-risk: GREEN — no existing Ads Product Scope design or non-sale scope document existed
+
+**Key Facts Confirmed (frozen — do not re-investigate in Level 5):**
+- Total Sajeepan Ads products (30d): 2,126
+- Product ID formats: shopify_GB_* (1,422) + numeric (703) + other (1)
+- Jefri normalization = authoritative for all Ads staff
+- Non-sale: 719 | Group A: 693 | Group B: 25 | SALE_SIGNAL_CONFLICT: 4 | UNRESOLVED: 1
+
+**Level 5 blockers (5 open decisions — design document Section 15):**
+1. Group B (OOS 25) — include or exclude in default view
+2. Rolling window default — 7d / 30d / 90d
+3. Nav section placement
+4. Snapshot interval
+5. Export scope (all vs filtered)
+
+**Session Result: PASS** — All phases READ-ONLY. No code changed. No DB modified. No tables created. Evidence + design + validation + prompts all filed.
+
+---
+
+### 2026-09-25 — Level 5 — Ads Product Scope Implementation (Sajeepan Proof of Concept)
+
+**What was done:** Implemented the Ads Product Scope admin page per the Level 4C design. Created 2 new files, modified 2 existing files. Frontend build passes. Backend syntax clean. sajeepan.py not modified. DB not modified. Live endpoint validation pending server restart.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SAJE-SCOPE-L5-2026-09-25 | Level 5 — Ads Product Scope implementation (Sajeepan POC) | `dm-dashboard/backend/app/admin_ads_product_scope.py` + `dm-dashboard/frontend/src/admin/pages/AdsProductScope.jsx` | `evidence/sajeepan/sajeepan-ads-scope-level5-implementation-2026-09-25.md` | dm-dashboard piranv-work (uncommitted) | YES | Live endpoint validation pending server restart | Restart server → validate live counts → commit dm-dashboard (account: websitetecteam-arch) | PASS |
+
+**10-Folder Asset Check:**
+- Prompt: N/A — implementation used Level 4C design; design prompt already registered in PROMPT_REGISTER.md
+- Evidence: `evidence/sajeepan/sajeepan-ads-scope-level5-implementation-2026-09-25.md` — CREATED
+- Capability: `capability/piranav/ads-product-scope-admin-page.md` — CREATED
+- Closure: this entry — DONE
+- PROMPT_REGISTER: N/A — no new prompt created this phase
+- Validation: `validation/piranav/sajeepan-ads-scope-level5-validation-2026-09-25.md` — CREATED
+- Source-map: N/A — no new data sources
+- Docs: N/A — Level 4C design already in docs/
+- Handover: `handover/piranav/ads-product-scope-level5-handover-2026-09-25.md` — CREATED
+- Reports: N/A
+- Duplicate-risk: GREEN — only one Ads Product Scope implementation
+
+**Session Result: PASS** — Code implemented. Build passes. Syntax clean. No existing dashboards modified. DB not modified.
+
+**Pending before full sign-off:** Restart server with real .env → hit /api/admin/ads-product-scope/sajeepan → confirm counts → commit dm-dashboard.

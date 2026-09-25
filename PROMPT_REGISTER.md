@@ -67,8 +67,11 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-09-18 | `sukirtha-ai-brief-variety-cap` | implementation | `prompts/sukirtha/ai-brief-variety-cap.md` | `closure/README.md — 2026-09-18` | ACTIVE |
 | 2026-09-16 | `ai-brief-multi-requirement-data-pattern` | implementation | `prompts/hetheesha/ai-brief-multi-requirement-data-pattern.md` | `closure/README.md — 2026-09-16 Hetheesha UX Overhaul` | ACTIVE |
 | 2026-09-08 | `sajeepan-system-workflow-gpt-brief` | reference | `prompts/sajeepan-system-workflow-gpt-brief.md` | N/A | ACTIVE — paste into GPT to brief it on Sajeepan's full system before any review or build task |
+| 2026-09-25 | `sajeepan-nonsale-product-scope-discovery` | discovery | `prompts/sajeepan/nonsale-product-scope-discovery.md` | `closure/README.md — 2026-09-25 Level 4C Design` | ACTIVE |
+| 2026-09-25 | `ads-product-scope-system-page-design` | implementation | `prompts/sajeepan/ads-product-scope-system-page-design.md` | `closure/README.md — 2026-09-25 Level 4C Design` | ACTIVE |
 | 2026-09-18 | `done-task-exclusion-window-fix` | implementation | `prompts/implementation/done-task-exclusion-window-fix.md` | `closure/README.md — 2026-09-18` | ACTIVE |
 | 2026-09-18 | `sajeepan-r3-oos-filter-pagination-fix` | implementation | `prompts/sajeepan/r3-oos-filter-pagination-fix.md` | `closure/README.md — 2026-09-18` | ACTIVE |
+| 2026-09-25 | `sajeepan-nonsale-product-scope-discovery` | discovery | `prompts/sajeepan/nonsale-product-scope-discovery.md` | `evidence/sajeepan/sajeepan-nonsale-product-scope-discovery-2026-09-25.md` | ACTIVE — discovery complete: 2,118 Ads products, 716 non-sale, 1,402 sale. Signal: shopify_listings.compare_price |
 | 2026-09-18 | `gsc-live-sync-build` | implementation | `prompts/implementation/gsc-live-sync-build.md` | `closure/README.md — 2026-09-18` | ACTIVE |
 | 2026-09-21 | `semrush-organic-snapshot-neon-daily` | implementation | `prompts/implementation/semrush-organic-snapshot-neon-daily.md` | `closure/README.md — 2026-09-21 SEMrush Snapshot` | ACTIVE |
 | 2026-06-16 | `shopify-lighthouse-accessibility-fix` | implementation | `prompts/implementation/shopify-lighthouse-accessibility-fix.md` | `closure/sessions/2026-06-16.md` | ACTIVE |
