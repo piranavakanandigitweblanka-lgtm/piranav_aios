@@ -34,7 +34,17 @@ Sajeepan's 7 campaigns show 2,126 products. 719 are non-sale (compare_price IS N
 6. Existing Sajeepan staff dashboard still works
 7. Snapshot table `public.admin_ads_product_scope_snapshot` created in app DB
 
-## Known Issue — Live Counts May Differ Slightly
+## ⚠ Level 6A Update (2026-09-25)
+
+This handover covers the Level 5 implementation. The page has since been corrected
+in Level 6A to use **lifetime product scope** instead of 30-day product scope.
+
+Level 6A counts: Total 17,137 products (not 2,126). Group A: 4,814. Group B: 1,577.
+See: `evidence/sajeepan/sajeepan-ads-scope-level6a-lifetime-verification-2026-09-25.md`
+
+---
+
+## Known Issue — Live Counts May Differ Slightly (Level 5 note — superseded)
 
 The investigation was done on 2026-09-25 with a 30-day window. Daily Ads data changes mean live counts shift naturally. If Group A shows 685 instead of 693, that is normal (products entering/leaving campaigns daily). If there is a large unexplained difference (e.g. Group A = 100), investigate the SQL join.
 

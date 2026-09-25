@@ -1049,3 +1049,47 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 **Session Result: PASS** — Code implemented. Build passes. Syntax clean. No existing dashboards modified. DB not modified.
 
 **Pending before full sign-off:** Restart server with real .env → hit /api/admin/ads-product-scope/sajeepan → confirm counts → commit dm-dashboard.
+
+---
+
+### 2026-09-25 — Level 6A — Lifetime Product Scope Verification + Correction
+
+**Req ID / Task / Asset / Evidence / Commit / Queryable / Blockers / Next / Status**
+
+| ID | Task | Asset | Evidence | Commit | Queryable | Blockers | Next | Status |
+|---|---|---|---|---|---|---|---|---|
+| SAJE-SCOPE-L6A-2026-09-25 | Level 6A — Lifetime product scope verification + implementation correction | `admin_ads_product_scope.py` + `AdsProductScope.jsx` | `evidence/sajeepan/sajeepan-ads-scope-level6a-lifetime-verification-2026-09-25.md` | NOT YET (dm-dashboard piranv-work) | YES | Live endpoint validation pending server restart | Restart server → validate lifetime counts → commit dm-dashboard (account: websitetecteam-arch) | PASS |
+
+**Assets created/updated this session:**
+
+- Prompt: `prompts/dm-dashboard/sajeepan-ads-scope-level6a-lifetime-scope.md` — CREATED
+- Evidence: `evidence/sajeepan/sajeepan-ads-scope-level6a-lifetime-verification-2026-09-25.md` — CREATED
+- Validation: `validation/piranav/sajeepan-ads-scope-level6a-validation-2026-09-25.md` — CREATED
+- Capability: `capability/piranav/ads-product-scope-admin-page.md` — UPDATED (lifetime counts added)
+- Handover: `handover/piranav/ads-product-scope-level5-handover-2026-09-25.md` — UPDATED (L6A note added)
+- PROMPT_REGISTER: row added for L6A prompt
+- Docs: N/A — existing docs sufficient
+- Source-map: N/A — no new data sources
+- Reports: N/A
+- Duplicate-risk: GREEN — L5 evidence preserved, L6A supersedes only the counts
+
+**Key Facts (Level 6A):**
+
+- Lifetime unique product_item_ids: 19,350 raw → 17,137 distinct normalized (after dedup)
+- Data range: 2024-09-01 → 2026-09-24
+- All 7 campaigns confirmed SAJEEPAN via google_ads.campaigns.group_name
+- 14,047 matched to Shopify UK; 3,083 UNMATCHED (removed from catalogue)
+- GROUP_A: 4,814 | GROUP_B: 1,577 | ON_SALE: 7,566 | UNMATCHED: 3,083 | Total: 17,137
+- Architecture: snapshot stores lifetime classification; metrics fetched fresh per window
+- LATERAL removed; ::text cast removed; Python-computed cutoff date
+- sajeepan.py UNCHANGED; existing Sajeepan dashboard UNCHANGED
+
+**Code changed:** YES (admin_ads_product_scope.py + AdsProductScope.jsx)
+**Database changed:** NO
+**Existing Sajeepan dashboard changed:** NO
+**Deployment performed:** NO
+**Git commit created:** NO
+
+**Session Result: PASS** — Lifetime scope verified via DB queries. Implementation corrected. Build passes. Syntax clean. No existing dashboards modified.
+
+**Pending before full sign-off:** Restart server → hit endpoint → confirm 17,137 lifetime products → commit dm-dashboard (account: websitetecteam-arch).

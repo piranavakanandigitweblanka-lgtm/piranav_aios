@@ -9,7 +9,8 @@ metadata:
 
 ## What It Does
 
-An admin-only page in the DM Dashboard that shows which products appear in a staff member's Google Ads campaigns, classified into:
+An admin-only page in the DM Dashboard that shows all products **ever** in a staff
+member's Google Ads campaigns (lifetime scope), classified into:
 - **GROUP_A**: non-sale + active + in-stock (primary eligible set)
 - **GROUP_B**: non-sale + active + out-of-stock (monitoring list)
 - **ON_SALE**: compare_price > 0
@@ -24,7 +25,8 @@ An admin-only page in the DM Dashboard that shows which products appear in a sta
 | Frontend | `dm-dashboard/frontend/src/admin/pages/AdsProductScope.jsx` |
 | API endpoint | `GET /api/admin/ads-product-scope/sajeepan?days=30` |
 | Nav | AdminLayout.jsx → Sales & Performance → Ads Product Scope |
-| Snapshot scope | `admin-ads-product-scope-sajeepan` (1-hour refresh) |
+| Snapshot scope | `admin-ads-product-scope-sajeepan` (1-hour refresh, stores lifetime classification) |
+| Metrics query | Fast windowed aggregation — always fetched fresh per request |
 
 ## How to Reuse for Another Staff Member
 
@@ -40,8 +42,24 @@ An admin-only page in the DM Dashboard that shows which products appear in a sta
 - OOS: merchant `out_of_stock/preorder` (primary) OR `qty=0/NULL` (fallback)
 - Product ID normalization: Jefri pattern (split last segment for `shopify_*`, else use directly)
 
+## Lifetime Scope Counts (Sajeepan, verified 2026-09-25)
+
+| Group | Count |
+|---|---|
+| GROUP_A | 4,814 |
+| GROUP_B | 1,577 |
+| ON_SALE | 7,566 |
+| SALE_SIGNAL_CONFLICT | 5 |
+| NON_SALE_INACTIVE | 85 |
+| UNMATCHED (removed from Shopify) | 3,083 |
+| UNRESOLVED | 7 |
+| **TOTAL** | **17,137** |
+
+Data range: 2024-09-01 → 2026-09-24
+
 ## Related Evidence
 
-- `evidence/sajeepan/sajeepan-ads-scope-level5-implementation-2026-09-25.md`
+- `evidence/sajeepan/sajeepan-ads-scope-level6a-lifetime-verification-2026-09-25.md` ← Level 6A (current)
+- `evidence/sajeepan/sajeepan-ads-scope-level5-implementation-2026-09-25.md` ← Level 5 (superseded counts)
 - `docs/dm-dashboard/ads-product-scope-level4c-design-2026-09-25.md`
 - `evidence/sajeepan/sajeepan-nonsale-level4a-business-rule-evidence-2026-09-25.md`
