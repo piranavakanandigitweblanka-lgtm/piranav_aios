@@ -1093,3 +1093,40 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 **Session Result: PASS** — Lifetime scope verified via DB queries. Implementation corrected. Build passes. Syntax clean. No existing dashboards modified.
 
 **Pending before full sign-off:** Restart server → hit endpoint → confirm 17,137 lifetime products → commit dm-dashboard (account: websitetecteam-arch).
+
+---
+
+### 2026-09-28 — Scheduled: Weekly SEMrush Domain Rank Refresh (ledsone.co.uk)
+
+**What was attempted:** Automated scheduled agent fired to fetch latest SEMrush domain_rank data for ledsone.co.uk (UK database) and upsert into Neon PostgreSQL `semrush_history` table.
+
+**Step 1 — SEMrush fetch: SUCCESS.**
+- Rank: 48,334 | Organic Keywords: 10,252 | Traffic: 10,249 | Cost: £5,111 | Paid: 0
+- Position breakdown: kw_top3=210, kw_top4_10=639, kw_top11_20=1,877, kw_top21_100=6,772
+- Week-over-week: Rank improved +3,072, Traffic +694, Cost +£835
+
+**Step 2 — Script updated: SUCCESS.** `Staff-requirements-02/scripts/semrush-upsert.js` ROWS[0] updated with 2026-09-28 data.
+
+**Step 3 — Neon DB upsert: BLOCKED (recurring).**
+- NEON_DATABASE_URL not set in container environment
+- Neon host `ep-soft-leaf-zavu7dmm.c-2.eu-west-2.aws.neon.tech` blocked by org egress policy
+- Same blocker documented in: SEO-SNAP-2026-09-21-001, SEO-BL-2026-09-21-003, SEO-PAGES-REFRESH-2026-09-21
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SEO-RANK-2026-09-28-001 | Weekly SEMrush domain_rank fetch for ledsone.co.uk (uk) + upsert script update | `Staff-requirements-02/scripts/semrush-upsert.js` | `evidence/piranav/semrush-domain-rank-refresh-2026-09-28.md` | Pending commit | YES | Neon DB blocked by org egress policy — NEON_DATABASE_URL not set; `*.neon.tech` not in allowlist | (1) Piranav: run `NEON_DATABASE_URL="..." node Staff-requirements-02/scripts/semrush-upsert.js` locally; OR (2) Add `*.neon.tech` to egress allowlist at https://code.claude.com → Environments → Network settings | PARTIAL PASS — data fetched, script updated, DB write blocked |
+
+**AIOS assets this session:**
+- Prompt: N/A — existing prompt covers this (see PROMPT_REGISTER semrush-domain-rank-weekly)
+- Evidence: `evidence/piranav/semrush-domain-rank-refresh-2026-09-28.md` — CREATED
+- Validation: `validation/piranav/semrush-refresh-validation-2026-09-28.md` — CREATED
+- Closure: this row
+- PROMPT_REGISTER: existing row updated
+- Capability: N/A — no new capability
+- Source-map: N/A — no new source
+- Docs: N/A
+- Handover: N/A
+- Reports: N/A
+- Duplicate-risk: N/A
+
+**Session Result: PARTIAL PASS** — SEMrush data fetched. Script updated with latest values. DB write blocked by persistent egress policy issue (4th occurrence). Piranav notified via push notification. Permanent fix: add `*.neon.tech` to Claude Code remote environment egress allowlist.
