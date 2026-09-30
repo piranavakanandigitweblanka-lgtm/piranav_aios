@@ -78,6 +78,14 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-09-30 — WLG SKU Sales Date Filter (dm-dashboard)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DE-WLG-2026-09-30-001 | Add date filter to WLG SKU Sales tab (Report 7) in GermanySalesDecline.jsx. Backend: from_date/to_date params in report_wlg_sales(). Frontend: year pills (All Time/2025/2026/Custom) + custom month range picker + active range label + loading indicator. Data verified correct vs DB before build. | dm-dashboard/backend/app/germany_sales_decline.py, dm-dashboard/frontend/src/admin/pages/GermanySalesDecline.jsx | evidence/germany/wlg-date-filter-2026-09-30.md | 083020b on websitetecteam-arch/dm-dashboard piranv-work | YES | Browser test pending Contabo deploy | git pull + npm run build frontend + systemctl restart backend on Contabo | PASS |
+
+---
+
 ### 2026-09-16 — Sajeepan Title Optimization Feasibility Audit
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
@@ -1093,3 +1101,260 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 **Session Result: PASS** — Lifetime scope verified via DB queries. Implementation corrected. Build passes. Syntax clean. No existing dashboards modified.
 
 **Pending before full sign-off:** Restart server → hit endpoint → confirm 17,137 lifetime products → commit dm-dashboard (account: websitetecteam-arch).
+
+---
+
+### 2026-09-28 — ledsone_de Energy Label Modal Responsive Fix
+
+**What was done:** Fixed Energy Label modal viewport overflow on desktop and mobile. CSS-only fix — no JS, no metafields, no functionality changed. Root cause was missing  on flex body preventing scroll activation, plus  units and oversized image  values.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DE-ENERGY-LABEL-MODAL-2026-09-28 | Energy Label modal responsive fix — ledsone_de |  |  | NOT YET (untracked folder) | YES | ledsone_de folder not yet git tracked; deploy via Shopify CLI | Push to Shopify DE store via CLI → browser validate desktop + mobile | PASS |
+
+**10-Folder Asset Check:**
+- Prompt:  — CREATED
+- Evidence:  — CREATED
+- Capability: N/A — bug fix, no new system capability
+- Closure: this entry — DONE
+- PROMPT_REGISTER: row added — DONE
+- Validation:  — CREATED
+- Source-map:  updated — ledsone_de folder + energy-label snippet added — DONE
+- Docs: N/A — no new topic index needed
+- Handover: N/A — no handover required
+- Reports: N/A — no reportable data output
+- Duplicate-risk: GREEN — no duplicate created; energy-label.liquid is the only copy
+
+**Root cause:**  missing on  flex child prevented  from activating.  on scrollable body clipped tall images from the top.  units inconsistent on mobile. Fixed  on mobile image blocked full scroll.
+
+**CSS changes:** 5 targeted rules — dialog max-height, body min-height + align, image max-height desktop, dialog dvh mobile, image max-height none mobile.
+
+**Session Result: PASS** — CSS-only fix. No functionality changed. No metafields changed. Live browser validation pending Shopify CLI push by Piranav.
+
+---
+
+### 2026-09-30 — LEDSone US Phase 2A — Variant Option Normalization Discovery
+
+**What was done:** Full audit of all 38 variant option name strings across 316 LEDSone US parent products. Produced normalization mapping table with confidence ratings. Identified 29 high-confidence renames and 7 ambiguous groups requiring GPT Brain decision. Documented 6 products needing structural variant restructuring. All data quality issues catalogued.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| LEDSONE-US-PHASE2A-NORMALIZATION-2026-09-30 | Variant option name normalization discovery — Phase 2A | `prompts/shopify/ledsone-us-phase2a-normalization-discovery.md` | `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` (Phase C section) | NOT YET | YES | 7 ambiguous mapping groups require GPT Brain decision before Phase 2B | Send report to GPT Brain for Section C decisions → Phase 2B: approved normalization execution plan | PASS |
+
+**10-Folder Asset Check:**
+- Prompt: `prompts/shopify/ledsone-us-phase2a-normalization-discovery.md` — CREATED
+- Evidence: `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` — APPENDED (Phase C section)
+- Capability: N/A — discovery phase only
+- Closure: this entry — DONE
+- PROMPT_REGISTER: row added — DONE
+- Validation: `validation/piranav/ledsone-us-catalogue-discovery-2026-09-30.md` — APPENDED (Phase 2A section)
+- Source-map: N/A — no new data source
+- Docs: N/A
+- Handover: N/A
+- Reports: `reports/ledsone-us-phase2a-normalization-mapping-2026-09-30.md` — CREATED (full mapping table)
+- Duplicate-risk: GREEN — report is new file; evidence/validation appended to existing files
+
+**Session Result: PASS — Phase 2A discovery complete. Pending GPT Brain decisions on Section C.**
+
+---
+
+### 2026-09-28 — ledsone_de Energy Label Modal — Phase 2: Stacking Context + Mobile Centering Fix
+
+**What was done:** Fixed modal being trapped inside `.sticky-product-information .bls__product-details-infor` stacking context. Used JS portal pattern to teleport modal to `<body>`. Removed bottom-sheet mobile layout — modal now centred on all viewports. Z-index raised to max-safe. Safe-area insets added.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DE-ENERGY-LABEL-STACKING-2026-09-28 | Energy Label modal stacking context fix + mobile centering | `shopify_projects/ledsone_de/snippets/energy-label.liquid` | `evidence/shopify/ledsone-de-energy-label-modal-responsive-fix-2026-09-28.md` (Phase 2 section) | NOT YET (untracked folder) | YES | ledsone_de folder not git tracked; deploy via Shopify CLI | Push to Shopify DE store via CLI — browser validate desktop + mobile centering | PASS |
+
+**10-Folder Asset Check:**
+- Prompt: N/A — same pattern as registered prompt `energy-label-modal-responsive-fix` — no new prompt needed
+- Evidence: `evidence/shopify/ledsone-de-energy-label-modal-responsive-fix-2026-09-28.md` — Phase 2 section APPENDED
+- Capability: N/A — bug fix, no new capability
+- Closure: this entry — DONE
+- PROMPT_REGISTER: N/A — no new prompt
+- Validation: `validation/piranav/ledsone-de-energy-label-modal-validation-2026-09-28.md` — Phase 2 checklist APPENDED
+- Source-map: N/A — ledsone_de already added in Phase 1
+- Docs: N/A
+- Handover: N/A
+- Reports: N/A
+- Duplicate-risk: GREEN — extended existing files, no new duplicates
+
+**Root cause (stacking):** `position: sticky` on `.bls__product-details-infor` (product-details.css:15) creates a stacking context. Modal DOM-nested inside it was trapped — z-index had no effect against global overlays.
+**Fix:** JS `document.body.appendChild(modal)` at init time — modal escapes all stacking contexts.
+**Root cause (mobile):** Previous mobile CSS used bottom-sheet layout (align-items: flex-end). Changed to centered (align-items: center).
+
+**Session Result: PASS** — Portal + CSS fix applied. No metafields, product layout, or theme files changed. Live browser validation pending CLI push.
+
+---
+
+### 2026-09-30 — LEDSone US Product Catalogue Discovery (Theme + Data)
+
+**What was done:** Two-phase discovery for LEDSone US Product Catalogue project. Phase A: full theme structure audit (Umino v2.8.0, 20 discovery questions answered, reuse decision confirmed). Phase B: PostgreSQL product/variant data audit (sub_source 245, 316 parent products, 38 distinct option names analysed). Filter feasibility verdict produced.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| LEDSONE-US-CATALOGUE-DISCOVERY-2026-09-30 | LEDSone US theme + data discovery — filter feasibility assessment | `prompts/shopify/ledsone-us-theme-discovery.md`, `prompts/shopify/ledsone-us-product-variant-data-discovery.md` | `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` | NOT YET — pending Piranav commit instruction | YES | Variant option names in Shopify Admin not yet audited (MCP unauthorized); normalization required before S&D filter setup | Audit + normalize variant option names in Shopify Admin → configure S&D filter groups → create `collection.catalogue.json` template | PASS |
+
+**10-Folder Asset Check:**
+- Prompt (theme): `prompts/shopify/ledsone-us-theme-discovery.md` — CREATED
+- Prompt (data): `prompts/shopify/ledsone-us-product-variant-data-discovery.md` — CREATED
+- Evidence: `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` — CREATED
+- Capability: N/A — discovery phase only, no new system capability
+- Closure: this entry — DONE
+- PROMPT_REGISTER: 2 new rows added — DONE
+- Validation: `validation/piranav/ledsone-us-catalogue-discovery-2026-09-30.md` — CREATED
+- Source-map: N/A — PostgreSQL listings schema already in source-map; ledsone-us theme folder is local-only, no new source introduced
+- Docs: N/A — no new topic index required
+- Handover: N/A — no other person taking over
+- Reports: N/A — discovery report is part of evidence file; no separate data export
+- Duplicate-risk: GREEN — first LEDSone US evidence files; no duplicates created
+
+**Key finding:** Shopify S&D `filter_by_dynamic` block already wired in all 3 collection templates. Filter infrastructure is ready. Blocker: 38 distinct option name strings in PostgreSQL data (mirror of Shopify) suggest severe naming inconsistency — "color" concept has 9 variant names, "bulb included" concept has 12+. S&D will generate fragmented filter groups until Shopify variant option names are normalised. German-language product contamination in US store confirmed (Farbe, Schattenfarbe, Birne etc.).
+
+**Session Result: PASS**
+
+---
+
+### 2026-09-30 — LEDSone US Phase 3 Catalogue Template Implementation
+
+**What was done:** Created `templates/collection.catalogue.json` for the LEDSone US Shopify store. Reuses all existing Umino theme section types. 7 sections: heading, product grid with filter_by_dynamic, optional sub-collection (disabled), divider, description, review buttons, subscribe form. No existing templates modified. No Liquid files created. JSON validated. Static checks PASS. Live browser test pending CLI push.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| LEDSONE-US-PHASE3-CATALOGUE-TEMPLATE-2026-09-30 | Create `templates/collection.catalogue.json` — reusable catalogue template using existing Umino sections | `shopify_projects/ledsone us/templates/collection.catalogue.json` | `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` (Phase 3 section) | NOT YET — pending Piranav commit + Shopify CLI push | YES | Live browser test requires `shopify theme push` to LEDSone US store | Push via Shopify CLI → assign template to test collection in Shopify Admin → verify products/filters load → report live test results | PASS (static) / PENDING (live) |
+
+**10-Folder Asset Check:**
+- Prompt: `prompts/shopify/ledsone-us-phase3-catalogue-template.md` — CREATED
+- Evidence: `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` — Phase 3 section appended
+- Capability: N/A — template file, not a new system capability
+- Closure: this entry — DONE
+- PROMPT_REGISTER: 1 new row added — DONE
+- Validation: `validation/piranav/ledsone-us-catalogue-discovery-2026-09-30.md` — Phase 3 checklist appended
+- Source-map: N/A — no new data source
+- Docs: N/A
+- Handover: N/A
+- Reports: N/A — implementation, not a reportable data output
+- Duplicate-risk: GREEN — new template file in separate path from existing templates; existing templates untouched
+
+**Session Result: PASS (static)**
+
+---
+
+### 2026-09-30 — LEDSone US Phase 3B Architecture Correction
+
+**What was done:** Architecture assessment for one-page catalogue requirement. Discovered that `main-collection-product.liquid` and `collection.filters` are collection-page-only (not usable on page templates). Evaluated 3 options. Recommended: Collection Template + Cross-Collection Navigation Strip — keeps `collection.catalogue.json`, adds new `sections/catalogue-navigation.liquid` reading from a Shopify nav menu. Full S&D filters, sorting, infinite scroll work natively. Pending GPT Brain approval.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| LEDSONE-US-PHASE3B-ARCHITECTURE-2026-09-30 | Architecture report — one-page catalogue with collection switching | N/A — design only | `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` (Phase 3B section) | NOT YET | YES | GPT Brain approval required before implementation | GPT Brain to approve architecture → then create `sections/catalogue-navigation.liquid` + modify `collection.catalogue.json` | OPEN — awaiting GPT Brain approval |
+
+**Session Result: PASS (static) — architecture approved and implemented**
+
+---
+
+### 2026-09-30 — LEDSone US Phase 4 Catalogue Debug/Fix
+
+**What was done:** Diagnosed and fixed three root causes of broken catalogue behaviour after AJAX section injection. (1) 404: `_loadCollection` was missing `?view=catalogue` — Shopify fell back to default `collection.json` where `catalogue-product-grid` doesn't exist. (2) Filter breakage: `_patchRenderUrl` read `data-catalogue-handle` from the DOM section node, which `renderSectionFilter` replaces on every filter action — switched to `_currentHandle` closure variable. (3) Unstyled injected content: `catalogue-product-zone.liquid` was not loading `collection.css`/`product.css` — DOMParser discards `<link>` tags from the section HTML. Added stylesheet preloads to zone section.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| LEDSONE-US-CATALOGUE-DEBUG-2026-09-30 | Fix 404 + filter breakage + missing CSS on AJAX-injected catalogue section | `assets/catalogue-page.js`, `sections/catalogue-product-zone.liquid` | `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` (Phase 4 section) | NOT YET — pending Piranav commit + CLI push | YES | Live validation requires `shopify theme push` | Push via Shopify CLI → test all 13 live validation points in browser | PASS (static) |
+
+**10-Folder Asset Check:**
+- Prompt: `prompts/shopify/ledsone-us-catalogue-debug-fix.md` — CREATED
+- Evidence: `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` — Phase 4 section appended
+- Closure: this entry — DONE
+- PROMPT_REGISTER: 1 new row added — DONE
+- Validation: `validation/piranav/ledsone-us-catalogue-discovery-2026-09-30.md` — Phase 4 checklist appended
+- Capability / Source-map / Docs / Handover / Reports: N/A
+- Duplicate-risk: GREEN — modified existing files only, no new files that risk duplicate truth
+
+**Session Result: PASS (static) / LIVE PENDING CLI PUSH**
+
+---
+
+### 2026-09-30 — LEDSone US Phase 3B Catalogue Navigation Implementation
+
+**What was done:** Created `sections/catalogue-navigation.liquid` — reads `linklists['catalogue-nav']` navigation menu, renders horizontal tab strip with `bls__collection-tab-item` classes, active state from `collection.handle`, mobile horizontal scroll, XSS-safe, nil-safe. Modified `templates/collection.catalogue.json` to insert navigation section between heading and product grid. 13/13 Liquid checks pass. No existing files changed.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| LEDSONE-US-PHASE3B-IMPLEMENTATION-2026-09-30 | Create `sections/catalogue-navigation.liquid` + update `collection.catalogue.json` | `sections/catalogue-navigation.liquid`, `templates/collection.catalogue.json` | `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` (Phase 3B section) | NOT YET — pending Piranav commit + CLI push | YES | Live browser test requires CLI push + merchant creates `catalogue-nav` menu + assigns template to collections | Push via Shopify CLI → create `catalogue-nav` nav menu → assign `catalogue` template to collections → live browser test | PASS (static) |
+
+**10-Folder Asset Check:**
+- Prompt: existing `prompts/shopify/ledsone-us-phase3-catalogue-template.md` — no new prompt needed (same implementation phase)
+- Evidence: `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` — Phase 3B section appended
+- Closure: this entry — DONE
+- PROMPT_REGISTER: no new row needed (extends Phase 3 prompt)
+- Validation: `validation/piranav/ledsone-us-catalogue-discovery-2026-09-30.md` — Phase 3B checklist appended
+- Capability / Source-map / Docs / Handover / Reports: N/A
+- Duplicate-risk: GREEN — new section file, no existing file duplicated
+
+**Session Result: PASS (static)**
+
+---
+
+### 2026-09-30 — LEDSone US Phase 2A Normalization Discovery
+
+**What was done:** Full PostgreSQL-based normalization mapping for all 38 variant option name strings across 316 US parent products. Canonical vocabulary confirmed: Colour / Bulb Included / Pack Quantity / Cable Length. 29 high-confidence renames identified. 6 STOP conditions flagged for GPT Brain decision. Full normalization mapping report produced.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| LEDSONE-US-PHASE2A-NORMALIZATION-2026-09-30 | Full normalization mapping for all 38 variant option name strings — canonical vocabulary, confidence ratings, STOP conditions | `prompts/shopify/ledsone-us-phase2a-normalization-discovery.md` | `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` (Phase C section) | NOT YET — pending Piranav commit instruction | YES | GPT Brain decisions required on STOP conditions before Phase 2B | GPT Brain to approve canonical concepts + decisions → then Phase 2B change plan | PASS |
+
+**10-Folder Asset Check:**
+- Prompt: `prompts/shopify/ledsone-us-phase2a-normalization-discovery.md` — CREATED
+- Evidence: `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` — Phase C section appended
+- Capability: N/A — discovery phase only
+- Closure: this entry — DONE
+- PROMPT_REGISTER: 1 new row added — DONE
+- Validation: `validation/piranav/ledsone-us-catalogue-discovery-2026-09-30.md` — Phase 2A checklist appended
+- Reports: `reports/ledsone-us-phase2a-normalization-mapping-2026-09-30.md` — CREATED
+- Duplicate-risk: GREEN
+
+**Session Result: PASS**
+
+---
+
+### 2026-09-30 — LEDSone US Phase 2B Shopify Admin Change Plan
+
+**What was done:** Product-by-product Shopify Admin change plan generated from PostgreSQL data. All approved canonical concepts applied. ~165 unique products assigned to Section A (safe renames), B (value normalization), C (context-split), D (excluded), E (high-risk). Full execution guide written. NO Shopify changes performed.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| LEDSONE-US-PHASE2B-CHANGEPLAN-2026-09-30 | Manual Shopify Admin change plan — product-by-product rename table, value normalization, excluded products, execution guide | `prompts/shopify/ledsone-us-phase2b-shopify-change-plan.md` | `reports/ledsone-us-phase2b-shopify-change-plan-2026-09-30.md` | NOT YET — pending Piranav commit instruction | YES | None — plan complete, ready for Piranav to execute in Shopify Admin | Execute Section A renames in Shopify Admin (drafts first, then active) → verify S&D filter groups → Phase 3: create catalogue template | PASS |
+
+**10-Folder Asset Check:**
+- Prompt: `prompts/shopify/ledsone-us-phase2b-shopify-change-plan.md` — CREATED
+- Evidence: `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` — Phase 2B section appended
+- Reports: `reports/ledsone-us-phase2b-shopify-change-plan-2026-09-30.md` — CREATED
+- Validation: `validation/piranav/ledsone-us-catalogue-discovery-2026-09-30.md` — Phase 2B checklist appended
+- PROMPT_REGISTER: 1 new row added — DONE
+- Closure: this entry — DONE
+- Capability / Source-map / Docs / Handover: N/A
+- Duplicate-risk: GREEN — new named report, no duplicate
+
+**Session Result: PASS**
+
+---
+
+### 2026-09-30 — LEDSone US Catalogue AJAX Fix (Phase 4C Debug + Deploy-Ready)
+
+**What was done:** Full theme inspection using exported theme `ledsone-us-umino-2-8-0__30SEP2026-0213am`. Identified 3 root causes of catalogue 404/broken-UI bug. Confirmed the local repo already has the correct fix in `catalogue-page.js`. Fixed 1 remaining error in local repo (`catalogue-navigation.liquid` wrong menu handle). All 3 files verified and ready for `shopify theme push`.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| LEDSONE-US-CATALOGUE-FIX-2026-09-30 | Fix LEDSone US catalogue AJAX 404s — root cause: `renderUrl` patch read DOM attribute destroyed by `renderSectionFilter`. Fix: use `_currentHandle` closure var. Also fixed wrong nav menu handle (`catalogue-nav` → `catalogue-navigation`) and verified CSS preloads in zone section. | `shopify_projects/ledsone us/assets/catalogue-page.js`, `sections/catalogue-navigation.liquid`, `sections/catalogue-product-zone.liquid` | `evidence/shopify/ledsone-us/2026-09-30-catalogue-ajax-fix.md` | NOT YET — pending Piranav commit + Shopify CLI push | YES | None — all files verified, ready to push | Commit → push to GitHub → `shopify theme push --only assets/catalogue-page.js sections/catalogue-navigation.liquid sections/catalogue-product-zone.liquid` from `shopify_projects/ledsone us/` | PASS |
+
+**10-Folder Asset Check:**
+- Prompt: `prompts/shopify/ledsone-us-catalogue-debug-fix.md` — REUSED (already complete, no update needed)
+- Evidence: `evidence/shopify/ledsone-us/2026-09-30-catalogue-ajax-fix.md` — CREATED
+- Capability: N/A — fix, not new capability
+- Closure: this entry — DONE
+- PROMPT_REGISTER: Row 39 already exists (`ledsone-us-catalogue-debug-fix`) — no new row needed
+- Validation: `validation/piranav/ledsone-us-catalogue-ajax-fix-2026-09-30.md` — CREATED
+- Source-map: N/A — no new data source
+- Docs / Handover / Reports: N/A — fix session
+- Duplicate-risk: GREEN — `catalogue-ajax-fix` filename distinct from `catalogue-discovery`
+
+**Session Result: PASS (pre-deploy)**

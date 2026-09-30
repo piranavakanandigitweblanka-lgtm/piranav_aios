@@ -1,0 +1,172 @@
+{%- liquid
+  assign catalogue_nav = linklists['catalogue-navigation']
+  assign st = section.settings
+  assign reset_spacing = ''
+  if st.reset_spacing
+    assign reset_spacing = ' remove_spacing'
+  endif
+-%}
+
+{%- if catalogue_nav != blank and catalogue_nav.links.size > 0 -%}
+
+<style>
+  #catalogue-nav-{{ section.id }} {
+    padding-top: {{ st.padding_top }}px;
+    padding-bottom: {{ st.padding_bottom }}px;
+  }
+  #catalogue-nav-{{ section.id }} .catalogue-nav__track {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 4px;
+  }
+  #catalogue-nav-{{ section.id }} .catalogue-nav__track::-webkit-scrollbar {
+    display: none;
+  }
+  #catalogue-nav-{{ section.id }} .catalogue-nav__item {
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 20px;
+    position: relative;
+  }
+  #catalogue-nav-{{ section.id }} .catalogue-nav__item span {
+    position: relative;
+  }
+</style>
+
+<div
+  class="catalogue-nav bls__section color-{{ st.color_scheme }} gradient{{ reset_spacing }}"
+  id="catalogue-nav-{{ section.id }}"
+  data-section-id="{{ section.id }}"
+>
+  <div class="{{ st.container }} section-full">
+    <nav
+      class="catalogue-nav__track bls__collection-tab bls__section-header tab-header tab-desgin-{{ st.tab_style }}"
+      aria-label="Browse catalogue collections"
+    >
+      {%- for link in catalogue_nav.links -%}
+        {%- liquid
+          assign link_handle = link.url | split: '/collections/' | last | split: '?' | first | split: '/' | first
+          assign is_active = false
+          if collection != blank and collection.handle == link_handle
+            assign is_active = true
+          endif
+        -%}
+        <a
+          href="{{ link.url }}"
+          class="catalogue-nav__item bls__section-heading bls__collection-tab-item px-25{% if is_active %} active{% endif %}"
+          data-catalogue-handle="{{ link_handle }}"
+          {% if is_active %}aria-current="page"{% endif %}
+        >
+          <span>{{ link.title | escape }}</span>
+        </a>
+      {%- endfor -%}
+    </nav>
+  </div>
+</div>
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Catalogue Navigation",
+  "tag": "div",
+  "class": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "container",
+      "label": "Layout",
+      "default": "container",
+      "options": [
+        {
+          "value": "container",
+          "label": "Container"
+        },
+        {
+          "value": "container-fluid",
+          "label": "Container fluid"
+        },
+        {
+          "value": "strecth-width",
+          "label": "Stretch width"
+        },
+        {
+          "value": "full-width",
+          "label": "Full width"
+        }
+      ]
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme"
+    },
+    {
+      "type": "select",
+      "id": "tab_style",
+      "label": "Tab style",
+      "default": "1",
+      "info": "Matches the existing collection tab design styles",
+      "options": [
+        {
+          "value": "1",
+          "label": "Style 1"
+        },
+        {
+          "value": "2",
+          "label": "Style 2"
+        },
+        {
+          "value": "3",
+          "label": "Style 3"
+        },
+        {
+          "value": "4",
+          "label": "Style 4"
+        },
+        {
+          "value": "5",
+          "label": "Style 5"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "default": 12,
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "default": 12,
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "reset_spacing",
+      "label": "Remove top/bottom spacing",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Catalogue Navigation"
+    }
+  ]
+}
+{% endschema %}

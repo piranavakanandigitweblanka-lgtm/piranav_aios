@@ -1,0 +1,38 @@
+{{ 'collection.css' | asset_url | stylesheet_tag }}
+{{ 'product.css' | asset_url | stylesheet_tag }}
+{{ 'catalogue-page.js' | asset_url | script_tag }}
+
+<div
+  id="catalogue-product-zone"
+  class="catalogue-product-zone"
+  data-section-id="{{ section.id }}"
+  aria-live="polite"
+  aria-busy="false"
+>
+  <div class="catalogue-product-zone__loading" id="catalogue-loading-state" aria-hidden="true">
+    <span class="loader-icon"></span>
+  </div>
+</div>
+
+<style>
+  .catalogue-product-zone { min-height: 400px; position: relative; }
+  .catalogue-product-zone__loading {
+    display: none;
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.7);
+    z-index: 10;
+  }
+  .catalogue-product-zone.is-loading .catalogue-product-zone__loading { display: flex; }
+</style>
+
+{% schema %}
+{
+  "name": "Catalogue Product Zone",
+  "tag": "div",
+  "class": "section",
+  "settings": []
+}
+{% endschema %}

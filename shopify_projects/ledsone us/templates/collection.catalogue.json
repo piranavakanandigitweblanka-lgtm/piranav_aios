@@ -1,0 +1,170 @@
+{
+  "sections": {
+    "catalogue-heading": {
+      "type": "main-collection-heading",
+      "blocks": {
+        "catalogue-heading-title": {
+          "type": "1",
+          "settings": {
+            "text_fs": 40
+          }
+        }
+      },
+      "block_order": ["catalogue-heading-title"],
+      "settings": {
+        "container": "container",
+        "color_scheme": "scheme-d127e173-a562-42f4-a41e-3483b672d918",
+        "show_banner": false,
+        "use_collection_image": false,
+        "min_height": 200,
+        "parallax": false,
+        "show_overlay": false,
+        "overlay": 0,
+        "design": "text-overlay-image",
+        "text_postion": "text-center"
+      }
+    },
+    "catalogue-nav": {
+      "type": "catalogue-navigation",
+      "settings": {
+        "container": "container",
+        "color_scheme": "",
+        "tab_style": "1",
+        "padding_top": 12,
+        "padding_bottom": 12,
+        "reset_spacing": false
+      }
+    },
+    "catalogue-product-grid": {
+      "type": "main-collection-product",
+      "blocks": {
+        "catalogue-filter-dynamic": {
+          "type": "filter_by_dynamic",
+          "settings": {}
+        }
+      },
+      "block_order": ["catalogue-filter-dynamic"],
+      "settings": {
+        "container": "container-fluid",
+        "enable_list_view": false,
+        "products_column": 4,
+        "number_products_grid": 24,
+        "number_products_list": 4,
+        "pagination": "infinit_scrolling",
+        "product_page_count": true,
+        "product_sort_options": true,
+        "progress_bar": true,
+        "enable_sidebar": true,
+        "sidebar_position": "dropdonw_sidebar",
+        "show_count": true
+      }
+    },
+    "catalogue-sub-collection": {
+      "type": "sub-collection",
+      "disabled": true,
+      "settings": {
+        "heading": "",
+        "description": "",
+        "text_alignment": "text-center",
+        "container": "container",
+        "color_scheme": "",
+        "design_layout": "carousel",
+        "design_collection": "design-1",
+        "hover_effect": "zoom",
+        "show_count_product": true,
+        "hide_image_collection": false,
+        "collection_center": false,
+        "custom_width_images": false,
+        "width_image": 200,
+        "images_style": "square",
+        "image_ratio": "3\/4",
+        "custom_ratio": "21:9",
+        "custom_column": 6,
+        "column_gap": 30,
+        "collection_font_size": 16,
+        "collection_font_weight": 500,
+        "collection_spacing": 0,
+        "count_font_size": 14,
+        "count_font_weight": 400,
+        "autoplay": false,
+        "loop": false,
+        "show_arrow": false,
+        "carousel_pagination": "carousel_none",
+        "reveal_on_scroll": false,
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "reset_spacing": false
+      }
+    },
+    "catalogue-divider": {
+      "type": "divider",
+      "settings": {
+        "container": "container",
+        "border_height": 1,
+        "border_color": "#ebebeb",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "reset_spacing": false
+      }
+    },
+    "catalogue-description": {
+      "type": "custom-liquid",
+      "settings": {
+        "heading_logo_svg": "",
+        "subheading": "",
+        "heading": "",
+        "description": "",
+        "text_alignment": "text-center",
+        "container": "container",
+        "color_scheme": "",
+        "content_liquid": "{% if collection.description != blank %}\n<hr>\n<div class=\"top-picks-section\">\n      <div class=\"collection-description grid__item rte\">\n        {{ collection.description }}\n      <\/div>\n    {% endif %}",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "reset_spacing": false
+      }
+    },
+    "catalogue-reviews": {
+      "type": "custom-html",
+      "settings": {
+        "heading_logo_svg": "",
+        "subheading": "",
+        "heading": "",
+        "description": "",
+        "text_alignment": "text-center",
+        "container": "container",
+        "color_scheme": "",
+        "content_html": "<div class=\"review-section-wrapper\" style=\"padding: 20px; background-color: #f8f9fc;\">\n\n  <style>\n    .review-section {\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      gap: 25px;\n      flex-wrap: wrap;\n      max-width: 100%;\n      text-align: center;\n    }\n\n    @media (max-width: 600px) {\n      .review-section {\n        flex-direction: column;\n        gap: 15px;\n      }\n\n      .google-review-button,\n      .trustpilot-clean-button {\n        width: 100%;\n        justify-content: center;\n      }\n    }\n\n    .review-button {\n      display: inline-flex;\n      align-items: center;\n      padding: 8px 16px;\n      border-radius: 4px;\n      background-color: #ffffff;\n      color: black;\n      font-size: 15px;\n      font-weight: 500;\n      text-decoration: none;\n      cursor: pointer;\n      box-shadow: none;\n      border: 1px solid #00B67A;\n    }\n\n    .review-button:hover {\n      background-color: #ffffff;\n      border-color: #00B67A;\n      color: black;\n    }\n\n    .google-review-button img,\n    .trustpilot-star {\n      width: 18px;\n      height: 18px;\n      margin-right: 5px;\n      border-radius: 5px;\n    }\n\n    .google-star {\n      fill: #FFC300;\n      width: 24px;\n      height: 24px;\n    }\n\n    .trustpilot-star {\n      fill: #00B67A;\n    }\n  <\/style>\n\n  <div class=\"review-section\">\n    <a href=\"https:\/\/g.page\/r\/CVf461BWK9CjEAI\/review\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"review-button google-review-button\">\n      <img src=\"https:\/\/cdn.shopify.com\/s\/files\/1\/0250\/4094\/5248\/files\/google_logo.png?v=1732103956\" alt=\"Google G icon\">\n      Google Review\n      <svg class=\"google-star\" xmlns=\"http:\/\/www.w3.org\/2000\/svg\" viewbox=\"0 0 24 24\">\n        <path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"><\/path>\n      <\/svg>\n    <\/a>\n\n    <a href=\"https:\/\/uk.trustpilot.com\/review\/ledsone.co.uk\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"review-button trustpilot-clean-button\">\n      Review us on\n      <svg class=\"trustpilot-star\" xmlns=\"http:\/\/www.w3.org\/2000\/svg\" viewbox=\"0 0 24 24\">\n        <path d=\"M12 .587l3.668 7.431L24 9.748l-6 5.847 1.416 8.261L12 19.896l-7.416 3.96L6 15.595 0 9.748l8.332-1.73z\"><\/path>\n      <\/svg>\n      <strong>Trustpilot<\/strong>\n    <\/a>\n  <\/div>\n<\/div>",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "reset_spacing": false
+      }
+    },
+    "catalogue-subscribe": {
+      "type": "subscribe-form",
+      "settings": {
+        "heading_logo_svg": "",
+        "heading": "Sign up now & get 10% off",
+        "description": "<p>Be the first to get the latest news about trends, promotions, and much more!<\/p>",
+        "text_alignment": "text-center",
+        "container": "container",
+        "color_scheme": "",
+        "email_placeholder": "Your email address...",
+        "btn_text": "Subscribe",
+        "form_layout": "vertical",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "reset_spacing": false
+      }
+    }
+  },
+  "order": [
+    "catalogue-heading",
+    "catalogue-nav",
+    "catalogue-product-grid",
+    "catalogue-sub-collection",
+    "catalogue-divider",
+    "catalogue-description",
+    "catalogue-reviews",
+    "catalogue-subscribe"
+  ]
+}

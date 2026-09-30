@@ -1,0 +1,38 @@
+{
+  "sections": {
+    "catalogue-page-heading": {
+      "type": "page-heading",
+      "settings": {
+        "container": "container",
+        "color_scheme": "scheme-d127e173-a562-42f4-a41e-3483b672d918",
+        "show_banner": false,
+        "min_height": 80,
+        "parallax": false,
+        "show_overlay": false,
+        "overlay": 0,
+        "design": "text-overlay-image",
+        "text_postion": "text-center"
+      }
+    },
+    "catalogue-nav": {
+      "type": "catalogue-navigation",
+      "settings": {
+        "container": "container",
+        "color_scheme": "",
+        "tab_style": "1",
+        "padding_top": 12,
+        "padding_bottom": 12,
+        "reset_spacing": false
+      }
+    },
+    "catalogue-zone": {
+      "type": "catalogue-product-zone",
+      "settings": {}
+    }
+  },
+  "order": [
+    "catalogue-page-heading",
+    "catalogue-nav",
+    "catalogue-zone"
+  ]
+}
