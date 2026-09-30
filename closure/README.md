@@ -1358,3 +1358,26 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 - Duplicate-risk: GREEN — `catalogue-ajax-fix` filename distinct from `catalogue-discovery`
 
 **Session Result: PASS (pre-deploy)**
+
+---
+
+### 2026-09-30 — E27/B22 Collection Cleanup — Evidence Doc
+
+**What was done:** Built ordered Word evidence document for the E27/B22 collection cleanup task completed in Shopify. Read all 40 screenshots from `C:\Users\PC\Downloads\clean up\`, mapped each to the correct step from the GPT coordinator chat, and produced a single ordered Word doc covering: Section A (collection verification), Section B (tag backup with Google Doc link), Section C (6 confirmed changes + Change 4 skipped), Section D (post-change verification). Deleted 2 old/wrong doc versions.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SHOPIFY-CLEANUP-E27-B22-2026-09-30 | E27/B22 collection cleanup — build ordered Word evidence doc with all 40 screenshots mapped to correct steps from GPT chat | `evidence/shopify/collection-cleanup-e27-b22-2026-09-30.docx` | Same file — self-evidencing Word doc with embedded screenshots | Pending commit | YES | Change 4 (Vintage Amber B22~1045) still pending warehouse confirmation before tag change | Confirm with warehouse re SKU LDST185E274, then remove E27 tags from ~1045 | PASS |
+
+**10-Folder Asset Check:**
+- Prompt: N/A — documentation task, no new reusable prompt. Skip noted.
+- Evidence: `evidence/shopify/collection-cleanup-e27-b22-2026-09-30.docx` — CREATED (40 screenshots, ordered, Google Doc backup linked)
+- Capability: N/A — documentation session
+- Closure: this entry — DONE
+- PROMPT_REGISTER: N/A — no new prompt this session
+- Validation: N/A — doc build session, no code change to validate
+- Source-map: N/A — no new data source
+- Docs / Handover / Reports: N/A
+- Duplicate-risk: GREEN — deleted 2 old duplicate docs, only 1 final doc remains
+
+**Session Result: PASS**
