@@ -59,4 +59,16 @@ Response: `{ success, generatedAt, period, months, store, collections: [{ handle
 - `localStorage.getItem('dm_token')` for auth header
 
 ## Expected Output
-Page shows collection tabs (e.g. "Conduit Accessories (183)"), each tab has product blocks with SKU table (columns: SKU, Title, Apr, May, Jun, Jul, Aug, Sep, Total), plus a product-level total row.
+Page shows collection tabs (e.g. "Conduit Accessories (183 / £2,450.00)"), each tab has product blocks with SKU table (columns: SKU, Title, Apr–Sep [units + revenue per month], Total), plus a product-level total row and a Total Revenue summary card. Export CSV button exports the current collection.
+
+## Revenue Definition (established 2026-10-01)
+**Field**: `lineItem.originalTotalSet.shopMoney.amount`
+**Meaning**: Quantity × original unit price, pre-discount, GBP. Same as `admin_sku_audit.py`.
+**Rule**: Applied on same non-VOIDED orders as units. Discounts not subtracted (gross revenue).
+
+## CSV Export
+- Client-side generation from API response data
+- Columns: Collection, Product ID, SKU, Title, Row Type, [Apr–Sep Units + Revenue] × 6, Total Units, Total Revenue (GBP)
+- One row per SKU (row_type=sku) + product total row (row_type=product_total)
+- Filename: `{collection-handle}-sold-apr-sep-2026.csv`
+- UTF-8 BOM for Excel compatibility

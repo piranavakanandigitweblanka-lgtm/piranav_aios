@@ -1405,3 +1405,25 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 - Duplicate-risk: GREEN — no duplicate. Only new files created.
 
 **Session Result: PASS**
+
+---
+
+### 2026-10-01 — DM Dashboard Conduit Sold Phase 1.1 — Revenue + CSV Export
+
+**What was done:** Extended existing Conduit Sold page to add revenue per SKU/product/collection + CSV export. Revenue definition: `originalTotalSet.shopMoney.amount` per line item (qty × original unit price, pre-discount, GBP) — same as `admin_sku_audit.py`. Added to ORDERS_QUERY, parsed in `_fetch_uk_orders_in_range()`, aggregated in `_build_report()`. Response shape v2 (cache auto-invalidates v1 via `_CACHE_VERSION=2`). Frontend: MonthCell shows units+rev, product total row shows rev, 4th summary card "Total Revenue", collection tab shows revenue, Export CSV button downloads current collection.
+
+| Req ID | Task | Asset Path | Evidence Path | Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-CONDUIT-SOLD-2026-10-01-P1.1 | Add revenue (originalTotalSet.shopMoney.amount) and CSV export to Conduit Sold page | dm-dashboard/backend/app/admin_conduit_sold.py + dm-dashboard/frontend/src/admin/pages/ConduitSold.jsx | evidence/dm-dashboard/conduit-sold-phase1-2026-10-01.md (Phase 1.1 section) | Pending commit (piranv-work, dm-dashboard repo) | YES | None | Restart backend, click Refresh (live), verify revenue values non-zero for known conduit SKUs, test CSV export in Excel. | PASS (code) — live data test pending |
+
+**10-Folder Asset Check:**
+- Prompt: prompts/dm-dashboard/conduit-sold-history-phase1.md — UPDATED (revenue definition + CSV columns added)
+- Evidence: evidence/dm-dashboard/conduit-sold-phase1-2026-10-01.md — UPDATED (Phase 1.1 section added)
+- Capability: N/A — enhancement to existing page, not new system capability
+- Closure: this entry — DONE
+- PROMPT_REGISTER: Existing conduit-sold-history-phase1 row — update pending
+- Validation: validation/piranav/conduit-sold-phase1-validation-2026-10-01.md — UPDATED (Phase 1.1 checks added)
+- Source-map/Docs/Handover/Reports: N/A
+- Duplicate-risk: GREEN — extended existing files, no new duplicates
+
+**Session Result: PASS (code verified) — live revenue data test required after backend restart**

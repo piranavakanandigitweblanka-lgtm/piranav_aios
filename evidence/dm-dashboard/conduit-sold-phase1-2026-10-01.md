@@ -116,3 +116,45 @@ Uses existing `shopify_client.graphql("ledsone_uk", ...)` — no new client crea
 2. Phase 1 scope: Apr-Sep 2026 only. Future months require code update or dynamic date range.
 3. `conduit-pipe` and `conduit-lighting-accessories` collections exist but are NOT included (not in scope per task).
 4. Products in multiple conduit collections appear in each collection's tab separately (correct behavior — same product can be sold under different collection contexts).
+
+---
+
+## Phase 1.1 Enhancement — Revenue + CSV Export (2026-10-01)
+
+### Revenue Definition
+**Field**: `lineItem.originalTotalSet.shopMoney.amount`
+**Meaning**: Quantity × original unit price, pre-discount, GBP
+**Precedent**: Same field used by `admin_sku_audit.py` — the established dashboard convention
+**Scope**: Gross revenue on non-VOIDED orders (same order filter as units)
+
+### Backend Changes
+- `ORDERS_QUERY` — added `originalTotalSet { shopMoney { amount } }` to line item fields
+- `_fetch_uk_orders_in_range()` — parses revenue from each line item
+- `_build_report()` — tracks `{"qty": int, "rev": float}` per bucket instead of just qty
+- Response now includes per-SKU: `monthly_rev`, `total_rev`
+- Response now includes per-product: `monthly_rev_totals`, `total_rev`
+- Response now includes per-collection: `grand_revenue`
+- `_CACHE_VERSION = 2` — auto-invalidates in-process cache from v1 (units-only)
+- `meta.revenueDefinition` field added to API response
+
+### Frontend Changes
+- `MonthCell` — now shows units + revenue (two lines per cell)
+- Table headers — show "Units / Rev" sub-label per month column
+- SKU rows — monthly_rev + total_rev rendered
+- Product TOTAL row — monthly_rev_totals + total_rev rendered
+- Summary cards — added `Total Revenue` card (4th card)
+- Collection tabs — now show `(units / £revenue)` in label
+- Export CSV button — appears next to Refresh, green style
+- `exportCSV()` function — client-side CSV generation, selected collection only
+
+### CSV Format
+- UTF-8 BOM for Excel compatibility
+- Columns: Collection, Product ID, SKU, Title, Row Type, [Apr–Sep Units + Revenue] × 6, Total Units, Total Revenue (GBP)
+- One row per SKU (row_type=sku) + one product total row per product (row_type=product_total)
+- Filename: `{collection-handle}-sold-apr-sep-2026.csv`
+- Revenue as numeric GBP decimal (e.g., `125.00`)
+
+### Consistency Check
+- Same Shopify order dataset → units + revenue → SKU → product totals → collection totals → UI + CSV
+- No second Shopify API call; no second aggregation path
+- Cache invalidated on version bump (v1→v2)

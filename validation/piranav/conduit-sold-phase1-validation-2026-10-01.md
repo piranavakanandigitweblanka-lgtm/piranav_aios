@@ -48,4 +48,50 @@
 - Modified: 2 existing files
 - Total change footprint: minimal
 
-## Status: PASS
+---
+
+## Phase 1.1 — Revenue + CSV (2026-10-01)
+
+### Revenue Checks (pending live data test — requires backend restart + ?refresh=1)
+| Check | Result |
+|---|---|
+| `originalTotalSet.shopMoney.amount` field added to ORDERS_QUERY | ✅ Code verified |
+| Revenue parsed per line item in `_fetch_uk_orders_in_range()` | ✅ Code verified |
+| `_build_report()` aggregates revenue alongside qty | ✅ Code verified |
+| Per-SKU `monthly_rev` + `total_rev` in API response | ✅ Code verified |
+| Per-product `monthly_rev_totals` + `total_rev` in API response | ✅ Code verified |
+| Per-collection `grand_revenue` in API response | ✅ Code verified |
+| Cache version bumped to v2 — v1 (units-only) cache auto-invalidated | ✅ Code verified |
+| Revenue definition matches `admin_sku_audit.py` convention | ✅ Same field: `originalTotalSet.shopMoney.amount` |
+
+### CSV Export Checks (pending live data test)
+| Check | Result |
+|---|---|
+| Export CSV button renders in header area | ✅ Code verified |
+| Exports currently selected collection only | ✅ Uses `coll` (activeTab) |
+| Columns: Collection, Product ID, SKU, Title, Row Type, [6×Units+Rev], Total Units, Total Rev | ✅ Code verified |
+| SKU rows (row_type=sku) | ✅ Code verified |
+| Product total rows (row_type=product_total) | ✅ Code verified |
+| Revenue as numeric GBP decimal | ✅ `.toFixed(2)` |
+| UTF-8 BOM for Excel | ✅ `'﻿'` prepended |
+| Filename: `{handle}-sold-apr-sep-2026.csv` | ✅ Code verified |
+| No credentials in CSV | ✅ Only order aggregates, no tokens |
+
+### UI Checks (pending live data test)
+| Check | Result |
+|---|---|
+| MonthCell shows units + revenue (two lines) | ✅ Code verified |
+| Table header shows "Units / Rev" sub-label | ✅ Code verified |
+| Product TOTAL row shows monthly_rev_totals + total_rev | ✅ Code verified |
+| Total Revenue summary card added (4th card) | ✅ Code verified |
+| Collection tab label shows units + revenue | ✅ Code verified |
+| Existing cards (Total Products, Products with Sales, Total Units) unchanged | ✅ Verified |
+
+### Live Data Test Required
+- Requires backend restart (to load new ORDERS_QUERY with revenue field)
+- First load after restart will fetch fresh data with ?refresh=1 or wait for cache expiry
+- Verify: SKU monthly_rev values are non-zero for known Conduit SKUs
+- Verify: product total_rev = sum of SKU total_revs
+- Verify: collection grand_revenue = sum of product total_revs
+
+## Status: PASS (code) — PENDING live data confirmation
