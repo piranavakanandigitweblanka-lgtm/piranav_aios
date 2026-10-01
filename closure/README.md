@@ -1381,3 +1381,27 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 - Duplicate-risk: GREEN — deleted 2 old duplicate docs, only 1 final doc remains
 
 **Session Result: PASS**
+
+
+---
+
+### 2026-10-01 — DM Dashboard Conduit Sold History Phase 1
+
+**What was done:** Built new Admin-only dm-dashboard page "Conduit Sold" showing Shopify UK units sold per collection → product ID → SKU → monthly for Apr–Sep 2026. Discovery confirmed: business DB order_item_info.product_id is NULL for UK orders (must use Shopify API). Collection membership from business DB listings.shopify_collections + shopify_collection_products. Reused shopify_client.graphql, verify_admin_token, get_business_conn, cache pattern. Created 2 files, modified 2 files. End-to-end validated with real Shopify API data.
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-CONDUIT-SOLD-2026-10-01-P1 | Build Admin-only Conduit Sold page — 4 conduit collections, Apr-Sep 2026, Shopify UK API + business DB collections | dm-dashboard/backend/app/admin_conduit_sold.py + dm-dashboard/frontend/src/admin/pages/ConduitSold.jsx | evidence/dm-dashboard/conduit-sold-phase1-2026-10-01.md | Pending commit (piranv-work, dm-dashboard repo) | YES | First load ~1-3 min (250+ Shopify pages). Local app DB offline during testing — expected. | Start backend, load page as admin, verify data. Commit to piranv-work. | PASS |
+
+**10-Folder Asset Check:**
+- Prompt: prompts/dm-dashboard/conduit-sold-history-phase1.md — CREATED
+- Evidence: evidence/dm-dashboard/conduit-sold-phase1-2026-10-01.md — CREATED
+- Capability: N/A — new report page, not a new distinct system capability
+- Closure: this entry — DONE
+- PROMPT_REGISTER: Row added for conduit-sold-history-phase1 — DONE
+- Validation: validation/piranav/conduit-sold-phase1-validation-2026-10-01.md — CREATED
+- Source-map: N/A — no new data source (uses existing Shopify UK + business DB listings tables)
+- Docs/Handover/Reports: N/A
+- Duplicate-risk: GREEN — no duplicate. Only new files created.
+
+**Session Result: PASS**

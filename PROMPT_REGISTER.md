@@ -36,6 +36,11 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 
 | Date | Pattern Name | Category | Template File | Source Session | Status |
 |---|---|---|---|---|---|
+| 2026-10-01 | `conduit-sold-history-phase1` | implementation | `prompts/dm-dashboard/conduit-sold-history-phase1.md` | `closure/README.md — 2026-10-01 Conduit Sold Phase 1` | ACTIVE — 2 files created, 2 modified. Admin page: /api/admin/conduit-sold, 4 collections, Apr-Sep 2026 via Shopify UK API. |
+| 2026-09-30 | `ledsone-us-catalogue-debug-fix` | implementation | `prompts/shopify/ledsone-us-catalogue-debug-fix.md` | `closure/README.md — 2026-09-30 LEDSone US Phase 4 Debug` | ACTIVE — 3 root causes fixed: ?view=catalogue missing (404), DOM attr lost after renderSectionFilter replaces section (filter break), CSS not preloaded (unstyled inject). |
+| 2026-09-30 | `ledsone-us-phase3-catalogue-template` | implementation | `prompts/shopify/ledsone-us-phase3-catalogue-template.md` | `closure/README.md — 2026-09-30 LEDSone US Phase 3` | ACTIVE — template created: `shopify_projects/ledsone us/templates/collection.catalogue.json`. 7 sections, filter_by_dynamic active, no hardcoded data. |
+| 2026-09-30 | `ledsone-us-phase2b-shopify-change-plan` | discovery | `prompts/shopify/ledsone-us-phase2b-shopify-change-plan.md` | `closure/README.md — 2026-09-30 LEDSone US Phase 2B` | ACTIVE — change plan complete: ~165 products across Sections A–E. Report: `reports/ledsone-us-phase2b-shopify-change-plan-2026-09-30.md` |
+| 2026-09-30 | `germany-report7-wlg-date-filter` | implementation | `prompts/implementation/germany-report7-wlg-date-filter.md` | `closure/README.md — 2026-09-30` | ACTIVE |
 | 2026-06-09 | `shopify-section-code-review` | discovery | `prompts/discovery/shopify-liquid-section-code-review.md` | `closure/sessions/2026-06-09.md` | ACTIVE |
 | 2026-06-09 | `shopify-css-render-block-fix` | implementation | `prompts/implementation/shopify-css-render-blocking-fix.md` | `closure/sessions/2026-06-09.md` | ACTIVE |
 | 2026-06-12 | `coupon-card-row-widget` | implementation | PENDING | `closure/sessions/2026-06-12.md` | PENDING |
@@ -75,6 +80,7 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-09-25 | `sajeepan-nonsale-product-scope-discovery` | discovery | `prompts/sajeepan/nonsale-product-scope-discovery.md` | `evidence/sajeepan/sajeepan-nonsale-product-scope-discovery-2026-09-25.md` | ACTIVE — discovery complete: 2,118 Ads products, 716 non-sale, 1,402 sale. Signal: shopify_listings.compare_price |
 | 2026-09-18 | `gsc-live-sync-build` | implementation | `prompts/implementation/gsc-live-sync-build.md` | `closure/README.md — 2026-09-18` | ACTIVE |
 | 2026-09-21 | `semrush-organic-snapshot-neon-daily` | implementation | `prompts/implementation/semrush-organic-snapshot-neon-daily.md` | `closure/README.md — 2026-09-21 SEMrush Snapshot` | ACTIVE |
+| 2026-09-28 | `energy-label-modal-responsive-fix` | implementation | `prompts/shopify/energy-label-modal-responsive-fix.md` | `closure/README.md — 2026-09-28 ledsone_de Energy Label` | ACTIVE |
 | 2026-06-16 | `shopify-lighthouse-accessibility-fix` | implementation | `prompts/implementation/shopify-lighthouse-accessibility-fix.md` | `closure/sessions/2026-06-16.md` | ACTIVE |
 | 2026-06-17 | `lighthouse-menu-banner-link-discernible-text-fix` | implementation | `prompts/implementation/shopify-lighthouse-accessibility-fix.md` | `closure/sessions/2026-06-17.md` | ACTIVE — covered by lighthouse-accessibility-fix template |
 | 2026-06-17 | `inp-eval-in-scroll-path` | discovery | PENDING | `closure/sessions/2026-06-17.md` | PENDING |
@@ -105,6 +111,9 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-07-01 | `shopify-pdp-gallery-nav-fix` | implementation | `prompts/implementation/shopify-pdp-gallery-nav-fix.md` | `evidence/shopify/electricalsone/pdp-gallery-nav/2026-07-01_pdp_gallery_nav_closure.md` | ACTIVE |
 | 2026-07-01 | `aios-closure-evidence-template` | documentation | `prompts/documentation/aios-closure-evidence-template.md` | _(standing template — applies to all future closure tasks)_ | ACTIVE |
 | 2026-09-23 | `aios-reference-folder-import` | documentation | `prompts/documentation/aios-reference-folder-import.md` | `closure/README.md` — 2026-09-23 GSC import session | ACTIVE |
+| 2026-09-30 | `ledsone-us-theme-discovery` | discovery | `prompts/shopify/ledsone-us-theme-discovery.md` | `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` | ACTIVE |
+| 2026-09-30 | `ledsone-us-product-variant-data-discovery` | discovery | `prompts/shopify/ledsone-us-product-variant-data-discovery.md` | `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` | ACTIVE |
+| 2026-09-30 | `ledsone-us-phase2a-normalization-discovery` | discovery | `prompts/shopify/ledsone-us-phase2a-normalization-discovery.md` | `reports/ledsone-us-phase2a-normalization-mapping-2026-09-30.md` | ACTIVE |
 
 ---
 
