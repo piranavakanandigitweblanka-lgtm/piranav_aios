@@ -1515,3 +1515,33 @@ Key decisions:
 - Duplicate-risk: GREEN — new files, no existing Phase 2B files
 
 **Session Result: PASS — BACKEND COMPLETE / FRONTEND NOT STARTED / READY FOR FRONTEND DESIGN**
+
+---
+
+### 2026-10-02 — DM Dashboard Conduit Sold Phase 2C — Frontend Implementation
+
+**What was done:** Added "Component Stock" 5th tab to the existing Conduit Sold page (ConduitSold.jsx). Consumes `GET /api/admin/conduit-stock`. All existing Phase 1 logic is untouched. Summary cards, client-side filters (SKU search, collection, type, alert status), SKU table with alert colour coding, expandable component rows with BOTTLENECK badge. Separate CSV export for stock tab.
+
+Key decisions:
+- **activeTab changed from integer-only to `string | number`** — `STOCK_TAB = 'stock'` avoids index collision with collection tabs
+- **Stock tab always visible** in tab bar; collection tabs only appear once sold data loads
+- **Lazy load**: stock data fetches on first click of the stock tab, not on page load
+- **Summary cards clickable** — clicking a status card toggles that filter
+- **No stock calculations in React** — all values read directly from API response
+
+| Req ID | Task | Asset Path | Evidence Path | Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-CONDUIT-STOCK-2026-10-02-P2C | Phase 2C frontend — Component Stock tab in ConduitSold.jsx | dm-dashboard/frontend/src/admin/pages/ConduitSold.jsx | evidence/dm-dashboard/conduit-sold-phase2c-frontend-2026-10-02.md | Pending commit (piranv-work, dm-dashboard repo) | YES | Browser test pending | Commit to piranv-work → push → browser test 10 validation cases → close | OPEN — CODE WRITTEN, BROWSER TEST PENDING |
+
+**10-Folder Asset Check:**
+- Prompt: prompts/dm-dashboard/conduit-sold-phase2c-frontend.md — CREATED
+- Evidence: evidence/dm-dashboard/conduit-sold-phase2c-frontend-2026-10-02.md — CREATED
+- Capability: N/A — frontend UI for existing backend capability
+- Closure: this entry — DONE
+- PROMPT_REGISTER: Row to be added — PENDING (see below)
+- Validation: validation/piranav/conduit-sold-phase2c-validation-2026-10-02.md — CREATED
+- Source-map: N/A — no new data sources
+- Docs/Handover/Reports: N/A
+- Duplicate-risk: GREEN — new tab within existing file, no duplicate files
+
+**Session Result: OPEN — Code complete, commit + browser test required before PASS**
