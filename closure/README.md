@@ -1449,3 +1449,40 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 - Duplicate-risk: GREEN — new files for Phase 2, no duplicates
 
 **Session Result: PASS — DISCOVERY COMPLETE, IMPLEMENTATION NOT STARTED**
+
+---
+
+### 2026-10-02 — DM Dashboard Conduit Sold Phase 2A — Data Gap Verification
+
+**What was done:** Resolved all 4 data gaps identified during Phase 2 discovery. No code written, no UI built. Pure database investigation.
+
+- **Gap 1 (PCBSF SKUs):** RESOLVED. `PCBSF2MCH3PK` (id=34680), `PCBSF2MCH2PK` (id=35129), `PCBSF2MCH` (id=34679) all exist in PostgreSQL `inventory.products`. Previous search used a too-narrow pattern. All have UK stock records. They appear in conduit-accessories collection (product_id=14822482411906). No MySQL vultr1 query needed.
+- **Gap 2 (Join path):** RESOLVED. Confirmed join: `shopify_collection_products.product_id` → `shopify_listings.item_id` (is_parent=1, sub_source=104) → `shopify_listings_parent_child_mapping.parent_id` → `.child_id` → `shopify_listings.sku`. Parent rows have `sku=null`; variant (child) rows carry the SKU.
+- **Gap 3 (Complete conduit SKU list):** RESOLVED. 288 unique SKUs across 4 collections: conduit-accessories (158 SKUs, 37 products), conduit-lamp-holder (22 SKUs, 3 products), conduit-lighting (253 SKUs, 49 products), conduit-lightings (125 SKUs, 20 products). Per-collection totals exceed 288 due to cross-collection products.
+- **Gap 4 (Alternative warehouse logic):** RESOLVED. `inventory.product_mapping.alternative_inventory_id` is the configuration. `CRSF10025BM` (id=2559) → alt=344 = `CRSF100BM` (UK stock=2316). Trigger threshold: primaryStock ≤ 5. Most conduit components have `alternative_inventory_id=null` — alt-warehouse is only configured for specific SKUs. The stored combo stock in `local_inventory_current_stock_location_wise` already incorporates alt-warehouse logic — do not re-derive.
+
+| Req ID | Task | Asset Path | Evidence Path | Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-CONDUIT-SOLD-2026-10-02-P2A | Phase 2A — Resolve all 4 data gaps before Phase 2 implementation | evidence/dm-dashboard/conduit-sold-phase2-discovery-2026-10-01.md (Phase 2A section) | Same — evidence file updated with verified findings + 5 end-to-end validation examples | Pending commit | YES | None — all 4 gaps resolved | Phase 2 backend + frontend implementation may now begin | PASS |
+
+**End-to-End Validation (5 SKUs verified):**
+| SKU | Type | Collection | product_id | inv_id | UK Stock |
+|---|---|---|---|---|---|
+| CRSF100BM | single | conduit-accessories | 14822482411906 (via component) | 344 | 2316 |
+| CRSF10025BM | single (alt-warehouse) | confirmed in collections | 2559 | 2559 | 0 (alt=CRSF100BM: 2316) |
+| PCBSF2MCH3PK | pack (3-pack) | conduit-accessories | 14822482411906 | 34680 | 303 |
+| CRSF10025BM+PHHC1BMRBM | combo | conduit collections | via shopify_listings | 36078 | 92 (alt-warehouse active) |
+| ENC8047 | ENC combo | conduit-accessories | 14881090568578 | 33552 | 110 |
+
+**10-Folder Asset Check:**
+- Prompt: N/A — verification session, prompt already exists from Phase 2 discovery
+- Evidence: evidence/dm-dashboard/conduit-sold-phase2-discovery-2026-10-01.md — UPDATED (Phase 2A section added)
+- Capability: N/A — no new system capability implemented
+- Closure: this entry — DONE
+- PROMPT_REGISTER: Row updated for conduit-sold-phase2-stock-alert — DONE
+- Validation: validation/piranav/conduit-sold-phase1-validation-2026-10-01.md — UPDATED (Phase 2A section added)
+- Source-map: N/A — no new data sources; listings.shopify_collections already mapped
+- Docs/Handover/Reports: N/A
+- Duplicate-risk: GREEN — extended existing files, no new duplicates
+
+**Session Result: PASS — DATA DISCOVERY COMPLETE / UI IMPLEMENTATION NOT STARTED**

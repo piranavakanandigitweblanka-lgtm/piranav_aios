@@ -95,3 +95,30 @@
 - Verify: collection grand_revenue = sum of product total_revs
 
 ## Status: PASS (code) — PENDING live data confirmation
+
+---
+
+## Phase 2A — Data Gap Verification (2026-10-02)
+
+### Gap Resolution Checks
+| Gap | Check | Result |
+|---|---|---|
+| Gap 1 — PCBSF SKUs | `PCBSF2MCH3PK` found in `inventory.products` (id=34680) | ✅ RESOLVED — UK stock=303 |
+| Gap 1 — PCBSF SKUs | `PCBSF2MCH` (id=34679) found | ✅ UK stock=911 |
+| Gap 1 — PCBSF SKUs | `PCBSF2MCH2PK` (id=35129) found | ✅ UK stock=455 |
+| Gap 2 — Join path | `product_id → shopify_listings.item_id (is_parent=1) → parent_child_mapping → sku` | ✅ CONFIRMED via product 8009880633594 → SKUs PCGZ20MX, PCGZ20MX2PK etc. |
+| Gap 3 — Complete SKU list | 288 unique SKUs across 4 collections via confirmed join path | ✅ CONFIRMED (158+22+253+125 per-collection, 288 unique) |
+| Gap 4 — Alt warehouse | `inventory.product_mapping.alternative_inventory_id=344` for CRSF10025BM | ✅ CONFIRMED |
+| Gap 4 — Alt warehouse | Alt = CRSF100BM, UK stock=2316 | ✅ CONFIRMED |
+| Gap 4 — Alt warehouse | Combo stock pre-calculated in `local_inventory_current_stock_location_wise` | ✅ DO NOT RE-DERIVE |
+
+### End-to-End Chain Validation (5 SKUs)
+| SKU | DB Record | UK Stock | Chain Verified |
+|---|---|---|---|
+| CRSF100BM | inv_id=344, inventory_bool=true | 2316 | ✅ |
+| CRSF10025BM | inv_id=2559, inventory_bool=true | 0 (alt=2316) | ✅ |
+| PCBSF2MCH3PK | inv_id=34680, inventory_bool=false | 303 | ✅ |
+| CRSF10025BM+PHHC1BMRBM | inv_id=36078, inventory_bool=false | 92 | ✅ |
+| ENC8047 | inv_id=33552, sku_original=PCFT90LBM+PCBSM2FYB+LHNSE27YB+SCRN70BM+LSFT220BM | 110 | ✅ |
+
+### Status: PASS — ALL 4 GAPS RESOLVED — PHASE 2 IMPLEMENTATION MAY BEGIN

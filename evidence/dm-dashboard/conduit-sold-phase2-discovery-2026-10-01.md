@@ -270,6 +270,141 @@ For combo SKUs, to show which component is the bottleneck:
 
 ---
 
+---
+
+## Phase 2A — Data Gap Verification (2026-10-02)
+
+**Status: ALL 4 GAPS RESOLVED**
+
+### GAP 1 — PCBSF SKUs: RESOLVED
+
+Previous search used too-narrow pattern. All PCBSF SKUs confirmed in `inventory.products` PG mirror:
+
+| SKU | inv_id | inventory_bool | UK Stock |
+|---|---|---|---|
+| PCBSF2MCH | 34679 | true (single) | 911 |
+| PCBSF2MCH2PK | 35129 | false (2-pack) | 455 |
+| PCBSF2MCH3PK | 34680 | false (3-pack) | 303 |
+| PCBSF2MSN | 32922 | true (single) | 159 |
+
+All appear in conduit-accessories collection (product_id=14822482411906). No MySQL vultr1 query needed.
+
+---
+
+### GAP 2 — Collection Product ID → SKU Join: RESOLVED
+
+**Confirmed join path:**
+```
+listings.shopify_collections.handle
+  → shopify_collections.collection_id (Shopify bigint)
+  → listings.shopify_collection_products.collection_id
+  → shopify_collection_products.product_id (Shopify product bigint)
+  → listings.shopify_listings.item_id WHERE is_parent=1 AND sub_source=104
+  → shopify_listings.id (internal integer)
+  → listings.shopify_listings_parent_child_mapping.parent_id
+  → shopify_listings_parent_child_mapping.child_id
+  → listings.shopify_listings.id → .sku (variant rows)
+```
+
+Key facts:
+- `shopify_listings` parent rows: `is_parent=1`, `sku=null`, `item_id` = Shopify product_id (bigint as varchar)
+- `shopify_listings` variant rows: `is_parent=0`, `sku` populated, `item_id` = Shopify variant_id
+- `sub_source=104` = UK LEDSone store
+- `shopify_listings_parent_child_mapping` columns: `id`, `parent_id`, `child_id`, `child_order` (all ref shopify_listings.id)
+
+**Evidence:** Traced product_id=8009880633594 → listing id=357670 → children with SKUs: PCGZ20MX, PCGZ20MX2PK, PCGZ20MX3PK, PCGZ20MX5PK. Confirmed working.
+
+---
+
+### GAP 3 — Complete UK Conduit SKU List: RESOLVED
+
+**288 unique SKUs** across 4 UK conduit collections (sub_source=104):
+
+| Collection | SKU Count | Product Count |
+|---|---|---|
+| conduit-accessories | 158 | 37 |
+| conduit-lamp-holder | 22 | 3 |
+| conduit-lighting | 253 | 49 |
+| conduit-lightings | 125 | 20 |
+| **TOTAL UNIQUE (deduplicated)** | **288** | **109** |
+
+Per-collection counts sum to 558 — overlap because products appear in multiple collections. Unique count = 288.
+
+List includes: single SKUs, pack variants (2PK/3PK/5PK/APK), combo SKUs (e.g. `PCBM20MX+PCDO20BM+PCBSM2FBM+RW1FG2PK`), ENC codes (e.g. ENC8047, ENC8401).
+
+---
+
+### GAP 4 — Alternative Warehouse Logic: RESOLVED
+
+**Configuration column:** `inventory.product_mapping.alternative_inventory_id`
+
+**Verified example:**
+- `CRSF10025BM` (id=2559): `alternative_inventory_id = 344` = `CRSF100BM`
+- `CRSF100BM` UK stock = 2316
+- Trigger: if primaryStock ≤ 5 → use alternative stock
+- Result: combo `CRSF10025BM+PHHC1BMRBM` = UK stock 92 (not 0), because alt-warehouse supplies 2316 → adjusted = 2316, min with PHHC1BMRBM (92) = 92
+
+**Key finding:** Most conduit components have `alternative_inventory_id = null`. Alt-warehouse only applies to specifically configured SKUs. The stored combo stock in `local_inventory_current_stock_location_wise` already incorporates alt-warehouse logic — Phase 2 must NOT re-derive combo stock.
+
+**Warehouse identifiers confirmed (all UK):**
+- warehouse 1 = UK Unit3
+- warehouse 6 = UK Unit18
+- warehouse 8 = UK Unit4
+
+`CRSF10025BM` is mapped to all 3 UK warehouses with the same alternative_inventory_id=344.
+
+---
+
+### End-to-End Validation — 5 SKUs
+
+| SKU | Type | Collection | Shopify product_id | inv_id | UK Stock | Notes |
+|---|---|---|---|---|---|---|
+| CRSF100BM | single | conduit-accessories (component) | 14822482411906 | 344 | 2316 | OK |
+| CRSF10025BM | single | conduit collections | linked via shopify_listings | 2559 | 0 | Alt-warehouse = CRSF100BM (2316); combo stock uses alt |
+| PCBSF2MCH3PK | pack (3-pack) | conduit-accessories | 14822482411906 | 34680 | 303 | OK — was previously thought missing |
+| CRSF10025BM+PHHC1BMRBM | combo (2-component) | conduit collections | N/A (combo product) | 36078 | 92 | Alt-warehouse active; do NOT re-derive |
+| ENC8047 | ENC combo | conduit-accessories | 14881090568578 | 33552 | 110 | sku_original = PCFT90LBM+PCBSM2FYB+LHNSE27YB+SCRN70BM+LSFT220BM |
+
+---
+
+### Phase 2 Implementation — Recommended Queries
+
+**Step 1: Get all conduit SKUs**
+```sql
+WITH conduit_products AS (
+  SELECT DISTINCT scp.product_id
+  FROM listings.shopify_collections sc
+  JOIN listings.shopify_collection_products scp ON scp.collection_id = sc.collection_id
+  WHERE sc.handle IN ('conduit-accessories','conduit-lamp-holder','conduit-lighting','conduit-lightings')
+    AND sc.sub_source = 104 AND scp.is_deleted = 0
+),
+parent_listings AS (
+  SELECT sl.id as listing_id, cp.product_id
+  FROM conduit_products cp
+  JOIN listings.shopify_listings sl ON sl.item_id = cp.product_id::varchar
+    AND sl.is_parent = 1 AND sl.sub_source = 104
+)
+SELECT DISTINCT sc.handle, pl.product_id, sl_child.sku, sl_child.item_id as variant_id
+FROM listings.shopify_collections sc
+JOIN listings.shopify_collection_products scp ON scp.collection_id = sc.collection_id
+JOIN parent_listings pl ON pl.product_id = scp.product_id
+JOIN listings.shopify_listings_parent_child_mapping m ON m.parent_id = pl.listing_id
+JOIN listings.shopify_listings sl_child ON sl_child.id = m.child_id
+WHERE sc.handle IN ('conduit-accessories','conduit-lamp-holder','conduit-lighting','conduit-lightings')
+  AND sc.sub_source = 104 AND scp.is_deleted = 0 AND sl_child.sku IS NOT NULL;
+```
+
+**Step 2: Get stock for all conduit SKUs**
+```sql
+SELECT p.sku, p.sku_original, p.inventory_bool, l.stock
+FROM inventory.products p
+JOIN inventory.local_inventory_current_stock_location_wise l ON l.inventory_id = p.id
+WHERE p.sku IN (<conduit_sku_list>)
+  AND l.warehouse_location = 'UK';
+```
+
+---
+
 ## Unknowns / Needs Confirmation
 
 | # | Unknown | Impact |

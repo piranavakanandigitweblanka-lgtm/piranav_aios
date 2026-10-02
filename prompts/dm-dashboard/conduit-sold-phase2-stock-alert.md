@@ -51,9 +51,8 @@ For combos, show which component is the bottleneck:
 4. `floor(stock / pack_qty)` per component → min = bottleneck
 5. Display bottleneck component SKU and its stock
 
-## Known Gap — PCBSF Prefix
-`PCBSF` prefix SKUs (e.g. `PCBSF2MCH3PK`, appeared in Phase 1 order data) not found in `inventory.products` PostgreSQL mirror.
-Must verify via MySQL vultr1 (`order_management.inv_products`) or Shopify API before implementing stock display for this SKU family.
+## PCBSF Prefix — RESOLVED (2026-10-02)
+`PCBSF2MCH3PK` (id=34680), `PCBSF2MCH2PK` (id=35129), `PCBSF2MCH` (id=34679) all confirmed in `inventory.products` PG mirror with UK stock. No MySQL vultr1 query needed.
 
 ## Files to Create
 - `backend/app/admin_conduit_stock.py` — new FastAPI router `/api/admin/conduit-stock`
