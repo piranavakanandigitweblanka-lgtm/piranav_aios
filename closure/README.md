@@ -1531,7 +1531,7 @@ Key decisions:
 
 | Req ID | Task | Asset Path | Evidence Path | Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
-| DM-CONDUIT-STOCK-2026-10-02-P2C | Phase 2C frontend — Component Stock tab in ConduitSold.jsx | dm-dashboard/frontend/src/admin/pages/ConduitSold.jsx | evidence/dm-dashboard/conduit-sold-phase2c-frontend-2026-10-02.md | Pending commit (piranv-work, dm-dashboard repo) | YES | Browser test pending | Commit to piranv-work → push → browser test 10 validation cases → close | OPEN — CODE WRITTEN, BROWSER TEST PENDING |
+| DM-CONDUIT-STOCK-2026-10-02-P2C | Phase 2C frontend — Component Stock tab in ConduitSold.jsx | dm-dashboard/frontend/src/admin/pages/ConduitSold.jsx | evidence/dm-dashboard/conduit-sold-phase2c-frontend-2026-10-02.md | a1f9b7b on websitetecteam-arch/dm-dashboard piranv-work | YES | Browser test pending | Push piranv-work → browser test 10 validation cases → close | OPEN — COMMITTED, BROWSER TEST PENDING |
 
 **10-Folder Asset Check:**
 - Prompt: prompts/dm-dashboard/conduit-sold-phase2c-frontend.md — CREATED
