@@ -1486,3 +1486,32 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 - Duplicate-risk: GREEN — extended existing files, no new duplicates
 
 **Session Result: PASS — DATA DISCOVERY COMPLETE / UI IMPLEMENTATION NOT STARTED**
+
+---
+
+### 2026-10-02 — DM Dashboard Conduit Sold Phase 2B — Backend API Design + Validation
+
+**What was done:** Designed, implemented, and validated the Phase 2 `/api/admin/conduit-stock` backend endpoint. Pure PostgreSQL — no Shopify API. 3 queries: collection→SKU join, inventory metadata + stock, component bulk stock fetch. Handles all 4 SKU types (single/pack/combo/ENC). Combo stock is authoritative stored value — never recalculated. is_bottleneck rule identifies constraining component for display. All 8 validation checks pass. Frontend not started.
+
+Key decisions:
+- **Dedicated endpoint** `/api/admin/conduit-stock` (not extending Phase 1) — different data source, TTL, and response shape make coupling harmful
+- **5-min cache TTL** vs Phase 1's 15-min (stock syncs more frequently)
+- **DISTINCT ON (p.sku)** eliminates product_mapping duplicate rows (1 row per warehouse per SKU)
+- **collections[] array** per SKU record — 257 of 288 SKUs appear in 2+ collections
+
+| Req ID | Task | Asset Path | Evidence Path | Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-CONDUIT-STOCK-2026-10-02-P2B | Phase 2B backend API design + validation — GET /api/admin/conduit-stock | dm-dashboard/backend/app/admin_conduit_stock.py + dm-dashboard/backend/app/main.py | evidence/dm-dashboard/conduit-sold-phase2b-api-design-2026-10-02.md | Pending commit (piranv-work, dm-dashboard repo) | YES | None | Frontend design may begin. Backend restart required to load new endpoint. | PASS |
+
+**10-Folder Asset Check:**
+- Prompt: prompts/dm-dashboard/conduit-sold-phase2b-backend.md — CREATED
+- Evidence: evidence/dm-dashboard/conduit-sold-phase2b-api-design-2026-10-02.md — CREATED
+- Capability: N/A — implementation of planned feature, no new distinct system capability
+- Closure: this entry — DONE
+- PROMPT_REGISTER: Row added for conduit-sold-phase2b-backend — DONE
+- Validation: validation/piranav/conduit-sold-phase2b-validation-2026-10-02.md — CREATED
+- Source-map: N/A — no new data sources
+- Docs/Handover/Reports: N/A
+- Duplicate-risk: GREEN — new files, no existing Phase 2B files
+
+**Session Result: PASS — BACKEND COMPLETE / FRONTEND NOT STARTED / READY FOR FRONTEND DESIGN**
