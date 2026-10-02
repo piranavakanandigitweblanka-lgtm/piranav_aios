@@ -1427,3 +1427,25 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 - Duplicate-risk: GREEN — extended existing files, no new duplicates
 
 **Session Result: PASS (code verified) — live revenue data test required after backend restart**
+
+---
+
+### 2026-10-01 — DM Dashboard Conduit Sold Phase 2 — Step 1 Discovery
+
+**What was done:** Discovery-only session. No code written. Verified SKU structure, component/combo logic, stock source, and out-of-stock rules for Phase 2 Conduit Stock Alert sub-tab. Sources: ledsone-aios-knowledge-base (5 rule docs), inventory.products, inventory.local_inventory_current_stock_location_wise, inventory.product_pk, configurator.components_sot_skus, order_management.order_combo, listings.shopify_listings schema. Key findings: combo stock pre-calculated and stored in inventory table; combo = min(component_stock/pack_size); configurator_sot only covers Ceiling Rose (not conduit); PCBSF prefix SKUs missing from PG mirror (gap flagged).
+
+| Req ID | Task | Asset Path | Evidence Path | Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-CONDUIT-SOLD-2026-10-01-P2-DISC | Discovery: SKU structure + combo logic + stock source for Phase 2 conduit stock alert | prompts/dm-dashboard/conduit-sold-phase2-stock-alert.md | evidence/dm-dashboard/conduit-sold-phase2-discovery-2026-10-01.md | Pending | YES | PCBSF prefix SKUs not in PG inventory mirror — needs MySQL vultr1 or Shopify API verification | Resolve PCBSF gap, then implement Phase 2 backend + frontend | PASS (discovery) |
+
+**10-Folder Asset Check:**
+- Prompt: prompts/dm-dashboard/conduit-sold-phase2-stock-alert.md — CREATED
+- Evidence: evidence/dm-dashboard/conduit-sold-phase2-discovery-2026-10-01.md — CREATED
+- Capability: N/A — discovery only, no new capability implemented
+- Closure: this entry — DONE
+- PROMPT_REGISTER: Row added for conduit-sold-phase2-stock-alert — DONE
+- Validation: N/A — discovery only, no code to validate
+- Source-map/Docs/Handover/Reports: N/A
+- Duplicate-risk: GREEN — new files for Phase 2, no duplicates
+
+**Session Result: PASS — DISCOVERY COMPLETE, IMPLEMENTATION NOT STARTED**
