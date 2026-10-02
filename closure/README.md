@@ -1545,3 +1545,25 @@ Key decisions:
 - Duplicate-risk: GREEN — new tab within existing file, no duplicate files
 
 **Session Result: OPEN — Code complete, commit + browser test required before PASS**
+
+
+---
+
+## Session: 2026-10-02 — Admin Listing Management Issue Tracker
+
+| Req ID | Task | Asset Path | Evidence Path | Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DM-LISTING-ISSUES-2026-10-02 | Build Admin-only Listing Management Issue Tracker in DM Dashboard | dm-dashboard/backend/app/admin/listing_issues.py + frontend/src/admin/pages/ListingIssues.jsx | evidence/dm-dashboard/listing-issue-tracker-build-2026-10-02.md | PENDING — requires commit | YES (after DB tables created on server start) | None — build passes | Start backend + frontend, test as admin user, commit, push | OPEN — BUILD COMPLETE, SERVER TEST PENDING |
+
+**10-Folder Asset Check:**
+- Prompt: prompts/implementation/admin-listing-issue-tracker.md — CREATED
+- Evidence: evidence/dm-dashboard/listing-issue-tracker-build-2026-10-02.md — CREATED
+- Capability: N/A — new feature, capability recorded in evidence
+- Closure: this entry — DONE
+- PROMPT_REGISTER: Row to be added — see below
+- Validation: validation/piranav/listing-issue-tracker-validation-2026-10-02.md — CREATED
+- Source-map: N/A — no new external data sources (uses app DB only)
+- Docs/Handover/Reports: N/A
+- Duplicate-risk: GREEN — no duplicate files
+
+**Session Result: OPEN — Build complete, browser test required before PASS**
