@@ -1567,3 +1567,31 @@ Key decisions:
 - Duplicate-risk: GREEN — no duplicate files
 
 **Session Result: OPEN — Build complete, browser test required before PASS**
+
+---
+
+## Session: 2026-10-02 — Listing Issues PDF Enhancement (Reported By + Image Embed)
+
+### Task Summary
+Enhanced the PDF export for the Admin Listing Management Issue Tracker:
+1. "Reported By" shown in a prominent blue banner at the top of every PDF
+2. Uploaded images embedded as base64 data URLs — display inline without any auth issue
+
+### Closure Row
+
+| ID | Task | Asset | Evidence | Commit | Queryable | Blockers | Next Step | Status |
+|---|---|---|---|---|---|---|---|---|
+| DM-LISTING-PDF-2026-10-02 | Embed images + Reported By banner in Issue Tracker PDF export | backend/app/admin/listing_issues.py | evidence/dm-dashboard/listing-issues-pdf-enhancement-2026-10-02.md | 5e243b2 (piranv-work) → 2f6b29f (main) | YES | Server pull pending | `git pull origin main` on Contabo server | OPEN — code complete, server deploy pending |
+
+### 10-Folder Asset Check
+- Prompt: prompts/dm-dashboard/listing-issues-pdf-export-with-images.md — CREATED
+- Evidence: evidence/dm-dashboard/listing-issues-pdf-enhancement-2026-10-02.md — CREATED
+- Capability: N/A — enhancement to existing feature
+- Closure: this entry — DONE
+- PROMPT_REGISTER: Row added — `listing-issues-pdf-export-with-images`
+- Validation: validation/piranav/listing-issues-pdf-2026-10-02.md — CREATED
+- Source-map: N/A — no new data sources
+- Docs/Handover/Reports: N/A
+- Duplicate-risk: GREEN
+
+**Session Result: OPEN — code committed and pushed, browser test pending after server pull**
