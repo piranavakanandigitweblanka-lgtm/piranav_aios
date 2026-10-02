@@ -2,7 +2,7 @@
 
 **Date**: 2026-10-02
 **Feature**: Component Stock tab — ConduitSold.jsx
-**Status**: CODE REVIEW PASS — BROWSER TEST PENDING
+**Status**: CODE REVIEW PASS — UI POSITION CORRECTED — BROWSER TEST PENDING
 
 ---
 
@@ -55,5 +55,16 @@
 | Console errors | None | PENDING |
 
 ---
+
+## UI Position Correction (2026-10-02)
+
+| Check | Result |
+|---|---|
+| Tab bar rendered before Shopify loading panel | ✅ Fixed — `commit 67ed429` |
+| Component Stock reachable without waiting for sold data | ✅ Tab bar always rendered first |
+| Shopify loading panel suppressed on stock tab | ✅ `!isStockTab &&` guard added |
+| No second tab-navigation system created | ✅ Same `CollectionTab` component used |
+| Backend/API unchanged | ✅ No backend files touched |
+| Phase 1 logic unchanged | ✅ Zero modifications to existing functions |
 
 ## Status: READY FOR BROWSER TEST
