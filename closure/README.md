@@ -1655,3 +1655,33 @@ Enhanced the PDF export for the Admin Listing Management Issue Tracker:
 - Duplicate-risk: GREEN — no existing organic-discovery folder found
 
 **Session Result: PASS — Organic Discovery project created, 18 files committed, no website changes made**
+
+---
+
+### 2026-10-05 — Organic Discovery Backfill: PI-01 + CC-01
+
+| Field | Value |
+|---|---|
+| Requirement ID | OD-BACKFILL-2026-10-05 |
+| Task | Backfill PI-01 and CC-01 from Word documents into Organic Discovery AIOS project |
+| Asset Paths | `organic-discovery/03_PI-01_stock_hiding_proposal/`, `organic-discovery/01_CC-01_conduit_collection_seo/evidence/` |
+| Evidence Paths | `PI-01.docx` → 6 screenshots; `CC-01.docx` → 4 screenshots (before/after/verification) |
+| GitHub / Commit | Pending |
+| Queryability Result | YES |
+| Blockers | CC-01 not fully confirmed (SEO title/meta/name); PI-01 blocked on Muguntha decision |
+| Next Step | Start CC-02 (conduit guide links — 5 broken links); complete CC-01 VERIFICATION |
+| Result | PASS — backfill complete, no website changes made |
+
+### 10-Folder Asset Check
+- Prompt: N/A — backfill/documentation task
+- Evidence: `organic-discovery/03_PI-01.../evidence/` and `01_CC-01.../evidence/` — screenshots + source docs — CREATED
+- Capability: N/A
+- Closure: this entry — DONE
+- PROMPT_REGISTER: N/A
+- Validation: N/A — backfill documentation
+- Source-map: N/A
+- Docs: N/A
+- Duplicate-risk: GREEN — no duplicate records created
+- Source documents: preserved in Downloads and copied to AIOS evidence/source/
+
+**Session Result: PASS — PI-01 and CC-01 backfilled into Organic Discovery AIOS**

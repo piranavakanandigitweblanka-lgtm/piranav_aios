@@ -1,15 +1,14 @@
 # Organic Discovery — Current Status
 
-**Last updated:** 2026-10-05  
-**Updated by:** Piranav (AIOS setup)  
+**Last updated:** 2026-10-05 (backfill of PI-01 and CC-01)  
 
 ---
 
 ## Overall Project Status
 
-**SETUP COMPLETE — NO TASKS STARTED**
+**BACKFILL COMPLETE — PI-01 and CC-01 evidence imported**
 
-The Organic Discovery AIOS project has been created. All tasks are registered. No Shopify changes have been made. No tasks are marked COMPLETED.
+Two tasks were completed outside the AIOS tracking system. Both have now been backfilled with source documents and screenshots. Neither task is fully COMPLETED yet in AIOS terms — see statuses below.
 
 ---
 
@@ -17,30 +16,50 @@ The Organic Discovery AIOS project has been created. All tasks are registered. N
 
 | Code | Task | Deadline | Status |
 |---|---|---|---|
-| CC-01 | Conduit collection SEO title, meta, H1 | 5 Oct 2026, 18:00 SL | NOT STARTED |
-| CC-02 | Fix conduit guide links | 5 Oct 2026, 18:00 SL | NOT STARTED |
+| **PI-01** | Stock-hiding rule investigation — proposal sent to Muguntha | 5 Oct 2026 | **BLOCKED** — awaiting Muguntha decision |
+| **CC-01** | Conduit collection SEO: H1 added | 5 Oct 2026 | **VERIFICATION** — H1 confirmed by screenshots; SEO title/meta/name pending |
+| CC-02 | Fix conduit guide links | 5 Oct 2026 | NOT STARTED |
 | GA-01 | Remove hidden zero-price and promo text | 6 Oct 2026 | NOT STARTED |
 | GA-02 | Fix robots.txt pagination crawling | 6 Oct 2026 | NOT STARTED |
 | GA-08 | Correct bulb collection tags | 6 Oct 2026 | NOT STARTED |
-| OD-A5 | Remove 7 wrong products from E27/B22 | 9 Oct 2026 | NOT STARTED |
-| PI-02 | Add conduit guide links | 9 Oct 2026 | NOT STARTED |
 | CC-04 | Remove 278 hidden zero-price strings (conduit) | 6 Oct 2026 | NOT STARTED |
+| OD-A5 | Remove 7 wrong products from E27/B22 | 9 Oct 2026 | NOT STARTED |
 | CC-06 | Conduit FAQ + schema | 9 Oct 2026 | NOT STARTED |
+| PI-02 | Add conduit guide links | 9 Oct 2026 | NOT STARTED |
 | CC-07 | Duplicate conduit collection decision | Decision 7 Oct | BLOCKED — Muguntha to decide |
-| GA-18 | llms.txt + Organization schema | Week of 5 Oct | NOT STARTED |
-| GA-20 | PageSpeed baseline + GA4 order ID + Merchant fixes | PageSpeed 5 Oct | NOT STARTED |
+| CC-03 | Conduit collection answer-first intro | 7 Oct 2026 | NOT STARTED |
 | (others) | See Task Register | Various | NOT STARTED |
 
 ---
 
-## Immediate Next Steps (Mon 5 Oct)
+## Tasks Requiring Immediate Action
 
-Per source document — in this order:
+### CC-01 — VERIFICATION needed
+To close CC-01 fully:
+1. Open `https://ledsone.co.uk/collections/conduit-lightings`
+2. Confirm H1 reads `Conduit Lighting & 20mm Conduit Light Fittings`
+3. Confirm SEO title in browser tab
+4. Confirm collection name
+5. Confirm meta description status (was "TO BE DEFINED")
+6. Get Muguntha approval
+7. Then create `completion/CC-01_Completion_Report.docx`
 
-1. **CC-01** — Conduit collection SEO title + H1 (under 1.5 hours together with CC-02)
-2. **CC-02** — Fix conduit guide broken links
-3. **GA-20** — PageSpeed baseline measurement
-4. **GA-01** and **GA-02** — after CC-01/CC-02
+### PI-01 — BLOCKED
+Waiting for Muguntha's response on whether PCGZ20MO/PCGZ20MY are reserved or buffer-held.
+
+---
+
+## Next Active Task to Start
+
+**CC-02** — Fix conduit guide links (5 broken links)  
+Deadline: 5 Oct 2026 (past due) — start immediately  
+Task file: `organic-discovery/02_CC-02_conduit_guide_links/task.md`
+
+---
+
+## Completed Tasks
+
+_None yet — CC-01 is VERIFICATION, PI-01 is BLOCKED._
 
 ---
 
@@ -48,19 +67,10 @@ Per source document — in this order:
 
 | Code | Deadline | Status |
 |---|---|---|
-| CC-01 | 5 Oct 2026, 18:00 SL | NOT STARTED — past deadline |
-| CC-02 | 5 Oct 2026, 18:00 SL | NOT STARTED — past deadline |
-
----
-
-## Blocked Tasks
-
-| Code | Blocker | Who resolves |
-|---|---|---|
-| CC-07 | Muguntha must decide: merge duplicate conduit collection or keep as separate | Muguntha — decision by 7 Oct |
-
----
-
-## Completed Tasks
-
-_None yet._
+| CC-01 | 5 Oct 2026 | VERIFICATION — partially done |
+| CC-02 | 5 Oct 2026 | NOT STARTED |
+| PI-01 | 5 Oct 2026 | BLOCKED |
+| GA-01 | 6 Oct 2026 | NOT STARTED |
+| GA-02 | 6 Oct 2026 | NOT STARTED |
+| GA-08 | 6 Oct 2026 | NOT STARTED |
+| CC-04 | 6 Oct 2026 | NOT STARTED |

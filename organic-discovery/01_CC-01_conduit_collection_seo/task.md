@@ -4,8 +4,30 @@
 **Owner:** Piranav; Arudchelvi checks the wording  
 **Approver:** Muguntha  
 **Deadline:** 5 Oct 2026, 18:00 SL  
-**Status:** NOT STARTED  
+**Status:** VERIFICATION — H1 added and screenshot-verified; SEO title, meta description and collection name confirmation pending  
 **Source:** LEDSone Organic Discovery: Rules, Recommendations and Results Log — Section 2b, New tasks from 4 Oct 2026  
+**Backfilled into AIOS:** 2026-10-05  
+**URL confirmed from source document:** https://ledsone.co.uk/collections/conduit-lightings  
+**⚠ URL NOTE:** Source document shows `/collections/conduit-lightings` (with 's'). Task required keeping the existing URL — this may be the live collection URL. Verify against the task requirement that the URL must not change.
+
+---
+
+## Backfill Summary (from CC-01.docx)
+
+**What the source document proves:**
+- H1 was added to the conduit collection page
+- A before screenshot exists (image2.png → `before/before_01.png`)
+- An after screenshot exists (image3.png → `after/after_01.png`)
+- Two H1 verification screenshots exist (image1.png, image4.png → `evidence/`)
+- Page URL confirmed: `https://ledsone.co.uk/collections/conduit-lightings`
+
+**What the source document does NOT confirm:**
+- Whether the SEO title was set to exactly `Conduit Lighting & 20mm Conduit Light Fittings`
+- Whether the collection name was updated
+- Whether a meta description was written and approved
+- Whether Muguntha approved
+
+**Therefore status = VERIFICATION** (not COMPLETED)
 
 ---
 

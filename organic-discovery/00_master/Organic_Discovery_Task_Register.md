@@ -3,7 +3,7 @@
 **Project:** LEDSone Organic Discovery  
 **Owner:** Piranav (ledsone.co.uk tasks)  
 **Approver:** Muguntha  
-**Last updated:** 2026-10-05  
+**Last updated:** 2026-10-05 (backfill: PI-01, CC-01)  
 
 ---
 
@@ -11,7 +11,8 @@
 
 | Order | Code | Task | Owner | Deadline (SL) | Status |
 |---|---|---|---|---|---|
-| 1 | CC-01 | Conduit collection: set SEO title, meta description, collection name "Conduit Lighting", visible H1 | Piranav; Arudchelvi checks wording | 5 Oct 2026, 18:00 SL | NOT STARTED |
+| 0 | PI-01 | Find stock-hiding rule for listing ~5543; write proposal → send to Muguntha | Piranav | 5 Oct 2026, 18:00 SL | BLOCKED — proposal sent, awaiting Muguntha decision |
+| 1 | CC-01 | Conduit collection: set SEO title, meta description, collection name "Conduit Lighting", visible H1 | Piranav; Arudchelvi checks wording | 5 Oct 2026, 18:00 SL | VERIFICATION — H1 added; SEO title/meta/name confirmation pending |
 | 2 | CC-02 | Fix 4 conduit guide links to sold-out products and 1 link to a page that no longer exists | Piranav | 5 Oct 2026, 18:00 SL | NOT STARTED |
 | 3 | GA-01 | Remove hidden 'Sale price 0.00' text and cable promo codes (LEDCL10%, SAVESJ15) from product page template | Piranav; Muguntha approves | 6 Oct 2026 | NOT STARTED |
 | 4 | GA-02 | Remove `Disallow: /*?page=*` from robots.txt, rebuild from Shopify default, re-submit sitemap | Piranav; Muguntha approves | 6 Oct 2026 | NOT STARTED |
@@ -42,6 +43,35 @@
 ## Completed Tasks
 
 _None yet._
+
+---
+
+## Backfilled Task Records
+
+### PI-01 — Find stock-hiding rule, write proposal → send to Muguntha
+
+Status: BLOCKED  
+Work completed: Proposal written and sent to Muguntha (date: on or before 5 Oct 2026)  
+Backfilled into AIOS: 2026-10-05  
+Source document: `03_PI-01_stock_hiding_proposal/evidence/source/PI-01.docx`  
+Evidence: `03_PI-01_stock_hiding_proposal/evidence/`  
+Screenshots: 6 evidence images extracted (no before/after — investigation task, no website changes)  
+Completion report: Not applicable — task not COMPLETED (no website changes made)  
+Blocker: Awaiting Muguntha's decision on root cause  
+14-day check: PENDING — not applicable until fix is implemented  
+
+### CC-01 — Conduit collection SEO title, meta, H1
+
+Status: VERIFICATION  
+Work partially confirmed: H1 added to conduit collection page  
+Backfilled into AIOS: 2026-10-05  
+Source document: `01_CC-01_conduit_collection_seo/evidence/source/CC-01.docx`  
+Evidence: `01_CC-01_conduit_collection_seo/evidence/CC-01_evidence.md`  
+Before screenshot: `01_CC-01_conduit_collection_seo/before/before_01.png`  
+After screenshot: `01_CC-01_conduit_collection_seo/after/after_01.png`  
+H1 verification: `01_CC-01_conduit_collection_seo/evidence/h1_verification_01.png` and `h1_verification_02.png`  
+Completion report: NOT YET CREATED — pending full verification (SEO title, meta description, collection name)  
+14-day check: PENDING — task not yet fully verified  
 
 ---
 

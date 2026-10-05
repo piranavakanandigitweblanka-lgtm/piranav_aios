@@ -34,4 +34,18 @@ Each entry records:
 
 ---
 
+---
+
+## 2026-10-05 — Backfill: PI-01 and CC-01
+
+- **PI-01 backfilled:** Task "Find the stock-hiding rule, write proposal → send to Muguntha" was completed outside the AIOS system. Source document PI-01.docx imported. 6 screenshots extracted and saved to `03_PI-01_stock_hiding_proposal/evidence/`. No website changes were made in PI-01 — investigation and proposal only. Status: BLOCKED (awaiting Muguntha decision).
+
+- **CC-01 backfilled:** Task "Conduit collection SEO title, meta description, collection name, visible H1" was partially completed outside the AIOS system. Source document CC-01.docx imported. 4 screenshots extracted — before (1), after (1), H1 verification (2) — saved to correct `before/`, `after/`, `evidence/` folders. Document confirms: H1 was added to `https://ledsone.co.uk/collections/conduit-lightings`. SEO title, collection name, meta description not confirmed by document. Status: VERIFICATION.
+
+- **Source documents preserved:** Both original Word documents copied to `evidence/source/` inside each task folder. Original files in Downloads untouched.
+
+- **Master register updated:** PI-01 added as task row 0; CC-01 status changed from NOT STARTED to VERIFICATION.
+
+- **Current_Status.md updated:** Both tasks reflected. CC-02 identified as next task to start.
+
 _Website changes will be logged here as tasks are completed._
