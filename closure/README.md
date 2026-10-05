@@ -1603,3 +1603,29 @@ Enhanced the PDF export for the Admin Listing Management Issue Tracker:
 - Duplicate-risk: GREEN
 
 **Session Result: OPEN — code committed and pushed, browser test pending after server pull**
+
+---
+
+## 2026-10-05 — SEMrush Domain Refresh (Scheduled Task)
+
+### Context
+Automated scheduled task fired at 03:13 UTC. No live user present. Task: fetch SEMrush domain overview for ledsone.co.uk and upsert into semrush_history (month: 2026-10-01).
+
+### Closure Row
+
+| ID | Task | Asset | Evidence | Commit | Queryable | Blockers | Next Step | Status |
+|---|---|---|---|---|---|---|---|---|
+| SEO-SEMRUSH-REFRESH-2026-10-05 | Weekly SEMrush domain overview upsert → semrush_history (ledsone.co.uk, 2026-10-01) | Staff-requirements-02/scripts/semrush-upsert.js (existing) | evidence/piranav/semrush-domain-refresh-2026-10-05.md | N/A — no data written | NO | (1) SEMrush API: no_api_units (trace: 58a637541de6abad3b2d412cedd89e1e) — top up at https://www.semrush.com/mcp-access; (2) Neon egress blocked — add *.neon.tech to container network allowlist; (3) NEON_DATABASE_URL not in trigger env | Resolve both blockers — next scheduled run will succeed automatically | BLOCKED |
+
+### 10-Folder Asset Check
+- Prompt: N/A — existing prompt covers this task (prompts/implementation/semrush-domain-rank-weekly-upsert.md)
+- Evidence: evidence/piranav/semrush-domain-refresh-2026-10-05.md — CREATED
+- Capability: N/A — existing pipeline, no new capability
+- Closure: this entry — DONE
+- PROMPT_REGISTER: N/A — no new prompt, existing row stands
+- Validation: N/A — no data written, nothing to validate
+- Source-map: N/A — no new data sources
+- Docs/Handover/Reports: N/A
+- Duplicate-risk: GREEN — evidence file is new dated file, no duplicate risk
+
+**Session Result: BLOCKED — SEMrush API units = 0 (same as 2026-09-14). Neon DB also unreachable from remote container (same as 2026-09-21). No data fetched or written. Piranav notified via push notification.**
