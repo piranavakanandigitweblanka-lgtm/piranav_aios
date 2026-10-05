@@ -63,3 +63,11 @@ Each entry records:
 - 14-day result: PENDING
 
 _Website changes will be logged here when CC-02 implementation is approved and executed._
+
+## 2026-10-05 — CC-02: Affected links table + team assignment email prepared
+
+- Change made: No website changes — documentation only. Created CC-02_Affected_Links.md, CC-02_Team_Assignment_Summary.md, CC-02_Team_Assignment_Email.md.
+- URL affected: N/A — documentation phase
+- Changed by: Piranav (via Claude AIOS)
+- Approved by: N/A
+- Evidence: `organic-discovery/02_CC-02_conduit_guide_links/evidence/`
