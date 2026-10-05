@@ -118,6 +118,7 @@ Single authoritative register of all reusable Claude/GPT prompt patterns used in
 | 2026-09-30 | `ledsone-us-theme-discovery` | discovery | `prompts/shopify/ledsone-us-theme-discovery.md` | `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` | ACTIVE |
 | 2026-09-30 | `ledsone-us-product-variant-data-discovery` | discovery | `prompts/shopify/ledsone-us-product-variant-data-discovery.md` | `evidence/shopify/ledsone-us/2026-09-30-catalogue-discovery.md` | ACTIVE |
 | 2026-09-30 | `ledsone-us-phase2a-normalization-discovery` | discovery | `prompts/shopify/ledsone-us-phase2a-normalization-discovery.md` | `reports/ledsone-us-phase2a-normalization-mapping-2026-09-30.md` | ACTIVE |
+| 2026-10-05 | `pi-01-stock-hiding-investigation` | discovery | `prompts/piranav/pi-01-stock-hiding-investigation.md` | `evidence/piranav/pi-01-stock-hiding-proposal-2026-10-05.md` | ACTIVE |
 
 ---
 

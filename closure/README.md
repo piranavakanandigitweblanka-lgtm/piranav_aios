@@ -1595,3 +1595,33 @@ Enhanced the PDF export for the Admin Listing Management Issue Tracker:
 - Duplicate-risk: GREEN
 
 **Session Result: OPEN — code committed and pushed, browser test pending after server pull**
+
+---
+
+### 2026-10-05 — PI-01 Stock-Hiding Investigation
+
+| Field | Value |
+|---|---|
+| Requirement ID | PI-01-2026-10-05 |
+| Task | Find the shop setting that hides low-stock variants; send written proposal to Muguntha |
+| Asset Path | `prompts/piranav/pi-01-stock-hiding-investigation.md` |
+| Evidence Path | `evidence/piranav/pi-01-stock-hiding-proposal-2026-10-05.md` |
+| Validation Path | `validation/piranav/pi-01-stock-hiding-validation-2026-10-05.md` |
+| GitHub / Commit | Pending commit |
+| Queryability Result | YES |
+| Blockers | Awaiting Muguntha's decision on root cause (reserved stock vs. buffer rule) |
+| Next Step | Once Muguntha confirms root cause, Piranav implements the fix (hide out-of-stock variants; reappear on restock) |
+| Result | OPEN — proposal delivered, no changes made |
+
+### 10-Folder Asset Check
+- Prompt: `prompts/piranav/pi-01-stock-hiding-investigation.md` — CREATED
+- Evidence: `evidence/piranav/pi-01-stock-hiding-proposal-2026-10-05.md` — CREATED
+- Capability: N/A — investigation task, no new system capability
+- Closure: this entry — DONE
+- PROMPT_REGISTER: Row added — `pi-01-stock-hiding-investigation`
+- Validation: `validation/piranav/pi-01-stock-hiding-validation-2026-10-05.md` — CREATED
+- Source-map: N/A — no new data source introduced
+- Docs/Handover/Reports: N/A
+- Duplicate-risk: GREEN
+
+**Session Result: OPEN — proposal sent to Muguntha, awaiting decision**
