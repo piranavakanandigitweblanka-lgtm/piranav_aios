@@ -15,6 +15,8 @@ I've audited all 26 links in the **Conduit Lighting collection description** (th
 
 5 links are broken. I've mapped the exact location of each one in the collection description HTML so the team can find and fix them directly.
 
+**Deadline: 5 October 2026, 18:00 SL** — this task is currently overdue. Please prioritise.
+
 ---
 
 ## Problems 1 and 2 — Ready to implement
