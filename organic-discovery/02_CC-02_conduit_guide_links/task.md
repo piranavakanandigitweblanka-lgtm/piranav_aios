@@ -4,7 +4,11 @@
 **Owner:** Piranav  
 **Approver:** Muguntha  
 **Deadline:** 5 Oct 2026, 18:00 SL  
-**Status:** IN PROGRESS — link audit complete, implementation pending Piranav approval  
+**Status:** IN PROGRESS — exact HTML code mapping complete. Problems 1 and 2 ready to implement. Problems 3–5 blocked pending decisions.
+
+**Code Map:** `evidence/CC-02_Code_Line_Map.md`  
+**Worker Fix Table:** `evidence/CC-02_Worker_Quick_Fix.md`  
+**Correction:** Problem 4 and 5 headings are `<h4>` elements (not H3). Problem 5 images are plain `<img>` — NOT hyperlinks.  
 **Source:** LEDSone Organic Discovery: Rules, Recommendations and Results Log — Section 2b, New tasks from 4 Oct 2026  
 
 ---

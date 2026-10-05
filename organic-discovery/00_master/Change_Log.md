@@ -71,3 +71,12 @@ _Website changes will be logged here when CC-02 implementation is approved and e
 - Changed by: Piranav (via Claude AIOS)
 - Approved by: N/A
 - Evidence: `organic-discovery/02_CC-02_conduit_guide_links/evidence/`
+
+## 2026-10-05 — CC-02: Exact HTML code-line map created
+
+- Change made: No website changes. Recovered full browser-rendered HTML from session transcript. Created CC-02_Code_Line_Map.md (exact generated HTML line numbers for all 5 problems) and CC-02_Worker_Quick_Fix.md (worker-ready search-and-replace table).
+- URL affected: N/A — documentation only
+- Changed by: Piranav (via Claude AIOS)
+- Approved by: N/A
+- Key finding: Problem 4 and 5 headings are `<h4>` (not `<h3>`). Problem 5 section images are plain `<img>` — NOT hyperlinks.
+- Evidence: `organic-discovery/02_CC-02_conduit_guide_links/evidence/CC-02_Code_Line_Map.md`
