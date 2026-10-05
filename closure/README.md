@@ -70,6 +70,14 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-10-05 — SEO Keyword Gap Weekly Refresh (Scheduled Agent)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SEO-GAP-2026-10-05-001 | Weekly SEMrush keyword gap refresh — ledsone.co.uk vs ledhut, lightingcompany, industville — write to Neon semrush_keyword_gap table | N/A — no DB writes executed | evidence/semrush/seo-keyword-gap-weekly-blocked-2026-10-05.md | Not committed yet (uncommitted) | YES | SEMrush API units exhausted — error no_api_units (trace: a8f77e52ee178b51b6991a26e86c05d9). Resolve at: https://www.semrush.com/mcp-access | Piranav: add API units, then re-run scheduled task | OPEN |
+
+---
+
 ### 2026-09-16 — Thivajini Req1 Dynamic Campaign System
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
