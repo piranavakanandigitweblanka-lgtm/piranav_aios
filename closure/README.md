@@ -57,6 +57,16 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 
+### 2026-10-05 — ElectricalsOne Fake Judge.me Rating Fix
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| ES-URGFIX-2026-10-05-001 | Root cause investigation — TWO issues found: (1) Judge.me `review_data: "sample_data"` on 3 blocks in `templates/product.json`; (2) hardcoded `else` block in `main-product.liquid` JSON-LD outputting fake `aggregateRating: 4.5/10` when no SPR reviews exist | `electricalsone_urgent_fixes/investigation/root_cause.md` | `electricalsone_urgent_fixes/implementation/fix_record.md` | See ES-URGFIX-002 | YES | NONE | NONE | PASS |
+| ES-URGFIX-2026-10-05-002 | Code fix — (1) `review_data: "sample_data"` → `""` on all 3 Judge.me blocks in `templates/product.json`; (2) hardcoded `else` aggregateRating block removed from `sections/main-product.liquid` | `shopify_projects/electricalsone-theme/templates/product.json`, `shopify_projects/electricalsone-theme/sections/main-product.liquid` | Google Rich Results Test screenshot — 5 items (was 6), Review snippets absent. Verified Oct 5, 2026, 4:05:53 PM | Deployed to Shopify | YES | NONE | NONE | PASS |
+| ES-URGFIX-2026-10-05-003 | AIOS workstream created and updated — task brief, root cause, fix record, before/after verification records, evidence register, closure record | `electricalsone_urgent_fixes/` (all files) | `electricalsone_urgent_fixes/closure/closure_record.md` — status PASS | N/A — documentation only | YES | NONE | NONE | PASS |
+
+---
+
 ### 2026-09-16 — Hetheesha Dashboard UX Overhaul — All 5 Requirements + AI Brief
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
@@ -1717,3 +1727,34 @@ Enhanced the PDF export for the Admin Listing Management Issue Tracker:
 - Duplicate-risk: GREEN — no duplicate files created
 
 **Session Result: OPEN — CC-02 audit complete, 5 problems confirmed, awaiting 3 decisions before implementation**
+
+---
+
+### 2026-10-05 — Conduit Accessories Website Build — AIOS Project Initialisation
+
+| Field | Value |
+|---|---|
+| Requirement ID | CAB-INIT-2026-10-05 |
+| Task | Create conduit-accessories-build AIOS project folder — full 12-folder structure, project overview, task tracker, Step 4 working doc, evidence structure, approval structure |
+| Asset Path | `conduit-accessories-build/` (15 files created) |
+| Evidence Path | N/A — initialisation only, no Shopify changes made |
+| GitHub / Commit | Pending Piranav commit instruction |
+| Queryability Result | YES |
+| Blockers | Step 4 blocked on exact blog URLs for 5 guide articles (Piranav / Arudchelvi to obtain) |
+| Next Step | Obtain 5 blog URLs → update `05_step-04-guides/step-04-guides-working-doc.md` → begin linking on duplicate theme |
+| Result | PASS — AIOS structure created, no website changes made |
+
+### 10-Folder Asset Check
+- Prompt: N/A — initialisation task, no reusable GPT prompt pattern this session. Skip noted.
+- Evidence: N/A — no Shopify work done. Skip noted.
+- Capability: N/A — documentation/setup session
+- Closure: this entry — DONE
+- PROMPT_REGISTER: N/A — no new prompt this session
+- Validation: N/A — documentation setup only
+- Source-map: N/A — no new data source introduced
+- Docs: N/A — project overview in `conduit-accessories-build/00_project-overview/`
+- Handover: N/A — Piranav continues task
+- Reports: N/A
+- Duplicate-risk: GREEN — new folder `conduit-accessories-build/` distinct from all existing projects. DM Dashboard not modified.
+
+**Session Result: PASS — conduit-accessories-build AIOS project initialised, 15 files created, no website changes made**

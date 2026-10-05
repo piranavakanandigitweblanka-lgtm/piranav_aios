@@ -936,6 +936,10 @@ style="background-color: #151b27;
   {%- endif -%}
 }
 </script>
+{%- comment -%}
+  aggregateRating is only emitted when real review metafields exist (ld_review_count > 0).
+  No fallback/else branch. Hardcoded fake ratings (e.g. 4.5/10) must never appear here.
+{%- endcomment -%}
                       
 
 {% schema %}
