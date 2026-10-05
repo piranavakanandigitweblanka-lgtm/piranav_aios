@@ -1685,3 +1685,35 @@ Enhanced the PDF export for the Admin Listing Management Issue Tracker:
 - Source documents: preserved in Downloads and copied to AIOS evidence/source/
 
 **Session Result: PASS — PI-01 and CC-01 backfilled into Organic Discovery AIOS**
+
+---
+
+### 2026-10-05 — CC-02 Conduit Guide Link Audit
+
+| Field | Value |
+|---|---|
+| Requirement ID | CC-02-AUDIT-2026-10-05 |
+| Task | CC-02 — Audit all 26 links in conduit collection description, identify 5 broken links, find replacements |
+| Asset Path | `organic-discovery/02_CC-02_conduit_guide_links/` |
+| Evidence Path | `organic-discovery/02_CC-02_conduit_guide_links/evidence/CC-02_Link_Audit.md` |
+| Validation Path | `validation/piranav/cc-02-link-audit-validation-2026-10-05.md` |
+| GitHub / Commit | Pending |
+| Queryability Result | YES |
+| Blockers | 3 decisions required: (1) sharp-angle bend product URL, (2) dimmer switch replacement or removal, (3) bunker bulkhead replacement confirmation |
+| Next Step | Piranav answers 3 questions → implement 5 fixes → capture before/after screenshots → mark CC-02 COMPLETED |
+| Result | OPEN — audit complete, implementation blocked on 3 decisions |
+
+### 10-Folder Asset Check
+- Prompt: N/A — link audit / investigation task (no new reusable prompt pattern)
+- Evidence: `organic-discovery/02_CC-02_conduit_guide_links/evidence/CC-02_Link_Audit.md` — CREATED
+- Capability: N/A
+- Closure: this entry — DONE
+- PROMPT_REGISTER: N/A — no new reusable prompt
+- Validation: `validation/piranav/cc-02-link-audit-validation-2026-10-05.md` — CREATED
+- Source-map: N/A — no new data source introduced
+- Docs: N/A
+- Handover: N/A — Piranav continues task
+- Reports: N/A — investigation findings are in evidence file
+- Duplicate-risk: GREEN — no duplicate files created
+
+**Session Result: OPEN — CC-02 audit complete, 5 problems confirmed, awaiting 3 decisions before implementation**

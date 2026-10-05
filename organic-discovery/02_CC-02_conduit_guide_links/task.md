@@ -4,7 +4,7 @@
 **Owner:** Piranav  
 **Approver:** Muguntha  
 **Deadline:** 5 Oct 2026, 18:00 SL  
-**Status:** NOT STARTED  
+**Status:** IN PROGRESS — link audit complete, implementation pending Piranav approval  
 **Source:** LEDSone Organic Discovery: Rules, Recommendations and Results Log — Section 2b, New tasks from 4 Oct 2026  
 
 ---
@@ -32,11 +32,11 @@ These 5 links must be investigated, corrected and verified.
 
 | # | Guide | Existing URL | Problem | Replacement URL | Verified |
 |---|---|---|---|---|---|
-| 1 | TBD | TBD | Sold out | TBD | NO |
-| 2 | TBD | TBD | Sold out | TBD | NO |
-| 3 | TBD | TBD | Sold out | TBD | NO |
-| 4 | TBD | TBD | Sold out | TBD | NO |
-| 5 | TBD | TBD | Page unavailable | TBD | NO |
+| 1 | Conduit collection description — H3: "20mm Distance Saddle Mount Metal Bracket" | `/collections/conduit-lighting/products/circular-conduit-box-lid-black-20mm-conduit-lighting-metal-cover` | Sold out (~5548, 0 stock) + wrong product (Box Lid, not Saddle Mount) | `/products/conduit-pipe-fittings-accessories-l-tee-bend-saddle-mount-nipple?variant=53378250768770` (Saddle Mount variant ~5554, in stock) | NO |
+| 2 | Conduit collection description — Images (×2) in smooth 90° bend section | `/products/conduit-pipe-wall-light-vintage-industrial-indoor-e27-lamp-fitting-for-indoor-use/14847065719170` | Sold out (~5569, 0 stock) + wrong product type (wall light, not bend fitting) | `/collections/conduit-lighting/products/90-degree-male-20mm-elbow-metal-bend-conduit-fitting` (~5552, 161 in stock) | NO |
+| 3 | Conduit collection description — Images (×2) in sharp 90° bend section | `/products/conduit-pipe-wall-light-vintage-industrial-indoor-e27-lamp-fitting-for-indoor-use-1` | Sold out (~5588, 0 stock) + wrong product type (wall light, not bend fitting) | UNKNOWN — Piranav to identify correct sharp-angle-bend product URL | NO |
+| 4 | Conduit collection description — Dimmer Rotary Switch heading + image | `/products/dimmer-switch-rotary-switch-knob-for-lamp` | Sold out (~5511, 0 stock) | UNKNOWN — no replacement dimmer in stock. Escalate to Muguntha | NO |
+| 5 | Conduit collection description — Bunker Bulkhead Cage Wall Sconce section | `/products/industrial-bunker-bulkhead-cage-wall-sconce-lamp-light` | 404 — page does not exist | `/collections/conduit-lighting/products/exposed-lighting` (~6546 Nautical Bulkhead Flush Mount, in stock £25.49) — Piranav to verify product match | NO |
 
 **Rules:**
 - Never guess replacement URLs

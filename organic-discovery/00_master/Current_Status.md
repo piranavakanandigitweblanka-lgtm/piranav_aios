@@ -1,14 +1,14 @@
 # Organic Discovery — Current Status
 
-**Last updated:** 2026-10-05 (backfill of PI-01 and CC-01)  
+**Last updated:** 2026-10-05 (CC-02 link audit complete)  
 
 ---
 
 ## Overall Project Status
 
-**BACKFILL COMPLETE — PI-01 and CC-01 evidence imported**
+**CC-02 AUDIT COMPLETE — Awaiting Piranav/Muguntha Input on 3 Items**
 
-Two tasks were completed outside the AIOS tracking system. Both have now been backfilled with source documents and screenshots. Neither task is fully COMPLETED yet in AIOS terms — see statuses below.
+26 links audited. 5 problems confirmed (4 sold out + 1 × 404). 2 problems have HIGH-confidence replacements ready. 3 require decision before implementation can proceed. See CC-02 evidence for full details.
 
 ---
 
@@ -18,7 +18,7 @@ Two tasks were completed outside the AIOS tracking system. Both have now been ba
 |---|---|---|---|
 | **PI-01** | Stock-hiding rule investigation — proposal sent to Muguntha | 5 Oct 2026 | **BLOCKED** — awaiting Muguntha decision |
 | **CC-01** | Conduit collection SEO: H1 added | 5 Oct 2026 | **VERIFICATION** — H1 confirmed by screenshots; SEO title/meta/name pending |
-| CC-02 | Fix conduit guide links | 5 Oct 2026 | NOT STARTED |
+| **CC-02** | Fix conduit guide links | 5 Oct 2026 | **IN PROGRESS** — audit done, awaiting 3 answers from Piranav/Muguntha |
 | GA-01 | Remove hidden zero-price and promo text | 6 Oct 2026 | NOT STARTED |
 | GA-02 | Fix robots.txt pagination crawling | 6 Oct 2026 | NOT STARTED |
 | GA-08 | Correct bulb collection tags | 6 Oct 2026 | NOT STARTED |
@@ -49,11 +49,22 @@ Waiting for Muguntha's response on whether PCGZ20MO/PCGZ20MY are reserved or buf
 
 ---
 
-## Next Active Task to Start
+## CC-02 — Next Steps (3 Questions Blocking Implementation)
 
-**CC-02** — Fix conduit guide links (5 broken links)  
-Deadline: 5 Oct 2026 (past due) — start immediately  
-Task file: `organic-discovery/02_CC-02_conduit_guide_links/task.md`
+1. **Sharp angle bend (Problem 3):** What is the correct product URL for the black sharp-angle-bend fitting? (images are on ledsone CDN suggesting product exists)
+2. **Dimmer switch (Problem 4):** Is ~5511 being restocked? If not, remove section or link to `/collections/switches`?
+3. **Bunker bulkhead (Problem 5):** Does ~6546 (Nautical Bulkhead Flush Mount) match the section style? If yes → use it. If no → identify the correct product.
+
+Problems 1 and 2 have confirmed replacements and can be implemented immediately once Piranav approves.
+
+Full audit: `organic-discovery/02_CC-02_conduit_guide_links/evidence/CC-02_Link_Audit.md`
+
+---
+
+## Next Active Task to Start (after CC-02 questions answered)
+
+**GA-01** — Remove hidden zero-price text and promo codes from product template  
+Deadline: 6 Oct 2026
 
 ---
 

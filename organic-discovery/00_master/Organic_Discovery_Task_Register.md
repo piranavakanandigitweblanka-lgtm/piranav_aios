@@ -13,7 +13,7 @@
 |---|---|---|---|---|---|
 | 0 | PI-01 | Find stock-hiding rule for listing ~5543; write proposal → send to Muguntha | Piranav | 5 Oct 2026, 18:00 SL | BLOCKED — proposal sent, awaiting Muguntha decision |
 | 1 | CC-01 | Conduit collection: set SEO title, meta description, collection name "Conduit Lighting", visible H1 | Piranav; Arudchelvi checks wording | 5 Oct 2026, 18:00 SL | VERIFICATION — H1 added; SEO title/meta/name confirmation pending |
-| 2 | CC-02 | Fix 4 conduit guide links to sold-out products and 1 link to a page that no longer exists | Piranav | 5 Oct 2026, 18:00 SL | NOT STARTED |
+| 2 | CC-02 | Fix 4 conduit guide links to sold-out products and 1 link to a page that no longer exists | Piranav | 5 Oct 2026, 18:00 SL | IN PROGRESS — audit complete, 5 problems found, 2 HIGH-confidence replacements ready, 3 need Piranav/Muguntha input |
 | 3 | GA-01 | Remove hidden 'Sale price 0.00' text and cable promo codes (LEDCL10%, SAVESJ15) from product page template | Piranav; Muguntha approves | 6 Oct 2026 | NOT STARTED |
 | 4 | GA-02 | Remove `Disallow: /*?page=*` from robots.txt, rebuild from Shopify default, re-submit sitemap | Piranav; Muguntha approves | 6 Oct 2026 | NOT STARTED |
 | 5 | GA-08 | Fix bulb collection tags (51 pendants out of low-wattage-bulbs, 4 LEDs out of incandescent-bulbs, 27 missing dimmable bulbs, E14 and B22 corrections) | Piranav + Thuwaraga | 6 Oct 2026 | NOT STARTED |
