@@ -80,6 +80,21 @@ _Website changes (Shopify redirect import) will be logged here when Piranav comp
 
 ---
 
+## 2026-10-06 — CC-02: 4 hrefs corrected in local pirana.html (no Shopify changes)
+
+- Change made: 4 href values corrected in `C:\Users\PC\Desktop\pirana.html` (local copy of blog post). No Shopify/live changes.
+- Lines changed: 52 (Saddle heading), 64 (Saddle image), 140 (Dome heading), 153 (Dome image)
+- Old URL (all 4): `…/circular-conduit-box-lid-black-20mm-conduit-lighting-metal-cover`
+- New URL (lines 52, 64): `/products/20mm-black-metal-distance-saddles-for-conduit-pipe-installation`
+- New URL (lines 140, 153): `/products/20mm-conduit-dome-cover-conduit-fitting-20mm-nominal-size`
+- Old URL remaining in file: 0 — clean
+- Changed by: Claude Code (sinrasu mode)
+- Approved by: Piranav (task instruction)
+- Evidence: `CC-02_HTML_Verification_2026-10-06.md`
+- Next step: Piranav pastes corrected HTML into Shopify blog post editor and saves
+
+---
+
 ## 2026-10-06 — CC-02: Blog post HTML verified (no website changes)
 
 - Change made: No website changes. Local HTML file `C:\Users\PC\Desktop\pirana.html` verified against expected CC-02 fix. 4 incorrect links confirmed: Distance Saddle heading + image, Dome Cover heading + image — all 4 currently point to `circular-conduit-box-lid-black-20mm-conduit-lighting-metal-cover`.

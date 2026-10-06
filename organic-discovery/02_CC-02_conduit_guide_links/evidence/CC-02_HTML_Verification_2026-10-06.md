@@ -1,6 +1,7 @@
 # CC-02 — HTML Verification Report
 
 **Verification date:** 2026-10-06  
+**Href corrections applied:** 2026-10-06  
 **Source HTML file:** `C:\Users\PC\Desktop\pirana.html`  
 **Source page:** `https://ledsone.co.uk/blogs/new/in-depth-guide-to-the-essential-components-of-the-20mm-conduit-lighting-system`  
 **Verified by:** Claude Code (sinrasu mode)  
@@ -18,7 +19,9 @@
 | Conduit 20mm Metal Dome Cover | Image link (L153) | `…/circular-conduit-box-lid-black-20mm-conduit-lighting-metal-cover` | `/products/20mm-conduit-dome-cover-conduit-fitting-20mm-nominal-size` | **FAIL** |
 
 **Incorrect links found: 4 of 4**  
-**Already fixed: 0**
+**Fixed in local HTML (pirana.html): 4 of 4** ✓  
+**Old URL remaining in file: 0** ✓  
+**Shopify edit still required: YES** — pirana.html is the local copy; the live blog post has not been updated yet
 
 ---
 
@@ -110,6 +113,20 @@ The E27 lamp holder section has two links:
 - Second image (Line 193): `https://ledsone.co.uk/collections/conduit-lamp-holder/products/e27-lamp-holder-20mm-female-thread-conduit-ceiling-light-socket` — specific product ✓
 
 **Status: No cleanup needed.** All E27/lamp-holder links point to live ledsone URLs.
+
+---
+
+## Local HTML — Before / After
+
+| Line | Section | Before | After |
+|---|---|---|---|
+| 52 | Distance Saddle heading | `…/circular-conduit-box-lid-black-20mm-conduit-lighting-metal-cover` | `…/20mm-black-metal-distance-saddles-for-conduit-pipe-installation` ✓ |
+| 64 | Distance Saddle image | `…/circular-conduit-box-lid-black-20mm-conduit-lighting-metal-cover` | `…/20mm-black-metal-distance-saddles-for-conduit-pipe-installation` ✓ |
+| 140 | Dome Cover heading | `…/circular-conduit-box-lid-black-20mm-conduit-lighting-metal-cover` | `…/20mm-conduit-dome-cover-conduit-fitting-20mm-nominal-size` ✓ |
+| 153 | Dome Cover image | `…/circular-conduit-box-lid-black-20mm-conduit-lighting-metal-cover` | `…/20mm-conduit-dome-cover-conduit-fitting-20mm-nominal-size` ✓ |
+
+**File saved to:** `C:\Users\PC\Desktop\pirana.html`  
+**No other content changed.** Heading text, paragraphs, images, styling, and all other hrefs untouched.
 
 ---
 

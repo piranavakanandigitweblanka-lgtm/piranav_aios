@@ -4,7 +4,7 @@
 **Owner:** Piranav  
 **Approver:** Muguntha  
 **Deadline:** 5 Oct 2026, 18:00 SL  
-**Status:** IN PROGRESS — blog post HTML verified 2026-10-06. 4 incorrect links confirmed in `pirana.html`. Distance Saddle (×2) and Dome Cover (×2) both point to wrong URL. Shopify edit pending.
+**Status:** IN PROGRESS — 4 hrefs corrected in local `pirana.html` (2026-10-06). Shopify blog post edit still required to make changes live.
 
 **Code Map:** `evidence/CC-02_Code_Line_Map.md`  
 **Worker Fix Table:** `evidence/CC-02_Worker_Quick_Fix.md`  
