@@ -1862,3 +1862,96 @@ Automated scheduled task fired at 03:13 UTC. No live user present. Task: fetch S
 - Duplicate-risk: GREEN — new dated evidence file, no duplicate
 
 **Session Result: PASS (local) — 4 hrefs corrected in pirana.html. Old URL fully removed. Fisherman + E27 links checked: no cleanup needed. Shopify blog post save required to go live.**
+
+
+---
+
+### 2026-10-06 — RC-01 Repeat Customer Ads Exclusion — Step 1 Data Discovery
+
+| Field | Value |
+|---|---|
+| Requirement ID | RC-01 |
+| Task | Repeat Customer Ads Exclusion — Step 1: Discover and validate customer, order, and Google Ads attribution data in business DB and Shopify API |
+| Asset Path | `docs/dm-dashboard/repeat-customer-ads-exclusion-step1-discovery-2026-10-06.md` |
+| Evidence Path | `evidence/dm-dashboard/repeat-customer-ads-exclusion-step1-2026-10-06.md` |
+| Validation Path | `validation/piranav/repeat-customer-ads-exclusion-step1-validation-2026-10-06.md` |
+| GitHub / Commit | N/A — read-only discovery, no code changes |
+| Queryability Result | YES |
+| Blockers | Email is NULL for ALL Shopify UK orders in business DB — Customer Match requires extending ORDERS_QUERY to add `customer { id email }` |
+| Next Step | Piranav to confirm: (1) threshold 3+ or 4+, (2) UK only or UK+DE, (3) PII storage policy, (4) Option A or B first — then proceed to Step 2 build |
+| Result | PASS — discovery complete, 4 decisions needed from Piranav before Step 2 |
+
+### 10-Folder Asset Check
+- Prompt: `prompts/dm-dashboard/repeat-customer-ads-exclusion-step1-discovery.md` — CREATED
+- Evidence: `evidence/dm-dashboard/repeat-customer-ads-exclusion-step1-2026-10-06.md` — CREATED
+- Capability: N/A — discovery task, no new system capability built
+- Closure: this entry — DONE
+- PROMPT_REGISTER: Row added — `DM-RC-DISCOVERY-01`
+- Validation: `validation/piranav/repeat-customer-ads-exclusion-step1-validation-2026-10-06.md` — CREATED
+- Source-map: N/A — no new data source introduced (existing business DB + Shopify API)
+- Docs: `docs/dm-dashboard/repeat-customer-ads-exclusion-step1-discovery-2026-10-06.md` — CREATED
+- Handover: N/A
+- Reports: N/A
+- Duplicate-risk: GREEN — new dated files, no duplicates
+
+---
+
+## 2026-10-06 — GA-01 Hidden Zero-Price and Promo Text Fix (ledsone-uk-theme)
+
+| Field | Value |
+|---|---|
+| Requirement ID | GA-01-2026-10-06 |
+| Task | Fix hidden "Sale price £0.00" and promo codes (LEDCL10%, SAVESJ15) rendering in product page HTML for non-qualifying products |
+| Asset Path | `shopify_projects/ledsone-uk-theme/snippets/price.liquid`, `shopify_projects/ledsone-uk-theme/snippets/pk-discount-banner.liquid` |
+| Evidence Path | `organic-discovery/04_GA-01_hidden-zero-price-promo-text/evidence/GA-01_root-cause-investigation_2026-10-06.md`, `GA-01_sale-price-zero-baseline_2026-10-06.md`, `GA-01_post-fix-verification_2026-10-06.md` |
+| GitHub / Commit | Committed and pushed to `piranavakanandigitweblanka-lgtm/piranav_aios` main — see git log for 2026-10-06 |
+| Queryability Result | YES |
+| Blockers | Type D data issue (9 products with wrong compare_at_price) is a separate pending task |
+| Next Step | Separate task: data audit to correct compare_at_price for all affected products |
+| Result | PASS (Type A code fix PASS 3/3, Type B/C resolved, Type D pending separate task) |
+
+### 10-Folder Asset Check — GA-01
+
+- Prompt: `prompts/shopify/` — prompt captured before execution per Rule 1
+- Evidence: `organic-discovery/04_GA-01_hidden-zero-price-promo-text/evidence/` — 3 files (root cause, baseline, post-fix verification)
+- Capability: N/A — code fix, no new system capability
+- Closure: this entry — DONE
+- PROMPT_REGISTER: see existing rows for GA-01 pattern
+- Validation: `validation/piranav/` — baseline + post-fix tests documented in evidence files
+- Source-map: N/A — no new data source
+- Docs: N/A — task brief self-contained in evidence
+- Handover: N/A
+- Reports: N/A — 15-product baseline table is in evidence, not a separate report
+- Duplicate-risk: GREEN — dated evidence files, no duplicates
+
+---
+
+## 2026-10-06 — GA-02 Robots.txt Collection Pagination — STEP 1 Discovery
+
+| Field | Value |
+|---|---|
+| Requirement ID | GA-02-DISC-2026-10-06 |
+| Task | STEP 1 DISCOVERY ONLY — Audit whether robots.txt `Disallow: /*?page=*` is blocking Shopify collection pagination from Google crawling |
+| Asset Path | `organic-discovery/05_GA-02_robots-txt-pagination/task.md`, `evidence/GA-02_discovery-report_2026-10-06.md` |
+| Evidence Path | `organic-discovery/05_GA-02_robots-txt-pagination/evidence/GA-02_discovery-report_2026-10-06.md` |
+| GitHub / Commit | PENDING — not yet committed |
+| Queryability Result | YES |
+| Blockers | Fix not yet approved — discovery only |
+| Next Step | Present findings to Piranav/GPT → approve fix option → create separate GA-02 implementation task brief |
+| Result | PASS (discovery complete) |
+
+### 10-Folder Asset Check — GA-02
+
+- Prompt: `prompts/shopify/ga-02-robots-pagination-discovery.md` — CREATED
+- Evidence: `organic-discovery/05_GA-02_robots-txt-pagination/evidence/GA-02_discovery-report_2026-10-06.md` — CREATED
+- Capability: N/A — discovery only
+- Closure: this entry — DONE
+- PROMPT_REGISTER: row to be added — `shopify-robots-pagination-discovery`
+- Validation: `validation/piranav/GA-02_discovery-validation_2026-10-06.md` — CREATED
+- Source-map: N/A — no new data source (live robots.txt + existing theme files)
+- Docs: N/A
+- Handover: N/A
+- Reports: N/A — discovery report is in evidence
+- Duplicate-risk: GREEN — new dated files, no duplicates
+
+**Session Result: PASS — Step 1 discovery complete. Step 2 blocked on 4 business decisions from Piranav.**
