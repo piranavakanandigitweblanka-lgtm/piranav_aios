@@ -11,9 +11,9 @@
 **11 of 11 sold-out product pages resolved. CSV complete — ready for Shopify bulk import.**  
 #5 resolved: orange dome exact match (116 units). #8 resolved: collection redirect to `/collections/led-modules` approved by Piranav.
 
-**CC-02 AUDIT COMPLETE — Awaiting Piranav/Muguntha Input on 3 Items**
+**CC-02 — BLOG POST HTML VERIFIED 2026-10-06**
 
-26 links audited. 5 problems confirmed (4 sold out + 1 × 404). 2 problems have HIGH-confidence replacements ready. 3 require decision before implementation can proceed. See CC-02 evidence for full details.
+Blog post `pirana.html` verified: 4 incorrect links confirmed (Distance Saddle ×2, Dome Cover ×2 — all pointing to `circular-conduit-box-lid` URL). Replacement URLs provided by Piranav. Shopify blog post edit required. Collection description (separate page) has same issue — separate edit needed there too. Evidence: `CC-02_HTML_Verification_2026-10-06.md`.
 
 ---
 

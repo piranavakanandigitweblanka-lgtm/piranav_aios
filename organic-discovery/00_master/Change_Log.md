@@ -80,6 +80,19 @@ _Website changes (Shopify redirect import) will be logged here when Piranav comp
 
 ---
 
+## 2026-10-06 — CC-02: Blog post HTML verified (no website changes)
+
+- Change made: No website changes. Local HTML file `C:\Users\PC\Desktop\pirana.html` verified against expected CC-02 fix. 4 incorrect links confirmed: Distance Saddle heading + image, Dome Cover heading + image — all 4 currently point to `circular-conduit-box-lid-black-20mm-conduit-lighting-metal-cover`.
+- URL affected: `https://ledsone.co.uk/blogs/new/in-depth-guide-to-the-essential-components-of-the-20mm-conduit-lighting-system` (NOT yet edited)
+- Changed by: N/A — verification only
+- Approved by: N/A — verification only
+- Evidence: `organic-discovery/02_CC-02_conduit_guide_links/evidence/CC-02_HTML_Verification_2026-10-06.md`
+- Fisherman section: no hyperlink on heading — no cleanup needed
+- E27 lamp holder: all links live and correct — no cleanup needed
+- Next step: Piranav to edit blog post in Shopify — replace 4 hrefs (2 → Saddle URL, 2 → Dome Cover URL)
+
+---
+
 ## 2026-10-05 — CC-02: Conduit guide link audit (investigation only)
 
 - Change made: No website changes — investigation phase only. Full link audit completed on conduit collection description.
