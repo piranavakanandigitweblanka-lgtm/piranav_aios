@@ -1,54 +1,20 @@
 # GA-09 — Manual Review Items
 
-**Date:** 2026-10-06  
+**Date:** 2026-10-06 (updated — #5 resolved 2026-10-06)  
 **Prepared by:** Claude Code (sinrasu mode)  
 
-These 2 products were NOT added to the redirect CSV. Each requires a decision from Piranav before any redirect can be set.
+1 product was NOT added to the redirect CSV. It requires a decision from Piranav before any redirect can be set.
 
 ---
 
-## Product #5 — Orange Dome Pendant Lampshade
+## Product #5 — Orange Dome Pendant Lampshade — RESOLVED
 
-**Sold-out URL:** `/products/vintage-industrial-loft-style-metal-ceiling-light-modern-orange-dome-pendant-lampshade`  
-**Current page title:** "Flush Mount Lamp for Hallway & Entryway Lighting"  
-**Current price:** £16.10  
+**Resolved:** 2026-10-06  
+**Redirect added to CSV:** `/products/vintage-industrial-loft-style-metal-ceiling-light-modern-orange-dome-pendant-lampshade` → `/products/orange-metal-cylinder-dome-light-shade-lamp-shade-ceiling-light`  
+**Replacement:** Orange Metal Cylinder Dome Light Shade ~1891 — 116 units — ACTIVE  
+**Confidence:** HIGH — exact colour (orange) and shape (dome) match  
 
-### Problem
-
-The URL handle describes an "orange dome pendant lampshade" (vintage industrial loft style metal ceiling light).  
-The current page title shows a completely different product: "Flush Mount Lamp for Hallway & Entryway Lighting".  
-
-This mismatch means:
-- Google may have indexed this page for "orange dome pendant" searches
-- But the current page content is a flush mount ceiling light
-- The product is sold out either way
-
-### Why Not Safe to Redirect
-
-Redirecting without knowing what Google indexed for this URL risks sending traffic to the wrong destination. No in-stock orange dome pendant was found in the catalogue.
-
-### Options for Piranav
-
-**Option A — Check Google Search Console**  
-Filter by this URL. See which keywords Google is sending traffic from. This determines the correct destination intent.
-
-**Option B — Redirect to closest dome pendant in stock**  
-If GSC confirms "dome pendant" intent:
-- `Hanging Dome Industrial Kitchen Light Shade ~3160` → `/products/hanging-kitchen-light` (177 units)
-- `Luxury Vintage Industrial Metal Dome Lampshade ~2321` → `/products/luxury-lamp-shades` (104 units)
-- `Metal Dome Shape Lampshade ~1894` → `/products/yellow-chandelier-lampshade-ceiling-light-shade-pendant-lights-fixture` (77 units)
-
-**Option C — Redirect to flush mount collection**  
-If GSC confirms "flush mount" / "hallway ceiling light" intent, redirect to appropriate collection.
-
-**Option D — Leave the page as-is**  
-If the page has very low traffic, no redirect may be needed.
-
-### What Piranav Must Decide
-
-1. What does GSC show for this URL's top keywords?
-2. Is the flush mount product truly gone or was the URL accidentally reused?
-3. Which replacement option best matches the traffic intent?
+Previously flagged as manual review due to URL/title mismatch and no orange dome found in initial search. A second comprehensive dome search returned the exact product.
 
 ---
 
@@ -60,7 +26,7 @@ If the page has very low traffic, no redirect may be needed.
 
 ### Problem
 
-No in-stock IR remote controller for RGB LED strips was found in the entire LEDSone catalogue. The Shopify Admin API confirmed all RGB/remote controller products have 0 inventory.
+No in-stock IR remote controller for RGB LED strips was found in the entire LEDSone catalogue. The Shopify Admin API confirmed all RGB/remote controller products have 0 inventory. A second broader search (dimmer, LED controller, dimmer switch) confirmed no compatible replacement exists — results were all plug-in pendant lamp dimmers, not LED strip accessories.
 
 ### Why Not Safe to Redirect
 

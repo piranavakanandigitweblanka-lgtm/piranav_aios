@@ -14,6 +14,7 @@
 | 2 | `/products/zip-ties-releasable-...` | `/products/100-pack-reusable-cable-ties-black-white-nylon-zip-ties` | ✓ ACTIVE | ✓ 2,884 units | ✓ Same category | ✓ | HIGH |
 | 3 | `/products/multi-shade-2m-pendant-light` | `/products/5-way-spider-ceiling-pendant-lamp-metal-curvy-shade` | ✓ ACTIVE | ✓ 2,018 units | ✓ 5-arm E27 spider | ✓ | HIGH |
 | 4 | `/products/g4-cob-chip-2w-...` | `/products/g4-straight-pin-corn-lamp-220v-3w-5w-ceramic-led-bulb-5037` | ✓ ACTIVE | ✓ 2,187 units | ✓ G4 LED halogen replace | ✓ | MEDIUM |
+| 5 | `/products/vintage-industrial-loft-style-metal-ceiling-light-modern-orange-dome-pendant-lampshade` | `/products/orange-metal-cylinder-dome-light-shade-lamp-shade-ceiling-light` | ✓ ACTIVE | ✓ 116 units | ✓ Orange dome shape exact match | ✓ | HIGH |
 | 6 | `/products/led-decorative-outdoor-wall-light-up-down-lights` | `/products/led-outdoor-wall-light` | ✓ ACTIVE | ✓ 94 units | ✓ Outdoor up/down LED wall | ✓ | HIGH |
 | 7 | `/products/3w-e27-light-bulb-energy-saving-lamp-warm-white-globe` | `/products/18w-e27-light-bulb-energy-saving-lamp-warm-white-globe` | ✓ ACTIVE | ✓ 1,334 units | ✓ E27 warm white 2700K | ✓ | HIGH |
 | 9 | `/products/green-retro-metal-pendant-lampshade-...` | `/products/black-metal-retro-ceiling-pendant-light-shade-easy-fit-vintage-lampshade` | ✓ ACTIVE | ✓ 2,208 units | ✓ Metal retro easy fit | ✓ | HIGH |
@@ -26,8 +27,7 @@
 
 | # | Product | Reason Excluded |
 |---|---|---|
-| 5 | Orange dome pendant | URL/title mismatch — intent unclear. See Manual Review. |
-| 8 | 12V IR remote controller | No in-stock replacement found across entire catalogue. |
+| 8 | 12V IR remote controller | No in-stock replacement found across entire catalogue (confirmed by two search passes). |
 
 ---
 

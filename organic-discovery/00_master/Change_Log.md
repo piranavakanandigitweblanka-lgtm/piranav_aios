@@ -24,6 +24,18 @@ Each entry records:
 
 ---
 
+## 2026-10-06 — GA-09: Product #5 resolved — orange dome redirect added to CSV (no website changes)
+
+- Change made: No website changes. Second comprehensive API search found exact orange dome replacement for Product #5. `GA-09_Shopify_URL_Redirects.csv` updated to 10 redirects. Decision table, manual review, and validation files updated.
+- Source URL resolved: `/products/vintage-industrial-loft-style-metal-ceiling-light-modern-orange-dome-pendant-lampshade`
+- Replacement confirmed: `orange-metal-cylinder-dome-light-shade-lamp-shade-ceiling-light` (116 units — API 2026-10-06)
+- Changed by: Piranav (via Claude AIOS)
+- Approved by: PENDING — Piranav must review and manually import CSV into Shopify
+- Evidence: `organic-discovery/07_GA-09_soldout_pages_google_traffic/evidence/`
+- Product #8 (12V IR remote): No safe redirect — confirmed by two search passes. Still in Manual Review.
+
+---
+
 ## 2026-10-06 — GA-09: Sold-out pages redirect CSV prepared (no website changes)
 
 - Change made: No website changes. GA-09 discovery and validation completed. 9-redirect CSV created, 2 products flagged for manual review.

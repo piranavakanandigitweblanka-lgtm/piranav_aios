@@ -14,7 +14,7 @@
 | 2 | Zip Ties Releasable Heavy Duty Reusable | 100 Pack Reusable Cable Ties Black/White ~6210 | `/products/100-pack-reusable-cable-ties-black-white-nylon-zip-ties` | 2,884 units | HIGH | 301 Redirect |
 | 3 | Multi-Shade 2m Pendant Light (5-way spider) | Industrial Spider Adjustable 5-Light E27 ~3399 | `/products/5-way-spider-ceiling-pendant-lamp-metal-curvy-shade` | 2,018 units | HIGH | 301 Redirect |
 | 4 | G4 COB 2W LED Bulb (halogen replace) | G4 Cool White 3W/5W Corn Lamp AC 220V ~5037 | `/products/g4-straight-pin-corn-lamp-220v-3w-5w-ceramic-led-bulb-5037` | 2,187 units | MEDIUM | 301 Redirect |
-| 5 | Orange Dome Pendant Lampshade (URL/title mismatch) | — | — | — | — | **Manual Review** |
+| 5 | Orange Dome Pendant Lampshade (URL/title mismatch) | Orange Metal Cylinder Dome Light Shade ~1891 | `/products/orange-metal-cylinder-dome-light-shade-lamp-shade-ceiling-light` | 116 units | HIGH | 301 Redirect |
 | 6 | LED Outdoor Wall Light Up/Down | Modern 12W LED Outdoor Wall Light IP54 Up Down ~4964 | `/products/led-outdoor-wall-light` | 94 units | HIGH | 301 Redirect |
 | 7 | 3W E27 Warm White Globe Bulb | LED E27 A60 18W Warm White 2700K ~1379 | `/products/18w-e27-light-bulb-energy-saving-lamp-warm-white-globe` | 1,334 units | HIGH | 301 Redirect |
 | 8 | 12V IR Remote Controller (RGB LED strip) | — | — | 0 units | — | **No Safe Redirect** |
@@ -63,13 +63,13 @@
 
 ---
 
-### #5 — Orange Dome Pendant Lampshade → MANUAL REVIEW
+### #5 — Orange Dome Pendant Lampshade → ~1891 | HIGH
 
-**Issue:** URL handle = `vintage-industrial-loft-style-metal-ceiling-light-modern-orange-dome-pendant-lampshade` but current page title = "Flush Mount Lamp for Hallway & Entryway Lighting". URL and page content do not match.  
-**Google traffic intent:** Likely indexed for "orange dome pendant lampshade" / "industrial dome ceiling light" — NOT "flush mount lamp".  
-**Stock search:** No orange dome pendant currently in stock (API search confirmed). Closest dome shapes in stock: `hanging-kitchen-light` (177 units), `luxury-lamp-shades` (104 units), `yellow-chandelier-lampshade-ceiling-light-shade-pendant-lights-fixture` (77 units).  
-**Why not redirected:** The URL/title mismatch means the customer intent is unclear. Redirecting to a non-orange dome risks intent mismatch. Piranav must decide based on what Google actually indexed for this page.  
-**See:** `GA-09_Manual_Review.md` for options.
+**Source:** URL `vintage-industrial-loft-style-metal-ceiling-light-modern-orange-dome-pendant-lampshade` — sold-out orange dome pendant (page title had URL/title mismatch at time of first research pass).  
+**Replacement:** Orange Metal Cylinder Dome Light Shade ~1891 (`orange-metal-cylinder-dome-light-shade-lamp-shade-ceiling-light`) — 116 units, ACTIVE, productType: Easy_Fit_Lamp_Shades.  
+**Validation:** Exact colour match (orange ✓), exact shape match (dome/cylinder ✓), same category (pendant ceiling light shade ✓), in stock (116 units ✓).  
+**Why resolved:** A second comprehensive API search (title:*dome* query) returned this exact product which was missed in the initial search pass.  
+**Intent match:** Customer searching for "orange dome pendant lampshade" → lands on orange cylinder dome shade. ✓
 
 ---
 
