@@ -1926,6 +1926,36 @@ Automated scheduled task fired at 03:13 UTC. No live user present. Task: fetch S
 
 ---
 
+## 2026-10-06 — GA-02 Robots.txt Collection Pagination — STEP 2 Safe Implementation Plan
+
+| Field | Value |
+|---|---|
+| Requirement ID | GA-02-PLAN-2026-10-06 |
+| Task | STEP 2 PLAN ONLY — Design safe robots.txt replacement rules to allow collection pagination without opening sort/filter/AJAX URLs |
+| Asset Path | `organic-discovery/05_GA-02_robots-txt-pagination/task.md` (updated), `evidence/GA-02_implementation-plan_2026-10-06.md` |
+| Evidence Path | `organic-discovery/05_GA-02_robots-txt-pagination/evidence/GA-02_implementation-plan_2026-10-06.md` |
+| GitHub / Commit | PENDING — not yet committed |
+| Queryability Result | YES |
+| Blockers | Awaiting Piranav/GPT approval to implement |
+| Next Step | STEP 3 — Implement: create `templates/robots.txt.liquid` in ledsone-uk-theme with replacement rules |
+| Result | PASS (plan complete, no changes made) |
+
+### 10-Folder Asset Check — GA-02 Step 2
+
+- Prompt: existing `prompts/shopify/ga-02-robots-pagination-discovery.md` — covers discovery phase; plan documented in evidence
+- Evidence: `organic-discovery/05_GA-02_robots-txt-pagination/evidence/GA-02_implementation-plan_2026-10-06.md` — CREATED
+- Capability: N/A — plan step, no capability built
+- Closure: this entry — DONE
+- PROMPT_REGISTER: row updated — `shopify-robots-pagination-discovery` status updated to reflect plan complete
+- Validation: `validation/piranav/GA-02_plan-validation_2026-10-06.md` — CREATED
+- Source-map: N/A — no new data source
+- Docs: N/A — plan self-contained in evidence
+- Handover: N/A
+- Reports: N/A
+- Duplicate-risk: GREEN — new dated plan file, no duplicates
+
+---
+
 ## 2026-10-06 — GA-02 Robots.txt Collection Pagination — STEP 1 Discovery
 
 | Field | Value |

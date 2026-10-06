@@ -1,6 +1,6 @@
 # GA-02 — Fix Robots.txt Collection Pagination Crawling
 
-**Status:** DISCOVERY COMPLETE — Fix not yet implemented  
+**Status:** IMPLEMENTATION PLAN COMPLETE — Awaiting approval to implement  
 **Created:** 2026-10-06  
 **Theme:** ledsone-uk-theme  
 **Deadline:** 6 Oct 2026
@@ -21,12 +21,26 @@ See `evidence/GA-02_discovery-report_2026-10-06.md` for full findings.
 - This was intended to prevent crawling of parameter-based duplicate URLs (e.g. sort, filter)
 - Side effect: also blocks `?page=` pagination which IS unique content
 
-## Fix Options (not yet decided)
+## Proposed Fix (Step 2 Plan — 2026-10-06)
 
-1. **Shopify Admin robots.txt editor** — override the `Disallow: /*?page=*` rule to allow `/collections/*/page=*` specifically
-2. **Theme robots.liquid** — create a custom `robots.liquid` template to override Shopify's default robots.txt
-3. **Allow all, then disallow non-essential** — rebuild robots.txt rules more granularly
+See `evidence/GA-02_implementation-plan_2026-10-06.md` for full plan.
+
+**In both `User-agent: *` and `User-agent: adsbot-google`, remove:**
+```
+Disallow: /*?page=*
+```
+
+**Replace with:**
+```
+Disallow: /*?page=*&*filter*
+Disallow: /*?page=*&sort_by*
+Disallow: /*?page=*&section_id*
+```
+
+**Implementation method:** Create `templates/robots.txt.liquid` in theme (most reliable), OR edit via Shopify Admin → Online Store → Preferences.
+
+**Rollback:** Delete `robots.txt.liquid` — Shopify auto-reverts to original rules instantly.
 
 ## Do NOT Implement Until Approved
 
-Discovery only as of 2026-10-06. Implementation requires separate task brief.
+Plan complete as of 2026-10-06. Implementation requires Piranav/GPT approval.
