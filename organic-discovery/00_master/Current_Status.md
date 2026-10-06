@@ -1,10 +1,14 @@
 # Organic Discovery — Current Status
 
-**Last updated:** 2026-10-05 (CC-02 link audit complete)  
+**Last updated:** 2026-10-06 (GA-09 redirect CSV prepared)  
 
 ---
 
 ## Overall Project Status
+
+**GA-09 CSV READY — Awaiting Piranav Manual Shopify Import**
+
+9 of 11 sold-out product pages have validated redirect destinations. CSV prepared and ready for Shopify bulk import. 2 products require manual decision first (Product #5 URL/title mismatch, Product #8 no in-stock replacement found).
 
 **CC-02 AUDIT COMPLETE — Awaiting Piranav/Muguntha Input on 3 Items**
 
@@ -19,6 +23,7 @@
 | **PI-01** | Stock-hiding rule investigation — proposal sent to Muguntha | 5 Oct 2026 | **BLOCKED** — awaiting Muguntha decision |
 | **CC-01** | Conduit collection SEO: H1 added | 5 Oct 2026 | **VERIFICATION** — H1 confirmed by screenshots; SEO title/meta/name pending |
 | **CC-02** | Fix conduit guide links | 5 Oct 2026 | **IN PROGRESS** — audit done, awaiting 3 answers from Piranav/Muguntha |
+| **GA-09** | Redirect 11 sold-out pages — CSV ready, 9 validated | 6 Oct 2026 | **IN PROGRESS — CSV ready, import pending** |
 | GA-01 | Remove hidden zero-price and promo text | 6 Oct 2026 | NOT STARTED |
 | GA-02 | Fix robots.txt pagination crawling | 6 Oct 2026 | NOT STARTED |
 | GA-08 | Correct bulb collection tags | 6 Oct 2026 | NOT STARTED |

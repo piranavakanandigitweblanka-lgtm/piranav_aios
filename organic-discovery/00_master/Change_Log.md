@@ -24,6 +24,24 @@ Each entry records:
 
 ---
 
+## 2026-10-06 — GA-09: Sold-out pages redirect CSV prepared (no website changes)
+
+- Change made: No website changes. GA-09 discovery and validation completed. 9-redirect CSV created, 2 products flagged for manual review.
+- URLs affected: 11 sold-out product URLs on ledsone.co.uk (see GA-09_Decision_Table.md for full list)
+- Changed by: Piranav (via Claude AIOS)
+- Approved by: PENDING — Piranav must review and manually import CSV into Shopify
+- Evidence: `organic-discovery/07_GA-09_soldout_pages_google_traffic/evidence/`
+- Data source: Shopify Admin API (read-only) — stock verified 2026-10-06
+- CSV: `organic-discovery/07_GA-09_soldout_pages_google_traffic/GA-09_Shopify_URL_Redirects.csv`
+- Before screenshot: PENDING — to be captured before Shopify import
+- After screenshot: PENDING — to be captured after Shopify import
+- 14-day check date: PENDING — set after implementation
+- 14-day result: PENDING
+
+_Website changes (Shopify redirect import) will be logged here when Piranav completes the manual import._
+
+---
+
 ## 2026-10-05 — AIOS Setup
 
 - Change made: Organic Discovery AIOS project created — no website changes made
