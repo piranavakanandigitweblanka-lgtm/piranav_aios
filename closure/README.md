@@ -1792,3 +1792,73 @@ Automated scheduled task fired at 03:13 UTC. No live user present. Task: fetch S
 - Duplicate-risk: GREEN — evidence file is new dated file, no duplicate risk
 
 **Session Result: BLOCKED — SEMrush API units = 0 (same as 2026-09-14). Neon DB also unreachable from remote container (same as 2026-09-21). No data fetched or written. Piranav notified via push notification.**
+
+---
+
+## 2026-10-06 — GA-09 Sold-Out Pages Redirect CSV
+
+### GA-09 — Full 11-Redirect CSV Complete
+
+| Field | Value |
+|---|---|
+| Requirement ID | GA-09-2026-10-06 |
+| Task | Find in-stock replacements for 11 sold-out ledsone.co.uk product pages and build Shopify bulk redirect CSV |
+| Asset Path | `organic-discovery/07_GA-09_soldout_pages_google_traffic/GA-09_Shopify_URL_Redirects.csv` |
+| Evidence Path | `organic-discovery/07_GA-09_soldout_pages_google_traffic/evidence/` |
+| GitHub Commits | `2f38a91`, `3e33ab8`, `149deb7` |
+| Queryability | YES — CSV, decision table, and evidence all in git |
+| Blockers | None — CSV complete, awaiting Piranav manual Shopify import |
+| Next Step | Piranav imports CSV via Shopify Admin → Online Store → Navigation → URL Redirects → Import |
+| Status | **PASS — CSV READY** |
+
+### 10-Folder Asset Check
+- Prompt: `organic-discovery/07_GA-09_soldout_pages_google_traffic/prompts/GA-09_redirect_research_prompt.md` — EXISTS
+- Evidence: `organic-discovery/07_GA-09_soldout_pages_google_traffic/evidence/` (4 evidence files) — EXISTS
+- Capability: N/A — no new system capability
+- Closure: this entry — DONE
+- PROMPT_REGISTER: updated this session
+- Validation: `organic-discovery/07_GA-09_soldout_pages_google_traffic/evidence/04_final_validation/GA-09_final_validation_2026-10-06.md` — EXISTS
+- Source-map: N/A — no new data sources (Shopify Admin API already mapped)
+- Docs/Handover/Reports: N/A
+- Duplicate-risk: GREEN
+
+**Session Result: PASS — 11/11 redirects resolved. CSV ready for import. #5 (orange dome) found via second API search. #8 (IR remote) redirected to /collections/led-modules per Piranav decision.**
+
+---
+
+## 2026-10-06 — CC-02 Blog Post HTML Verification + Local Fix
+
+### CC-02 — Blog Post HTML Verified and 4 hrefs Corrected Locally
+
+| Field | Value |
+|---|---|
+| Requirement ID | CC-02-HTML-FIX-2026-10-06 |
+| Task | Verify and correct 4 incorrect hrefs in local blog post HTML (pirana.html) for CC-02 Distance Saddle + Dome Cover sections |
+| Asset Path | `C:\Users\PC\Desktop\pirana.html` (local file — corrected) |
+| Evidence Path | `organic-discovery/02_CC-02_conduit_guide_links/evidence/CC-02_HTML_Verification_2026-10-06.md` |
+| GitHub Commits | `6210434`, `01fdbc7` |
+| Queryability | YES — evidence file in git |
+| Blockers | Shopify blog post edit still required to make changes live |
+| Next Step | Piranav pastes corrected HTML from pirana.html into Shopify blog post editor and saves |
+| Status | **PASS (local) — Shopify edit pending** |
+
+### Corrections Made
+| Line | Section | Old href | New href |
+|---|---|---|---|
+| 52 | Distance Saddle heading | `…/circular-conduit-box-lid-…` | `/products/20mm-black-metal-distance-saddles-for-conduit-pipe-installation` |
+| 64 | Distance Saddle image | `…/circular-conduit-box-lid-…` | `/products/20mm-black-metal-distance-saddles-for-conduit-pipe-installation` |
+| 140 | Dome Cover heading | `…/circular-conduit-box-lid-…` | `/products/20mm-conduit-dome-cover-conduit-fitting-20mm-nominal-size` |
+| 153 | Dome Cover image | `…/circular-conduit-box-lid-…` | `/products/20mm-conduit-dome-cover-conduit-fitting-20mm-nominal-size` |
+
+### 10-Folder Asset Check
+- Prompt: N/A — existing CC-02 prompt covers verification task
+- Evidence: `CC-02_HTML_Verification_2026-10-06.md` — CREATED
+- Capability: N/A
+- Closure: this entry — DONE
+- PROMPT_REGISTER: N/A — no new prompt
+- Validation: N/A — local HTML fix, no live page to validate yet (pending Shopify save)
+- Source-map: N/A
+- Docs/Handover/Reports: N/A
+- Duplicate-risk: GREEN — new dated evidence file, no duplicate
+
+**Session Result: PASS (local) — 4 hrefs corrected in pirana.html. Old URL fully removed. Fisherman + E27 links checked: no cleanup needed. Shopify blog post save required to go live.**
