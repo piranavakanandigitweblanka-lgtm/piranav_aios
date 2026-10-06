@@ -1,6 +1,6 @@
 # GA-02 — Fix Robots.txt Collection Pagination Crawling
 
-**Status:** IMPLEMENTATION PLAN COMPLETE — Awaiting approval to implement  
+**Status:** PRE-IMPLEMENTATION VERIFIED — EDIT to existing file confirmed — Awaiting approval  
 **Created:** 2026-10-06  
 **Theme:** ledsone-uk-theme  
 **Deadline:** 6 Oct 2026
@@ -41,6 +41,10 @@ Disallow: /*?page=*&section_id*
 
 **Rollback:** Delete `robots.txt.liquid` — Shopify auto-reverts to original rules instantly.
 
+## CORRECTION — Implementation is an EDIT, not CREATE
+
+The file `templates/robots.txt.liquid` **already exists** in the theme. The implementation is an EDIT to this file — replace 3 lines. See `evidence/GA-02_pre-implementation-verification_2026-10-06.md` for exact steps.
+
 ## Do NOT Implement Until Approved
 
-Plan complete as of 2026-10-06. Implementation requires Piranav/GPT approval.
+Pre-implementation verification complete as of 2026-10-06. Awaiting Piranav/GPT approval.
