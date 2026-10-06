@@ -212,6 +212,27 @@
   }
 </style>
 
+{%- comment -%} Liquid qualifiers mirror the JS conditions exactly — no HTML rendered for non-qualifying products {%- endcomment -%}
+{%- assign pk_show_pl = false -%}
+{%- for _col in product.collections -%}
+  {%- if _col.handle == 'wall-light' or _col.handle == 'pendant-lights' or _col.handle == 'easy-fit-shades' -%}
+    {%- assign pk_show_pl = true -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- assign pk_show_vc = false -%}
+{%- if product.tags contains 'Vintage Cables' -%}
+  {%- assign pk_show_vc = true -%}
+{%- endif -%}
+{%- unless pk_show_vc -%}
+  {%- for _col in product.collections -%}
+    {%- if _col.handle == '2core-round' or _col.handle == '2core-twisted' or _col.handle == '3core-round' or _col.handle == '3core-twisted' or _col.handle == 'vintage-cables' -%}
+      {%- assign pk_show_vc = true -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endunless -%}
+
+{%- if pk_show_pl -%}
 <!-- Promo Banner: Wall Lights / Pendant Lights / Lampshades -->
 <div id="pl-banner" class="vc-banner-carousel" style="display: none;">
   <div class="pl-banner-slide active">
@@ -247,7 +268,9 @@
     <button class="vc-dot" data-index="1" aria-label="Banner 2"></button>
   </div>
 </div>
+{%- endif -%}
 
+{%- if pk_show_vc -%}
 <!-- Vintage Cables Carousel -->
 <div id="vc-banner-carousel" style="display: none;">
   <div class="vc-banner-slide vc-banner-slide--note active">
@@ -291,6 +314,7 @@
     <button class="vc-dot" data-index="2" aria-label="Banner 3"></button>
   </div>
 </div>
+{%- endif -%}
 
 <script>
   (function () {
