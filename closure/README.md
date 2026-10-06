@@ -2015,3 +2015,33 @@ Automated scheduled task fired at 03:13 UTC. No live user present. Task: fetch S
 - Handover: N/A
 - Reports: N/A
 - Duplicate-risk: GREEN — new dated verification file, no duplicates
+
+---
+
+## 2026-10-06 — GA-02 Robots.txt Collection Pagination — STEP 3 Local Implementation
+
+| Field | Value |
+|---|---|
+| Requirement ID | GA-02-IMPL-2026-10-06 |
+| Task | STEP 3 LOCAL ONLY — Edit `templates/robots.txt.liquid` to replace `Disallow: /*?page=*` with 3 targeted rules in all 3 user-agent blocks. No Shopify deployment performed. |
+| Asset Path | `shopify_projects/ledsone-uk-theme/templates/robots.txt.liquid` |
+| Evidence Path | `organic-discovery/05_GA-02_robots-txt-pagination/evidence/GA-02_implementation-record_2026-10-06.md` |
+| GitHub / Commit | PENDING — not yet committed |
+| Queryability Result | YES |
+| Blockers | Live deployment pending — Piranav must run shopify theme push and verify GSC |
+| Next Step | Deploy: `shopify theme push` from theme dir. Verify live robots.txt. GSC URL Inspection on /collections/all?page=2. |
+| Result | PASS (local change validated — live verification still pending) |
+
+### 10-Folder Asset Check — GA-02 Step 3
+
+- Prompt: N/A — existing prompt covers this
+- Evidence: `organic-discovery/05_GA-02_robots-txt-pagination/evidence/GA-02_implementation-record_2026-10-06.md` — CREATED
+- Capability: N/A
+- Closure: this entry — DONE
+- PROMPT_REGISTER: no update needed for implementation step
+- Validation: `validation/piranav/GA-02_implementation-validation_2026-10-06.md` — CREATED
+- Source-map: N/A
+- Docs: N/A
+- Handover: N/A — Piranav deploys directly via shopify theme push
+- Reports: N/A
+- Duplicate-risk: GREEN — new dated implementation record, no duplicates
