@@ -8,7 +8,8 @@
 
 **GA-09 CSV READY — Awaiting Piranav Manual Shopify Import**
 
-10 of 11 sold-out product pages have validated redirect destinations. CSV prepared and ready for Shopify bulk import. 1 product requires manual decision (#8 — no in-stock replacement found). Product #5 (orange dome pendant) resolved: exact match found (`orange-metal-cylinder-dome-light-shade-lamp-shade-ceiling-light`, 116 units), added to CSV.
+**11 of 11 sold-out product pages resolved. CSV complete — ready for Shopify bulk import.**  
+#5 resolved: orange dome exact match (116 units). #8 resolved: collection redirect to `/collections/led-modules` approved by Piranav.
 
 **CC-02 AUDIT COMPLETE — Awaiting Piranav/Muguntha Input on 3 Items**
 

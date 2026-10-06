@@ -17,7 +17,7 @@
 | 5 | Orange Dome Pendant Lampshade (URL/title mismatch) | Orange Metal Cylinder Dome Light Shade ~1891 | `/products/orange-metal-cylinder-dome-light-shade-lamp-shade-ceiling-light` | 116 units | HIGH | 301 Redirect |
 | 6 | LED Outdoor Wall Light Up/Down | Modern 12W LED Outdoor Wall Light IP54 Up Down ~4964 | `/products/led-outdoor-wall-light` | 94 units | HIGH | 301 Redirect |
 | 7 | 3W E27 Warm White Globe Bulb | LED E27 A60 18W Warm White 2700K ~1379 | `/products/18w-e27-light-bulb-energy-saving-lamp-warm-white-globe` | 1,334 units | HIGH | 301 Redirect |
-| 8 | 12V IR Remote Controller (RGB LED strip) | — | — | 0 units | — | **No Safe Redirect** |
+| 8 | 12V IR Remote Controller (RGB LED strip) | LED Modules Collection | `/collections/led-modules` | Collection active, 11 products showing | MEDIUM | 301 Redirect |
 | 9 | Green Retro Metal Pendant Lampshade Easy Fit | Black Metal Retro Ceiling Pendant Shade Easy Fit ~2089 | `/products/black-metal-retro-ceiling-pendant-light-shade-easy-fit-vintage-lampshade` | 2,208 units | HIGH | 301 Redirect |
 | 10 | Turkish Moroccan Mosaic Glass Table Lamp | Mosaic Glass Bedside Table Lamp Wooden Base E27 ~5010 | `/products/unique-plug-in-bed-lamp` | 134 units | HIGH | 301 Redirect |
 | 11 | 240V to 12V Power Supply Universal Adapter | 12V LED Driver Constant Voltage IP44 AC to DC ~4482 | `/products/led-driver-ac-240v-to-dc-12v-constant-voltage-power-supply-adapter` | 283 units | MEDIUM | 301 Redirect |
@@ -92,12 +92,12 @@
 
 ---
 
-### #8 — 12V IR Remote Controller → NO SAFE REDIRECT
+### #8 — 12V IR Remote Controller → /collections/led-modules | MEDIUM
 
-**Source:** RGB LED strip IR remote controller, 24-key and 44-key variants, 12V, £4.99–£5.99  
-**API search result:** No in-stock IR/RF remote controllers for LED strips found in entire catalogue. All RGB controller products: 0 inventory. Closest in-stock results (crystal chandelier remote, ceiling fan remote) are completely different product intent.  
-**Decision:** No safe redirect. Sending traffic to an unrelated product would harm user experience.  
-**See:** `GA-09_Manual_Review.md` for options.
+**Source:** RGB LED strip IR remote controller, 24-key and 44-key variants, SKUs: NFRC24, NFRC44, 12V, £4.99–£5.99  
+**No in-stock product replacement:** All RGB/remote controller products confirmed 0 inventory across entire catalogue.  
+**Collection redirect chosen:** `/collections/led-modules` — "Led Modules | ledsone.co.uk" — 11 products live (out-of-stock controller is hidden from collection page by Shopify). Collection contains 12V LED products in the same ecosystem.  
+**Decision approved by:** Piranav (2026-10-06)
 
 ---
 
