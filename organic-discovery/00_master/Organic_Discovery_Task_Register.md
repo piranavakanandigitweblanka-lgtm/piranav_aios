@@ -17,7 +17,7 @@
 | 3 | GA-09 | Redirect 11 sold-out product pages to closest in-stock replacements — 11-redirect CSV complete | Piranav imports CSV | 6 Oct 2026 18:00 SL | IN PROGRESS — CSV complete (11/11), awaiting Piranav Shopify import |
 | 4 | GA-01 | Remove hidden 'Sale price 0.00' text and cable promo codes (LEDCL10%, SAVESJ15) from product page template | Piranav; Muguntha approves | 6 Oct 2026 | NOT STARTED |
 | 4 | GA-02 | Remove `Disallow: /*?page=*` from robots.txt, rebuild from Shopify default, re-submit sitemap | Piranav; Muguntha approves | 6 Oct 2026 | NOT STARTED |
-| 5 | GA-08 | Fix bulb collection tags (51 pendants out of low-wattage-bulbs, 4 LEDs out of incandescent-bulbs, 27 missing dimmable bulbs, E14 and B22 corrections) | Piranav + Thuwaraga | 6 Oct 2026 | NOT STARTED |
+| 5 | GA-08 | Fix bulb collection tags (51 pendants out of low-wattage-bulbs, 4 LEDs out of incandescent-bulbs, 27 missing dimmable bulbs, E14 and B22 corrections) | Piranav + Thuwaraga | 6 Oct 2026 | IN PROGRESS — Step 1 Discovery COMPLETE 2026-10-07. All 53 low-wattage products confirmed pendants. All 4 incandescent are LED. 11 dimmable missing from DB. ~6941/~6742 missing E14 tag. ~1045 B22/E27 needs review. Blocker: dimmable count 11 vs 27 claimed — source doc needed. |
 | 6 | OD-A5 | Remove 7 wrong products from E27 and B22 bulb collections (tags only) | Piranav | 9 Oct 2026 | NOT STARTED |
 | 7 | PI-02 | Conduit guides: add guide links (Steps 3, 5, 6 by 16 Oct; Step 7 from 19 Oct) | Piranav | 9 Oct 2026 (Steps 3,5,6) | NOT STARTED |
 | 8 | CC-04 | Remove 278 hidden zero-price strings from conduit collection; check discount badges | Piranav | 6 Oct 2026 | NOT STARTED |

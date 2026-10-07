@@ -81,6 +81,15 @@ The source map is the single place to look up "where does this file live?"
 
 ---
 
+## Reference Documents / Guides
+
+| Document | Local Path | Format | Git Tracked | Notes |
+|---|---|---|---|---|
+| PostgreSQL on Contabo Ubuntu — Setup Guide | `C:\Users\PC\Downloads\PostgreSQL on Contabo Ubuntu — Setup Guide.pdf` | PDF | NO — Downloads folder | Standalone install guide: apt install, DB/user setup, pg_dump restore, Nginx, troubleshooting. Source HTML at `docs/infrastructure/postgresql-on-contabo-ubuntu-guide.html` |
+| PostgreSQL on Contabo — Source HTML | `piranav_aios/docs/infrastructure/postgresql-on-contabo-ubuntu-guide.html` | HTML | YES | Print-to-PDF source for the guide above |
+
+---
+
 ## Data Source Map
 
 | Data Source | Access Method | Auth Required | Notes |
