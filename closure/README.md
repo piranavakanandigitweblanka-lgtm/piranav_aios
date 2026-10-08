@@ -2154,3 +2154,34 @@ Automated scheduled task fired at 03:13 UTC. No live user present. Task: fetch S
 | Result | PASS |
 
 **GA-02 summary:** `Disallow: /*?page=*` removed from live robots.txt. Replaced with 3 targeted rules in User-agent: * and adsbot-google. Live verification confirmed: /collections/all?page=2 ALLOWED, all 3 combined-parameter URLs BLOCKED. No bare page= rule remains.
+
+---
+
+## 2026-10-08 — Capability Library Reorganisation + Governance
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| CAP-REORG-2026-10-08-001 | Created `capability/INDEX.md` — date-wise index of all 80 capability files, monthly sections 2026-07 through 2026-10, queryability fields per row | `capability/INDEX.md` | `evidence/piranav/capability-library-reorganisation-and-governance-2026-10-08.md` | PENDING — not yet committed | YES | NONE | Commit when Piranav instructs | PASS |
+| CAP-REORG-2026-10-08-002 | Physically moved 80 capability files from owner-subfolders (piranav/, sajeepan/, sonya/, theekshy/) to `capability/2026/MM/YYYY-MM-DD/` date-wise structure. Old folders deleted. | `capability/2026/` (80 files) | Same | PENDING | YES | NONE | NONE | PASS |
+| CAP-REORG-2026-10-08-003 | Updated 211 path references across 41 AIOS .md files via Python script. Residual references in CLAUDE.md and historical snapshot files are intentional (conceptual / historical, not live links). | `scratchpad/fix_refs.py` (temp) | Same | PENDING | YES | NONE | NONE | PASS |
+| CAP-REORG-2026-10-08-004 | Added automatic capability update governance — extended `prompts/closure/capability-log-extraction.md` (Part 2) with 5-way classification, 9 trigger conditions, decision order, date rule, INDEX rule, 7-question queryability test, closure block format. Extended `daily-session-closure.md` to replace informal Capability Log with formal Capability Update Check block. Updated PROMPT_REGISTER.md. | `prompts/closure/capability-log-extraction.md`, `prompts/closure/daily-session-closure.md`, `PROMPT_REGISTER.md` | Same | PENDING | YES | NONE | NONE | PASS |
+
+### 10-Folder Asset Check — Capability Reorganisation + Governance
+
+- Prompt: PASS — `prompts/closure/capability-log-extraction.md` Part 2 (extended, not new file)
+- Evidence: PASS — `evidence/piranav/capability-library-reorganisation-and-governance-2026-10-08.md`
+- Capability: N/A — governance rule and library reorganisation, not a new system capability
+- Closure: PASS — this entry
+- PROMPT_REGISTER: PASS — row added (`capability-document-update-governance`)
+- Validation: PASS — `validation/piranav/capability-library-reorganisation-governance-2026-10-08.md`
+- Source-map: N/A — no new data source introduced
+- Docs: N/A — no new topic area requiring a docs index
+- Handover: N/A — Piranav continuing
+- Reports: N/A — no reportable data export
+- Duplicate-risk: GREEN — extended existing prompt files, did not create parallel copies
+
+### Capability Update Check — 2026-10-08
+Capability Decision: NO CHANGE
+Reason: This session reorganised the capability library structure and added governance rules — it did not create a new system capability that requires its own capability file.
+
+**Session Result: PASS** — All 4 tasks complete. 80 files moved, 211 references updated, governance rules embedded in existing prompt files. Pending commit only.

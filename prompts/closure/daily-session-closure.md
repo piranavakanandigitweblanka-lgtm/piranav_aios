@@ -55,11 +55,25 @@ Rules:
 After the table, add:
 **Session Result: PASS / FAIL** — [one-line reason]
 
-Then write a CAPABILITY LOG entry for any reusable pattern produced:
+Then write a CAPABILITY UPDATE CHECK for each trigger met this session.
+Trigger conditions are defined in `prompts/closure/capability-log-extraction.md` Part 2.
+If multiple decisions were made, repeat the block for each capability.
 
-### Capability Log — [YYYY-MM-DD]
-| Pattern Name | What Was Built | Reusable | Where It Applies |
-|---|---|---|---|
+### Capability Update Check — [YYYY-MM-DD]
+Capability Decision: NEW / EXTEND / UPDATE / NO CHANGE / REVIEW REQUIRED
+Capability Name: [name from capability/INDEX.md or new name]
+Capability Path: [capability/2026/MM/YYYY-MM-DD/filename.md or N/A]
+Evidence Path: [evidence/... or validation/... or N/A]
+Reason: [why this decision — one sentence]
+INDEX Updated: YES / NO / N/A
+Queryability: PASS / FAIL / N/A
+Reviewer: [Claude / GPT / Piranav]
+Next Action: [NONE or what must happen before this capability is usable]
+
+If NO trigger conditions were met this session:
+### Capability Update Check — [YYYY-MM-DD]
+Capability Decision: NO CHANGE
+Reason: [one sentence — what the session did and why no capability action was needed]
 
 Then state git status:
 ### Git Status — [YYYY-MM-DD]
@@ -95,7 +109,7 @@ FAIL: Any task missing a row. Any evidence path pointing to a non-existent file.
 ACTIVE
 
 ## Last Updated
-2026-07-01
+2026-10-08
 
 ## Source Evidence
 - `closure/README.md` — closure format established 2026-06-25; all sessions from 2026-06-09 have CAPABILITY LOG entries
