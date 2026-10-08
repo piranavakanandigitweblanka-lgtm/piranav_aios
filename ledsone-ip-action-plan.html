@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>LEDSone — IP Infringement Analysis & Action Plan</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Georgia', serif;
+      font-size: 11pt;
+      color: #1a1a1a;
+      background: #fff;
+      padding: 60px 80px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    .header {
+      border-bottom: 3px solid #1a1a1a;
+      padding-bottom: 16px;
+      margin-bottom: 28px;
+    }
+    .company-name {
+      font-size: 20pt;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .company-details {
+      font-size: 9pt;
+      color: #555;
+      margin-top: 5px;
+      line-height: 1.7;
+    }
+    .doc-meta {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0 30px 0;
+      font-size: 10pt;
+      color: #444;
+    }
+    .label {
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 8pt;
+      letter-spacing: 1px;
+      color: #888;
+    }
+    h1.title {
+      font-size: 14pt;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      text-align: center;
+      border: 2px solid #1a1a1a;
+      padding: 11px 20px;
+      margin-bottom: 34px;
+    }
+    h2 {
+      font-size: 11.5pt;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1.5px solid #1a1a1a;
+      padding-bottom: 5px;
+      margin: 32px 0 14px 0;
+    }
+    p {
+      margin-bottom: 12px;
+      line-height: 1.85;
+    }
+    /* Comparison boxes */
+    .compare {
+      display: flex;
+      gap: 16px;
+      margin: 16px 0 24px 0;
+    }
+    .compare-box {
+      flex: 1;
+      border: 1.5px solid #ccc;
+      border-radius: 4px;
+      padding: 14px 16px;
+    }
+    .compare-box.ours {
+      border-color: #2a6a2a;
+      background: #f4faf4;
+    }
+    .compare-box.theirs {
+      border-color: #a03030;
+      background: #fdf4f4;
+    }
+    .box-title {
+      font-size: 9pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .ours .box-title { color: #2a6a2a; }
+    .theirs .box-title { color: #a03030; }
+    .compare-box ul {
+      margin-left: 16px;
+      line-height: 1.9;
+      font-size: 10.5pt;
+    }
+    /* Claims table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px 0;
+      font-size: 10.5pt;
+    }
+    th {
+      background: #1a1a1a;
+      color: #fff;
+      text-align: left;
+      padding: 8px 12px;
+      font-size: 9pt;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #e0e0e0;
+      vertical-align: top;
+      line-height: 1.6;
+    }
+    tr:nth-child(even) td { background: #f9f9f9; }
+    .strong { color: #2a6a2a; font-weight: bold; }
+    .helps { color: #1a4a8a; font-weight: bold; }
+    /* Steps */
+    .step {
+      margin: 0 0 20px 0;
+      border-left: 4px solid #1a1a1a;
+      padding-left: 16px;
+    }
+    .step-title {
+      font-size: 11pt;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    .step ul {
+      margin-left: 18px;
+      line-height: 2;
+      font-size: 10.5pt;
+    }
+    .step p {
+      font-size: 10.5pt;
+      margin-bottom: 6px;
+    }
+    /* Email block */
+    .email-block {
+      background: #f5f5f5;
+      border: 1.5px solid #bbb;
+      border-radius: 4px;
+      padding: 16px 20px;
+      margin: 12px 0 20px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 9.5pt;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+    .email-subject {
+      font-weight: bold;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      font-family: Georgia, serif;
+      font-size: 10pt;
+    }
+    .highlight-box {
+      background: #fff8e1;
+      border-left: 4px solid #f0a500;
+      padding: 12px 16px;
+      margin: 16px 0;
+      font-size: 10.5pt;
+      line-height: 1.7;
+    }
+    .footer-note {
+      margin-top: 40px;
+      font-size: 8.5pt;
+      color: #888;
+      border-top: 1px solid #ddd;
+      padding-top: 12px;
+      line-height: 1.6;
+    }
+    @media print {
+      body { padding: 40px 55px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="company-name">LEDSone UK Ltd</div>
+    <div class="company-details">
+      ledsone.co.uk &nbsp;|&nbsp; ledsone.de &nbsp;|&nbsp; admin@ledsone.de
+    </div>
+  </div>
+
+  <div class="doc-meta">
+    <div><div class="label">Date</div>8 October 2026</div>
+    <div><div class="label">Ref</div>LEDSone / IP / 2026-001</div>
+    <div><div class="label">Prepared by</div>LEDSone Internal</div>
+  </div>
+
+  <h1 class="title">IP Infringement — Analysis &amp; Action Plan</h1>
+
+  <!-- SECTION 1 -->
+  <h2>1. Site Identification</h2>
+
+  <div class="compare">
+    <div class="compare-box ours">
+      <div class="box-title">Ours — LEDSone</div>
+      <ul>
+        <li><strong>ledsone.co.uk</strong> — UK store</li>
+        <li><strong>ledsone.de</strong> — German market</li>
+        <li>Address: Schmutter Str. 16, 78647 Trossingen, Germany</li>
+        <li>Contact: admin@ledsone.de / jefri@ledsone.de</li>
+        <li>Full legal transparency — VAT, address, registration</li>
+        <li>Same product range: pendant lights, LED bulbs, vintage lighting</li>
+      </ul>
+    </div>
+    <div class="compare-box theirs">
+      <div class="box-title">Infringing — Lidsone</div>
+      <ul>
+        <li><strong>lidsone.com</strong></li>
+        <li>Language: German &nbsp;|&nbsp; Currency: EUR</li>
+        <li>Contact: support@lidsone.com</li>
+        <li><strong>No address listed</strong></li>
+        <li><strong>No VAT number listed</strong></li>
+        <li><strong>No company registration listed</strong></li>
+        <li>Using our logo without authorisation</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <h2>2. Legal Claims</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Claim</th>
+        <th>Strength</th>
+        <th>Basis</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Copyright infringement (logo)</strong></td>
+        <td><span class="strong">Strong</span></td>
+        <td>Our logo is original creative work — automatically protected under UK &amp; EU copyright law. Lidsone reproduced it without licence or authorisation.</td>
+      </tr>
+      <tr>
+        <td><strong>Passing off / Trade dress</strong></td>
+        <td><span class="strong">Strong</span></td>
+        <td>Similar name (lidsone vs ledsone) + copied logo = deliberately misleading consumers into believing an association with LEDSone UK Ltd.</td>
+      </tr>
+      <tr>
+        <td><strong>EU unfair competition law</strong></td>
+        <td><span class="strong">Strong</span></td>
+        <td>Lidsone operates in the EU targeting German speakers — the same market as ledsone.de. This constitutes an unfair commercial practice under Directive 2005/29/EC.</td>
+      </tr>
+      <tr>
+        <td><strong>EU E-Commerce Directive breach</strong></td>
+        <td><span class="helps">Helps us</span></td>
+        <td>No VAT number, no business address, no company registration — in breach of Article 5 of the EU E-Commerce Directive (2000/31/EC). This weakens any defence they may attempt.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 3 -->
+  <h2>3. Action Steps</h2>
+
+  <div class="step">
+    <div class="step-title">Step 1 — Evidence Gathering (Do This Today)</div>
+    <ul>
+      <li>Screenshot lidsone.com header/logo side by side with ledsone.co.uk</li>
+      <li>Archive the page: visit <strong>web.archive.org/save/https://lidsone.com</strong></li>
+      <li>Save their logo file directly: <strong>lidsone.com/media/site_logos/lidsone.com_logo_raw.png</strong></li>
+      <li>Record the date and time of discovery: <strong>8 October 2026</strong></li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-title">Step 2 — WHOIS Lookup</div>
+    <p>Go to <strong>who.is/whois/lidsone.com</strong> to identify:</p>
+    <ul>
+      <li>Domain registrar</li>
+      <li>Registration date (if after our brand launch = stronger case)</li>
+      <li>Hosting provider (for takedown request)</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-title">Step 3 — Send Cease &amp; Desist Email</div>
+    <p>Send to: <strong>support@lidsone.com</strong></p>
+    <div class="email-block"><div class="email-subject">Subject: Cease and Desist — Unauthorised Use of LEDSone Registered Logo</div>To Lidsone,
+
+We are LEDSone UK Ltd, the registered owner of the LEDSone brand and logo
+(ledsone.co.uk / ledsone.de).
+
+It has come to our attention that lidsone.com is displaying a logo that is
+identical or substantially similar to our registered brand identity.
+This constitutes copyright infringement and passing off under UK and EU law.
+
+We demand that you:
+  1. Immediately remove our logo from your website and all associated materials
+  2. Cease all use of our brand identity, logo, or trade dress
+  3. Confirm removal in writing within 7 days of this notice
+
+Failure to comply will result in us pursuing legal remedies including
+injunctive relief and damages. We reserve all rights.
+
+LEDSone UK Ltd
+ledsone.co.uk | ledsone.de
+admin@ledsone.de</div>
+  </div>
+
+  <div class="step">
+    <div class="step-title">Step 4 — Report to Hosting Platform &amp; Registrar</div>
+    <ul>
+      <li><strong>Shopify (if applicable):</strong> shopify.com/legal/report-ip — Shopify acts quickly on IP complaints</li>
+      <li><strong>Domain registrar:</strong> File IP abuse report (found via WHOIS in Step 2)</li>
+      <li><strong>Hosting provider:</strong> File DMCA / IP takedown with their host</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <div class="step-title">Step 5 — If No Response Within 7 Days</div>
+    <ul>
+      <li>Escalate to a UK or EU intellectual property solicitor</li>
+      <li>Apply for injunctive relief to prevent continued infringement</li>
+      <li>File a formal complaint with the <strong>EUIPO</strong> (EU Intellectual Property Office) if trademark is registered</li>
+      <li>Pursue claim for damages and account of profits</li>
+    </ul>
+  </div>
+
+  <!-- SECTION 4 -->
+  <h2>4. Recommended Next Step</h2>
+
+  <div class="highlight-box">
+    <strong>Check trademark registration status.</strong> If the LEDSone logo is formally registered as a UK or EU trademark, reference the registration number in all correspondence — it significantly strengthens the legal position and enables faster enforcement action through EUIPO and UK IPO.
+    <br/><br/>
+    If not yet registered, consider filing immediately at <strong>ipo.gov.uk</strong> (UK) or <strong>euipo.europa.eu</strong> (EU). Filing date creates a priority date even before registration is complete.
+  </div>
+
+  <div class="footer-note">
+    This document is confidential and prepared for internal use by LEDSone UK Ltd.
+    It does not constitute legal advice. For formal legal proceedings, consult a qualified IP solicitor.
+    All evidence referenced has been preserved and timestamped as of 8 October 2026.
+  </div>
+
+</body>
+</html>
