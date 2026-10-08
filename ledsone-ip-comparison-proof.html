@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>LEDSone vs Lidsone — Evidence of Data Theft</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: Arial, sans-serif; font-size: 10pt; color: #1a1a1a; background:#fff; padding:40px 50px; max-width:1000px; margin:0 auto; }
+    h1 { font-size:16pt; text-transform:uppercase; letter-spacing:1px; text-align:center; border:2px solid #1a1a1a; padding:12px; margin-bottom:8px; }
+    .subtitle { text-align:center; font-size:9pt; color:#555; margin-bottom:30px; }
+    .badge { display:inline-block; background:#c0392b; color:#fff; font-size:8pt; font-weight:bold; padding:3px 8px; border-radius:3px; letter-spacing:1px; text-transform:uppercase; }
+    .badge.green { background:#27ae60; }
+    h2 { font-size:12pt; text-transform:uppercase; letter-spacing:1px; background:#1a1a1a; color:#fff; padding:8px 12px; margin:28px 0 0 0; }
+    .compare-grid { display:grid; grid-template-columns:1fr 1fr; border:1px solid #ccc; }
+    .col { padding:14px 16px; }
+    .col.ours { background:#f0faf0; border-right:1px solid #ccc; }
+    .col.theirs { background:#fdf0f0; }
+    .col-header { font-size:8.5pt; font-weight:bold; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; padding-bottom:6px; border-bottom:2px solid; }
+    .ours .col-header { color:#27ae60; border-color:#27ae60; }
+    .theirs .col-header { color:#c0392b; border-color:#c0392b; }
+    table.data { width:100%; border-collapse:collapse; font-size:9.5pt; }
+    table.data td { padding:5px 6px; border-bottom:1px solid #e0e0e0; vertical-align:top; }
+    table.data td:first-child { font-weight:bold; color:#555; width:100px; white-space:nowrap; }
+    .match { background:#fff3cd; font-weight:bold; }
+    .stolen { background:#fde8e8; font-weight:bold; color:#c0392b; }
+    .verdict { grid-column:1/-1; background:#fff8e1; border-top:2px solid #f0a500; padding:12px 16px; }
+    .verdict-title { font-weight:bold; font-size:9pt; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; color:#b7770d; }
+    .verdict ul { margin-left:18px; line-height:1.9; font-size:9.5pt; }
+    .verdict ul li::marker { color:#c0392b; }
+    .images-block { background:#f5f5f5; border:1px solid #ddd; padding:10px 14px; margin-top:8px; font-size:8.5pt; line-height:1.9; font-family:monospace; }
+    .images-block .title { font-family:Arial,sans-serif; font-weight:bold; font-size:8.5pt; margin-bottom:4px; color:#333; }
+    h3 { font-size:11pt; margin:28px 0 12px 0; border-bottom:2px solid #1a1a1a; padding-bottom:5px; }
+    .summary-table { width:100%; border-collapse:collapse; font-size:10pt; margin:12px 0; }
+    .summary-table th { background:#1a1a1a; color:#fff; padding:8px 12px; text-align:left; font-size:9pt; text-transform:uppercase; }
+    .summary-table td { padding:8px 12px; border-bottom:1px solid #e0e0e0; }
+    .summary-table tr:nth-child(even) td { background:#f9f9f9; }
+    .red { color:#c0392b; font-weight:bold; }
+    .green2 { color:#27ae60; font-weight:bold; }
+    .highlight-box { background:#fdf0f0; border:2px solid #c0392b; padding:14px 18px; margin:20px 0; }
+    .highlight-box h4 { font-size:11pt; color:#c0392b; margin-bottom:8px; }
+    .highlight-box ul { margin-left:18px; line-height:2; font-size:10pt; }
+    .footer { margin-top:40px; font-size:8pt; color:#888; border-top:1px solid #ddd; padding-top:12px; line-height:1.6; }
+    @media print { body { padding:25px 35px; } }
+  </style>
+</head>
+<body>
+
+<h1>Evidence of Full Product Data Theft</h1>
+<div class="subtitle">
+  ledsone.de (LEDSone UK Ltd) &nbsp;vs&nbsp; lidsone.com (Infringing Party)<br/>
+  Captured: 8 October 2026 &nbsp;|&nbsp; Ref: IP-2026-10-08-001 &nbsp;|&nbsp; Method: Live automated web scrape
+</div>
+
+<!-- SUMMARY -->
+<h3>1. Scale of Theft</h3>
+<table class="summary-table">
+  <thead><tr><th>Metric</th><th>ledsone.de (Ours)</th><th>lidsone.com (Infringing)</th><th>Match</th></tr></thead>
+  <tbody>
+    <tr><td>Total products</td><td>2,544</td><td><strong>2,485</strong></td><td class="red">97.7% copied</td></tr>
+    <tr><td>Product categories</td><td>Multiple</td><td>118</td><td class="red">Copied</td></tr>
+    <tr><td>Our brand name "LEDSONE" in their titles</td><td>—</td><td class="red">YES — SKU ~1085, ~1086</td><td class="red">Forgot to remove</td></tr>
+    <tr><td>Our brand in their image filenames</td><td>—</td><td class="red">YES — Ledsone_12V_100W_LED_Treiber.jpg</td><td class="red">Direct copy</td></tr>
+    <tr><td>Matching internal SKU numbers</td><td>~1043 to ~1097+</td><td class="red">ALL match exactly</td><td class="red">Database copy</td></tr>
+    <tr><td>Business address listed</td><td class="green2">YES</td><td class="red">NOT LISTED</td><td>—</td></tr>
+    <tr><td>VAT number</td><td class="green2">YES</td><td class="red">NOT LISTED</td><td>—</td></tr>
+    <tr><td>About page</td><td class="green2">Real lighting business</td><td class="red">Generic fashion template</td><td>Fake</td></tr>
+  </tbody>
+</table>
+
+<div class="highlight-box">
+  <h4>SMOKING GUN — Our brand name appears in their product listings</h4>
+  <ul>
+    <li><strong>"LEDSONE 12v Netzteil 100w Konstantspannung | IP20"</strong> — listed on lidsone.com. They forgot to remove our brand name.</li>
+    <li><strong>"Ledsone LED Treiber 12V 80W 6.6A IP20 Netzteil Trafo"</strong> — listed on lidsone.com. Our name still in the title.</li>
+    <li><strong>Image file: "Ledsone_12V_100W_LED_Treiber.jpg"</strong> — uploaded to their Shopify store. Contains our brand name in the filename.</li>
+  </ul>
+</div>
+
+<!-- PRODUCT 1 -->
+<h2>Product Comparison 1 — LEDSONE 12v Netzteil 100w | SKU ~1085</h2>
+<div class="compare-grid">
+  <div class="col ours">
+    <div class="col-header">ledsone.de — OURS</div>
+    <table class="data">
+      <tr><td>URL</td><td>ledsone.de/products/dc12v-100w-ip20-universell-geregeltes-schaltnetzteil</td></tr>
+      <tr class="match"><td>Title</td><td>LEDSONE 12v Netzteil 100w Konstantspannung | IP20 ~1085</td></tr>
+      <tr class="match"><td>SKU</td><td>~1085</td></tr>
+      <tr class="match"><td>Price</td><td>€12.25 EUR</td></tr>
+      <tr><td>Description</td><td>"Constant DC 12V at 8.5A. 100% full-load burn-in tested. die Lebensdauer von MR16/MR11-LED-Lampen fast verdoppeln"</td></tr>
+      <tr><td>Reviews</td><td>3 reviews, 4.67/5 stars</td></tr>
+    </table>
+  </div>
+  <div class="col theirs">
+    <div class="col-header">lidsone.com — INFRINGING <span class="badge">COPIED</span></div>
+    <table class="data">
+      <tr><td>URL</td><td>lidsone.com/products/ledsone-12v-netzteil-100w-konstantspannung-ip20</td></tr>
+      <tr class="stolen"><td>Title</td><td>LEDSONE 12v Netzteil 100w Konstantspannung | IP20 ~1085 ← OUR BRAND NAME</td></tr>
+      <tr class="stolen"><td>SKU</td><td>~1085 ← IDENTICAL PRIVATE SKU</td></tr>
+      <tr class="stolen"><td>Price</td><td>€12.25 base → selling at €9.17 ← SAME BASE PRICE</td></tr>
+      <tr><td>Description</td><td>"Constant DC 12V at 8.5A. nearly double LED lamp lifespan" ← SAME SENTENCES</td></tr>
+      <tr><td>Internal SKU</td><td>12IP20100-IDE</td></tr>
+    </table>
+  </div>
+  <div class="verdict">
+    <div class="verdict-title">Images stolen — lidsone.com CDN (store 1/0414/9864/0551):</div>
+    <div class="images-block">
+DC12V_-Transformator_-_100W_IP20.jpg &nbsp;|&nbsp; LED_Netzteil_12V_100W_led_driver.jpg &nbsp;|&nbsp; LED_Transformator_12V_DC.jpg<br/>
+100W_LED_Treiber_IP20.jpg &nbsp;|&nbsp; <strong style="color:#c0392b">Leistungsstarkes_12V_100W_Netzteil_f_r_LED_Streifen.jpg</strong><br/>
+Konstantspannungstrafo_12V.jpg &nbsp;|&nbsp; Trafo_f_r_LED_Streifen_100W.png &nbsp;|&nbsp; <strong style="color:#c0392b">Ledsone_12V_100W_LED_Treiber.jpg ← OUR BRAND IN FILENAME</strong>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT 2 -->
+<h2>Product Comparison 2 — Ledsone LED Treiber 12V 80W | SKU ~1086</h2>
+<div class="compare-grid">
+  <div class="col ours">
+    <div class="col-header">ledsone.de — OURS</div>
+    <table class="data">
+      <tr><td>URL</td><td>ledsone.de/products/led-streifen-netzteil-12v-80w-trafo-fur-led-beleuchtung-ip20</td></tr>
+      <tr class="match"><td>Title</td><td>Ledsone LED Treiber 12V 80W 6.6A IP20 Netzteil Trafo ~1086</td></tr>
+      <tr class="match"><td>SKU</td><td>~1086</td></tr>
+      <tr class="match"><td>Price</td><td>€7.49 EUR</td></tr>
+      <tr><td>Description</td><td>"can supply all LED strips or other LED lights as long as the load voltage matches. 100% full-load burn-in tested. CE, RoHS."</td></tr>
+      <tr><td>Reviews</td><td>3 reviews, 4.81/5 stars</td></tr>
+    </table>
+  </div>
+  <div class="col theirs">
+    <div class="col-header">lidsone.com — INFRINGING <span class="badge">COPIED</span></div>
+    <table class="data">
+      <tr><td>URL</td><td>lidsone.com/products/ledsone-led-treiber-12v-80w-6-6a-ip20-netzteil-trafo</td></tr>
+      <tr class="stolen"><td>Title</td><td>Ledsone LED Treiber 12V 80W 6.6A IP20 Netzteil Trafo ~1086 ← OUR BRAND NAME</td></tr>
+      <tr class="stolen"><td>SKU</td><td>~1086 ← IDENTICAL PRIVATE SKU</td></tr>
+      <tr class="stolen"><td>Price</td><td>€7.49 base → €5.65 ← SAME BASE PRICE</td></tr>
+      <tr><td>Description</td><td>"can supply all LED strips or other LED lights. almost doubles the lifespan" ← SAME SENTENCES</td></tr>
+    </table>
+  </div>
+  <div class="verdict">
+    <div class="verdict-title">Images stolen:</div>
+    <div class="images-block">Trafo_12V_80W_6.6A_IP20_netzteil_Fur_LED_Streifen.jpg</div>
+  </div>
+</div>
+
+<!-- PRODUCT 3 -->
+<h2>Product Comparison 3 — DC 5V 10W LED Transformator | SKU ~1074</h2>
+<div class="compare-grid">
+  <div class="col ours">
+    <div class="col-header">ledsone.de — OURS</div>
+    <table class="data">
+      <tr><td>URL</td><td>ledsone.de/products/dc-5v-10w-ip20-gedrehter-led-transformator</td></tr>
+      <tr class="match"><td>Title</td><td>DC 5V 10W LED Transformator – IP20 Universell Geregelter LED Trafo ~1074</td></tr>
+      <tr class="match"><td>SKU</td><td>~1074</td></tr>
+      <tr class="match"><td>Price</td><td>€5.15 EUR</td></tr>
+      <tr class="match"><td>Image</td><td>IP20-DC5V-Led-transformer.jpg</td></tr>
+      <tr><td>Description</td><td>"LED strips, CCTV cameras, 3D printers. Selector switch. 100% full-load burn-in testing. CE, RoHS."</td></tr>
+    </table>
+  </div>
+  <div class="col theirs">
+    <div class="col-header">lidsone.com — INFRINGING <span class="badge">COPIED</span></div>
+    <table class="data">
+      <tr><td>URL</td><td>lidsone.com/products/dc-5v-10w-led-transformator-ip20-universell-geregelter-led-trafo</td></tr>
+      <tr class="stolen"><td>Title</td><td>DC 5V 10W LED Transformator – IP20 Universell Geregelter LED Trafo ~1074 ← WORD FOR WORD</td></tr>
+      <tr class="stolen"><td>SKU</td><td>~1074 ← IDENTICAL PRIVATE SKU</td></tr>
+      <tr class="stolen"><td>Price</td><td>€6.00 → €5.10 ← SAME BASE</td></tr>
+      <tr class="stolen"><td>Image</td><td>IP20-DC5V-Led-transformer.jpg ← IDENTICAL FILENAME</td></tr>
+      <tr><td>Description</td><td>"Niederspannungs-LED-Lampen. switchable input voltage selector. 100% full-load burn-in testing. CE, RoHS." ← SAME</td></tr>
+    </table>
+  </div>
+  <div class="verdict">
+    <div class="verdict-title">Critical: Identical image filename on both sites</div>
+    <ul>
+      <li><strong>IP20-DC5V-Led-transformer.jpg</strong> — same filename on ledsone.de AND lidsone.com. Image was taken directly from our file library.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- PRODUCT 4 -->
+<h2>Product Comparison 4 — 12V 100W LED Treiber IP20 | SKU ~1077</h2>
+<div class="compare-grid">
+  <div class="col ours">
+    <div class="col-header">ledsone.de — OURS</div>
+    <table class="data">
+      <tr class="match"><td>Title</td><td>12V 100W LED Treiber IP20 Trafo Konstantspannung Netzteil ~1077</td></tr>
+      <tr class="match"><td>SKU</td><td>~1077</td></tr>
+    </table>
+  </div>
+  <div class="col theirs">
+    <div class="col-header">lidsone.com — INFRINGING <span class="badge">COPIED</span></div>
+    <table class="data">
+      <tr class="stolen"><td>Title</td><td>12V 100W LED Treiber IP20 Trafo Konstantspannung Netzteil ~1077 ← IDENTICAL</td></tr>
+      <tr class="stolen"><td>SKU</td><td>~1077 ← IDENTICAL PRIVATE SKU</td></tr>
+      <tr><td>Price</td><td>€14.99 → €11.74</td></tr>
+    </table>
+  </div>
+  <div class="verdict">
+    <div class="verdict-title">Images stolen — including our brand in filename:</div>
+    <div class="images-block">
+Konstantspannungs-LED-Treiber_100W.jpg &nbsp;|&nbsp; 12v-100w-pvc-case-led-transformer-4.jpg<br/>
+<strong style="color:#c0392b">Ledsone_12V_100W_LED_Treiber.jpg ← OUR BRAND "Ledsone" IN THEIR IMAGE FILENAME</strong><br/>
+DC_12V_Konstantspannung.jpg &nbsp;|&nbsp; 12V_100W_LED_Treiber_Transformator.jpg
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT 5 -->
+<h2>Product Comparison 5 — Metall Deckenbaldachin 108mm | SKU ~1043</h2>
+<div class="compare-grid">
+  <div class="col ours">
+    <div class="col-header">ledsone.de — OURS</div>
+    <table class="data">
+      <tr class="match"><td>Title</td><td>Metall Deckenbaldachin 108mm mit Haken Schwarz & Weiß ~1043</td></tr>
+      <tr class="match"><td>SKU</td><td>~1043</td></tr>
+    </table>
+  </div>
+  <div class="col theirs">
+    <div class="col-header">lidsone.com — INFRINGING <span class="badge">COPIED</span></div>
+    <table class="data">
+      <tr class="stolen"><td>Title</td><td>Metall Deckenbaldachin 108mm mit Haken Schwarz & Weiß ~1043 ← IDENTICAL</td></tr>
+      <tr class="stolen"><td>SKU</td><td>~1043 ← IDENTICAL PRIVATE SKU</td></tr>
+      <tr><td>Price</td><td>€6.69 → €5.17</td></tr>
+    </table>
+  </div>
+  <div class="verdict">
+    <div class="verdict-title">13 product images stolen — all our filenames:</div>
+    <div class="images-block">
+Deckenrosette_f_r_DIY_Beleuchtungsprojekte.jpg &nbsp;|&nbsp; Deckenbefestigung_Lampe.webp &nbsp;|&nbsp; Runder_Deckenbaldachin_108mm_schwarz_wei.jpg<br/>
+Kabelauslass_Decke.jpg &nbsp;|&nbsp; Deckenrose_f_r_Pendelleuchte.jpg &nbsp;|&nbsp; Lampenanschluss_Decke.webp<br/>
+Baldachin_ohne_Haken_f_r_Deckenmontage.jpg &nbsp;|&nbsp; Deckenbaldachin_108mm.jpg &nbsp;|&nbsp; 108mm_Deckenrose_Kunststoff.jpg<br/>
+Baldachin_schwarz_rund.jpg &nbsp;|&nbsp; Schwarzer_Deckenanschluss_f_r_Lampe.jpg &nbsp;|&nbsp; Wei_e_Lampenhalterung_108mm.jpg<br/>
+Deckenbaldachin_mit_Haken_f_r_schwere_Lampen.webp
+    </div>
+  </div>
+</div>
+
+<!-- LEGAL -->
+<h3 style="margin-top:36px;">2. Legal Claims — Upgraded Based on Evidence</h3>
+<table class="summary-table">
+  <thead><tr><th>Claim</th><th>Legal Basis</th><th>Strength</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Copyright — logo</strong></td><td>UK CDPA 1988; EU Directive 2001/29/EC</td><td class="red">Strong</td></tr>
+    <tr><td><strong>Copyright — product descriptions (2,485 items)</strong></td><td>Same</td><td class="red">Very Strong</td></tr>
+    <tr><td><strong>Copyright — product photography</strong></td><td>Same — all images are our original photography</td><td class="red">Very Strong</td></tr>
+    <tr><td><strong>Database rights — full catalogue extraction</strong></td><td>EU Database Directive 96/9/EC</td><td class="red">Very Strong</td></tr>
+    <tr><td><strong>Trademark infringement — "LEDSONE" in their titles</strong></td><td>UK TMA 1994; EU Reg 2017/1001</td><td class="red">Strong (if registered)</td></tr>
+    <tr><td><strong>Passing off</strong></td><td>UK common law</td><td class="red">Strong</td></tr>
+    <tr><td><strong>EU unfair competition</strong></td><td>Directive 2005/29/EC</td><td class="red">Strong</td></tr>
+    <tr><td><strong>E-Commerce Directive breach</strong></td><td>Article 5, Directive 2000/31/EC</td><td>Supports position</td></tr>
+  </tbody>
+</table>
+
+<div class="footer">
+  This document was generated by automated live web scrape on 2026-10-08 by Claude Code on behalf of LEDSone UK Ltd.
+  All product titles, SKU numbers, image filenames, prices, and descriptions are as found on the live websites at the time of capture.
+  This document is confidential, prepared for internal legal use by LEDSone UK Ltd, and does not constitute legal advice.
+  LEDSone UK Ltd reserves all rights.
+</div>
+
+</body>
+</html>
