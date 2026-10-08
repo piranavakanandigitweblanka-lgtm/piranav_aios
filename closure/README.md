@@ -88,6 +88,54 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-10-07 — Conduit 1–2 Stock Price Cards Discovery
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| CONDUIT-1-2-2026-10-07-001 | Discovery — root causes for incorrect stock label and missing "From" prefix on conduit-lighting collection cards. Architecture correction applied (active template is collection-pipe, not conduit-lighting-pk). | `conduit-stock-price-cards/01_discovery/CONDUIT-01-02-discovery-2026-10-07.md` | Same file | Untracked — pending commit | YES | NONE | See -002 for Part 1 implementation | PASS — discovery complete, architecture confirmed |
+| CONDUIT-1-2-2026-10-07-002 | Part 1 implementation — stock label fix in `snippets/product-item.liquid`. Replaced single `product.available` check with three-state logic: all available → "In Stock"; partial → "Some options sold out"; none → "Out of Stock". Added variant-card branch using `variant.available`. Added `.partial-stock` CSS rule. `price.liquid` NOT touched. | `conduit-stock-price-cards/02_implementation/CONDUIT-01-implementation-2026-10-07.md` | `shopify_projects/ledsone-uk-theme/snippets/product-item.liquid` — uncommitted diff | Uncommitted — pending Piranav push + commit | YES | Browser validation requires Piranav to push theme to draft ("Conduit build 2026-10") interactively: `shopify theme push --store ledsone.myshopify.com` from theme dir | Piranav pushes to draft theme → validates ~6829 shows "Some options sold out" → reports result → commit + close | OPEN — CODE COMPLETE, BROWSER VALIDATION PENDING |
+
+| CONDUIT-1-2-2026-10-07-003 | Part 2 deep-dive discovery — confirmed root cause of missing "From" prefix (price.liquid line 16 `target == product` always false when `use_variant: true`). Confirmed one-line fix: change to `if product.price_varies and variant == nil`. Revised Part 2b recommendation: DO NOT remove `.price__sale` wrapper — `theme.js` `updatePrice()` injects compare-price HTML into it on swatch click; removing it would silently break sale price on non-conduit pages using swatches. "274 zero-price strings" are visually harmless empty wrapper divs — structurally required. Discovery doc amended: sections 10–15 rewritten with full analysis. | `conduit-stock-price-cards/01_discovery/CONDUIT-01-02-discovery-2026-10-07.md` (amended) | Same file — sections 10–15 | Uncommitted — pending commit | YES | NONE | Piranav approves Part 2a implementation → Claude edits price.liquid line 16 only → push to draft theme → browser validate | PASS — Part 2 discovery complete, implementation pending Piranav approval |
+
+| CONDUIT-1-2-2026-10-07-004 | Part 2 implementation — "From" prefix fix in `snippets/price.liquid`. Changed line 16 from `if target == product and product.price_varies` to `if product.price_varies and variant == nil`. One-line change. `.price__sale` wrapper preserved (required by theme.js). Part 1 code untouched. Static validation PASS — all 7 logic cases traced. | `conduit-stock-price-cards/02_implementation/CONDUIT-02-implementation-2026-10-07.md` | `shopify_projects/ledsone-uk-theme/snippets/price.liquid` — uncommitted diff | Uncommitted — pending Piranav push + commit | YES | Browser validation requires Piranav to push theme to draft ("Conduit build 2026-10") | Piranav pushes to draft theme → validates ~5542 shows "From £X.XX" → validates sale/swatch/PDP → reports result → commit + close | OPEN — CODE COMPLETE, BROWSER VALIDATION PENDING |
+
+| CONDUIT-4-2026-10-07-001 | Task 4 — Add Filter 3 (Finish/Colour) to collection-meta-filters.liquid. Reads Shopify variant option "Colour" via `settings.option_name_color` (live value confirmed "Colour"). Detects colour_index per product via `product.options` loop + `forloop.index0` — not hard-coded. Adds `data-f3` to all variant cards. Generates colour buttons from `product.options_with_values`. Extends filterProducts() with selectedColour state, F3 visibility check, 3-way dynamic facets, updateColourButtons, reset. Schema: filter_3_label added. Only `collection-meta-filters.liquid` changed. | `conduit-stock-price-cards/02_implementation/CONDUIT-04-implementation-2026-10-07.md` | `validation/piranav/conduit-task4-filter3-implementation-validation-2026-10-07.md` | Uncommitted — pending Piranav push + commit | YES | Browser validation requires Piranav to push draft theme | Push to "Conduit build 2026-10" → validate 17-point checklist → report result | OPEN — CODE COMPLETE, BROWSER VALIDATION PENDING |
+
+**Prompt:** `prompts/shopify/conduit-1-2-stock-price-cards.md` — existing, not duplicated
+**Part 1 (product-item.liquid):** IMPLEMENTED — browser validation confirmed PASS by Piranav
+**Part 2 (price.liquid line 16):** IMPLEMENTED — browser validation pending Piranav push to draft theme
+**Part 2b (zero-price wrapper):** DROPPED — theme.js JS dependency makes removal unsafe
+**Task 4 (collection-meta-filters.liquid):** IMPLEMENTED — browser validation pending Piranav push to draft theme
+**Architecture confirmation:** collection-pipe → collection-meta-filters.liquid → product-item.liquid → price.liquid
+
+---
+
+### 2026-10-08 — Conduit Task 6 — Finish Swatches on Collection Cards
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| CONDUIT-TASK6-2026-10-08-001 | Task 6 Discovery — confirmed existing `product-color-swatches.liquid` component is fully built but blocked by `enable_sw_only_product_detail = True` global setting. Root cause: guard in product-item.liquid line 451. Confirmed products ~5552/~5653/~5564 all have 8 Colour values. Recommended: replace global setting check with `variant == nil` guard. | `conduit-stock-price-cards/02_implementation/CONDUIT-TASK6-finish-swatches-2026-10-08.md` | Same file — section: Root Cause | Uncommitted | YES | NONE | Implementation approved — see -002 | PASS |
+| CONDUIT-TASK6-2026-10-08-002 | Task 6 Implementation — final approach: `product-item.liquid` line 451 guard updated to `(th_st.enable_sw_only_product_detail == false or request.path == '/collections/conduit-lighting')`. Global setting untouched. Swatches render only on conduit-lighting collection via `request.path` check (Shopify global object, accessible inside render-tag snippets). `.bls__swatch-count` CSS added to `collection-meta-filters.liquid`. `product-color-swatches.liquid` reused unchanged. GPT confirmed task complete. | `shopify_projects/ledsone-uk-theme/snippets/product-item.liquid` (line 451–457), `shopify_projects/ledsone-uk-theme/sections/collection-meta-filters.liquid` (CSS block) | `conduit-stock-price-cards/02_implementation/CONDUIT-TASK6-finish-swatches-2026-10-08.md` | Uncommitted | YES | NONE | Commit pending Piranav instruction | PASS |
+| CONDUIT-TASK6-2026-10-08-003 | Task 6 Card Alignment Fix — CSS chain scoped to `#bls__product-grid` in `collection-meta-filters.liquid`: `align-items:stretch` on row; `align-self:stretch;flex-direction:column` on grid item; `height:100%` on product-item; `flex:1 1 auto` on details; `margin-top:auto !important` on swatches. GPT confirmed task complete. | `shopify_projects/ledsone-uk-theme/sections/collection-meta-filters.liquid` (CSS block) | `conduit-stock-price-cards/02_implementation/CONDUIT-TASK6-finish-swatches-2026-10-08.md` — Card Alignment Fix v2 section | Uncommitted | YES | NONE | Commit pending Piranav instruction | PASS |
+
+---
+
+### 2026-10-08 — Conduit Step 3 HTML Reduction (Fixes 1–3)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| CONDUIT-STEP3-2026-10-08-001 | Step 3 Discovery — identified root cause of 7.83 MB HTML on /collections/conduit-lighting. Root cause: variant card explosion loop renders full product-item.liquid per variant. Top contributors: inline SVGs (~6.5KB×N renders), product.variants JSON repeated per card, `<style>` block repeated per card. Full 10-section discovery report produced. | `conduit-stock-price-cards/01_discovery/CONDUIT-01-02-discovery-2026-10-07.md` (Step 3 appended) | Discovery report output in session | Uncommitted | YES | NONE | Piranav approved Fixes 1–3 for implementation | PASS |
+| CONDUIT-STEP3-2026-10-08-002 | Fix 1 — Move `<style>` stock CSS out of product-item.liquid. Removed repeated `<style>` block (~600 bytes per card render). Added to collection-meta-filters.liquid `<style>` block — emitted once per page. | `snippets/product-item.liquid`, `sections/collection-meta-filters.liquid` | Static check: 0 `<style>` blocks in product-item.liquid ✓ | Uncommitted | YES | NONE | Push to draft theme → measure → validate | OPEN — CODE COMPLETE |
+| CONDUIT-STEP3-2026-10-08-003 | Fix 2 — SVG symbol/use deduplication. Removed 8 inline SVG blocks from product-item.liquid (wishlist×2, compare×2, quickview×1, cart×1, check×2). Added 5 `<symbol>` defs in collection-meta-filters.liquid — emitted once. Replaced all SVG instances with `<svg><use href="#icon-id"/></svg>`. Static check: 0 raw `<path d=` in product-item, 9 `<use>` refs, 5 symbols defined. | `snippets/product-item.liquid`, `sections/collection-meta-filters.liquid` | `conduit-stock-price-cards/02_implementation/CONDUIT-STEP3-html-reduction-2026-10-08.md` | Uncommitted | YES | NONE | Push to draft theme → measure → validate | OPEN — CODE COMPLETE |
+| CONDUIT-STEP3-2026-10-08-004 | Fix 3 — Prevent JSON scripts from emitting on variant cards. Wrapped `productinfo` and `productVariantsQty` script blocks in `{%- unless variant -%}`. Default cards (variant=nil) still emit JSON. Variant cards suppressed. Static check: 1 `unless variant` guard, 2 script blocks inside it ✓. | `snippets/product-item.liquid` | `conduit-stock-price-cards/02_implementation/CONDUIT-STEP3-html-reduction-2026-10-08.md` | Uncommitted | YES | NONE | Push to draft theme → measure → validate | OPEN — CODE COMPLETE |
+
+**Baseline:** HTML 7.83 MB | DOM 19,966 | Scripts 703 | SVGs 1,221
+**Expected after Fixes 1–3:** ~1.3–1.5 MB HTML (estimated ~82% reduction)
+**Fix 4 (lightweight variant card):** Deferred — implement only if Fixes 1–3 do not achieve <2 MB target
+**All changes uncommitted — pending Piranav git commit and push to draft theme for browser validation**
+
+---
+
 ### 2026-10-05 — ElectricalsOne Fake Judge.me Rating Fix
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
