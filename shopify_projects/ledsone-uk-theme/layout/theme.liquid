@@ -162,7 +162,7 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Organization",
+       "@type": ["Organization", "LocalBusiness"],
         "name": "LEDSone UK Ltd",
         "url": "{{ shop.url }}",
         "logo": "{{ settings.logo_image_desktop | image_url }}",
@@ -170,6 +170,8 @@
         "description": {{ shop.description | json }},
         "telephone": "02477220687",
         "priceRange": "£",
+        "foundingDate": "2015",
+        "email": "sales@ledsone.co.uk",
         "address": {
           "@type": "PostalAddress",
           "streetAddress": "Unit 3, Green Industrial Estate, Marshbrook Cl, Lythalls Ln",
@@ -216,6 +218,23 @@
         ]
       }
     </script>
+    {% comment %} 2026 WebSite schema — needed for sitelinks searchbox signal 2026.09.08 piranav{% endcomment %}
+      <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "LEDSone UK Ltd",
+    "url": "{{ shop.url }}",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "{{ shop.url }}/search?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
 
      {% render 'seo-noindex' %}
 
@@ -366,7 +385,7 @@
         setTimeout(loadThirdPartyScripts, 5000);
       })();
     </script> {% endcomment %}
-
+ {% render 'whatsapp-float' %}
 
  
   </body>

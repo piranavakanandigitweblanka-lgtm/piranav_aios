@@ -1,0 +1,403 @@
+<!-- sections/day-night-switch.liquid -->
+<section class="day-night-section" id="day-night-{{ section.id }}">
+  <div class="day-night-wrapper">
+    <div class="heading-with-arrows">
+      {% if section.settings.heading != blank %}
+        <h2 class="day-night-heading">{{ section.settings.heading }}</h2>
+      {% endif %}
+      
+      <!-- Navigation Arrows (Mobile Only) -->
+      <div class="slider-nav-arrows">
+        <button class="slider-nav-arrow slider-nav-left" onclick="scrollSliderLeft('{{ section.id }}')" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button class="slider-nav-arrow slider-nav-right" onclick="scrollSliderRight('{{ section.id }}')" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="day-night-container">
+      <div class="day-night-slider" id="slider-{{ section.id }}">
+        {% for block in section.blocks %}
+          <div class="day-night-item" {{ block.shopify_attributes }}>
+            <a 
+              {% if block.settings.product != blank %}
+                href="{{ block.settings.product.url }}"
+              {% else %}
+                href="#"
+              {% endif %}
+              class="day-night-link"
+            >
+              <div class="day-night-image-wrapper">
+                   <img 
+  src="{{ block.settings.day_image | img_url: '350x550', crop: 'center' }}" 
+  alt="Day Mode" 
+  class="mode-image day-image active"
+  loading="{% if forloop.index <= 3 %}eager{% else %}lazy{% endif %}"
+  width="350"
+  height="550"
+>
+<img 
+  src="{{ block.settings.night_image | img_url: '350x550', crop: 'center' }}" 
+  alt="Night Mode" 
+  class="mode-image night-image"
+  loading="lazy"
+  width="350"
+  height="550"
+>
+
+                <!-- ✅ Day/Night Toggle (inside image, centered at bottom) -->
+                <div class="day-night-toggle inside-toggle">
+                  <div class="toggle-group">
+                    <button class="toggle-btn day-btn active" type="button">Tag</button>
+                    <button class="toggle-btn night-btn" type="button">Nacht</button>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- ✅ Single bottom View More button -->
+    {% if section.settings.collection != blank %}
+      <div class="bottom-view-more">
+        <a href="{{ section.settings.collection.url }}" class="collection-inline-btn">
+          Mehr anzeigen
+          <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  <style>
+    .day-night-section {
+      width: 100%;
+      background: #fff;
+      padding: 40px 0 60px;
+    }
+
+    .day-night-wrapper {
+      width: 100%;
+      max-width: 1800px;
+      margin: 0 auto;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    .day-night-heading {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 500;
+      margin-bottom: 40px;
+      color: #111;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .day-night-container {
+      text-align: center;
+      width: 100%;
+    }
+
+    .day-night-slider {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .day-night-item {
+      text-align: center;
+      flex: 0 0 auto;
+    }
+
+    .day-night-link {
+      text-decoration: none;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .day-night-image-wrapper {
+      position: relative;
+      overflow: hidden;
+      border-radius: 0;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 350px;
+      height: 550px;
+      margin: 0 auto;
+    }
+
+    .mode-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      transition: opacity 0.4s ease-in-out; /* Smooth fade transition */
+      z-index: 1;
+    }
+
+    .mode-image.active {
+      opacity: 1;
+      z-index: 2;
+    }
+
+    /* ✅ Toggle inside image (bottom center) */
+    .inside-toggle {
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 3;
+      flex-wrap: nowrap;
+      justify-content: center;
+    }
+
+    .toggle-group {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 40px;
+      display: inline-flex;
+      align-items: center;
+      overflow: hidden;
+      backdrop-filter: blur(5px);
+      padding: 4px;
+      gap: 4px;
+      height: 40px;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .toggle-btn {
+      padding: 8px 16px;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #555;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .toggle-btn.active {
+      background: #111;
+      color: #fff;
+    }
+
+    .toggle-btn:not(.active):hover {
+      background: rgba(0,0,0,0.05);
+    }
+
+    /* ✅ Bottom View More button */
+    .bottom-view-more {
+      display: flex;
+      justify-content: center;
+      margin-top: 50px;
+    }
+
+    .collection-inline-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: rgba(17, 17, 17, 0.9);
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 10px 24px;
+      border-radius: 40px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      height: 44px;
+    }
+
+    .collection-inline-btn:hover {
+      background: #fff;
+      color: #111;
+      transform: translateY(-2px);
+    }
+
+    .collection-inline-btn .arrow-icon {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.2;
+      transition: transform 0.3s ease;
+    }
+
+    .collection-inline-btn:hover .arrow-icon {
+      transform: translateX(4px);
+    }
+
+    /* Navigation Arrows - Hidden on Desktop */
+    .heading-with-arrows {
+      display: block;
+    }
+
+    .slider-nav-arrows {
+      display: none;
+    }
+
+    /* ------------------- MOBILE ------------------- */
+    @media (max-width: 768px) {
+      .heading-with-arrows {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+      }
+
+      .day-night-heading {
+        font-size: 22px;
+        margin-bottom: 0;
+        text-align: left;
+      }
+
+      .slider-nav-arrows {
+        display: flex;
+        gap: 12px;
+      }
+
+      .slider-nav-arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: transparent;
+        border: 1px solid #333;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        padding: 0;
+      }
+
+      .slider-nav-arrow svg {
+        width: 18px;
+        height: 18px;
+        stroke: #333;
+        stroke-width: 2;
+      }
+
+      .day-night-slider {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 0;
+        justify-content: flex-start;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+      }
+
+      .day-night-slider::-webkit-scrollbar {
+        display: none;
+      }
+
+      .day-night-item {
+        flex: 0 0 100%;
+        scroll-snap-align: center;
+      }
+
+      .day-night-image-wrapper {
+        width: 100%;
+        height: 500px;
+      }
+
+      .bottom-view-more {
+        margin-top: 40px;
+      }
+    }
+  </style>
+
+  <script>
+    // Global arrow scroll functions
+    window.scrollSliderLeft = function(sectionId) {
+      var slider = document.getElementById('slider-' + sectionId);
+      if (slider) slider.scrollLeft -= slider.offsetWidth;
+    };
+
+    window.scrollSliderRight = function(sectionId) {
+      var slider = document.getElementById('slider-' + sectionId);
+      if (slider) slider.scrollLeft += slider.offsetWidth;
+    };
+
+    function initDayNightSection(sectionId) {
+      var section = document.querySelector('#day-night-' + sectionId);
+      if (!section) return;
+
+      var wrappers = section.querySelectorAll('.day-night-item');
+      wrappers.forEach(function(wrapper) {
+        var dayBtn = wrapper.querySelector('.day-btn');
+        var nightBtn = wrapper.querySelector('.night-btn');
+        var dayImage = wrapper.querySelector('.day-image');
+        var nightImage = wrapper.querySelector('.night-image');
+        if (!dayBtn || !nightBtn) return;
+
+        dayBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          dayBtn.classList.add('active');
+          nightBtn.classList.remove('active');
+          dayImage.classList.add('active');
+          nightImage.classList.remove('active');
+        });
+
+        nightBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          nightBtn.classList.add('active');
+          dayBtn.classList.remove('active');
+          nightImage.classList.add('active');
+          dayImage.classList.remove('active');
+        });
+      });
+    }
+
+    document.addEventListener('shopify:section:load', function() {
+      initDayNightSection('{{ section.id }}');
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      initDayNightSection('{{ section.id }}');
+    });
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Day/Night Switch",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Section Heading", "default": "Day & Night Product Showcase" },
+    { "type": "collection", "id": "collection", "label": "Bottom 'View More' Collection" }
+  ],
+  "blocks": [
+    {
+      "type": "image_set",
+      "name": "Image Set",
+      "settings": [
+        { "type": "image_picker", "id": "day_image", "label": "Day Mode Image" },
+        { "type": "image_picker", "id": "night_image", "label": "Night Mode Image" },
+        { "type": "product", "id": "product", "label": "Select Product" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Day/Night Switch" }
+  ]
+}
+{% endschema %}

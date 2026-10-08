@@ -113,7 +113,7 @@ evidence/piranav/seo-dashboard-evidence-2026-08-03.md
 validation/piranav/seo-dashboard-validation-2026-08-03.md
 
 ## Capability
-capability/piranav/seo-dashboard-2026-08-03.md
+capability/2026/08/2026-08-03/seo-dashboard-2026-08-03.md
 
 ## Implementation
 implementation/piranav/seo-dashboard-2026-08-03.md

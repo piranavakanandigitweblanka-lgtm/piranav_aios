@@ -1,0 +1,240 @@
+<style>
+  .leds-wa-float {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .leds-wa-popup {
+    width: 280px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    animation: ledsWaSlideUp 0.25s ease;
+  }
+
+  .leds-wa-popup.leds-wa-open {
+    display: flex;
+  }
+
+  @keyframes ledsWaSlideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .leds-wa-popup-header {
+    background: #22994dff;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .leds-wa-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .leds-wa-avatar svg { display: block; }
+
+  .leds-wa-header-info { flex: 1; }
+
+  .leds-wa-header-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: #fff;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .leds-wa-header-status {
+    font-size: 11px;
+    color: rgba(255,255,255,0.85);
+    margin: 2px 0 0;
+  }
+
+  .leds-wa-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(255,255,255,0.8);
+    font-size: 20px;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .leds-wa-popup-body {
+    padding: 16px;
+    background: #f0f4f8;
+  }
+
+  .leds-wa-bubble {
+    background: #fff;
+    border-radius: 0 12px 12px 12px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #333;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    line-height: 1.5;
+  }
+
+  .leds-wa-popup-footer {
+    padding: 12px 16px;
+    background: #fff;
+  }
+
+  .leds-wa-start-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 11px 0;
+    background: #16863fff;
+    color: #fff;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background 0.2s;
+  }
+
+  .leds-wa-start-btn:hover { background: #21954fff; color: #fff; }
+
+  .leds-wa-btn {
+    width: 56px;
+    height: 56px;
+    background: #24a352ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(37,211,102,0.45);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    padding: 0;
+  }
+
+  .leds-wa-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 20px rgba(37,211,102,0.55);
+  }
+
+  .leds-wa-btn-wrap {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .leds-wa-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 14px;
+    height: 14px;
+    background: #ff4444;
+    border-radius: 50%;
+    border: 2px solid #fff;
+  }
+
+  @media (max-width: 768px) {
+    .leds-wa-float {
+      bottom: 80px;
+      left: 16px;
+    }
+    .leds-wa-popup { width: calc(100vw - 32px); }
+  }
+</style>
+
+<div class="leds-wa-float" id="ledsWaFloat">
+
+  <div class="leds-wa-popup" id="ledsWaPopup" role="dialog" aria-label="WhatsApp chat">
+    <div class="leds-wa-popup-header">
+      <div class="leds-wa-avatar">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.535 5.858L.057 23.625a.75.75 0 0 0 .918.918l5.747-1.476A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.694 9.694 0 0 1-4.95-1.354l-.356-.212-3.688.947.967-3.594-.232-.371A9.716 9.716 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/>
+        </svg>
+      </div>
+      <div class="leds-wa-header-info">
+        <p class="leds-wa-header-name">LEDSone Team</p>
+        <p class="leds-wa-header-status">&#x2022; Typically replies within 24hrs<br>Text chat only Not call</p>
+      </div>
+      <button class="leds-wa-close" id="ledsWaClose" aria-label="Close chat">&times;</button>
+    </div>
+
+    <div class="leds-wa-popup-body">
+      <div class="leds-wa-bubble">
+        Hi there! 👋 Need a enquiry? We're here to help — tap below to chat with us on WhatsApp.
+      </div>
+    </div>
+
+    <div class="leds-wa-popup-footer">
+      <a href="https://wa.me/447503918100?text=Hello%2C%20I%20am%20interested%20in%20a%20B2B%20quote."
+         class="leds-wa-start-btn"
+         target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.535 5.858L.057 23.625a.75.75 0 0 0 .918.918l5.747-1.476A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.694 9.694 0 0 1-4.95-1.354l-.356-.212-3.688.947.967-3.594-.232-.371A9.716 9.716 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/>
+        </svg>
+        Start Chat
+      </a>
+    </div>
+  </div>
+
+  <div class="leds-wa-btn-wrap">
+    <button class="leds-wa-btn" id="ledsWaToggle" aria-label="Open WhatsApp chat">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.535 5.858L.057 23.625a.75.75 0 0 0 .918.918l5.747-1.476A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.694 9.694 0 0 1-4.95-1.354l-.356-.212-3.688.947.967-3.594-.232-.371A9.716 9.716 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/>
+      </svg>
+    </button>
+    <span class="leds-wa-badge" id="ledsWaBadge" aria-hidden="true"></span>
+  </div>
+
+</div>
+
+<script>
+  (function () {
+    var toggle = document.getElementById('ledsWaToggle');
+    var popup  = document.getElementById('ledsWaPopup');
+    var close  = document.getElementById('ledsWaClose');
+    var badge  = document.getElementById('ledsWaBadge');
+
+    function openPopup() {
+      popup.classList.add('leds-wa-open');
+      badge.style.display = 'none';
+    }
+
+    function closePopup() {
+      popup.classList.remove('leds-wa-open');
+    }
+
+    toggle.addEventListener('click', function () {
+      popup.classList.contains('leds-wa-open') ? closePopup() : openPopup();
+    });
+
+    close.addEventListener('click', closePopup);
+
+    if (!sessionStorage.getItem('ledsWaShown')) {
+      setTimeout(function () {
+        openPopup();
+        sessionStorage.setItem('ledsWaShown', '1');
+      }, 6000);
+    }
+  })();
+</script>

@@ -96,6 +96,6 @@ On 2026-08-10, a massive sync commit (`a4033b8`) brought 32 files from the aios-
 ---
 
 ## Related Capability Docs
-- `capability/piranav/staff-id-performance-2026-08-14.md`
-- `capability/piranav/auth-system-2026-08-10.md`
-- `capability/piranav/api-consolidation-2026-08-10.md`
+- `capability/2026/08/2026-08-14/staff-id-performance-2026-08-14.md`
+- `capability/2026/08/2026-08-10/auth-system-2026-08-10.md`
+- `capability/2026/08/2026-08-10/api-consolidation-2026-08-10.md`

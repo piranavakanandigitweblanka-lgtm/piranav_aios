@@ -16,7 +16,7 @@
 - `docs/dm-dashboard-dev-knowledge.md` (full)
 - `docs/dm-dashboard/dm-dashboard-gpt-brief-2026-09-25.md` (full)
 - `docs/dm-dashboard/ads-product-scope-level4c-design-2026-09-25.md` (full)
-- `capability/piranav/ads-product-scope-admin-page.md` (first 30 lines)
+- `capability/2026/09/2026-09-25/ads-product-scope-admin-page.md` (first 30 lines)
 - `docs/dm-dashboard/` folder listing
 - `evidence/dm-dashboard/` folder listing
 - `capability/piranav/` folder listing
@@ -54,7 +54,7 @@
 | Conduit Sold pattern | ScheduledSnapshot (12h), Postgres-stored, Shopify UK GraphQL scan (~1–3 min) |
 | Conduit Stock pattern | In-memory 5-min cache, pure PostgreSQL, 3 queries, sub-second |
 | Merge conflict in closure README | `closure/README.md` lines 1609–1661 — unresolved `<<<<<<< HEAD` / `>>>>>>>` markers |
-| Stale capability file path | `capability/piranav/ads-product-scope-admin-page.md` has wrong path for backend file |
+| Stale capability file path | `capability/2026/09/2026-09-25/ads-product-scope-admin-page.md` has wrong path for backend file |
 | Conduit Sold date hardcoded | `PHASE1_END = date(2026, 9, 30)` — Oct 2026+ data requires code change |
 
 ---

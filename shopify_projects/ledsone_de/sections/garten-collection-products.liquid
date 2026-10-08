@@ -1,0 +1,447 @@
+ {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign col = collections['gartenbeleuchtung-fur-den-aussenbereich']
+  assign st = section.settings
+  assign products_limit = st.products_limit | default: 20
+-%}
+
+<style>
+  #garten-section-{{ section.id }} {
+    padding: {{ st.padding_top }}px 0 {{ st.padding_bottom }}px;
+    background-color: {{ st.bg_color }};
+  }
+  #garten-section-{{ section.id }} .gs__inner {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── Header ── */
+  #garten-section-{{ section.id }} .gs__header {
+    margin-bottom: 24px;
+    text-align: {{ st.heading_alignment | default: 'center' }};
+  }
+  #garten-section-{{ section.id }} .gs__title {
+    font-size: 28px;
+    font-weight: 500;
+    color: #111111;
+    line-height: 1.2;
+    margin: 0 0 6px 0;
+  }
+  #garten-section-{{ section.id }} .gs__title-sub {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+  }
+  @media (max-width: 768px) {
+    #garten-section-{{ section.id }} .gs__title { font-size: 22px; }
+    #garten-section-{{ section.id }} .gs__header { margin-bottom: 20px; }
+    #garten-section-{{ section.id }} .gs__inner { padding: 0 16px; }
+    #garten-section-{{ section.id }} .gs__view-all {
+      width: 70%;
+      padding: 13px 20px;
+      display: block;
+      margin: 0 auto;
+    }
+  }
+
+  /* ── Swiper ── */
+  #garten-section-{{ section.id }} .gs__swiper {
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+  #garten-section-{{ section.id }} .swiper-wrapper {
+    align-items: stretch;
+  }
+  #garten-section-{{ section.id }} .swiper-slide {
+    height: auto;
+  }
+
+  /* ── Card ── */
+  #garten-section-{{ section.id }} .gs__card {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: box-shadow 0.28s ease, transform 0.28s ease;
+  }
+  #garten-section-{{ section.id }} .gs__card:hover {
+    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.10);
+    transform: translateY(-4px);
+  }
+
+  /* image */
+  #garten-section-{{ section.id }} .gs__card-img-wrap {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    background: #f5f5f5;
+  }
+  #garten-section-{{ section.id }} .gs__card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.42s ease;
+    display: block;
+  }
+  #garten-section-{{ section.id }} .gs__card:hover .gs__card-img {
+    transform: scale(1.07);
+  }
+  #garten-section-{{ section.id }} .gs__card-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+  }
+  #garten-section-{{ section.id }} .gs__sale-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgb(11, 95, 2);
+    color: #fff;
+    padding: 3px 9px;
+    font-size: 10px;
+    font-weight: 650;
+    border-radius: 4px;
+    z-index: 1;
+    line-height: 1.5;
+  }
+
+  /* body */
+  #garten-section-{{ section.id }} .gs__card-body {
+    padding: 14px 16px 18px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  #garten-section-{{ section.id }} .gs__card-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #111;
+    margin: 0 0 8px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  #garten-section-{{ section.id }} .gs__card-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+  #garten-section-{{ section.id }} .gs__card-title a:hover { color: #555; }
+  #garten-section-{{ section.id }} .gs__card-price-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 10px;
+  }
+  #garten-section-{{ section.id }} .gs__card-price-row .price {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: #111;
+  }
+  #garten-section-{{ section.id }} .gs__card-price-row .price--on-sale .price-item--sale {
+    color: #c0392b;
+  }
+  #garten-section-{{ section.id }} .gs__card-price-row .price-item--regular {
+    text-decoration: line-through;
+    color: #aaa;
+    font-size: 1.2rem;
+    font-weight: 400;
+  }
+
+  /* ── Pagination dots — mobile only ── */
+  #garten-section-{{ section.id }} .gs__pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 18px;
+  }
+  #garten-section-{{ section.id }} .gs__pagination .swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+    background: #ccc;
+    opacity: 1;
+    border-radius: 50%;
+    margin: 0 4px;
+    transition: background 0.2s ease;
+  }
+  #garten-section-{{ section.id }} .gs__pagination .swiper-pagination-bullet-active {
+    background: #111;
+  }
+  @media (min-width: 768px) {
+    #garten-section-{{ section.id }} .gs__pagination { display: none; }
+  }
+
+  /* ── Disable hover effects on mobile ── */
+  @media (max-width: 767px) {
+    #garten-section-{{ section.id }} .gs__card:hover {
+      box-shadow: none;
+      transform: none;
+    }
+    #garten-section-{{ section.id }} .gs__card:hover .gs__card-img {
+      transform: none;
+    }
+  }
+
+  /* ── View all button ── */
+  #garten-section-{{ section.id }} .gs__footer {
+    text-align: center;
+    margin-top: 32px;
+  }
+  #garten-section-{{ section.id }} .gs__view-all {
+    display: inline-block;
+    padding: 13px 38px;
+    border: 2px solid #111;
+    color: #111;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.22s ease, color 0.22s ease;
+  }
+  #garten-section-{{ section.id }} .gs__view-all:hover {
+    background: #111;
+    color: #fff;
+  }
+
+</style>
+
+<section id="garten-section-{{ section.id }}" class="garten-collection-section">
+  <div class="gs__inner">
+
+    {%- if st.title != blank -%}
+      <div class="gs__header">
+        <h2 class="gs__title">{{ st.title }}</h2>
+        {%- if st.heading_subtext != blank -%}
+          <p class="gs__title-sub">{{ st.heading_subtext }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if col != blank and col.products_count > 0 -%}
+      <div class="swiper gs__swiper">
+        <div class="swiper-wrapper">
+          {%- for product in col.products limit: products_limit -%}
+            {%- liquid
+              assign fv = product.variants.first
+              assign gs_sale = false
+              assign gs_percent = 0
+              if fv.compare_at_price > fv.price and fv.compare_at_price != blank
+                assign gs_sale = true
+                assign gs_diff = fv.compare_at_price | minus: fv.price
+                assign gs_percent = gs_diff | times: 100.0 | divided_by: fv.compare_at_price | round
+              endif
+            -%}
+            <div class="swiper-slide">
+              <div class="gs__card">
+
+                <a class="gs__card-img-wrap" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
+                  {%- if gs_sale -%}
+                    <span class="gs__sale-badge">-{{ gs_percent }}% OFF</span>
+                  {%- endif -%}
+                  {%- if product.featured_image != blank -%}
+                    <img
+                      class="gs__card-img"
+                      src="{{ product.featured_image | image_url: width: 600 }}"
+                      alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                      width="600"
+                      height="600"
+                      loading="lazy"
+                    >
+                  {%- else -%}
+                    <div class="gs__card-placeholder">
+                      {{ 'product-1' | placeholder_svg_tag }}
+                    </div>
+                  {%- endif -%}
+                </a>
+
+                <div class="gs__card-body">
+                  <h3 class="gs__card-title">
+                    <a href="{{ product.url }}">{{ product.title }}</a>
+                  </h3>
+                  <div class="gs__card-price-row">
+                    {%- render 'price', product: product, use_variant: true, price_class: '' -%}
+                    <div class="made-in-italy-badge">Hergestellt in Italien</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <!-- pagination dots (mobile only) -->
+        <div class="gs__pagination"></div>
+      </div>
+    {%- endif -%}
+
+    {%- if st.show_view_all and col != blank -%}
+      <div class="gs__footer">
+        <a href="{{ col.url }}" class="gs__view-all">{{ st.view_all_label | default: 'Alle ansehen' }}</a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<script>
+  (function () {
+    var el = document.querySelector('#garten-section-{{ section.id }} .gs__swiper');
+    if (!el) return;
+
+    function initSwiper() {
+      if (typeof Swiper === 'undefined') {
+        setTimeout(initSwiper, 100);
+        return;
+      }
+      var autoplayConfig = {{ st.autoplay | json }} ? {
+        delay: {{ st.autoplay_speed | times: 1000 }},
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true
+      } : false;
+
+      new Swiper(el, {
+        slidesPerView: 1.3,
+        spaceBetween: 12,
+        loop: true,
+        autoplay: autoplayConfig,
+        pagination: {
+          el: '#garten-section-{{ section.id }} .gs__pagination',
+          clickable: true
+        },
+        breakpoints: {
+          560:  { slidesPerView: 2, spaceBetween: 16 },
+          800:  { slidesPerView: 3, spaceBetween: 20 },
+          1100: { slidesPerView: 4, spaceBetween: 22 },
+          1280: { slidesPerView: 5, spaceBetween: 22 }
+        }
+      });
+    }
+
+    initSwiper();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Garten Kollektion",
+  "tag": "section",
+  "class": "section-garten-collection",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Überschrift",
+      "default": "Gartenbeleuchtung für den Außenbereich"
+    },
+    {
+      "type": "text",
+      "id": "heading_subtext",
+      "label": "Unterüberschrift (optional)"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Überschrift Ausrichtung",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "Links" },
+        { "value": "center", "label": "Mitte" },
+        { "value": "right", "label": "Rechts" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Produkte"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "min": 5,
+      "max": 30,
+      "step": 5,
+      "label": "Maximale Produktanzahl",
+      "default": 20
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay aktivieren",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Autoplay Geschwindigkeit (Sekunden)",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "\"Alle ansehen\" anzeigen",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "Button Text",
+      "default": "Alle ansehen"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Hintergrundfarbe",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Abstand oben",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Abstand unten",
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "Garten Kollektion"
+    }
+  ]
+}
+{% endschema %}

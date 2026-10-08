@@ -15,7 +15,7 @@ Add Requirement 3 "Revenue Protection & PPC Actions" tab to the Sajeepan Google 
 
 ## Evidence Path
 - Git commit: `717f3d8`
-- No capability file yet — CREATE REQUIRED: `capability/sajeepan/requirement-3-2026-08-11.md`
+- No capability file yet — CREATE REQUIRED: `capability/2026/08/2026-08-11/requirement-3-2026-08-11.md`
 - No evidence file yet — CREATE REQUIRED: `evidence/sajeepan/requirement-3-2026-08-11.md`
 - No validation file yet — CREATE REQUIRED: `validation/sajeepan/requirement-3-2026-08-11.md`
 - No GPT review evidence — GPT REVIEW EVIDENCE MISSING
@@ -83,7 +83,7 @@ MISSING — No saved GPT review of R3 scope, design, or output exists.
 
 ## Next Step
 1. GPT to design: `SAJEEPAN-R3-CAPABILITY-PROMPT`
-2. Claude to create: `capability/sajeepan/requirement-3-2026-08-11.md`
+2. Claude to create: `capability/2026/08/2026-08-11/requirement-3-2026-08-11.md`
 3. Claude to create: `evidence/sajeepan/requirement-3-2026-08-11.md`
 4. Claude to create: `validation/sajeepan/requirement-3-2026-08-11.md`
 5. Claude to update: `Staff-requirements-02/docs/dashboard-sajeepan.md` (add R3 tab)

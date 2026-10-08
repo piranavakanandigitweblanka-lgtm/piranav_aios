@@ -15,12 +15,13 @@
       hreflang="x-default"
     > {% endcomment %}
 
+
 {%- comment -%} Noindex for search pages and parameter URLs update 2026.02.05 piranav {%- endcomment -%}
 {% if template contains 'search' %}
   <meta name="robots" content="noindex, follow">
 {% endif %}
 
-<script>
+{% comment %} <script>
   (function() {
     const currentURL = new URL(window.location);
     const URLContainsSrsltid = currentURL.searchParams.get('srsltid');
@@ -32,4 +33,10 @@
       document.head.appendChild(newMetaRobotsTag);
     }
   })();
-</script>
+</script> {% endcomment %}
+{%- if request.url contains 'srsltid' -%}
+    <meta name="robots" content="noindex, follow">
+  {%- endif -%}
+
+{%- comment -%} Noindex for collection by a tag URLs update 2026.09.28 piranav {%- endcomment -%}
+{%- if current_tags -%}<meta name="robots" content="noindex, follow">{%- endif -%}

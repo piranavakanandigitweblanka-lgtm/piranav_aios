@@ -1,0 +1,153 @@
+{% schema %}
+{
+  "name": "Shop By Room",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Title"
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Heading",
+      "default": "Shop By Room"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "room",
+      "name": "Room block",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Background Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Kitchen Lighting"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Use a range of task lighting, general lighting & accent lighting styles."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Button link"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button text",
+          "default": "Discover"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Shop By Room",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
+
+<section class="shop-by-room">
+  <div class="container">
+    <h2 class="sbr-heading">{{ section.settings.section_title }}</h2>
+    <div class="room-grid">
+      {% for block in section.blocks %}
+        <a href="{{ block.settings.link }}" class="room-card" style="background-image: url({{ block.settings.image | img_url: 'master' }});">
+          <div class="overlay">
+            <h3>{{ block.settings.title }}</h3>
+            <p>{{ block.settings.description }}</p>
+            <span class="btn">{{ block.settings.button_text }}</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+.shop-by-room {
+  padding: 50px 0;
+}
+
+.sbr-heading {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 30px;
+  font-weight: 450;
+
+}
+
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.room-card {
+  position: relative;
+  height: 420px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  text-decoration: none;
+
+}
+
+.room-card .overlay {
+  background: rgba(211, 211, 211, 0.45);
+  width: 100%;
+  padding: 25px;
+}
+
+
+.room-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.room-card p {
+  margin: 0 0 15px 0;
+}
+
+.room-card .btn {
+  background: white;
+  color: black;
+  padding: 10px 18px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+
+  .room-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 15px;
+    padding: 0 15px;
+  }
+
+  .room-card {
+    min-width: 85%;
+    scroll-snap-align: center;
+    height: 420px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+}
+
+</style>

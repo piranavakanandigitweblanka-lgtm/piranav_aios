@@ -90,7 +90,7 @@ Matched to merchant_products: **284** | Unmatched: **870**
 | `evidence/sajeepan/requirement-1-2026-07-14.md` | Updated |
 | `deployment/sajeepan/requirement-1-2026-07-14.md` | Created |
 | `closure/sajeepan/requirement-1-2026-07-14.md` | Updated |
-| `capability/sajeepan/requirement-1-2026-07-14.md` | Updated |
+| `capability/2026/07/2026-07-14/requirement-1-2026-07-14.md` | Updated |
 
 ---
 

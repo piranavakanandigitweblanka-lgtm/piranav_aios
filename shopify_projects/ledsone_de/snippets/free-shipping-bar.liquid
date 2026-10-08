@@ -1,0 +1,248 @@
+{% comment %} free-shipping-bar.liquid - Full Live Update Version {% endcomment %}
+
+{% assign free_shipping_threshold = 3000 %}
+{% assign cart_total = cart.total_price %}
+{% assign remaining = free_shipping_threshold | minus: cart_total %}
+{% assign progress = cart_total | times: 100 | divided_by: free_shipping_threshold %}
+{% if progress > 100 %}{% assign progress = 100 %}{% endif %}
+
+<div class="fs-cart-bar{% if cart_total >= free_shipping_threshold %} fs-done{% endif %}" id="fs-shipping-bar" data-threshold="{{ free_shipping_threshold }}">
+  <div class="fs-cart-bar__icon-row">
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a6fc4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="1" y="3" width="15" height="13" rx="1"/>
+      <path d="M16 8h4l3 5v3h-7V8z"/>
+      <circle cx="5.5" cy="18.5" r="2.5"/>
+      <circle cx="18.5" cy="18.5" r="2.5"/>
+    </svg>
+    <div class="fs-cart-bar__track">
+      <div class="fs-cart-bar__fill{% if cart_total >= free_shipping_threshold %} fs-complete{% endif %}" id="fs-bar-fill" style="width: {{ progress }}%"></div>
+    </div>
+  </div>
+<div class="fs-cart-bar__text{% if cart_total >= free_shipping_threshold %} fs-unlocked{% endif %}" id="fs-bar-text">
+    {% if cart_total >= free_shipping_threshold %}
+      Du genießt <strong>KOSTENLOSEN VERSAND!</strong>
+    {% else %}
+      Ausgeben <strong>{{ remaining | money }} EUR</strong> mehr zu genießen
+      <span class="fs-cart-bar__highlight">KOSTENLOSER VERSAND!</span>
+    {% endif %}
+  </div>
+  <div class="fs-cart-bar__hint" id="fs-bar-hint">
+    {% unless cart_total >= free_shipping_threshold %}
+      (In den Warenkorb legen, um kostenlosen Versand zu erhalten.)
+    {% endunless %}
+  </div>
+</div>
+
+<style>
+  .fs-cart-bar {
+    border: 1px solid #d0d0d0;
+    border-left: 3px solid #1a6fc4;
+    border-radius: 6px;
+    background:rgb(243, 243, 243);
+    padding: 5px 10px;
+    margin-bottom: 8px;
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .fs-cart-bar__icon-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 3px;
+  }
+
+  .fs-cart-bar__icon-row svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    stroke: #1a6fc4;
+  }
+
+  .fs-cart-bar__track {
+    flex: 1;
+    background: #e0e0e0;
+    border-radius: 50px;
+    height: 4px;
+    overflow: hidden;
+  }
+
+  .fs-cart-bar__fill {
+    background: linear-gradient(90deg, #1a6fc4, #34c0eb);
+    height: 100%;
+    border-radius: 50px;
+    transition: width 0.6s ease;
+  }
+
+  .fs-cart-bar__fill.fs-complete {
+    background: linear-gradient(90deg, #2e7d32, #43a047);
+  }
+
+  .fs-cart-bar__text {
+    font-size: 11px;
+    color: #555;
+    line-height: 1.3;
+  }
+
+  .fs-cart-bar__text strong {
+    color: #222;
+  }
+
+  .fs-cart-bar__highlight {
+    color: #1a6fc4;
+    font-weight: 600;
+  }
+
+  .fs-cart-bar__text.fs-unlocked {
+    color: #2e7d32;
+  }
+
+  .fs-cart-bar.fs-done {
+    border-left-color: #2e7d32;
+    background: #f6fbf6;
+  }
+
+  .fs-cart-bar.fs-done .fs-cart-bar__icon-row svg {
+    stroke: #2e7d32;
+  }
+  .fs-cart-bar__hint {
+    font-size: 10px;
+    color: #888;
+    line-height: 1.3;
+    margin-top: 2px;
+  }
+</style>
+
+<script>
+(function () {
+  const bar       = document.getElementById('fs-shipping-bar');
+  if (!bar) return;
+
+  const fill      = document.getElementById('fs-bar-fill');
+  const text      = document.getElementById('fs-bar-text');
+  const threshold = parseInt(bar.dataset.threshold, 10);
+
+  let currentCartTotal = 0;
+
+  /* ---------- format money ---------- */
+  function formatMoney(cents) {
+    const euros = cents / 100;
+    return euros.toLocaleString('de-DE', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }) + ' EUR';
+  }
+
+  /* ---------- update bar UI ---------- */
+  function updateBar(total) {
+    const remaining = threshold - total;
+    const progress  = Math.min((total / threshold) * 100, 100);
+
+    fill.style.width = progress + '%';
+
+    if (total >= threshold) {
+      fill.classList.add('fs-complete');
+      text.classList.add('fs-unlocked');
+      bar.classList.add('fs-done');
+      bar.querySelector('svg').style.stroke = '#2e7d32';
+      text.innerHTML = 'Du genießt <strong>KOSTENLOSEN VERSAND!</strong>';
+    } else {
+      fill.classList.remove('fs-complete');
+      text.classList.remove('fs-unlocked');
+      bar.classList.remove('fs-done');
+      bar.querySelector('svg').style.stroke = '#1a6fc4';
+      text.innerHTML = `Ausgeben <strong>${formatMoney(remaining)}</strong> mehr zu genießen <span class="fs-cart-bar__highlight">KOSTENLOSER VERSAND!</span>`;
+    }
+  }
+
+  /* ---------- get selected variant price ---------- */
+  function getProductPrice() {
+    try {
+      const productJson = document.querySelector('[data-product-json]');
+      if (productJson) {
+        const product      = JSON.parse(productJson.textContent);
+        const variantInput = document.querySelector('input[name="id"]');
+        if (variantInput) {
+          const variantId = parseInt(variantInput.value, 10);
+          const variant   = product.variants.find(v => v.id === variantId);
+          return variant ? variant.price : 0;
+        }
+        return product.variants[0].price;
+      }
+    } catch(e) {}
+    return 0;
+  }
+
+  /* ---------- get current quantity ---------- */
+  function getQuantity() {
+    const qtyInput = document.querySelector('.quantity__input, input[name="quantity"]');
+    return qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+  }
+
+  /* ---------- recalculate bar with qty x price ---------- */
+  function recalcWithQty() {
+    const productPrice = getProductPrice();
+    const qty          = getQuantity();
+    const projected    = currentCartTotal + (productPrice * qty);
+    updateBar(projected);
+  }
+
+  /* ---------- fetch real cart total ---------- */
+  function fetchCart() {
+    fetch('/cart.js', { headers: { 'Content-Type': 'application/json' } })
+      .then(r => r.json())
+      .then(cart => {
+        currentCartTotal = cart.total_price;
+        recalcWithQty();
+      })
+      .catch(err => console.warn('FS bar error:', err));
+  }
+
+  /* ---------- quantity +/- button click ---------- */
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest('[name="minus"], [name="plus"], .quantity__button');
+    if (btn) {
+      setTimeout(recalcWithQty, 100);
+    }
+  });
+
+  /* ---------- quantity input manual typing ---------- */
+  document.addEventListener('input', function (e) {
+    if (e.target.matches('.quantity__input, input[name="quantity"]')) {
+      recalcWithQty();
+    }
+  });
+
+  /* ---------- variant change ---------- */
+  document.addEventListener('change', function (e) {
+    if (e.target.closest('variant-selects, .product-form')) {
+      setTimeout(recalcWithQty, 200);
+    }
+  });
+
+  /* ---------- intercept fetch for cart changes ---------- */
+  const _fetch = window.fetch;
+  window.fetch = function (...args) {
+    const url = typeof args[0] === 'string' ? args[0] : (args[0]?.url || '');
+    const isCartChange = /\/cart\/(add|change|update)/.test(url);
+    return _fetch.apply(this, args).then(res => {
+      if (isCartChange) setTimeout(fetchCart, 600);
+      return res;
+    });
+  };
+
+  /* ---------- native cart events ---------- */
+  document.addEventListener('cart:updated', fetchCart);
+  document.addEventListener('cart:refresh', fetchCart);
+
+  /* ---------- after add to cart form submit ---------- */
+  document.addEventListener('submit', function (e) {
+    const form = e.target.closest('form[data-type="add-to-cart-form"]');
+    if (form) setTimeout(fetchCart, 800);
+  });
+
+  /* ---------- initial load ---------- */
+  fetchCart();
+
+})();
+</script>

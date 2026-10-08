@@ -276,7 +276,7 @@
 
           <a
             class="wtd-card"
-            href="{{ col.url }}?ref=wholesale_trendy"
+           href="{{ col.url }}"
             {{ block.shopify_attributes }}
             aria-label="{{ col.title | escape }}"
           >
@@ -469,14 +469,14 @@
             {%- for block in quicklink_blocks -%}
               <a
                 class="wtd-quicklinks__link"
-                href="{% if block.settings.link_url contains '?' %}{{ block.settings.link_url }}&ref=wholesale_trendy{% else %}{{ block.settings.link_url }}?ref=wholesale_trendy{% endif %}"
+              href="{{ block.settings.link_url }}"
                 {{ block.shopify_attributes }}
               >
                 {{- block.settings.link_label | escape -}}
               </a>
             {%- endfor -%}
             {%- if view_more_url != blank -%}
-              <a class="wtd-quicklinks__link wtd-quicklinks__link--more" href="{% if view_more_url contains '?' %}{{ view_more_url }}&ref=wholesale_trendy{% else %}{{ view_more_url }}?ref=wholesale_trendy{% endif %}">
+              <a class="wtd-quicklinks__link wtd-quicklinks__link--more" href="{{ view_more_url }}">
                 {{- view_more_label | escape -}}
               </a>
             {%- endif -%}

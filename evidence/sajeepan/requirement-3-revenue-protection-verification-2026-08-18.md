@@ -288,7 +288,7 @@ Campaign 24092456136 coverage:
 
 1. **MUST FIX — Fan-out risk (MEDIUM):** Investigate whether the ROAS banding GROUP BY with merchant_products columns produces duplicate rows for products with multiple merchant_products rows. Add `DISTINCT ON` or sub-select to merchant_products join.
 2. Add `24092456136` to `SJ_TARGET_ROAS` constant (Req 1 display fix — not a Req 3 blocker).
-3. Create `capability/sajeepan/requirement-3-2026-08-11.md` (still missing per closure).
+3. Create `capability/2026/08/2026-08-11/requirement-3-2026-08-11.md` (still missing per closure).
 4. Create `validation/sajeepan/requirement-3-2026-08-11.md` (still missing per closure).
 5. Piranav: browser-validate Req 3 tab and capture screenshot.
 

@@ -43,6 +43,6 @@ docs/
 | Type | Path |
 |---|---|
 | Google Sign-In evidence | `evidence/piranav/homingmbh-shopify-google-signin-2026-09-24.md` |
-| Google Sign-In capability | `capability/piranav/shopify-customer-google-signin.md` |
+| Google Sign-In capability | `capability/2026/09/2026-09-24/shopify-customer-google-signin.md` |
 | Google Sign-In handover | `handover/piranav/homingmbh-shopify-google-signin-2026-09-24.md` |
 | GSC SOP evidence | `evidence/piranav/homingmbh-gsc-sop-2026-09-24.md` |

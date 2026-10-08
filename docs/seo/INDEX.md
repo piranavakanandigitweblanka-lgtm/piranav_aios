@@ -37,6 +37,6 @@ Last updated: 2026-09-23
 
 | Capability | File |
 |---|---|
-| GSC reference guides | `capability/piranav/gsc-reference-guides-ledsone-2026-08-23.md` |
-| SEO Intelligence Dashboard | `capability/piranav/seo-dashboard-2026-08-03.md` |
-| SEO Raw API | `capability/piranav/seo-intel-raw-api-2026-08-24.md` |
+| GSC reference guides | `capability/2026/08/2026-08-23/gsc-reference-guides-ledsone-2026-08-23.md` |
+| SEO Intelligence Dashboard | `capability/2026/08/2026-08-03/seo-dashboard-2026-08-03.md` |
+| SEO Raw API | `capability/2026/08/2026-08-24/seo-intel-raw-api-2026-08-24.md` |

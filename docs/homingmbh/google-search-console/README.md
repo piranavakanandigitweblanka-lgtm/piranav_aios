@@ -63,7 +63,7 @@ If credentials are required during setup, access them through the approved secur
 | Shopify Customer Google Sign-In setup | `docs/homingmbh/shopify-google-sign-in/README.md` |
 | Google Sign-In trainee guide | `docs/homingmbh/shopify-google-sign-in/Homingmbh_Shopify_Google_SignIn_Trainee_Guide.docx` |
 | Google Sign-In evidence | `evidence/piranav/homingmbh-shopify-google-signin-2026-09-24.md` |
-| Google Sign-In capability | `capability/piranav/shopify-customer-google-signin.md` |
+| Google Sign-In capability | `capability/2026/09/2026-09-24/shopify-customer-google-signin.md` |
 
 ---
 

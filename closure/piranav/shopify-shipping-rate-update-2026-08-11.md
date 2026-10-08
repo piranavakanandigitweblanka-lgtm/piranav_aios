@@ -10,10 +10,10 @@ PIRANAV-SHOPIFY-SHIPPING-2026-08-11
 Bulk update shipping rates for 9 EU countries on the LEDSone UK Shopify store (ledsone.co.uk) by +£1.50 / +€1.50, using the Shopify MCP (Admin GraphQL `deliveryProfileUpdate` mutation).
 
 ## Asset Path
-- `capability/piranav/shopify-shipping-rate-update-2026-08-11.md` — UNTRACKED (not committed to git)
+- `capability/2026/08/2026-08-11/shopify-shipping-rate-update-2026-08-11.md` — UNTRACKED (not committed to git)
 
 ## Evidence Path
-- Capability file exists locally: `capability/piranav/shopify-shipping-rate-update-2026-08-11.md`
+- Capability file exists locally: `capability/2026/08/2026-08-11/shopify-shipping-rate-update-2026-08-11.md`
 - No git commit — UNTRACKED
 - No evidence file (separate from capability)
 - No validation file
@@ -23,10 +23,10 @@ Bulk update shipping rates for 9 EU countries on the LEDSone UK Shopify store (l
 Repo: https://github.com/piranavakanandigitweblanka-lgtm/piranav_aios
 Commit: NONE — file is untracked. Git status confirms:
 ```
-?? capability/piranav/shopify-shipping-rate-update-2026-08-11.md
+?? capability/2026/08/2026-08-11/shopify-shipping-rate-update-2026-08-11.md
 ```
 Once committed, the file will appear at:
-https://github.com/piranavakanandigitweblanka-lgtm/piranav_aios/blob/main/capability/piranav/shopify-shipping-rate-update-2026-08-11.md
+https://github.com/piranavakanandigitweblanka-lgtm/piranav_aios/blob/main/capability/2026/08/2026-08-11/shopify-shipping-rate-update-2026-08-11.md
 
 ## Countries Updated
 | Country | Before | After |
@@ -78,7 +78,7 @@ MISSING
 3. No evidence or validation file
 
 ## Next Step
-1. COMMIT: `capability/piranav/shopify-shipping-rate-update-2026-08-11.md` immediately (P1 — live change)
+1. COMMIT: `capability/2026/08/2026-08-11/shopify-shipping-rate-update-2026-08-11.md` immediately (P1 — live change)
 2. CREATE: `evidence/piranav/shopify-shipping-rate-update-2026-08-11.md`
 3. GPT to review → PASS or FAIL
 

@@ -29,7 +29,7 @@ Replace hardcoded SHA-256 password hashes with a Neon Postgres–backed authenti
 ## Evidence Path
 - Primary commit: `d1fc7c9` — DB-backed auth across 14 dashboards
 - Secondary commit: `18888cb` — admin session auto-unlocks all pages
-- No AIOS capability file — CREATE REQUIRED: `capability/piranav/auth-system-2026-08-10.md`
+- No AIOS capability file — CREATE REQUIRED: `capability/2026/08/2026-08-10/auth-system-2026-08-10.md`
 - No GPT review evidence — GPT REVIEW EVIDENCE MISSING
 
 ## GitHub Path / Commit
@@ -76,7 +76,7 @@ MISSING
 - Neon DB table schema not in any AIOS file
 
 ## Next Step
-1. CREATE: `capability/piranav/auth-system-2026-08-10.md` (include table schema, page_key model, admin unlock pattern)
+1. CREATE: `capability/2026/08/2026-08-10/auth-system-2026-08-10.md` (include table schema, page_key model, admin unlock pattern)
 2. GPT to review architecture → PASS or FAIL
 
 ## Result

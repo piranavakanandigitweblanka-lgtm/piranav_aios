@@ -1,0 +1,268 @@
+{% doc %}
+  @prompt
+    Create a custom "Partner With Us" contact form section for a premium lighting brand (LEDSone). The form should include the following fields: Full Name, Email Address, Company Name, Phone Number, and Message. Style it to match a modern industrial-premium aesthetic with clean typography, subtle borders, and a dark or accent-coloured submit button. On submission, use JavaScript fetch() to POST the form data as JSON to a configurable Google Apps Script Web App URL (stored as a Liquid section setting called "google_script_url"). Show a success message on successful submission and an error message if it fails. Include a section setting for the Google Apps Script URL so the merchant can paste their deployment URL in the theme editor without touching code. Do not use any external libraries — pure HTML, CSS, and vanilla JavaScript only.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-partner-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 56px 24px;
+    background: {{ block.settings.background_color }};
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-partner-{{ ai_gen_id }}__inner {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .ai-partner-{{ ai_gen_id }}__eyebrow {
+    margin: 0 0 12px;
+    color: {{ block.settings.accent_color }};
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .ai-partner-{{ ai_gen_id }}__heading {
+    margin: 0 0 14px;
+    color: {{ block.settings.heading_color }};
+    font-family: {{ block.settings.heading_font.family }}, sans-serif;
+    font-size: {{ block.settings.heading_size }}px;
+    font-weight: 600;
+    line-height: 1.15;
+  }
+
+  .ai-partner-{{ ai_gen_id }}__intro {
+    max-width: 620px;
+    margin: 0 0 34px;
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  .ai-partner-{{ ai_gen_id }}__form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .ai-partner-{{ ai_gen_id }}__field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ai-partner-{{ ai_gen_id }}__field--full,
+  .ai-partner-{{ ai_gen_id }}__actions,
+  .ai-partner-{{ ai_gen_id }}__status {
+    grid-column: 1 / -1;
+  }
+
+  .ai-partner-{{ ai_gen_id }}__label {
+    color: {{ block.settings.heading_color }};
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .ai-partner-{{ ai_gen_id }}__input {
+    width: 100%;
+    min-height: 50px;
+    box-sizing: border-box;
+    padding: 14px 16px;
+    border: 1px solid {{ block.settings.border_color }};
+    border-radius: 0;
+    background: {{ block.settings.input_background }};
+    color: {{ block.settings.text_color }};
+    font: inherit;
+    line-height: 1.4;
+  }
+
+  .ai-partner-{{ ai_gen_id }}__input:focus {
+    outline: 2px solid {{ block.settings.accent_color }};
+    outline-offset: 2px;
+  }
+
+  textarea.ai-partner-{{ ai_gen_id }}__input {
+    min-height: 150px;
+    resize: vertical;
+  }
+
+  .ai-partner-{{ ai_gen_id }}__actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 4px;
+  }
+
+  .ai-partner-{{ ai_gen_id }}__button {
+    min-height: 50px;
+    padding: 14px 28px;
+    border: 1px solid {{ block.settings.button_background }};
+    border-radius: {{ block.settings.button_radius }}px;
+    background: {{ block.settings.button_background }};
+    color: {{ block.settings.button_text_color }};
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+    transition: opacity 0.2s ease;
+  }
+
+  .ai-partner-{{ ai_gen_id }}__button:hover,
+  .ai-partner-{{ ai_gen_id }}__button:focus-visible {
+    opacity: 0.82;
+  }
+
+  .ai-partner-{{ ai_gen_id }}__button:focus-visible {
+    outline: 2px solid {{ block.settings.accent_color }};
+    outline-offset: 3px;
+  }
+
+  .ai-partner-{{ ai_gen_id }}__button[disabled] {
+    cursor: wait;
+    opacity: 0.6;
+  }
+
+  .ai-partner-{{ ai_gen_id }}__status {
+    display: none;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .ai-partner-{{ ai_gen_id }}__status.is-visible { display: block; }
+  .ai-partner-{{ ai_gen_id }}__status--success { color: {{ block.settings.success_color }}; }
+  .ai-partner-{{ ai_gen_id }}__status--error { color: {{ block.settings.error_color }}; }
+
+  @media screen and (max-width: 749px) {
+    .ai-partner-{{ ai_gen_id }} { padding: 40px 18px; }
+    .ai-partner-{{ ai_gen_id }}__form { grid-template-columns: 1fr; }
+    .ai-partner-{{ ai_gen_id }}__field--full,
+    .ai-partner-{{ ai_gen_id }}__actions,
+    .ai-partner-{{ ai_gen_id }}__status { grid-column: auto; }
+    .ai-partner-{{ ai_gen_id }}__heading { font-size: {{ block.settings.heading_size | times: 0.82 }}px; }
+    .ai-partner-{{ ai_gen_id }}__actions { align-items: stretch; flex-direction: column; }
+  }
+{% endstyle %}
+
+<partner-contact-{{ ai_gen_id }} class="ai-partner-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-partner-{{ ai_gen_id }}__inner">
+    {% if block.settings.eyebrow != blank %}<p class="ai-partner-{{ ai_gen_id }}__eyebrow">{{ block.settings.eyebrow | escape }}</p>{% endif %}
+    <h2 class="ai-partner-{{ ai_gen_id }}__heading">{{ block.settings.heading | escape }}</h2>
+    <div class="ai-partner-{{ ai_gen_id }}__intro">{{ block.settings.intro }}</div>
+
+    <form class="ai-partner-{{ ai_gen_id }}__form" novalidate>
+      <div class="ai-partner-{{ ai_gen_id }}__field">
+        <label class="ai-partner-{{ ai_gen_id }}__label" for="partner-name-{{ ai_gen_id }}">Full Name</label>
+        <input class="ai-partner-{{ ai_gen_id }}__input" id="partner-name-{{ ai_gen_id }}" name="full_name" type="text" autocomplete="name" required>
+      </div>
+      <div class="ai-partner-{{ ai_gen_id }}__field">
+        <label class="ai-partner-{{ ai_gen_id }}__label" for="partner-email-{{ ai_gen_id }}">Email Address</label>
+        <input class="ai-partner-{{ ai_gen_id }}__input" id="partner-email-{{ ai_gen_id }}" name="email" type="email" autocomplete="email" required>
+      </div>
+      <div class="ai-partner-{{ ai_gen_id }}__field">
+        <label class="ai-partner-{{ ai_gen_id }}__label" for="partner-company-{{ ai_gen_id }}">Company Name</label>
+        <input class="ai-partner-{{ ai_gen_id }}__input" id="partner-company-{{ ai_gen_id }}" name="company_name" type="text" autocomplete="organization" required>
+      </div>
+      <div class="ai-partner-{{ ai_gen_id }}__field">
+        <label class="ai-partner-{{ ai_gen_id }}__label" for="partner-phone-{{ ai_gen_id }}">Phone Number</label>
+        <input class="ai-partner-{{ ai_gen_id }}__input" id="partner-phone-{{ ai_gen_id }}" name="phone_number" type="tel" autocomplete="tel">
+      </div>
+      <div class="ai-partner-{{ ai_gen_id }}__field ai-partner-{{ ai_gen_id }}__field--full">
+        <label class="ai-partner-{{ ai_gen_id }}__label" for="partner-message-{{ ai_gen_id }}">Message</label>
+        <textarea class="ai-partner-{{ ai_gen_id }}__input" id="partner-message-{{ ai_gen_id }}" name="message" required></textarea>
+      </div>
+      <div class="ai-partner-{{ ai_gen_id }}__actions">
+        <button class="ai-partner-{{ ai_gen_id }}__button" type="submit">{{ block.settings.button_label | escape }}</button>
+      </div>
+      <p class="ai-partner-{{ ai_gen_id }}__status ai-partner-{{ ai_gen_id }}__status--success" role="status" aria-live="polite">{{ block.settings.success_message | escape }}</p>
+      <p class="ai-partner-{{ ai_gen_id }}__status ai-partner-{{ ai_gen_id }}__status--error" role="alert" aria-live="assertive">{{ block.settings.error_message | escape }}</p>
+    </form>
+  </div>
+</partner-contact-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class PartnerContact{{ ai_gen_id }} extends HTMLElement {
+      connectedCallback() {
+        this.form = this.querySelector('form');
+        this.button = this.querySelector('button[type="submit"]');
+        this.success = this.querySelector('.ai-partner-{{ ai_gen_id }}__status--success');
+        this.error = this.querySelector('.ai-partner-{{ ai_gen_id }}__status--error');
+        this.form.addEventListener('submit', (event) => this.submitForm(event));
+      }
+
+      async submitForm(event) {
+        event.preventDefault();
+        this.success.classList.remove('is-visible');
+        this.error.classList.remove('is-visible');
+        if (!this.form.checkValidity()) {
+          this.form.reportValidity();
+          return;
+        }
+        const endpoint = {{ block.settings.google_script_url | json }};
+        if (!endpoint) {
+          this.error.classList.add('is-visible');
+          return;
+        }
+        this.button.disabled = true;
+        try {
+          const response = await fetch(endpoint, {
+            method: 'POST',
+           mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(Object.fromEntries(new FormData(this.form)))
+          });
+       
+          this.form.reset();
+          this.success.classList.add('is-visible');
+        } catch (error) {
+          this.error.classList.add('is-visible');
+        } finally {
+          this.button.disabled = false;
+        }
+      }
+    }
+    if (!customElements.get('partner-contact-{{ ai_gen_id }}')) customElements.define('partner-contact-{{ ai_gen_id }}', PartnerContact{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Partner with us form",
+  "tag": null,
+  "class": "partner-with-us-block",
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Trade and partnerships" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Partner with LEDSone" },
+    { "type": "richtext", "id": "intro", "label": "Introduction", "default": "<p>Tell us about your project or business and our partnerships team will be in touch.</p>" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Send enquiry" },
+    { "type": "text", "id": "success_message", "label": "Success message", "default": "Thank you. Your enquiry has been sent successfully." },
+    { "type": "text", "id": "error_message", "label": "Error message", "default": "Something went wrong. Please try again or contact us directly." },
+    { "type": "header", "content": "Connection" },
+    { "type": "text", "id": "google_script_url", "label": "Google Apps Script URL" },
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "desktop_width_percent", "label": "Desktop width", "min": 50, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "heading_size", "label": "Heading size", "min": 24, "max": 56, "step": 1, "unit": "px", "default": 38 },
+    { "type": "font_picker", "id": "heading_font", "label": "Heading font", "default": "sans-serif" },
+    { "type": "header", "content": "Colours" },
+    { "type": "color", "id": "background_color", "label": "Background", "default": "#F7F8FA" },
+    { "type": "color", "id": "heading_color", "label": "Headings", "default": "#111111" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#333333" },
+    { "type": "color", "id": "accent_color", "label": "Accent", "default": "#012F6D" },
+    { "type": "color", "id": "border_color", "label": "Borders", "default": "#C9D0D8" },
+    { "type": "color", "id": "input_background", "label": "Fields", "default": "#FFFFFF" },
+    { "type": "color", "id": "button_background", "label": "Button", "default": "#012F6D" },
+    { "type": "color", "id": "button_text_color", "label": "Button text", "default": "#FFFFFF" },
+    { "type": "color", "id": "success_color", "label": "Success", "default": "#176B45" },
+    { "type": "color", "id": "error_color", "label": "Error", "default": "#A12622" },
+    { "type": "range", "id": "button_radius", "label": "Button radius", "min": 0, "max": 30, "step": 5, "unit": "px", "default": 0 }
+  ],
+  "presets": [{ "name": "Partner with us form" }]
+}
+{% endschema %}

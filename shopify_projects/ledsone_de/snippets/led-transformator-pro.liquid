@@ -1,0 +1,123 @@
+
+<style>
+.promo-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(270deg, #d6f3ff, #e0e0e0, #d6f3ff); /* animated light shading */
+  background-size: 400% 400%;
+  animation: lightning-shade 6s ease infinite;
+  color: #000000; 
+  font-family: 'Poppins', Arial, sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  padding: 14px 24px;
+  gap: 12px;
+  flex-wrap: wrap;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+}
+
+
+@keyframes lightning-shade {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+
+.promo-text {
+  flex: 1;
+  font-size: 16px;
+}
+
+
+.promo-code-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #8fd19e; 
+  color: #000; 
+  font-weight: 600;
+  padding: 6px 18px;
+  border-radius: 24px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.promo-code-box:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+
+.promo-copied-text {
+  display: none;
+  color: #006400; 
+  font-weight: 600;
+}
+
+.promo-code-box.copied .promo-copy-text,
+.promo-code-box.copied .promo-clipboard-icon {
+  display: none;
+}
+
+.promo-code-box.copied .promo-copied-text {
+  display: inline;
+}
+
+.promo-clipboard-icon {
+  font-size: 16px;
+}
+
+.promo-bar-space {
+  height: 20px;
+  width: 100%;
+}
+
+
+@media (max-width: 768px) {
+  .promo-bar {
+    flex-direction: column;
+    text-align: center;
+    padding: 10px 16px; 
+    gap: 8px; 
+    font-size: 14px; 
+  }
+  .promo-text {
+    font-size: 14px;
+  }
+  .promo-code-box {
+    padding: 5px 14px; 
+    font-size: 14px;
+    justify-content: center;
+  }
+}
+</style>
+
+<div class="promo-bar">
+  <div class="promo-text">
+    10 % Rabatt bei 4 oder mehr LED-Treibern.
+  </div>
+  <div class="promo-code-box" onclick="copyPromoCode('Trafo10', this)">
+    <span class="promo-code-value">Trafo10</span>
+    <span class="promo-clipboard-icon">📋</span>
+    <span class="promo-copy-text">Kopie</span>
+    <span class="promo-copied-text">✓ kopiert</span>
+  </div>
+</div>
+
+<div class="promo-bar-space"></div>
+
+<script>
+function copyPromoCode(code, el) {
+  navigator.clipboard.writeText(code).then(() => {
+    el.classList.add('copied'); 
+    setTimeout(() => el.classList.remove('copied'), 2000);
+  }).catch(err => console.error('Das Kopieren ist fehlgeschlagen', err));
+}
+
+</script>
+

@@ -84,4 +84,4 @@ The upsert script is ready and tested locally. To run successfully, one of the f
 | `Staff-requirements-02/scripts/semrush-backlinks-upsert.js` | Node.js upsert script (ready to run locally) |
 | `evidence/seo/semrush-backlinks-ledsone-2026-09-21.md` | This file |
 | `prompts/implementation/semrush-backlinks-neon-upsert.md` | Reusable prompt |
-| `capability/semrush-backlinks-pipeline.md` | Capability entry |
+| `capability/2026/09/2026-09-21/semrush-backlinks-pipeline.md` | Capability entry |

@@ -1,0 +1,623 @@
+{%- liquid
+  assign desktop_image = section.settings.desktop_image
+  assign mobile_image = section.settings.mobile_image | default: desktop_image
+  assign overlay_opacity = section.settings.overlay_opacity | divided_by: 100.0
+  assign promo_code = section.settings.promo_code | default: 'LDW10'
+  assign promo_label = section.settings.promo_label | default: '10% Rabatt'
+-%}
+
+{%- comment -%}
+  LCP PRELOAD — placed at top of first section so browser's preload scanner
+  discovers and starts fetching the hero image before CSS is fully parsed.
+  Using media= to only preload the image that will actually be rendered.
+{%- endcomment -%}
+{%- if desktop_image != blank -%}
+  <link
+    rel="preload"
+    as="image"
+    href="{{ desktop_image | image_url: width: 1600 }}"
+    imagesrcset="{{ desktop_image | image_url: width: 750 }} 750w, {{ desktop_image | image_url: width: 1200 }} 1200w, {{ desktop_image | image_url: width: 1600 }} 1600w, {{ desktop_image | image_url: width: 2000 }} 2000w"
+    imagesizes="100vw"
+    media="(min-width: 750px)"
+    fetchpriority="high"
+  >
+  {%- if section.settings.mobile_image != blank -%}
+    <link
+      rel="preload"
+      as="image"
+      href="{{ section.settings.mobile_image | image_url: width: 750 }}"
+      imagesrcset="{{ section.settings.mobile_image | image_url: width: 375 }} 375w, {{ section.settings.mobile_image | image_url: width: 750 }} 750w, {{ section.settings.mobile_image | image_url: width: 1000 }} 1000w"
+      imagesizes="100vw"
+      media="(max-width: 749px)"
+      fetchpriority="high"
+    >
+  {%- endif -%}
+{%- endif -%}
+
+<style>
+  .banner-{{ section.id }} {
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+    contain: layout style;
+  }
+  .banner-{{ section.id }} .banner__media,
+  .banner-{{ section.id }} picture.banner__media {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .banner-{{ section.id }} picture.banner__media img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .banner-{{ section.id }} .banner__overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: {{ section.settings.overlay_color }};
+    opacity: {{ overlay_opacity }};
+    z-index: 1;
+    pointer-events: none;
+  }
+  .banner-{{ section.id }} .banner__content {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    text-align: center;
+    z-index: 2;
+    padding: 0 20px;
+  }
+
+  /* ─── Responsive images handled by <picture><source media> — no display:none needed ─── */
+
+  /* ─── Speaker Hotspot ───────────────────────────────────── */
+  .banner-{{ section.id }} .speaker-hotspot {
+    position: absolute;
+    aspect-ratio: 1;
+    z-index: 10;
+    cursor: pointer;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    will-change: transform;
+    touch-action: manipulation;
+  }
+
+  /* Desktop — 750px and above (fixed, does not shift on resize) */
+  @media screen and (min-width: 750px) {
+    .banner-{{ section.id }} .speaker-hotspot {
+      top:   {{ section.settings.speaker_top_desktop  | default: 42 }}%;
+      left:  {{ section.settings.speaker_left_desktop | default: 37 }}%;
+      width: {{ section.settings.speaker_size_desktop | default: 2  }}%;
+    }
+  }
+
+  /* Mobile — below 750px */
+  @media screen and (max-width: 749px) {
+    .banner-{{ section.id }} .speaker-hotspot {
+      top:   {{ section.settings.speaker_top_mobile  | default: 42 }}%;
+      left:  {{ section.settings.speaker_left_mobile | default: 37 }}%;
+      width: {{ section.settings.speaker_size_mobile | default: 4  }}%;
+    }
+  }
+
+  /* Pulse rings — only after JS adds .ready */
+/*
+.banner-{{ section.id }} .speaker-hotspot.ready::before,
+.banner-{{ section.id }} .speaker-hotspot.ready::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid rgba(130,210,60,0.7);
+  animation: speakerPulse-{{ section.id }} 1.8s ease-out infinite;
+  will-change: transform, opacity;
+}
+.banner-{{ section.id }} .speaker-hotspot.ready::after { animation-delay: 0.9s; }
+*/
+
+  .banner-{{ section.id }} .speaker-hotspot .speaker-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: block;
+  }
+  .banner-{{ section.id }} .speaker-hotspot.ready .speaker-inner {
+    animation: speakerBounce-{{ section.id }} 2.4s ease-in-out infinite;
+    will-change: transform;
+  }
+  .banner-{{ section.id }} .speaker-hotspot:hover .speaker-inner {
+    animation: speakerWiggle-{{ section.id }} 0.5s ease-in-out !important;
+  }
+
+  @keyframes speakerPulse-{{ section.id }} {
+    0%   { transform: scale(1);   opacity: 0.8; }
+    70%  { transform: scale(1.9); opacity: 0; }
+    100% { transform: scale(1.9); opacity: 0; }
+  }
+  @keyframes speakerBounce-{{ section.id }} {
+    0%, 100% { transform: translateY(0) scale(1); }
+    30%       { transform: translateY(-8px) scale(1.06); }
+    60%       { transform: translateY(3px) scale(0.97); }
+  }
+  @keyframes speakerWiggle-{{ section.id }} {
+    0%  { transform: rotate(0deg)   scale(1); }
+    20% { transform: rotate(-12deg) scale(1.12); }
+    40% { transform: rotate(12deg)  scale(1.12); }
+    60% { transform: rotate(-8deg)  scale(1.08); }
+    80% { transform: rotate(8deg)   scale(1.08); }
+    100%{ transform: rotate(0deg)   scale(1); }
+  }
+
+  /* ─── Promo Reveal Card ─────────────────────────────────── */
+  .banner-{{ section.id }} .promo-reveal {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+  }
+  .banner-{{ section.id }} .promo-reveal.is-active {
+    visibility: visible;
+    pointer-events: auto;
+    animation: promoFadeInOut-{{ section.id }} 2.8s ease forwards;
+  }
+  .banner-{{ section.id }} .promo-card {
+    background: linear-gradient(135deg,#0d4a3a 0%,#0e6b4a 50%,#1a8a5a 100%);
+    border: 3px solid #82d23c;
+    border-radius: 20px;
+    padding: 28px 48px;
+    text-align: center;
+    box-shadow: 0 0 0 6px rgba(130,210,60,0.2),0 0 60px rgba(130,210,60,0.4),0 20px 60px rgba(0,0,0,0.5);
+    transform: scale(0.2) rotate(-8deg);
+    will-change: transform;
+    animation: promoCardPop-{{ section.id }} 2.8s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+  .banner-{{ section.id }} .promo-label-text {
+    font-family: 'Impact','Arial Black',sans-serif;
+    font-size: clamp(22px,5vw,52px);
+    color: #82d23c;
+    letter-spacing: 2px;
+    line-height: 1;
+    margin: 0 0 8px;
+    text-shadow: 0 0 20px rgba(130,210,60,0.6);
+  }
+  .banner-{{ section.id }} .promo-code-badge {
+    font-family: 'Courier New',monospace;
+    font-size: clamp(28px,6vw,68px);
+    font-weight: 900;
+    color: #fff;
+    background: rgba(130,210,60,0.15);
+    border: 2px dashed rgba(130,210,60,0.6);
+    border-radius: 10px;
+    padding: 6px 20px;
+    letter-spacing: 6px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  }
+  .banner-{{ section.id }} .promo-tap-hint {
+    font-family: sans-serif;
+    font-size: clamp(11px,1.5vw,15px);
+    color: rgba(255,255,255,0.7);
+    margin-top: 8px;
+    letter-spacing: 1px;
+  }
+
+  /* ─── MOBILE ONLY — bigger & darker promo card ──────────── */
+  @media screen and (max-width: 749px) {
+    .banner-{{ section.id }} .promo-card {
+      background: linear-gradient(135deg,#020f09 0%,#041f13 50%,#062e1c 100%);
+      border: 3px solid #82d23c;
+      border-radius: 16px;
+      padding: 36px 40px;
+      box-shadow: 0 0 0 6px rgba(130,210,60,0.25),
+                  0 0 50px rgba(130,210,60,0.5),
+                  0 16px 50px rgba(0,0,0,0.85);
+      width: 100vw;
+      max-width: 400px;
+    }
+    .banner-{{ section.id }} .promo-label-text {
+      font-size: clamp(24px, 8vw, 42px);
+    }
+    .banner-{{ section.id }} .promo-code-badge {
+      font-size: clamp(36px, 12vw, 60px);
+      letter-spacing: 4px;
+      padding: 8px 16px;
+    }
+    .banner-{{ section.id }} .promo-tap-hint {
+      font-size: clamp(12px,3.5vw,16px);
+    }
+  }
+
+  @keyframes promoFadeInOut-{{ section.id }} {
+    0%   { opacity:0; }
+    10%  { opacity:1; }
+    75%  { opacity:1; }
+    100% { opacity:0; }
+  }
+  @keyframes promoCardPop-{{ section.id }} {
+    0%   { transform: scale(0.2) rotate(-8deg); }
+    15%  { transform: scale(1.08) rotate(2deg); }
+    25%  { transform: scale(0.95) rotate(-1deg); }
+    35%  { transform: scale(1.0) rotate(0deg); }
+    75%  { transform: scale(1.0) rotate(0deg); }
+    100% { transform: scale(0.3) rotate(5deg); }
+  }
+
+  /* ─── Toast ─────────────────────────────────────────────── */
+  .banner-{{ section.id }} .copy-toast {
+    position: absolute;
+    bottom: 12%;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #82d23c;
+    color: #0d3020;
+    font-family: sans-serif;
+    font-weight: 700;
+    font-size: clamp(12px,2vw,16px);
+    padding: 8px 22px;
+    border-radius: 50px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+    z-index: 25;
+    pointer-events: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .banner-{{ section.id }} .copy-toast.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .banner-{{ section.id }} .banner__heading   { margin: 0 0 8px; }
+  .banner-{{ section.id }} .banner__subheading { margin: 0 0 16px; }
+</style>
+
+<div class="banner-{{ section.id }} {% if section.settings.full_width %}banner--full-width{% endif %}">
+
+  {%- if section.settings.link_url != blank -%}
+    <a href="{{ section.settings.link_url }}" class="banner__link">
+  {%- endif -%}
+
+  {%- if desktop_image != blank -%}
+    {%- assign desktop_alt = desktop_image.alt | default: section.settings.heading -%}
+    {%- comment -%}
+      <picture> ensures ONLY the matching source is downloaded per device.
+      The old display:none pattern caused BOTH images to download on every device.
+    {%- endcomment -%}
+    <picture class="banner__media">
+      {%- if section.settings.mobile_image != blank -%}
+        {%- assign mobile_alt = section.settings.mobile_image.alt | default: section.settings.heading -%}
+        <source
+          media="(max-width: 749px)"
+          srcset="{{ section.settings.mobile_image | image_url: width: 375 }} 375w, {{ section.settings.mobile_image | image_url: width: 750 }} 750w, {{ section.settings.mobile_image | image_url: width: 1000 }} 1000w"
+          sizes="100vw"
+        >
+      {%- endif -%}
+      <source
+        srcset="{{ desktop_image | image_url: width: 750 }} 750w, {{ desktop_image | image_url: width: 1200 }} 1200w, {{ desktop_image | image_url: width: 1600 }} 1600w, {{ desktop_image | image_url: width: 2000 }} 2000w"
+        sizes="100vw"
+      >
+      <img
+        src="{{ desktop_image | image_url: width: 1600 }}"
+        loading="eager"
+        fetchpriority="high"
+        width="{{ desktop_image.width }}"
+        height="{{ desktop_image.height }}"
+        alt="{{ desktop_alt }}"
+      >
+    </picture>
+  {%- endif -%}
+
+  {%- if section.settings.link_url != blank -%}
+    </a>
+  {%- endif -%}
+
+  {%- if section.settings.show_overlay -%}
+    <div class="banner__overlay"></div>
+  {%- endif -%}
+
+  {%- if section.settings.heading != blank or section.settings.subheading != blank or section.settings.button_label != blank -%}
+    <div class="banner__content">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="banner__heading" style="color:{{ section.settings.text_color }}">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subheading != blank -%}
+        <p class="banner__subheading" style="color:{{ section.settings.text_color }}">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+      {%- if section.settings.button_label != blank -%}
+        <button class="banner__button button" style="background-color:{{ section.settings.button_bg_color }};color:{{ section.settings.button_text_color }};">
+          {{ section.settings.button_label }}
+        </button>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <button
+    class="speaker-hotspot"
+    aria-label="Promo-Code enthüllen"
+    id="speaker-btn-{{ section.id }}"
+  ><span class="speaker-inner"></span></button>
+
+  <div class="promo-reveal" id="promo-reveal-{{ section.id }}" aria-live="polite">
+    <div class="promo-card">
+      <p class="promo-label-text">{{ promo_label }}</p>
+      <div class="promo-code-badge">{{ promo_code }}</div>
+      <p class="promo-tap-hint">✓ Code kopiert &amp; bereit!</p>
+    </div>
+  </div>
+
+  <div class="copy-toast" id="toast-{{ section.id }}">
+    🎉 Code "{{ promo_code }}" kopiert!
+  </div>
+
+</div>
+
+<script>
+(function() {
+  function initBanner() {
+    var sid    = '{{ section.id }}';
+    var code   = '{{ promo_code }}';
+    var btn    = document.getElementById('speaker-btn-'  + sid);
+    var reveal = document.getElementById('promo-reveal-' + sid);
+    var toast  = document.getElementById('toast-'        + sid);
+    var busy   = false;
+    if (!btn) return;
+
+    btn.classList.add('ready');
+
+    function copyCode() {
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(code);
+      }
+      var ta = document.createElement('textarea');
+      ta.value = code;
+      ta.style.cssText = 'position:fixed;left:-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch(e) {}
+      document.body.removeChild(ta);
+      return Promise.resolve();
+    }
+
+    function showToast() {
+      toast.classList.add('show');
+      setTimeout(function() { toast.classList.remove('show'); }, 2500);
+    }
+
+    function trigger() {
+      if (busy) return;
+      busy = true;
+      var inner = btn.querySelector('.speaker-inner');
+      inner.style.animation = 'none';
+      void inner.offsetWidth;
+      inner.style.animation = '';
+      reveal.classList.remove('is-active');
+      void reveal.offsetWidth;
+      reveal.classList.add('is-active');
+      copyCode().then(showToast).catch(showToast);
+      setTimeout(function() {
+        reveal.classList.remove('is-active');
+        busy = false;
+      }, 2900);
+    }
+
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      trigger();
+    }, { passive: false });
+
+    btn.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      trigger();
+    }, { passive: false });
+  }
+
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(initBanner, { timeout: 2000 });
+  } else {
+    window.addEventListener('load', initBanner, { once: true, passive: true });
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Responsive Banner",
+  "tag": "section",
+  "class": "shopify-section--banner",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full width",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_image",
+      "label": "Desktop Image",
+      "info": "Recommended size: 2000x800px"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile Image (optional)",
+      "info": "Recommended size: 1000x1000px. If not set, desktop image will be used."
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Banner Link",
+      "info": "Link to collection, product, or custom URL"
+    },
+    {
+      "type": "header",
+      "content": "🎤 Promo Code Interaction"
+    },
+    {
+      "type": "text",
+      "id": "promo_code",
+      "label": "Promo Code",
+      "default": "LDW10",
+      "info": "The code that gets copied when speaker is clicked"
+    },
+    {
+      "type": "text",
+      "id": "promo_label",
+      "label": "Promo Label (shown on reveal card)",
+      "default": "10% Rabatt"
+    },
+    {
+      "type": "header",
+      "content": "🖥️ Speaker Position — DESKTOP (750px and above)"
+    },
+    {
+      "type": "range",
+      "id": "speaker_top_desktop",
+      "label": "Desktop — Top (%)",
+      "min": 1,
+      "max": 95,
+      "step": 1,
+      "default": 42
+    },
+    {
+      "type": "range",
+      "id": "speaker_left_desktop",
+      "label": "Desktop — Left (%)",
+      "min": 1,
+      "max": 95,
+      "step": 1,
+      "default": 37
+    },
+    {
+      "type": "range",
+      "id": "speaker_size_desktop",
+      "label": "Desktop — Hotspot Size (%)",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "📱 Speaker Position — MOBILE (below 750px)"
+    },
+    {
+      "type": "range",
+      "id": "speaker_top_mobile",
+      "label": "Mobile — Top (%)",
+      "min": 1,
+      "max": 95,
+      "step": 1,
+      "default": 42
+    },
+    {
+      "type": "range",
+      "id": "speaker_left_mobile",
+      "label": "Mobile — Left (%)",
+      "min": 1,
+      "max": 95,
+      "step": 1,
+      "default": 37
+    },
+    {
+      "type": "range",
+      "id": "speaker_size_mobile",
+      "label": "Mobile — Hotspot Size (%)",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Banner Heading"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Add a tagline or promotion details here"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "Shop Now"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_overlay",
+      "label": "Show Overlay",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 30
+    }
+  ],
+  "presets": [
+    {
+      "name": "Responsive Banner",
+      "category": "Image"
+    }
+  ]
+}
+{% endschema %}

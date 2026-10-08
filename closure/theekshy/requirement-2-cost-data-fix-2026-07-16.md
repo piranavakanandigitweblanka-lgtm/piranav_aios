@@ -29,7 +29,7 @@
 | validation/theekshy/requirement-2-cost-data-fix-2026-07-16.md | DONE |
 | implementation/theekshy/requirement-2-cost-data-fix-2026-07-16.md | DONE |
 | closure/theekshy/requirement-2-cost-data-fix-2026-07-16.md | DONE |
-| capability/theekshy/requirement-2-cost-data-fix-2026-07-16.md | DONE |
+| capability/2026/07/2026-07-16/requirement-2-cost-data-fix-2026-07-16.md | DONE |
 
 ## Coordinator Notes
 

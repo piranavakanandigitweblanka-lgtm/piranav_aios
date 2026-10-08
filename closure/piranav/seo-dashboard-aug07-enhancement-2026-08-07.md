@@ -14,7 +14,7 @@ Add reactive week selector and full 26-week data history table to the SEO Intell
 
 ## Evidence Path
 - Git commit: `6e94b70`
-- Existing (outdated) capability: `capability/piranav/seo-dashboard-2026-08-03.md` — does NOT include Aug 7 features
+- Existing (outdated) capability: `capability/2026/08/2026-08-03/seo-dashboard-2026-08-03.md` — does NOT include Aug 7 features
 - Existing closure: `closure/piranav/seo-dashboard-closure-2026-08-03.md` — does NOT include Aug 7 features
 - No GPT review evidence for Aug 7 session — GPT REVIEW EVIDENCE MISSING
 
@@ -32,7 +32,7 @@ Commit: https://github.com/piranavakanandigitweblanka-lgtm/piranav_aios/commit/6
 7. **Executive Insights + WoW Alerts** — remain pinned to latest two weeks (correct behaviour)
 
 ## Relationship to Existing Capability
-The existing `capability/piranav/seo-dashboard-2026-08-03.md` covers the Aug 3 baseline. The Aug 7 enhancements are NOT documented there. The capability file must be EXTENDED, not replaced.
+The existing `capability/2026/08/2026-08-03/seo-dashboard-2026-08-03.md` covers the Aug 3 baseline. The Aug 7 enhancements are NOT documented there. The capability file must be EXTENDED, not replaced.
 
 ## Status
 PARTIAL
@@ -56,7 +56,7 @@ MISSING
 - Existing capability file not extended for Aug 7 features
 
 ## Next Step
-1. EXTEND: `capability/piranav/seo-dashboard-2026-08-03.md` — add Aug 7 section
+1. EXTEND: `capability/2026/08/2026-08-03/seo-dashboard-2026-08-03.md` — add Aug 7 section
 2. EXTEND: `closure/piranav/seo-dashboard-closure-2026-08-03.md` — add Aug 7 deliverable entry
 3. GPT to review → PASS or FAIL
 

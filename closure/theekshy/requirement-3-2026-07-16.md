@@ -35,4 +35,4 @@ Requirement 3 has been fully rebuilt as a manual Feed Optimisation Action Log in
 - `evidence/theekshy/requirement-3-2026-07-16.md` — created
 - `validation/theekshy/requirement-3-2026-07-16.md` — created
 - `closure/theekshy/requirement-3-2026-07-16.md` — created
-- `capability/theekshy/requirement-3-2026-07-16.md` — created
+- `capability/2026/07/2026-07-16/requirement-3-2026-07-16.md` — created

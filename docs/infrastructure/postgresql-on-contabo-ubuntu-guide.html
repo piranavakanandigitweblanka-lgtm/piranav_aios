@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PostgreSQL on Contabo Ubuntu — Setup Guide</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: #1a1a2e;
+      background: #fff;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 48px 60px;
+    }
+
+    /* ── Cover block ── */
+    .cover {
+      border-left: 5px solid #2563eb;
+      padding: 24px 28px;
+      background: #f0f6ff;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 40px;
+    }
+    .cover h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1e3a8a;
+      margin-bottom: 6px;
+    }
+    .cover .meta { font-size: 12px; color: #64748b; }
+    .cover .meta span { margin-right: 18px; }
+
+    /* ── Section headings ── */
+    h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e3a8a;
+      border-bottom: 2px solid #dbeafe;
+      padding-bottom: 5px;
+      margin: 36px 0 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    h3 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #1d4ed8;
+      margin: 22px 0 8px;
+    }
+
+    p { margin-bottom: 10px; }
+
+    /* ── Info / warning boxes ── */
+    .box {
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin: 14px 0;
+      font-size: 13px;
+    }
+    .box.info  { background: #eff6ff; border-left: 4px solid #3b82f6; }
+    .box.warn  { background: #fffbeb; border-left: 4px solid #f59e0b; }
+    .box.ok    { background: #f0fdf4; border-left: 4px solid #22c55e; }
+
+    /* ── Step badge ── */
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 28px 0 10px;
+    }
+    .step-badge {
+      background: #2563eb;
+      color: #fff;
+      font-weight: 700;
+      font-size: 12px;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #1e3a8a;
+    }
+
+    /* ── Code blocks ── */
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      border-radius: 6px;
+      padding: 16px 18px;
+      overflow-x: auto;
+      margin: 8px 0 14px;
+      line-height: 1.6;
+    }
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: #e0e7ff;
+      color: #3730a3;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    .comment { color: #64748b; }
+    .cmd     { color: #7dd3fc; }
+    .kw      { color: #f472b6; }
+    .str     { color: #86efac; }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      margin: 10px 0 18px;
+    }
+    th {
+      background: #1e3a8a;
+      color: #fff;
+      padding: 8px 12px;
+      text-align: left;
+      font-weight: 600;
+    }
+    td {
+      padding: 7px 12px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    tr:nth-child(even) td { background: #f8fafc; }
+
+    /* ── Checklist ── */
+    .checklist { list-style: none; padding: 0; }
+    .checklist li {
+      padding: 5px 0 5px 26px;
+      position: relative;
+      font-size: 13px;
+    }
+    .checklist li::before {
+      content: "☐";
+      position: absolute;
+      left: 0;
+      color: #2563eb;
+      font-size: 15px;
+    }
+
+    /* ── Troubleshooting grid ── */
+    .trouble-grid { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; }
+    .trouble-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .trouble-problem {
+      background: #fef2f2;
+      padding: 7px 12px;
+      font-weight: 600;
+      font-size: 12.5px;
+      color: #b91c1c;
+      border-bottom: 1px solid #fecaca;
+    }
+    .trouble-fix {
+      padding: 7px 12px;
+      font-size: 12.5px;
+      color: #166534;
+      background: #f0fdf4;
+    }
+
+    /* ── Print ── */
+    @media print {
+      body { padding: 20px 32px; font-size: 12px; }
+      .cover { page-break-after: avoid; }
+      pre { font-size: 10.5px; }
+      h2 { page-break-before: auto; }
+      .step-header { page-break-inside: avoid; }
+    }
+
+    .page-break { page-break-before: always; }
+
+    footer {
+      margin-top: 48px;
+      padding-top: 16px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 11.5px;
+      color: #94a3b8;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     COVER
+══════════════════════════════════════ -->
+<div class="cover">
+  <h1>PostgreSQL on Contabo Ubuntu — Complete Setup Guide</h1>
+  <div class="meta">
+    <span>📅 Created: 2026-09-01</span>
+    <span>🖥️ Server: Contabo Cloud VPS Plus 4</span>
+    <span>🐧 OS: Ubuntu 24.04 LTS</span>
+    <span>🐘 PostgreSQL: 16</span>
+  </div>
+</div>
+
+<div class="box info">
+  This guide covers every step to install, configure, secure, and restore PostgreSQL 16 on a fresh Contabo Ubuntu VPS. Based on the live production setup for <strong>dm-dashboard</strong> at <code>158.220.99.127</code>.
+</div>
+
+<!-- ══════════════════════════════════════
+     SERVER REFERENCE
+══════════════════════════════════════ -->
+<h2>Server Reference</h2>
+
+<table>
+  <tr><th>Item</th><th>Value</th></tr>
+  <tr><td>Provider</td><td>Contabo</td></tr>
+  <tr><td>Plan</td><td>Cloud VPS Plus 4 — £12.48/month</td></tr>
+  <tr><td>Specs</td><td>4 vCPU (AMD EPYC), 8 GB RAM, 150 GB NVMe</td></tr>
+  <tr><td>OS</td><td>Ubuntu 24.04 LTS</td></tr>
+  <tr><td>Server IP</td><td>158.220.99.127</td></tr>
+  <tr><td>Region</td><td>EU</td></tr>
+  <tr><td>SSH access</td><td>PuTTY → root@158.220.99.127 port 22</td></tr>
+</table>
+
+<!-- ══════════════════════════════════════
+     STEP 1 — CONNECT
+══════════════════════════════════════ -->
+<h2>Step-by-Step Installation</h2>
+
+<div class="step-header">
+  <div class="step-badge">1</div>
+  <div class="step-title">Connect to the Server via SSH</div>
+</div>
+
+<p>Open PuTTY on Windows. Enter the server IP and connect as <code>root</code>.</p>
+
+<pre><code><span class="comment"># PuTTY settings</span>
+Host: 158.220.99.127
+Port: 22
+Connection type: SSH
+Login as: root</code></pre>
+
+<div class="box warn">
+  Always SSH as <strong>root</strong> on Contabo — the default user is root unless you created a separate account.
+</div>
+
+<!-- ══════════════════════════════════════
+     STEP 2 — UPDATE + INSTALL
+══════════════════════════════════════ -->
+<div class="step-header">
+  <div class="step-badge">2</div>
+  <div class="step-title">Update System &amp; Install PostgreSQL</div>
+</div>
+
+<p>Run a full system update first, then install PostgreSQL 16 with contrib extensions.</p>
+
+<pre><code><span class="comment"># Update all packages</span>
+<span class="cmd">apt update &amp;&amp; apt upgrade -y</span>
+
+<span class="comment"># Install PostgreSQL 16 + contrib tools</span>
+<span class="cmd">apt install postgresql postgresql-contrib -y</span></code></pre>
+
+<div class="box info">
+  On Ubuntu 24.04, <code>apt install postgresql</code> installs <strong>PostgreSQL 16</strong> by default. The <code>postgresql-contrib</code> package adds useful extensions like <code>pg_stat_statements</code>.
+</div>
+
+<h3>Verify the Installation</h3>
+
+<pre><code><span class="comment"># Check PostgreSQL version</span>
+<span class="cmd">psql --version</span>
+<span class="comment"># Expected: psql (PostgreSQL) 16.x</span>
+
+<span class="comment"># Check service is running</span>
+<span class="cmd">systemctl status postgresql</span></code></pre>
+
+<!-- ══════════════════════════════════════
+     STEP 3 — START + ENABLE
+══════════════════════════════════════ -->
+<div class="step-header">
+  <div class="step-badge">3</div>
+  <div class="step-title">Start &amp; Enable PostgreSQL Service</div>
+</div>
+
+<p>Make sure PostgreSQL starts automatically on server reboot.</p>
+
+<pre><code><span class="comment"># Start PostgreSQL now</span>
+<span class="cmd">systemctl start postgresql</span>
+
+<span class="comment"># Enable on boot</span>
+<span class="cmd">systemctl enable postgresql</span>
+
+<span class="comment"># Confirm both are active</span>
+<span class="cmd">systemctl status postgresql</span>
+<span class="comment"># Look for: Active: active (running)</span></code></pre>
+
+<!-- ══════════════════════════════════════
+     STEP 4 — CREATE DB + USER
+══════════════════════════════════════ -->
+<div class="step-header">
+  <div class="step-badge">4</div>
+  <div class="step-title">Create Database, User &amp; Permissions</div>
+</div>
+
+<p>Connect as the postgres superuser and set up your app's database.</p>
+
+<pre><code><span class="comment"># Open psql as postgres superuser</span>
+<span class="cmd">sudo -u postgres psql</span></code></pre>
+
+<p>Inside psql, run these SQL commands:</p>
+
+<pre><code><span class="comment">-- 1. Create database</span>
+<span class="kw">CREATE DATABASE</span> dm_dashboard;
+
+<span class="comment">-- 2. Create app user with password</span>
+<span class="kw">CREATE USER</span> dm_user <span class="kw">WITH PASSWORD</span> <span class="str">'your_strong_password_here'</span>;
+
+<span class="comment">-- 3. Grant full access to the database</span>
+<span class="kw">GRANT ALL PRIVILEGES ON DATABASE</span> dm_dashboard <span class="kw">TO</span> dm_user;
+
+<span class="comment">-- 4. Connect to the new database</span>
+<span class="kw">\c</span> dm_dashboard
+
+<span class="comment">-- 5. Transfer schema ownership to app user</span>
+<span class="kw">ALTER SCHEMA</span> public <span class="kw">OWNER TO</span> dm_user;
+
+<span class="comment">-- 6. Grant all schema privileges</span>
+<span class="kw">GRANT ALL ON SCHEMA</span> public <span class="kw">TO</span> dm_user;
+<span class="kw">GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA</span> public <span class="kw">TO</span> dm_user;
+<span class="kw">GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA</span> public <span class="kw">TO</span> dm_user;
+
+<span class="comment">-- 7. Create app role (optional but recommended)</span>
+<span class="kw">CREATE ROLE</span> dm_dashboard_app;
+<span class="kw">GRANT</span> dm_dashboard_app <span class="kw">TO</span> dm_user;
+
+<span class="comment">-- Exit psql</span>
+<span class="kw">\q</span></code></pre>
+
+<div class="box warn">
+  <strong>Step 5 (ALTER SCHEMA) is critical.</strong> Without it, your app user cannot create tables or write data even if they own the database. This is the most common permission error after a fresh install.
+</div>
+
+<!-- ══════════════════════════════════════
+     STEP 5 — TEST CONNECTION
+══════════════════════════════════════ -->
+<div class="step-header">
+  <div class="step-badge">5</div>
+  <div class="step-title">Test the Connection</div>
+</div>
+
+<pre><code><span class="comment"># Test login as dm_user</span>
+<span class="cmd">psql -U dm_user -d dm_dashboard -h localhost -W</span>
+<span class="comment"># Enter your password — you should get a psql prompt</span>
+
+<span class="comment"># List all databases (inside psql)</span>
+<span class="kw">\l</span>
+
+<span class="comment"># List tables in public schema</span>
+<span class="kw">\dt</span></code></pre>
+
+<div class="box ok">
+  If you get a <code>dm_dashboard=#</code> prompt — PostgreSQL is correctly installed and your user has access.
+</div>
+
+<!-- ══════════════════════════════════════
+     STEP 6 — RESTORE FROM BACKUP
+══════════════════════════════════════ -->
+<div class="page-break"></div>
+
+<div class="step-header">
+  <div class="step-badge">6</div>
+  <div class="step-title">Restore Database from pg_dump Backup</div>
+</div>
+
+<p>If migrating an existing database from your local Windows machine:</p>
+
+<h3>On Your Local Windows PC</h3>
+
+<pre><code><span class="comment"># Export from local PostgreSQL</span>
+<span class="comment"># Run in Command Prompt or PowerShell</span>
+<span class="cmd">"C:\Program Files\PostgreSQL\16\bin\pg_dump.exe" -U dm_dashboard_app -h localhost -p 5432 dm_dashboard -f dm_backup.sql</span>
+
+<span class="comment"># If pg_dump is not in PATH, use the full path above</span></code></pre>
+
+<h3>Upload via FileZilla</h3>
+
+<pre><code>Protocol:   SFTP
+Host:       158.220.99.127
+Port:       22
+Username:   root
+Password:   [your Contabo root password]
+
+Upload: dm_backup.sql → /root/dm_backup.sql</code></pre>
+
+<h3>On the Server — Restore</h3>
+
+<pre><code><span class="comment"># Copy to /tmp so postgres user can read it</span>
+<span class="cmd">cp /root/dm_backup.sql /tmp/dm_backup.sql</span>
+<span class="cmd">chmod 644 /tmp/dm_backup.sql</span>
+
+<span class="comment"># Stop app service first (if running)</span>
+<span class="cmd">systemctl stop dm-dashboard</span>
+
+<span class="comment"># Drop and recreate clean database</span>
+<span class="cmd">sudo -u postgres dropdb dm_dashboard</span>
+<span class="cmd">sudo -u postgres createdb dm_dashboard</span>
+
+<span class="comment"># Restore from dump</span>
+<span class="cmd">sudo -u postgres psql -d dm_dashboard -f /tmp/dm_backup.sql</span>
+
+<span class="comment"># Re-apply permissions after restore</span>
+<span class="cmd">sudo -u postgres psql -d dm_dashboard</span></code></pre>
+
+<pre><code><span class="comment">-- Re-run after every restore</span>
+<span class="kw">ALTER SCHEMA</span> public <span class="kw">OWNER TO</span> dm_user;
+<span class="kw">GRANT ALL ON SCHEMA</span> public <span class="kw">TO</span> dm_user;
+<span class="kw">GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA</span> public <span class="kw">TO</span> dm_user;
+<span class="kw">GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA</span> public <span class="kw">TO</span> dm_user;
+<span class="kw">\q</span></code></pre>
+
+<div class="box warn">
+  Always re-apply schema ownership and grants after a restore. The dump file restores data but may reset ownership to <code>postgres</code>.
+</div>
+
+<!-- ══════════════════════════════════════
+     STEP 7 — APP CONNECTION STRING
+══════════════════════════════════════ -->
+<div class="step-header">
+  <div class="step-badge">7</div>
+  <div class="step-title">Configure App Connection String</div>
+</div>
+
+<p>In your backend <code>.env</code> file on the server:</p>
+
+<pre><code><span class="comment"># /var/www/dashboard-dm/backend/.env</span>
+DATABASE_URL=<span class="str">postgresql://dm_user:your_password@localhost:5432/dm_dashboard</span></code></pre>
+
+<div class="box warn">
+  <strong>Connection string format matters.</strong> Use <code>postgresql://</code> — NOT <code>postgresql+psycopg://</code> when using <code>psycopg_pool</code>. This caused a DB connection timeout in the original setup.
+</div>
+
+<!-- ══════════════════════════════════════
+     DAILY COMMANDS
+══════════════════════════════════════ -->
+<h2>Useful Daily Commands</h2>
+
+<table>
+  <tr><th>Action</th><th>Command</th></tr>
+  <tr><td>Connect to DB as app user</td><td><code>psql -U dm_user -d dm_dashboard -h localhost -W</code></td></tr>
+  <tr><td>Connect as superuser</td><td><code>sudo -u postgres psql -d dm_dashboard</code></td></tr>
+  <tr><td>List all databases</td><td><code>\l</code> (inside psql)</td></tr>
+  <tr><td>List tables</td><td><code>\dt</code> (inside psql)</td></tr>
+  <tr><td>Check table row count</td><td><code>SELECT COUNT(*) FROM table_name;</code></td></tr>
+  <tr><td>Exit psql</td><td><code>\q</code></td></tr>
+  <tr><td>Restart PostgreSQL</td><td><code>systemctl restart postgresql</code></td></tr>
+  <tr><td>Check PostgreSQL logs</td><td><code>journalctl -u postgresql -n 50 --no-pager</code></td></tr>
+  <tr><td>Check PostgreSQL status</td><td><code>systemctl status postgresql</code></td></tr>
+  <tr><td>Check which port Postgres is on</td><td><code>ss -tlnp | grep postgres</code></td></tr>
+</table>
+
+<!-- ══════════════════════════════════════
+     TROUBLESHOOTING
+══════════════════════════════════════ -->
+<h2>Troubleshooting</h2>
+
+<div class="trouble-grid">
+
+  <div class="trouble-card">
+    <div class="trouble-problem">❌ ERROR: permission denied for schema public</div>
+    <div class="trouble-fix">✅ Fix: Run <code>ALTER SCHEMA public OWNER TO dm_user;</code> and re-grant all privileges. See Step 4.</div>
+  </div>
+
+  <div class="trouble-card">
+    <div class="trouble-problem">❌ connection to server at "localhost" failed — Connection refused</div>
+    <div class="trouble-fix">✅ Fix: PostgreSQL not running. Run <code>systemctl start postgresql</code>.</div>
+  </div>
+
+  <div class="trouble-card">
+    <div class="trouble-problem">❌ pg_dump: command not found (on Windows)</div>
+    <div class="trouble-fix">✅ Fix: Use full path — <code>"C:\Program Files\PostgreSQL\16\bin\pg_dump.exe"</code></div>
+  </div>
+
+  <div class="trouble-card">
+    <div class="trouble-problem">❌ DB connection timeout in FastAPI app</div>
+    <div class="trouble-fix">✅ Fix: Change connection string from <code>postgresql+psycopg://</code> to <code>postgresql://</code> in <code>.env</code>.</div>
+  </div>
+
+  <div class="trouble-card">
+    <div class="trouble-problem">❌ FATAL: role "dm_user" does not exist after restore</div>
+    <div class="trouble-fix">✅ Fix: Re-run Step 4 (CREATE USER + GRANT) after dropdb/createdb — the restore wipes roles.</div>
+  </div>
+
+  <div class="trouble-card">
+    <div class="trouble-problem">❌ could not open file "/root/dm_backup.sql": Permission denied</div>
+    <div class="trouble-fix">✅ Fix: <code>cp /root/dm_backup.sql /tmp/dm_backup.sql &amp;&amp; chmod 644 /tmp/dm_backup.sql</code> — postgres user cannot read /root.</div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════
+     SECURITY NOTES
+══════════════════════════════════════ -->
+<h2>Security Notes</h2>
+
+<div class="box warn">
+  <strong>Port 5432 is NOT open to the public</strong> on this server — external pgAdmin access is disabled. All DB connections are local only (app → localhost:5432). Do not open 5432 to the internet without SSL and strong firewall rules.
+</div>
+
+<ul style="margin: 10px 0 0 18px; font-size: 13px; line-height: 1.9;">
+  <li>Never use the <code>postgres</code> superuser in your app's connection string</li>
+  <li>Use a dedicated app user (<code>dm_user</code>) with minimum required privileges</li>
+  <li>Store the <code>DATABASE_URL</code> in <code>.env</code> — never hardcode it in source code</li>
+  <li>Back up <code>.env</code> to <code>/root/backend.env.backup</code> — it is NOT in Git</li>
+  <li>Take a <code>pg_dump</code> before any major migration or schema change</li>
+</ul>
+
+<!-- ══════════════════════════════════════
+     QUICK-REFERENCE CHECKLIST
+══════════════════════════════════════ -->
+<h2>Quick-Reference Checklist — Fresh Install</h2>
+
+<ul class="checklist">
+  <li>SSH into server as root via PuTTY</li>
+  <li><code>apt update &amp;&amp; apt upgrade -y</code></li>
+  <li><code>apt install postgresql postgresql-contrib -y</code></li>
+  <li><code>systemctl start postgresql &amp;&amp; systemctl enable postgresql</code></li>
+  <li>Open psql: <code>sudo -u postgres psql</code></li>
+  <li>CREATE DATABASE + CREATE USER + GRANT PRIVILEGES</li>
+  <li>ALTER SCHEMA public OWNER TO app_user</li>
+  <li>Test connection as app user</li>
+  <li>Upload backup via FileZilla and restore with <code>psql -f</code></li>
+  <li>Set <code>DATABASE_URL</code> in backend <code>.env</code></li>
+  <li>Restart app service and verify health check</li>
+</ul>
+
+<footer>
+  PostgreSQL on Contabo Ubuntu — Setup Guide &nbsp;|&nbsp; piranav AIOS &nbsp;|&nbsp; Created 2026-09-01 &nbsp;|&nbsp; Based on live production deployment of dm-dashboard
+</footer>
+
+</body>
+</html>

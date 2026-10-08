@@ -1,0 +1,955 @@
+{% assign compare_products = product.metafields.custom.compare_with.value %}
+
+{% if compare_products != blank %}
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --cmp-green-400: #4cbc6e;
+    --cmp-green-500: #2ea04e;
+    --cmp-green-600: #217a3b;
+    --cmp-border:    #e4e4e4;
+    --cmp-white:     #ffffff;
+    --cmp-gray-200:  #e8e8e8;
+    --cmp-gray-400:  #999999;
+    --cmp-gray-700:  #1a1a1a;
+    --cmp-shadow-lg: 0 4px 24px rgba(0,0,0,0.08);
+    --cmp-radius:    12px;
+    --cmp-radius-sm: 8px;
+    --cmp-transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .cmp-section {
+    font-family: 'DM Sans', sans-serif;
+    background: transparent;
+    padding: 64px 20px;
+    color: var(--cmp-gray-700);
+  }
+
+  .cmp-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .cmp-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .cmp-header__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cmp-green-500);
+    border: 1px solid var(--cmp-border);
+    border-radius: 100px;
+    padding: 6px 16px;
+    margin-bottom: 16px;
+    background: transparent;
+  }
+
+  .cmp-header__eyebrow svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  .cmp-header__title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 4vw, 38px);
+    font-weight: 600;
+    color: var(--cmp-gray-700);
+    margin: 0 0 12px;
+    line-height: 1.2;
+  }
+
+  .cmp-header__subtitle {
+    font-size: 15px;
+    color: var(--cmp-gray-400);
+    margin: 0;
+  }
+
+  /* Price styling */
+  .cmp-price-current { font-weight: 600; }
+  .cmp-price-compare {
+    text-decoration: line-through;
+    color: #e02b2b;
+    font-size: 0.85em;
+    margin-left: 6px;
+    font-weight: 400;
+  }
+
+  /* Image link reset */
+  .cmp-product-card__img-wrap a,
+  .cmp-mobile-card__head a {
+    display: block;
+    text-decoration: none;
+  }
+
+  /* ── DESKTOP TABLE ── */
+  .cmp-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--cmp-radius);
+    box-shadow: var(--cmp-shadow-lg);
+    border: 1px solid var(--cmp-border);
+  }
+
+  .cmp-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--cmp-white);
+    min-width: 640px;
+  }
+
+  .cmp-table thead tr th {
+    padding: 0;
+    vertical-align: top;
+    border-right: 1px solid var(--cmp-border);
+  }
+
+  .cmp-table thead tr th:last-child { border-right: none; }
+
+  .cmp-table thead tr th:first-child {
+    width: 160px;
+    min-width: 140px;
+    background: transparent;
+  }
+
+  .cmp-product-card {
+    padding: 28px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    background: transparent;
+  }
+
+  .cmp-product-card--current {
+    background: transparent;
+  }
+
+  .cmp-product-card__badge {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--cmp-green-500);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 0 0 8px 8px;
+    white-space: nowrap;
+  }
+
+  .cmp-product-card__img-wrap {
+    width: 110px;
+    height: 110px;
+    border-radius: var(--cmp-radius-sm);
+    overflow: hidden;
+    background: #f5f5f5;
+    flex-shrink: 0;
+    border: 1px solid var(--cmp-border);
+  }
+
+  .cmp-product-card__img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform var(--cmp-transition);
+  }
+
+  .cmp-product-card__img-wrap:hover img { transform: scale(1.06); }
+
+  .cmp-product-card__title {
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    color: var(--cmp-gray-700);
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  /* Row label column */
+  .cmp-row-label {
+    padding: 14px 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--cmp-gray-400);
+    background: transparent;
+    border-top: 1px solid var(--cmp-border);
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  /* Data cells */
+  .cmp-table tbody tr td {
+    padding: 14px 20px;
+    font-size: 14px;
+    color: var(--cmp-gray-700);
+    border-top: 1px solid var(--cmp-border);
+    border-right: 1px solid var(--cmp-border);
+    vertical-align: middle;
+    text-align: center;
+    line-height: 1.5;
+    transition: background var(--cmp-transition);
+    background: transparent;
+  }
+
+  .cmp-table tbody tr td:last-child { border-right: none; }
+  .cmp-table tbody tr:hover td { background: #fafafa; }
+  .cmp-table tbody tr td:first-child {
+    text-align: left;
+    background: transparent !important;
+  }
+
+  .cmp-table thead tr th.is-current,
+  .cmp-table tbody tr td.is-current {
+    background: transparent;
+  }
+
+  /* ATC button */
+  .cmp-atc {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    max-width: 180px;
+    padding: 11px 12px;
+    border-radius: var(--cmp-radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    border: none;
+    transition: all var(--cmp-transition);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .cmp-atc--primary {
+    background: var(--cmp-green-500);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(46,160,78,0.3);
+  }
+
+  .cmp-atc--primary:hover:not(:disabled) {
+    background: var(--cmp-green-600);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(46,160,78,0.35);
+  }
+
+  .cmp-atc--secondary {
+    background: transparent;
+    color: var(--cmp-green-500);
+    border: 1.5px solid var(--cmp-green-400);
+  }
+
+  .cmp-atc--secondary:hover:not(:disabled) {
+    background: #f0faf2;
+    transform: translateY(-2px);
+  }
+
+  .cmp-atc:disabled {
+    background: var(--cmp-gray-200);
+    color: var(--cmp-gray-400);
+    cursor: not-allowed;
+    box-shadow: none;
+    border: none;
+  }
+
+  .cmp-atc svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  /* ATC tfoot row */
+  .cmp-table tfoot tr td {
+    padding: 20px 16px 28px;
+    border-top: 2px solid var(--cmp-border);
+    text-align: center;
+    background: transparent;
+  }
+
+  .cmp-table tfoot tr td:first-child { background: transparent; }
+
+  /* ── DESCRIPTION ── */
+.cmp-desc-wrap {
+  font-size: 12px;
+  color: #555;
+  text-align: left;
+}
+
+.cmp-desc-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.55;
+  max-width: 200px;
+  word-break: break-word;
+  margin-bottom: 0;
+  font-size: 12px;
+}
+
+  .cmp-read-more {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cmp-green-500);
+    cursor: pointer;
+    text-decoration: none;
+    transition: none;
+    display: block;
+  }
+
+  .cmp-read-more:hover,
+  .cmp-read-more:focus,
+  .cmp-read-more:active {
+    color: var(--cmp-green-500);
+    background: none;
+    outline: none;
+    box-shadow: none;
+    text-decoration: none;
+  }
+
+  /* ── DESCRIPTION MODAL ── */
+  .cmp-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+  }
+
+  .cmp-modal-overlay.is-open { display: flex; }
+
+  .cmp-modal {
+    background: #fff;
+    border-radius: 0;
+    max-width: 560px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+    animation: cmpModalIn 0.25s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  @keyframes cmpModalIn {
+    from { opacity: 0; transform: scale(0.95) translateY(12px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .cmp-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--cmp-border);
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 1;
+  }
+
+  .cmp-modal__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--cmp-gray-700);
+    margin: 0;
+  }
+
+  .cmp-modal__close {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--cmp-border);
+    background: #f5f5f5;
+    color: var(--cmp-gray-700) !important;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--cmp-transition);
+    flex-shrink: 0;
+    padding: 0;
+  }
+
+  .cmp-modal__close svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--cmp-gray-700);
+    display: block;
+  }
+
+  .cmp-modal__close:hover { background: #e8e8e8; }
+
+  /* Modal body — matches inline description: left-aligned, clean paragraph spacing */
+  .cmp-modal__body {
+    padding: 20px 24px 28px;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--cmp-gray-700);
+    text-align: left;
+  }
+
+  .cmp-modal__body p {
+    margin: 0 0 12px;
+  }
+
+  .cmp-modal__body p:last-child { margin-bottom: 0; }
+
+  .cmp-modal__body br { display: none; }
+
+  .cmp-modal__body ul,
+  .cmp-modal__body ol {
+    margin: 0 0 12px;
+    padding-left: 20px;
+  }
+
+  .cmp-modal__body li { margin-bottom: 4px; }
+
+  /* ── MOBILE CARDS ── */
+  .cmp-mobile-cards {
+    display: none;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .cmp-mobile-card {
+    background: var(--cmp-white);
+    border-radius: var(--cmp-radius);
+    box-shadow: var(--cmp-shadow-lg);
+    overflow: hidden;
+    border: 1px solid var(--cmp-border);
+  }
+
+  .cmp-mobile-card--current {
+    border-color: var(--cmp-green-400);
+  }
+
+  .cmp-mobile-card__head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: transparent;
+    border-bottom: 1px solid var(--cmp-border);
+    position: relative;
+  }
+
+  .cmp-mobile-card__badge {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: var(--cmp-green-500);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+
+  .cmp-mobile-card__img {
+    width: 64px; height: 64px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid var(--cmp-border);
+    flex-shrink: 0;
+  }
+
+  .cmp-mobile-card__info { flex: 1; min-width: 0; }
+
+  .cmp-mobile-card__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--cmp-gray-700);
+    margin: 0;
+    line-height: 1.35;
+    padding-right: 60px;
+  }
+
+  .cmp-mobile-card__rows { padding: 0 16px; }
+
+  .cmp-mobile-card__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--cmp-border);
+    gap: 12px;
+  }
+
+  .cmp-mobile-card__row:last-child { border-bottom: none; }
+
+  .cmp-mobile-card__row-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--cmp-gray-400);
+    flex-shrink: 0;
+    padding-top: 2px;
+    min-width: 70px;
+  }
+
+  .cmp-mobile-card__row-value {
+    font-size: 13px;
+    color: var(--cmp-gray-700);
+    text-align: right;
+    flex: 1;
+  }
+
+  /* Description row on mobile — full width */
+  .cmp-mobile-desc {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 4px;
+  }
+
+  .cmp-mobile-desc .cmp-mobile-card__row-value {
+    text-align: left;
+    width: 100%;
+  }
+
+  .cmp-mobile-desc .cmp-desc-text {
+    max-width: 100%;
+  }
+
+  .cmp-mobile-card__foot {
+    padding: 14px 16px 16px;
+    background: transparent;
+    border-top: 1px solid var(--cmp-border);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .cmp-section { padding: 32px 12px; }
+    .cmp-header { margin-bottom: 28px; }
+    .cmp-table-wrap { display: none; }
+    .cmp-mobile-cards { display: flex; }
+    .cmp-atc { font-size: 12px; padding: 12px 16px; }
+  }
+
+  @media (min-width: 769px) {
+    .cmp-mobile-cards { display: none !important; }
+    .cmp-table-wrap { display: block; }
+  }
+</style>
+
+<section class="cmp-section" id="product-comparison">
+  <div class="cmp-inner">
+
+    <!-- Header -->
+    <div class="cmp-header">
+      <div class="cmp-header__eyebrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Produkte vergleichen
+      </div>
+      <h2 class="cmp-header__title">{{ section.settings.title }}</h2>
+      <p class="cmp-header__subtitle">{{ section.settings.subtitle }}</p>
+    </div>
+
+    <!-- ── DESKTOP TABLE ── -->
+    <div class="cmp-table-wrap">
+      <table class="cmp-table">
+        <thead>
+          <tr>
+            <th></th>
+
+            <!-- Current product -->
+            <th class="is-current">
+              <div class="cmp-product-card cmp-product-card--current">
+                <div class="cmp-product-card__badge">Aktuell</div>
+                <div class="cmp-product-card__img-wrap">
+                  <a href="{{ product.url }}">
+                    <img src="{{ product.featured_image | image_url: width: 220 }}" alt="{{ product.featured_image.alt | escape }}">
+                  </a>
+                </div>
+                <p class="cmp-product-card__title">{{ product.title }}</p>
+              </div>
+            </th>
+
+            {% for cp in compare_products %}
+            <th>
+              <div class="cmp-product-card">
+                <div class="cmp-product-card__img-wrap">
+                  <a href="{{ cp.url }}">
+                    <img src="{{ cp.featured_image | image_url: width: 220 }}" alt="{{ cp.featured_image.alt | escape }}">
+                  </a>
+                </div>
+                <p class="cmp-product-card__title">{{ cp.title }}</p>
+              </div>
+            </th>
+            {% endfor %}
+          </tr>
+        </thead>
+
+        <tbody>
+          <!-- Preis -->
+          <tr>
+            <td class="cmp-row-label">Preis</td>
+            <td class="is-current">
+              {% assign cur_cmp = product.selected_or_first_available_variant.compare_at_price %}
+              <strong class="cmp-price-current">{{ product.price | money }}</strong>
+              {% if cur_cmp and cur_cmp > product.price %}
+                <span class="cmp-price-compare">{{ cur_cmp | money }}</span>
+              {% endif %}
+            </td>
+            {% for cp in compare_products %}
+            <td>
+              {% assign cp_cmp = cp.selected_or_first_available_variant.compare_at_price %}
+              <span class="cmp-price-current">{{ cp.price | money }}</span>
+              {% if cp_cmp and cp_cmp > cp.price %}
+                <span class="cmp-price-compare">{{ cp_cmp | money }}</span>
+              {% endif %}
+            </td>
+            {% endfor %}
+          </tr>
+
+          <!-- Typ -->
+          <tr>
+            <td class="cmp-row-label">Typ</td>
+            <td class="is-current">{{ product.type | default: '—' }}</td>
+            {% for cp in compare_products %}
+            <td>{{ cp.type | default: '—' }}</td>
+            {% endfor %}
+          </tr>
+
+          <!-- Marke -->
+          <tr>
+            <td class="cmp-row-label">Marke</td>
+            <td class="is-current">{{ product.vendor | default: '—' }}</td>
+            {% for cp in compare_products %}
+            <td>{{ cp.vendor | default: '—' }}</td>
+            {% endfor %}
+          </tr>
+
+          <!-- Beschreibung -->
+          <tr>
+            <td class="cmp-row-label">Beschreibung</td>
+            <td class="is-current">
+              <div class="cmp-desc-wrap">
+                <div class="cmp-desc-text">{{ product.description | strip_html }}</div>
+                <button class="cmp-read-more" onclick="cmpOpenModal(this)" data-full="{{ product.description | escape }}">Mehr lesen</button>
+              </div>
+            </td>
+            {% for cp in compare_products %}
+            <td>
+              <div class="cmp-desc-wrap">
+                <div class="cmp-desc-text">{{ cp.description | strip_html }}</div>
+                <button class="cmp-read-more" onclick="cmpOpenModal(this)" data-full="{{ cp.description | escape }}">Mehr lesen</button>
+              </div>
+            </td>
+            {% endfor %}
+          </tr>
+        </tbody>
+
+        <!-- Add to cart row -->
+        <tfoot>
+          <tr>
+            <td class="cmp-row-label">In den Warenkorb</td>
+
+            <td class="is-current">
+              <button
+                type="button"
+                class="cmp-atc cmp-atc--primary"
+                data-cmp-atc
+                data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+                {% unless product.available %}disabled{% endunless %}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61H19a2 2 0 001.99-1.78L22 7H6"/>
+                </svg>
+                {% if product.available %}In den Warenkorb{% else %}Ausverkauft{% endif %}
+              </button>
+            </td>
+
+            {% for cp in compare_products %}
+            <td>
+              <button
+                type="button"
+                class="cmp-atc cmp-atc--secondary"
+                data-cmp-atc
+                data-variant-id="{{ cp.selected_or_first_available_variant.id }}"
+                {% unless cp.available %}disabled{% endunless %}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61H19a2 2 0 001.99-1.78L22 7H6"/>
+                </svg>
+                {% if cp.available %}In den Warenkorb{% else %}Ausverkauft{% endif %}
+              </button>
+            </td>
+            {% endfor %}
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- ── MOBILE CARDS ── -->
+    <div class="cmp-mobile-cards">
+
+      <!-- Current product -->
+      <div class="cmp-mobile-card cmp-mobile-card--current">
+        <div class="cmp-mobile-card__head">
+          <span class="cmp-mobile-card__badge">Aktuell</span>
+          <a href="{{ product.url }}">
+            <img class="cmp-mobile-card__img"
+              src="{{ product.featured_image | image_url: width: 160 }}"
+              alt="{{ product.featured_image.alt | escape }}">
+          </a>
+          <div class="cmp-mobile-card__info">
+            <p class="cmp-mobile-card__title">{{ product.title }}</p>
+          </div>
+        </div>
+        <div class="cmp-mobile-card__rows">
+          <div class="cmp-mobile-card__row">
+            <span class="cmp-mobile-card__row-label">Preis</span>
+            <span class="cmp-mobile-card__row-value">
+              {% assign cur_cmp = product.selected_or_first_available_variant.compare_at_price %}
+              <strong class="cmp-price-current">{{ product.price | money }}</strong>
+              {% if cur_cmp and cur_cmp > product.price %}
+                <span class="cmp-price-compare">{{ cur_cmp | money }}</span>
+              {% endif %}
+            </span>
+          </div>
+          <div class="cmp-mobile-card__row">
+            <span class="cmp-mobile-card__row-label">Typ</span>
+            <span class="cmp-mobile-card__row-value">{{ product.type | default: '—' }}</span>
+          </div>
+          <div class="cmp-mobile-card__row">
+            <span class="cmp-mobile-card__row-label">Marke</span>
+            <span class="cmp-mobile-card__row-value">{{ product.vendor | default: '—' }}</span>
+          </div>
+          <div class="cmp-mobile-card__row cmp-mobile-desc">
+            <span class="cmp-mobile-card__row-label">Beschreibung</span>
+            <span class="cmp-mobile-card__row-value">
+              <div class="cmp-desc-wrap">
+                <div class="cmp-desc-text">{{ product.description | strip_html }}</div>
+                <button class="cmp-read-more" onclick="cmpOpenModal(this)" data-full="{{ product.description | escape }}">Mehr lesen</button>
+              </div>
+            </span>
+          </div>
+        </div>
+        <div class="cmp-mobile-card__foot">
+          <button
+            type="button"
+            class="cmp-atc cmp-atc--primary"
+            style="max-width:100%;"
+            data-cmp-atc
+            data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+            {% unless product.available %}disabled{% endunless %}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:15px;height:15px;">
+              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61H19a2 2 0 001.99-1.78L22 7H6"/>
+            </svg>
+            {% if product.available %}In den Warenkorb{% else %}Ausverkauft{% endif %}
+          </button>
+        </div>
+      </div>
+
+      <!-- Compare products -->
+      {% for cp in compare_products %}
+      <div class="cmp-mobile-card">
+        <div class="cmp-mobile-card__head">
+          <a href="{{ cp.url }}">
+            <img class="cmp-mobile-card__img"
+              src="{{ cp.featured_image | image_url: width: 160 }}"
+              alt="{{ cp.featured_image.alt | escape }}">
+          </a>
+          <div class="cmp-mobile-card__info">
+            <p class="cmp-mobile-card__title">{{ cp.title }}</p>
+          </div>
+        </div>
+        <div class="cmp-mobile-card__rows">
+          <div class="cmp-mobile-card__row">
+            <span class="cmp-mobile-card__row-label">Preis</span>
+            <span class="cmp-mobile-card__row-value">
+              {% assign cp_cmp = cp.selected_or_first_available_variant.compare_at_price %}
+              <span class="cmp-price-current">{{ cp.price | money }}</span>
+              {% if cp_cmp and cp_cmp > cp.price %}
+                <span class="cmp-price-compare">{{ cp_cmp | money }}</span>
+              {% endif %}
+            </span>
+          </div>
+          <div class="cmp-mobile-card__row">
+            <span class="cmp-mobile-card__row-label">Typ</span>
+            <span class="cmp-mobile-card__row-value">{{ cp.type | default: '—' }}</span>
+          </div>
+          <div class="cmp-mobile-card__row">
+            <span class="cmp-mobile-card__row-label">Marke</span>
+            <span class="cmp-mobile-card__row-value">{{ cp.vendor | default: '—' }}</span>
+          </div>
+          <div class="cmp-mobile-card__row cmp-mobile-desc">
+            <span class="cmp-mobile-card__row-label">Beschreibung</span>
+            <span class="cmp-mobile-card__row-value">
+              <div class="cmp-desc-wrap">
+                <div class="cmp-desc-text">{{ cp.description | strip_html }}</div>
+                <button class="cmp-read-more" onclick="cmpOpenModal(this)" data-full="{{ cp.description | escape }}">Mehr lesen</button>
+              </div>
+            </span>
+          </div>
+        </div>
+        <div class="cmp-mobile-card__foot">
+          <button
+            type="button"
+            class="cmp-atc cmp-atc--secondary"
+            style="max-width:100%;"
+            data-cmp-atc
+            data-variant-id="{{ cp.selected_or_first_available_variant.id }}"
+            {% unless cp.available %}disabled{% endunless %}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:15px;height:15px;">
+              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61H19a2 2 0 001.99-1.78L22 7H6"/>
+            </svg>
+            {% if cp.available %}In den Warenkorb{% else %}Ausverkauft{% endif %}
+          </button>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+    <!-- End mobile cards -->
+
+    <!-- ── DESCRIPTION MODAL ── -->
+    <div class="cmp-modal-overlay" id="cmpModalOverlay" onclick="cmpCloseModalOverlay(event)">
+      <div class="cmp-modal" role="dialog" aria-modal="true" aria-labelledby="cmpModalTitle">
+        <div class="cmp-modal__header">
+          <p class="cmp-modal__title" id="cmpModalTitle">Produktbeschreibung</p>
+          <button class="cmp-modal__close" onclick="cmpCloseModal()" aria-label="Schließen">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        <div class="cmp-modal__body" id="cmpModalBody"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+/* ── Description Modal ── */
+function cmpOpenModal(btn) {
+  document.getElementById('cmpModalBody').innerHTML = btn.dataset.full;
+  document.getElementById('cmpModalOverlay').classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+
+function cmpCloseModal() {
+  document.getElementById('cmpModalOverlay').classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+
+function cmpCloseModalOverlay(e) {
+  if (e.target === document.getElementById('cmpModalOverlay')) cmpCloseModal();
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') cmpCloseModal();
+});
+
+/* ── Add to Cart ── */
+function cmpOpenCartDrawer() {
+  var cd = document.querySelector('cart-drawer');
+  if (cd) {
+    if (typeof cd.open === 'function') { cd.open(); return; }
+    cd.classList.add('active', 'animate');
+    cd.setAttribute('open', '');
+    return;
+  }
+  var selectors = ['#CartDrawer','#cart-drawer','.cart-drawer','[data-cart-drawer]','#cart-notification','.cart-notification'];
+  for (var i = 0; i < selectors.length; i++) {
+    var el = document.querySelector(selectors[i]);
+    if (el) { el.classList.add('active','is-open'); el.setAttribute('open',''); return; }
+  }
+  document.dispatchEvent(new CustomEvent('cart:open'));
+  var cartIcon = document.querySelector('[href="/cart"],[data-cart-icon],.header__icon--cart a,.cart-link');
+  if (cartIcon) cartIcon.click();
+}
+
+(function () {
+  if (sessionStorage.getItem('cmpOpenCart') === '1') {
+    sessionStorage.removeItem('cmpOpenCart');
+    setTimeout(cmpOpenCartDrawer, 500);
+  }
+
+  document.querySelectorAll('[data-cmp-atc]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var variantId = btn.getAttribute('data-variant-id');
+      if (!variantId) return;
+
+      var originalHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<svg style="width:15px;height:15px;animation:cmpSpin .7s linear infinite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>';
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: [{ id: parseInt(variantId, 10), quantity: 1 }] })
+      })
+      .then(function (res) {
+        if (!res.ok) throw new Error('cart/add failed');
+        return res.json();
+      })
+      .then(function () {
+        sessionStorage.setItem('cmpOpenCart', '1');
+        location.reload();
+      })
+      .catch(function (err) {
+        console.error('[cmp-atc] Error:', err);
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+        alert('Fehler beim Hinzufügen zum Warenkorb. Bitte erneut versuchen.');
+      });
+    });
+  });
+})();
+</script>
+
+<style>@keyframes cmpSpin { to { transform: rotate(360deg); } }</style>
+
+{% endif %}
+
+{% schema %}
+{
+  "name": "Produktvergleich",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Abschnittstitel",
+      "default": "Wie schneidet es ab?"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Untertitel",
+      "default": "Vergleichen Sie dieses Produkt mit ähnlichen Optionen"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Produktvergleich"
+    }
+  ]
+}
+{% endschema %}

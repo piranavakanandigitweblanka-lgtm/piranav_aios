@@ -44,7 +44,7 @@
 | Asset | Path | Status |
 |---|---|---|
 | Evidence README | `evidence/seo/gsc-pages-2026-08-23/README.md` | ✓ |
-| Capability record | `capability/piranav/gsc-reference-guides-ledsone-2026-08-23.md` | ✓ |
+| Capability record | `capability/2026/08/2026-08-23/gsc-reference-guides-ledsone-2026-08-23.md` | ✓ |
 | Closure entry | `closure/README.md` | ✓ |
 | Prompt file | `prompts/documentation/aios-reference-folder-import.md` | ✓ |
 | PROMPT_REGISTER row | `PROMPT_REGISTER.md` | ✓ |

@@ -1,0 +1,243 @@
+/* =====================================================
+   B2B Product — New B2B-only styles
+   All layout, typography, buttons, gallery, quantity
+   use existing theme classes. Only new B2B elements here.
+   ===================================================== */
+
+/* ── Gap utility used in flex column ── */
+.gap-15 { gap: 15px; }
+.mt-8   { margin-top: 8px; }
+.w-100  { width: 100%; }
+
+/* =====================================================
+   B2B PRICING BLOCK
+   ===================================================== */
+.b2b-pricing-block {
+  border: 1px solid var(--border-color-base, #e0e0e0);
+  border-radius: var(--btn-border-radius, 4px);
+  overflow: hidden;
+}
+
+.b2b-pricing-header {
+  padding: 8px 14px;
+  background: #f7f8fa;
+  border-bottom: 1px solid var(--border-color-base, #e0e0e0);
+}
+
+.b2b-pricing-title { display: inline; }
+.b2b-pricing-note  { display: inline; }
+
+/* Tier grid — 5 per row desktop, wraps to 5+4 */
+.b2b-tier-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.b2b-tier {
+  padding: 10px 8px;
+  text-align: center;
+  border-right: 1px solid var(--border-color-base, #e8e8e8);
+  border-bottom: 1px solid var(--border-color-base, #e8e8e8);
+  cursor: pointer;
+  transition: background var(--bls-transition, 0.15s);
+  position: relative;
+}
+.b2b-tier:hover { background: #f5f7ff; }
+.b2b-tier:nth-child(5n) { border-right: none; }
+.b2b-tier:nth-last-child(-n+4),
+.b2b-tier:last-child    { border-bottom: none; }
+
+/* Active tier */
+.b2b-tier.active {
+  background: #f0f4ff;
+  box-shadow: inset 0 -2px 0 var(--primary-color);
+}
+.b2b-tier.active .b2b-tier-qty,
+.b2b-tier.active .b2b-tier-price { color: var(--primary-color); }
+
+.b2b-tier-qty {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+  color: var(--base-color, #444);
+}
+.b2b-tier.active .b2b-tier-qty { color: var(--primary-color); }
+
+.b2b-tier-price {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--heading-color, #111);
+  line-height: 1.2;
+}
+
+.b2b-tier-each { color: #aaa; }
+
+.b2b-tier-save {
+  font-size: 9px;
+  font-weight: 700;
+  color: #16a34a;
+  background: #dcfce7;
+  border-radius: 3px;
+  padding: 1px 4px;
+  display: inline-block;
+  margin-top: 2px;
+}
+
+/* Discount code shown on tier card */
+.b2b-tier-code {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--primary-color);
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+
+/* =====================================================
+   B2B PURCHASE SUMMARY
+   ===================================================== */
+.b2b-purchase-summary {
+  width: 100%;
+  background: #f8f9fb;
+  border: 1px solid var(--border-color-base, #e8e8e8);
+  border-radius: var(--btn-border-radius, 4px);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.b2b-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.b2b-summary-total-row {
+  border-top: 1px solid var(--border-color-base, #e0e0e0);
+  padding-top: 6px;
+  margin-top: 2px;
+}
+
+.b2b-summary-total {
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+.b2b-savings-row  { display: none; }
+.b2b-summary-savings { color: #16a34a; }
+
+/* Tier badge */
+.b2b-tier-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: #f3f4f6;
+  color: #666;
+  letter-spacing: 0.03em;
+}
+.b2b-tier-badge--active {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* =====================================================
+   B2B DISCOUNT CODE PANEL
+   ===================================================== */
+.b2b-code-panel {
+  border: 1.5px solid var(--primary-color);
+  border-radius: var(--btn-border-radius, 4px);
+  padding: 12px 14px;
+  background: #f0f4ff;
+}
+
+.b2b-code-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.b2b-code-panel__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.b2b-code-panel__code {
+  font-size: 20px;
+  letter-spacing: 0.1em;
+  color: var(--primary-color);
+}
+
+.b2b-code-copy-btn {
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: var(--btn-border-radius, 4px);
+  padding: 4px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--bls-transition, opacity 0.15s);
+}
+.b2b-code-copy-btn:hover { opacity: 0.85; }
+
+.mt-5 { margin-top: 5px; }
+
+/* =====================================================
+   SPEC TABLE (tabs content)
+   ===================================================== */
+.b2b-spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--base-font-size, 13px);
+}
+.b2b-spec-table th,
+.b2b-spec-table td {
+  padding: 8px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color-base, #eee);
+}
+.b2b-spec-table th {
+  font-weight: 600;
+  color: var(--heading-color, #333);
+  background: #fafafa;
+  width: 160px;
+}
+.b2b-spec-table td { color: var(--base-color, #555); }
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+@media (max-width: 1024px) {
+  .b2b-tier-grid { grid-template-columns: repeat(4, 1fr); }
+  .b2b-tier:nth-child(5n) { border-right: 1px solid var(--border-color-base, #e8e8e8); }
+  .b2b-tier:nth-child(4n) { border-right: none; }
+}
+
+@media (max-width: 768px) {
+  .b2b-tier-grid { grid-template-columns: repeat(5, 1fr); }
+  .b2b-tier:nth-child(4n) { border-right: 1px solid var(--border-color-base, #e8e8e8); }
+  .b2b-tier:nth-child(5n) { border-right: none; }
+}
+
+@media (max-width: 480px) {
+  .b2b-tier-grid {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .b2b-tier-grid::-webkit-scrollbar { display: none; }
+  .b2b-tier {
+    flex: 0 0 auto;
+    min-width: 76px;
+    border-right: 1px solid var(--border-color-base, #e8e8e8) !important;
+    border-bottom: 1px solid var(--border-color-base, #e8e8e8) !important;
+  }
+  .b2b-tier:last-child { border-right: none !important; }
+  .b2b-tier.active { box-shadow: inset 0 -2px 0 var(--primary-color); }
+}

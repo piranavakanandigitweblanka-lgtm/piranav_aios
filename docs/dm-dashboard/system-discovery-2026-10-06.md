@@ -33,8 +33,8 @@
 | `docs/dm-dashboard/conduit-sold-phase2c-frontend-2026-10-02.md` | Conduit Sold frontend | CURRENT |
 | `docs/dm-dashboard/listing-issue-tracker-build-2026-10-02.md` | Listing Issues tracker build | CURRENT |
 | `docs/dm-dashboard/listing-issues-pdf-enhancement-2026-10-02.md` | Listing Issues PDF enhancement | CURRENT |
-| `capability/piranav/dm-dashboard-local-setup-2026-09-01.md` | Local dev setup | CURRENT |
-| `capability/piranav/ads-product-scope-admin-page.md` | AdsProductScope capability record | **STALE PATH** — backend path listed as `app/admin_ads_product_scope.py`, actual is `app/admin/admin_ads_product_scope.py` |
+| `capability/2026/09/2026-09-01/dm-dashboard-local-setup-2026-09-01.md` | Local dev setup | CURRENT |
+| `capability/2026/09/2026-09-25/ads-product-scope-admin-page.md` | AdsProductScope capability record | **STALE PATH** — backend path listed as `app/admin_ads_product_scope.py`, actual is `app/admin/admin_ads_product_scope.py` |
 | `evidence/dm-dashboard/` | 6 evidence files for Conduit + Listing Issues | CURRENT |
 
 **Action:** The primary reference for architecture is `docs/dm-dashboard/dm-dashboard-gpt-brief-2026-09-25.md`. This discovery report captures what changed since then. Do not duplicate the GPT brief.
@@ -645,7 +645,7 @@ When adding any new page to this dashboard:
 | # | Issue | Location | Impact |
 |---|---|---|---|
 | 1 | **Merge conflict in closure/README.md** | `closure/README.md` lines 1609–1661 | Will cause `git commit` failure in `piranav_aios` root; must resolve before next commit |
-| 2 | **Stale path in capability file** | `capability/piranav/ads-product-scope-admin-page.md` | Backend path listed as `app/admin_ads_product_scope.py`, actual is `app/admin/admin_ads_product_scope.py` |
+| 2 | **Stale path in capability file** | `capability/2026/09/2026-09-25/ads-product-scope-admin-page.md` | Backend path listed as `app/admin_ads_product_scope.py`, actual is `app/admin/admin_ads_product_scope.py` |
 | 3 | **dm-dashboard-dev-knowledge.md outdated** | `docs/dm-dashboard-dev-knowledge.md` | Still shows flat `backend/app/` structure; doesn't mention Conduit, Listing Issues, global auth middleware |
 | 4 | **Conduit Sold Phase 1 hardcoded date range** | `admin_conduit_sold.py` L51-52 | `PHASE1_START = date(2026, 4, 1)` / `PHASE1_END = date(2026, 9, 30)` are constants — Oct 2026+ data will not appear without a code change |
 | 5 | **Conduit Stock uses in-memory cache** | `admin_conduit_stock.py` | Cache lives in process memory — restarting the backend resets it. Not a ScheduledSnapshot; data is not persisted. This is intentional (stock syncs frequently) but differs from other pages |
@@ -697,7 +697,7 @@ When adding any new page to this dashboard:
 
 2. **Update `docs/dm-dashboard-dev-knowledge.md`** — add: backend subdirectory structure, Conduit Sold/Stock entries, Listing Issues, global login middleware, `apiFetch.js`.
 
-3. **Fix stale path in `capability/piranav/ads-product-scope-admin-page.md`** — update backend path from `app/admin_ads_product_scope.py` to `app/admin/admin_ads_product_scope.py`.
+3. **Fix stale path in `capability/2026/09/2026-09-25/ads-product-scope-admin-page.md`** — update backend path from `app/admin_ads_product_scope.py` to `app/admin/admin_ads_product_scope.py`.
 
 4. **Confirm scope for next dm-dashboard task** with GPT coordinator before building — architecture is now fully understood and ready.
 

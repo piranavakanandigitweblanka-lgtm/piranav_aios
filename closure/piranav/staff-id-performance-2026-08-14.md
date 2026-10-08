@@ -102,7 +102,7 @@ MISSING
 
 ## Next Step
 1. RESOLVE merge conflict (Piranav to do manually)
-2. CREATE: `capability/piranav/staff-id-performance-2026-08-14.md` (include incident summary)
+2. CREATE: `capability/2026/08/2026-08-14/staff-id-performance-2026-08-14.md` (include incident summary)
 3. GPT to review → PASS or FAIL
 
 ## Result

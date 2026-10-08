@@ -13,7 +13,7 @@
   if settings.currency_code_enabled
     assign money_price = price | money_with_currency
   endif
-  if target == product and product.price_varies
+  if product.price_varies and variant == nil
     assign money_price = 'products.product.price.from_price_html' | t: price: money_price
   endif
 -%}

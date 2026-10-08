@@ -22,7 +22,7 @@ Verify that the Campaign Data shown in `Staff-requirements/pages/sajeepan.html` 
 | Asset | Path | Date |
 |---|---|---|
 | Evidence (previous) | `evidence/sajeepan/requirement-1-2026-07-14.md` | 2026-07-14 |
-| Capability | `capability/sajeepan/requirement-1-2026-07-14.md` | 2026-07-14 |
+| Capability | `capability/2026/07/2026-07-14/requirement-1-2026-07-14.md` | 2026-07-14 |
 | Closure (previous) | `closure/sajeepan/requirement-1-2026-07-14.md` | 2026-07-14 |
 | Prompt | `prompts/sajeepan/requirement-1-2026-07-14.md` | 2026-07-14 |
 | Dashboard HTML | `Staff-requirements/pages/sajeepan.html` | Current |

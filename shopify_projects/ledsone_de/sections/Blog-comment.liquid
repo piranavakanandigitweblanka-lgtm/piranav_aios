@@ -1,0 +1,194 @@
+{% schema %}
+{
+  "name": "Comment Section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Comment Section"
+    }
+  ]
+}
+{% endschema %}
+
+<section id="comment-section">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comment Section</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .comment-form {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .comment-form h2 {
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .form-group input {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      height: 120px;
+    }
+
+    button {
+      background-color: #032D66;
+      color: white;
+      padding: 12px 40px;
+      font-size: 16px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    button:hover {
+      background-color: #021F47;
+    }
+
+    p.note {
+      font-size: 14px;
+      color: gray;
+    }
+
+    .comments-section {
+      max-width: 800px;
+      margin: 40px auto 0;
+    }
+
+    .comments-section h3 {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .comment {
+      display: flex;
+      align-items: flex-start;
+      margin-top: 20px;
+      border-top: 2px solid #f3c24a;
+      padding-top: 10px;
+      position: relative;
+    }
+
+    .comment img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 15px;
+    }
+
+    .comment-body {
+      flex: 1;
+    }
+
+    .comment-body h4 {
+      margin: 0;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .comment-body span {
+      font-size: 13px;
+      color: gray;
+      margin-left: 10px;
+    }
+
+    .comment-body p {
+      margin-top: 5px;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+  </style>
+
+  <div class="comment-form">
+    <h2>Hinterlassen Sie einen Kommentar</h2>
+    <form id="commentForm">
+      <div class="form-group">
+        <input type="text" id="name" placeholder="Name *" required>
+        <input type="email" id="email" placeholder="E-Mail *" required>
+      </div>
+      <textarea id="comment" placeholder="Kommentar *" required></textarea>
+      <p class="note">Bitte beachten Sie, dass Kommentare vor der Veröffentlichung freigegeben werden müssen.</p>
+      <button type="submit">Kommentar posten</button>
+    </form>
+  </div>
+
+  <div class="comments-section">
+    <h3 id="commentCount">0 Kommentare</h3>
+    <div id="commentList"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('commentForm');
+    const commentList = document.getElementById('commentList');
+    const commentCount = document.getElementById('commentCount');
+    const pageKey = 'comments_' + window.location.pathname;
+    let comments = JSON.parse(localStorage.getItem(pageKey)) || [];
+
+    function renderComments() {
+      commentList.innerHTML = '';
+      comments.forEach(comment => {
+        const commentDiv = document.createElement('div');
+        commentDiv.classList.add('comment');
+        commentDiv.innerHTML = `
+          <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="user">
+          <div class="comment-body">
+            <h4>${comment.name.toUpperCase()} <span>${comment.date}</span></h4>
+            <p>${comment.text}</p>
+          </div>
+        `;
+        commentList.prepend(commentDiv);
+      });
+
+      commentCount.textContent =
+        comments.length + (comments.length === 1 ? " Kommentar" : " Kommentare");
+    }
+
+    renderComments();
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const text = document.getElementById('comment').value.trim();
+      if (!name || !text) return;
+      const newComment = {
+        name,
+        text,
+        date: new Date().toLocaleDateString('de-DE', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        })
+      };
+      comments.push(newComment);
+      localStorage.setItem(pageKey, JSON.stringify(comments));
+      renderComments();
+      form.reset();
+    });
+  </script>
+</section>

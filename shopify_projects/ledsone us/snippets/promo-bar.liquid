@@ -1,0 +1,140 @@
+<style>
+  .promo-bar-discount {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(270deg, #d6f3ff, #e0e0e0, #d6f3ff);
+    background-size: 400% 400%;
+    animation: lightning-shade-anim 6s ease infinite;
+    color: #000000;
+    font-family: 'Poppins', Arial, sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    padding: 14px 24px;
+    gap: 12px;
+    flex-wrap: wrap;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+  }
+
+  @keyframes lightning-shade-anim {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .promo-bar-text {
+    flex: 1;
+    font-size: 16px;
+  }
+
+  .promo-bar-code-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #8fd19e;
+    color: #000;
+    font-weight: 600;
+    padding: 6px 18px;
+    border-radius: 24px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .promo-bar-code-box:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+  }
+
+  .promo-bar-copied-text {
+    display: none;
+    color: #006400;
+    font-weight: 600;
+  }
+
+  .promo-bar-code-box.copied .promo-bar-copy-text,
+  .promo-bar-code-box.copied .promo-bar-clipboard-icon {
+    display: none;
+  }
+
+  .promo-bar-code-box.copied .promo-bar-copied-text {
+    display: inline;
+  }
+
+  .promo-bar-clipboard-icon {
+    font-size: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .promo-bar-discount {
+      flex-direction: column;
+      text-align: center;
+      padding: 10px 16px;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .promo-bar-text {
+      font-size: 14px;
+    }
+
+    .promo-bar-code-box {
+      padding: 5px 14px;
+      font-size: 14px;
+      justify-content: center;
+    }
+  }
+</style>
+
+<div class="promo-bar-discount">
+  <div class="promo-bar-text">
+    15% OFF your entire order
+  </div>
+  <div class="promo-bar-code-box" onclick="copyPromoCodeDiscount('LEDS15OFF', this)">
+    <span class="promo-bar-code-value">LEDS15OFF</span>
+    <span class="promo-bar-clipboard-icon">📋</span>
+    <span class="promo-bar-copy-text">Copy</span>
+    <span class="promo-bar-copied-text">✓ Copied!</span>
+  </div>
+</div>
+
+<script>
+  function copyPromoCodeDiscount(code, el) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(code).then(function() {
+        el.classList.add('copied');
+        setTimeout(function() {
+          el.classList.remove('copied');
+        }, 2000);
+      }).catch(function(err) {
+        console.error('Failed to copy: ', err);
+        fallbackCopyTextToClipboard(code, el);
+      });
+    } else {
+      fallbackCopyTextToClipboard(code, el);
+    }
+  }
+
+  function fallbackCopyTextToClipboard(text, el) {
+    var textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.top = "-999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      el.classList.add('copied');
+      setTimeout(function() {
+        el.classList.remove('copied');
+      }, 2000);
+    } catch (err) {
+      console.error('Fallback: Could not copy text: ', err);
+    }
+    document.body.removeChild(textArea);
+  }
+</script>

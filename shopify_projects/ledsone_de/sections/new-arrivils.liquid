@@ -1,0 +1,344 @@
+{% comment %} Only show on these 2 specific product pages {% endcomment %}
+{% if product.handle == 'lampenschirme-in-fur-wand-und-pendelleuchten' or product.handle == 'e27-lampenfassung-vintage-stilinnenbereich' %}
+
+{% comment %} Fetch the specific product to display {% endcomment %}
+{% assign featured_product = all_products['pendelleuchte-mit-stecker'] %}
+
+<div class="new-arrival-popup" id="newArrivalPopup">
+  <button class="popup-close" onclick="closeNewArrivalPopup()">×</button>
+  
+  <div class="popup-header">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="#4CAF50">
+      <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+    </svg>
+    <h3>Neu Angekommen</h3>
+  </div>
+  
+  <div class="popup-body">
+    <div class="product-image">
+      <a href="{{ featured_product.url }}">
+        <img 
+             src="{{ featured_product.featured_image | img_url: '80x80' }}" 
+             alt="{{ featured_product.title | escape }}"
+             loading="lazy"
+             width="80"
+             height="80"
+            >
+        </a>
+   </div>
+    
+    <div class="product-info">
+      <a href="{{ featured_product.url }}" class="title-link">
+        <h4>{{ featured_product.title }}</h4>
+      </a>
+      <p class="discount-text">10 % Rabatt bei 3 oder mehr Pendelleuchte</p>
+      
+      <div class="price-section">
+        {% if featured_product.compare_at_price > featured_product.price %}
+          <span class="sale-price">{{ featured_product.price | money }}</span>
+          <span class="original-price">{{ featured_product.compare_at_price | money }}</span>
+        {% else %}
+          <span class="current-price">{{ featured_product.price | money }}</span>
+        {% endif %}
+      </div>
+      
+      <div class="action-row">
+        <span class="stock-text">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" fill="#4CAF50"/>
+            <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          In stock
+        </span>
+        <a href="{{ featured_product.url }}" class="view-link">Jetzt ansehen</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.new-arrival-popup {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  z-index: 9999;
+  max-width: 380px;
+  width: calc(100% - 40px);
+  animation: slideInLeft 0.4s ease-out;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.popup-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #999;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  z-index: 10;
+  transition: color 0.2s;
+}
+
+.popup-close:hover {
+  color: #333;
+}
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+  background: #f9f9f9;
+}
+
+.popup-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.popup-body {
+  display: flex;
+  gap: 15px;
+  padding: 16px 20px;
+  align-items: flex-start;
+}
+
+.product-image {
+  flex-shrink: 0;
+}
+
+.product-image img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  transition: transform 0.2s;
+}
+
+.product-image a:hover img {
+  transform: scale(1.05);
+}
+
+.product-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.title-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.title-link:hover h4 {
+  color: #2196F3;
+}
+
+.product-info h4 {
+  margin: 0 0 6px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+
+.discount-text {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  color: #e74c3c;
+  font-weight: 500;
+}
+
+.price-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.sale-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #e74c3c;
+}
+
+.original-price {
+  font-size: 14px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.current-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+}
+
+.action-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.stock-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #4CAF50;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.stock-text svg {
+  flex-shrink: 0;
+}
+
+.view-link {
+  color: #2196F3;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Mobile-only adjustments */
+@media (max-width: 768px) {
+  .new-arrival-popup {
+    bottom: 100px;
+    left: 10px;
+    max-width: 320px;
+    width: calc(100% - 20px);
+    border-radius: 10px;
+  }
+  
+  .popup-close {
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    width: 20px;
+    height: 20px;
+  }
+  
+  .popup-header {
+    padding: 12px 14px;
+  }
+  
+  .popup-header svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .popup-header h3 {
+    font-size: 14px;
+  }
+  
+  .popup-body {
+    gap: 12px;
+    padding: 12px 14px;
+  }
+  
+  .product-image img {
+    width: 65px;
+    height: 65px;
+  }
+  
+  .product-info h4 {
+    font-size: 13px;
+    margin-bottom: 5px;
+  }
+  
+  .discount-text {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+  
+  .price-section {
+    margin-bottom: 8px;
+  }
+  
+  .sale-price,
+  .current-price {
+    font-size: 16px;
+  }
+  
+  .original-price {
+    font-size: 12px;
+  }
+  
+  .action-row {
+    gap: 15px;
+  }
+  
+  .stock-text {
+    font-size: 12px;
+  }
+  
+  .stock-text svg {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .view-link {
+    font-size: 12px;
+  }
+}
+</style>
+
+<script>
+function closeNewArrivalPopup() {
+  const popup = document.getElementById('newArrivalPopup');
+  popup.style.animation = 'slideOutLeft 0.3s ease-out';
+  setTimeout(() => {
+    popup.style.display = 'none';
+  }, 300);
+}
+
+// Show popup after 1 second, auto-close after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+  const popup = document.getElementById('newArrivalPopup');
+  if (popup) {
+    // Show after 1 second
+    setTimeout(() => {
+      popup.style.display = 'block';
+    }, 1000);
+    
+    // Auto-close after 6 seconds total (1s delay + 5s display)
+    setTimeout(() => {
+      closeNewArrivalPopup();
+    }, 6000);
+  }
+});
+</script>
+
+{% endif %}

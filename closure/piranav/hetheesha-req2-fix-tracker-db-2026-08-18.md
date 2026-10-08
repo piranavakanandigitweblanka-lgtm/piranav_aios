@@ -28,7 +28,7 @@
 | API | `Staff-requirements/api/members-api.js` |
 | Frontend | `Staff-requirements/pages/hetheesha.html` |
 | Evidence | `evidence/piranav/hetheesha-req2-fix-tracker-db-2026-08-18.md` |
-| Capability | `capability/piranav/hetheesha-req2-fix-tracker-db-2026-08-18.md` |
+| Capability | `capability/2026/08/2026-08-18/hetheesha-req2-fix-tracker-db-2026-08-18.md` |
 | Prompt | `prompts/hetheesha/req2-fix-tracker-db-migration-2026-08-18.md` |
 | Implementation | `implementation/piranav/hetheesha-req2-fix-tracker-db-2026-08-18.md` |
 | Validation | `validation/piranav/hetheesha-req2-fix-tracker-db-2026-08-18.md` |

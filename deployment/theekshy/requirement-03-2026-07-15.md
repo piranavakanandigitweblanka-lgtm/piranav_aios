@@ -34,7 +34,7 @@
 | `validation/theekshy/requirement-03-2026-07-15.md` | CREATED |
 | `deployment/theekshy/requirement-03-2026-07-15.md` | CREATED |
 | `closure/theekshy/requirement-03-2026-07-15.md` | CREATED |
-| `capability/theekshy/requirement-03-2026-07-15.md` | CREATED |
+| `capability/2026/07/2026-07-15/requirement-03-2026-07-15.md` | CREATED |
 
 ## Pre-Deployment Checklist (coordinator to verify before approving commit)
 

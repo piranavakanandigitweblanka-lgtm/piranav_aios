@@ -87,7 +87,7 @@ Rationale: manual `vercel --prod` from a stale local copy silently overwrites th
 
 ### Rule 2: AIOS Files Must Be Tracked
 After creating any AIOS file (capability, closure, evidence, validation), run `git status` and ensure the file appears in the staging area. An untracked AIOS file can be lost if the workspace is cleared.
-Example of failure: `capability/piranav/shopify-shipping-rate-update-2026-08-11.md` was left untracked.
+Example of failure: `capability/2026/08/2026-08-11/shopify-shipping-rate-update-2026-08-11.md` was left untracked.
 
 ### Rule 3: One Closure Row Per Task Per Session
 Every task completed in a session (code, documentation, investigation, fix) must have one closure row in `closure/README.md` before the session is considered done. If it cannot be closed, mark it OPEN with a blocker.

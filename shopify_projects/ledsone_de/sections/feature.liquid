@@ -1,0 +1,133 @@
+<section class="yellow-features-section">
+  <div class="container yellow-features-wrapper">
+    <div class="yellow-features-grid">
+      {% for block in section.blocks %}
+        {% assign link = block.settings.link %}
+
+        {% if link != blank %}
+          <a href="{{ link }}" class="yellow-feature-box">
+        {% else %}
+          <div class="yellow-feature-box">
+        {% endif %}
+
+            <div class="yellow-feature-icon">
+              {% if block.settings.icon %}
+                <img src="{{ block.settings.icon | img_url: '50x50' }}" alt="icon" loading="lazy">
+              {% endif %}
+            </div>
+
+            <div class="yellow-feature-text">
+              {% if block.settings.heading != blank %}
+                <p class="yellow-feature-heading">{{ block.settings.heading }}</p>
+              {% endif %}
+              {% if block.settings.text != blank %}
+                <p class="yellow-feature-description">{{ block.settings.text }}</p>
+              {% endif %}
+            </div>
+
+        {% if link != blank %}
+          </a>
+        {% else %}
+          </div>
+        {% endif %}
+      {% endfor %}
+
+    </div>
+  </div>
+
+  <style>
+    .yellow-features-section {
+      padding: 20px 0;
+    }
+
+    .yellow-features-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .yellow-features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .yellow-feature-box {
+      background:hsl(200, 200, 200);
+      padding: 20px 25px;
+      border-radius: 8px;
+      border: 2px solid black;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      text-decoration: none;
+      color: #000;
+      
+    }
+    .yellow-feature-icon img {
+      width: 28px;
+      height: 28px;
+    }
+
+    .yellow-feature-heading {
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .yellow-feature-description {
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      .yellow-features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</section>
+
+{% schema %}
+{
+  "name": "Feature Boxes",
+  "max_blocks": 6,
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature Box",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Bold text",
+          "default": "Free shipping on orders over €89"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Description",
+          "default": "Your description goes here"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Yellow feature boxes",
+      "blocks": [
+        { "type": "feature" },
+        { "type": "feature" },
+        { "type": "feature" }
+      ]
+    }
+  ]
+}
+{% endschema %}

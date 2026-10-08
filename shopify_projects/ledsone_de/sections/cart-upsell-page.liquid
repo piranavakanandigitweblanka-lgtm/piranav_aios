@@ -1,0 +1,20 @@
+
+{%- if recommendations.products_count > 0 -%}
+    <div class="swiper-wrapper">
+    {%- for product in recommendations.products -%}
+        <div
+            class="swiper-slide">
+            {%- render 'cart-upsell-item-page', product: product -%}
+            </div>
+    {%- endfor -%}
+</div>
+{%- endif -%} {%- comment -%}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- render 'cart-upsell-item-page' | product: product -%}"
+  to: "{%- render 'cart-upsell-item-page', product: product -%}"
+  position: 191..247
+{%- endcomment -%}

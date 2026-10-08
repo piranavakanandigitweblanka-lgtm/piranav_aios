@@ -1,0 +1,47 @@
+{%- layout none -%}<?xml version="1.0" encoding="UTF-8" ?>
+<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
+
+<channel>
+    <title>{{ shop.name | escape }} Products (DKK Feed)</title>
+    <link>{{ shop.url }}</link>
+    
+    {% comment %} Configuration: Set your conversion rate here {% endcomment %}
+    {% assign eur_to_dkk_rate = 7.458 %}
+    
+    {% assign target_collection = collections['moderne-belysning'] %}
+    {% paginate target_collection.products by 1000 %}
+
+    {% for product in target_collection.products %}
+        {% for variant in product.variants %}
+            <item>
+                <g:id>{{ variant.id }}</g:id>
+                <g:title><![CDATA[{{ product.title | strip_html | strip_newlines | escape | replace: 'amp;', 'and' | replace: '&#38;', 'and' }} {% unless variant.title == 'Default Title' %}- {{ variant.title | escape }}{% endunless %}]]></g:title>
+                <g:brand>{{ product.vendor | escape }}</g:brand>
+                <g:product_type>{{ product.type | escape }}</g:product_type>
+                <g:condition>New</g:condition>
+                <g:description><![CDATA[{{ product.description | strip_html | strip_newlines | replace: 'amp;', 'and' | replace: '&#38;', 'and' | replace: "..", ". " | replace: "â€œ", "&#34;" | replace: "â€", "&#34;" }}]]></g:description>
+
+                <g:image_link>
+                    {% if variant.image %}
+                        https:{{ variant.image | product_img_url: 'grande' }}
+                    {% else %}
+                        https:{{ product.featured_image | product_img_url: 'grande' }}
+                    {% endif %}
+                </g:image_link>
+                
+                <g:link>{{ shop.url }}{{ variant.url }}</g:link>
+
+                {% comment %} Price Conversion Logic {% endcomment %}
+                {% assign price_in_dkk = variant.price | times: eur_to_dkk_rate %}
+                <g:price>{{ price_in_dkk | money_without_currency | replace: ',', '.' }} DKK</g:price>
+
+                <g:availability>{% if variant.available %}in_stock{% else %}out_of_stock{% endif %}</g:availability>
+                <g:gtin>{{ variant.barcode }}</g:gtin>
+            </item>
+        {% endfor %}
+    {% endfor %}
+    
+    {% endpaginate %}
+</channel>
+</rss>
+

@@ -1,0 +1,316 @@
+{% comment %}
+  =============================================
+  SNIPPET: stock-badge.liquid
+  USAGE: {% render 'stock-badge', product: product %}
+  =============================================
+
+
+{% assign is_letzte = false %}
+{% for col in product.collections %}
+  {% if col.handle == 'letzte-stucke' %}
+    {% assign is_letzte = true %}
+  {% endif %}
+{% endfor %}
+
+{% if is_letzte %}
+
+  <span class="letzte-badge">Letzte Stücke</span>
+
+  {% assign lowest_qty = 10 %}
+  {% for variant in product.variants %}
+    {% if variant.inventory_management != blank %}
+      {% if variant.inventory_quantity > 0 and variant.inventory_quantity < 10 %}
+        {% if variant.inventory_quantity < lowest_qty %}
+          {% assign lowest_qty = variant.inventory_quantity %}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  {% if lowest_qty < 10 %}
+    {% assign bar_pct = lowest_qty | times: 11 %}
+    <div class="svs-stock">
+      <div class="svs-stock__bar">
+        <div class="svs-stock__fill" style="width: {{ bar_pct }}%"></div>
+      </div>
+      <p class="svs-stock__text">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Nur noch <strong>{{ lowest_qty }}</strong> auf Lager
+      </p>
+    </div>
+  {% endif %}
+
+  {% comment %} ── COPY CODE CHIP ── {% endcomment %}
+  <div class="lk-code-chip" onclick="lkCopyCode(this, '10%Verkauf')">
+    <span class="lk-code-chip__label">10% Rabatt</span>
+    <span class="lk-code-chip__divider"></span>
+    <span class="lk-code-chip__code">10%Verkauf</span>
+    <span class="lk-code-chip__btn">
+      <svg class="lk-code-chip__icon lk-icon-copy" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+      </svg>
+      <svg class="lk-code-chip__icon lk-icon-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      <span class="lk-code-chip__btn-text">Kopieren</span>
+    </span>
+  </div>
+
+{% endif %}
+
+{% if collection.handle == 'letzte-stucke' %}
+<style>
+  .stock-status { display: none !important; }
+</style>
+{% endif %}
+
+<style>
+
+/* ── CARD LAYOUT FIX — always same height per row ── */
+.product-grid {
+  align-items: stretch;
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.product-image-wrapper {
+  flex-shrink: 0;
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* ── CHIP ALWAYS PINNED TO BOTTOM ── */
+.lk-code-chip {
+  margin-top: auto !important;
+  margin-top: 8px;    /* ← moves spacing OUTSIDE the chip border */
+}
+
+/* ── TOP-LEFT BADGE ── */
+.letzte-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background:rgb(110, 0, 0);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 5px 9px;
+  z-index: 14;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom-right-radius: 5px;
+}
+
+/* ── STOCK BLOCK ── */
+.svs-stock {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.svs-stock__bar {
+  width: 100%;
+  height: 3px;
+  background: #efefef;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.svs-stock__fill {
+  height: 100%;
+  background:rgb(71, 0, 0);
+  border-radius: 99px;
+  max-width: 95%;
+  min-width: 8%;
+}
+
+.svs-stock__text {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #2563eb;
+  margin: 0;
+  line-height: 1;
+}
+
+.svs-stock__text svg {
+  color: #2563eb;
+  flex-shrink: 0;
+  position: relative;
+  top: -0.5px;
+}
+
+.svs-stock__text strong {
+  color: #f97316;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+/* ── CODE CHIP ── */
+.lk-code-chip {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1.5px dashedrgb(167, 167, 167);
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.2s ease;
+}
+
+.lk-code-chip:hover {
+  border-color: #1e40af;
+}
+
+.lk-code-chip__label {
+  background:rgb(126, 126, 126);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 5px 8px;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+
+.lk-code-chip__divider {
+  width: 1px;
+  background: #2563eb;
+  align-self: stretch;
+}
+
+.lk-code-chip__code {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 800;
+  color: #1e3a8a;
+  padding: 5px 6px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.lk-code-chip__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #eff6ff;
+  padding: 5px 8px;
+  border-left: 1.5px dashed #2563eb;
+  color: #2563eb;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+.lk-code-chip:hover .lk-code-chip__btn {
+  background: #dbeafe;
+}
+
+/* ── COPIED STATE ── */
+.lk-code-chip.copied {
+  border-color: #16a34a;
+}
+
+.lk-code-chip.copied .lk-code-chip__label {
+  background: #16a34a;
+}
+
+.lk-code-chip.copied .lk-code-chip__divider {
+  background: #16a34a;
+}
+
+.lk-code-chip.copied .lk-code-chip__code {
+  color: #15803d;
+}
+
+.lk-code-chip.copied .lk-code-chip__btn {
+  background: #f0fdf4;
+  color: #16a34a;
+  border-left-color: #16a34a;
+}
+
+/* ── CODE CHIP ── */
+.lk-code-chip {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1.5px dashed rgb(167, 167, 167);
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.2s ease;
+  width: 100%;          /* ← ADD THIS */
+  min-width: 0;         /* ← ADD THIS */
+  box-sizing: border-box; /* ← ADD THIS */
+}
+
+.lk-code-chip__code {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 800;
+  color: #1e3a8a;
+  padding: 5px 6px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;       /* ← ADD THIS */
+  text-overflow: ellipsis; /* ← ADD THIS */
+  min-width: 0;           /* ← ADD THIS */
+}
+
+/* ── MOBILE: hide copy text, icon only ── */
+@media (max-width: 768px) {   /* ← raised from 480px to 768px */
+  .lk-code-chip__btn-text {
+    display: none;
+  }
+
+  .lk-code-chip__btn {
+    padding: 5px 6px;
+  }
+
+  .lk-code-chip__label {
+    font-size: 9px;
+    padding: 5px 5px;
+  }
+
+  .lk-code-chip__code {
+    font-size: 10px;
+    padding: 5px 4px;
+  }
+}
+</style>
+
+<script>
+function lkCopyCode(el, code) {
+  navigator.clipboard.writeText(code).then(function () {
+    var chip = el;
+    var copyIcon = chip.querySelector('.lk-icon-copy');
+    var checkIcon = chip.querySelector('.lk-icon-check');
+    var btnText = chip.querySelector('.lk-code-chip__btn-text');
+
+    chip.classList.add('copied');
+    copyIcon.style.display = 'none';
+    checkIcon.style.display = 'inline';
+    btnText.textContent = 'Kopiert!';
+
+    setTimeout(function () {
+      chip.classList.remove('copied');
+      copyIcon.style.display = 'inline';
+      checkIcon.style.display = 'none';
+      btnText.textContent = 'Kopieren';
+    }, 2000);
+  });
+}
+</script>
+{% endcomment %}

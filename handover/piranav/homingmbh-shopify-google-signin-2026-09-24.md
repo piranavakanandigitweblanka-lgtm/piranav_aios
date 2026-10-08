@@ -101,4 +101,4 @@ This path is Git-ignored and must not be committed or shared.
 | `docs/homingmbh/shopify-google-sign-in/Homingmbh_Shopify_Google_SignIn_Trainee_Guide.docx` | Full trainee guide |
 | `evidence/piranav/homingmbh-shopify-google-signin-2026-09-24.md` | Implementation evidence |
 | `validation/piranav/homingmbh-shopify-google-signin-2026-09-24.md` | Validation checklist |
-| `capability/piranav/shopify-customer-google-signin.md` | Reusable capability record |
+| `capability/2026/09/2026-09-24/shopify-customer-google-signin.md` | Reusable capability record |

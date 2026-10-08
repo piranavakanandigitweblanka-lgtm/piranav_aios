@@ -62,7 +62,7 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 | IP-2026-10-08-001 | Investigated lidsone.com — confirmed third-party site using LEDSone logo without authorisation. Produced Cease & Desist letter and IP Action Plan as PDF-ready HTML files. Identified 4 legal claims (copyright, passing off, EU unfair competition, E-Commerce Directive breach). ledsone.de confirmed as ours (Trossingen address). | `ledsone-cease-and-desist.html` + `ledsone-ip-action-plan.html` | `evidence/legal/lidsone-ip-infringement-2026-10-08.md` | Untracked — pending commit | YES | Physical evidence capture (screenshots, Wayback archive, logo file, WHOIS) pending Piranav action. C&D not yet sent. | Piranav: (1) screenshot both logos, (2) archive lidsone.com on Wayback Machine, (3) run WHOIS, (4) send C&D to support@lidsone.com | PASS — documentation complete, physical evidence + send pending |
-| IP-2026-10-08-002 | Prompt + Capability | `prompts/legal/ledsone-ip-cease-and-desist.md` + `capability/piranav/ip-infringement-investigation-and-cease-desist.md` | Same | N/A | YES | NONE | NONE | PASS |
+| IP-2026-10-08-002 | Prompt + Capability | `prompts/legal/ledsone-ip-cease-and-desist.md` + `capability/2026/10/2026-10-08/ip-infringement-investigation-and-cease-desist.md` | Same | N/A | YES | NONE | NONE | PASS |
 | IP-2026-10-08-003 | Validation | `validation/piranav/ip-infringement-validation-2026-10-08.md` | Same | N/A | YES | NONE | NONE | PASS |
 
 **Session Result: PASS** — All AIOS assets created. C&D letter and action plan PDF-ready. Physical evidence capture and email send pending Piranav.
@@ -232,10 +232,10 @@ Or as a table when multiple tasks exist in one session:
 | DM-SAJ-2026-09-18-002 | Sajeepan R3 — OOS Item ID filter + pagination fix + OOS data accuracy. Changed HAVING filter from conversion_value>0 to cost/clicks/impressions. Added merchant_products availability lookup (primary OOS signal). Backend cap 50→200. variant_id field added to all OOS rows. | dm-dashboard/backend/app/sajeepan.py, frontend/.../ProductActionDashboard.jsx | Prompt: prompts/sajeepan/r3-oos-filter-pagination-fix.md. Evidence: OOS now shows products burning budget with zero revenue. | Committed, pushed to piranv-work | YES | NONE | Test in browser | PASS |
 | DM-SAJ-2026-09-18-003 | Sajeepan PPC + Dup Campaigns — Item ID (variant_id) instead of full item string in PPC, OOS, dup campaign tables. Dup campaigns: CSV download + campaign filter dropdown. Feed Optimization: text search per level + new Optimized Products Data section with search + CSV. | frontend/.../ProductActionDashboard.jsx, frontend/.../FeedOptimization.jsx | Committed, pushed to piranv-work | YES | NONE | Test in browser | PASS |
 | DM-UI-2026-09-18-004 | AI chat placeholder color fix — all 11 staff DailyTaskPage.jsx textarea inputs now have className="dm-chat-input". CSS rule added to dashboard.css (.dm-chat-input::placeholder). Placeholder now visible (#94a3b8 slate). | frontend/src/styles/dashboard.css, 11 DailyTaskPage.jsx files | Committed, pushed to piranv-work | YES | NONE | Deploy to Contabo | PASS |
-| DM-SEO-2026-09-18-005 | GSC Live Sync — replace 50%-sampled pipeline with full 100% GSC API data. New gsc_live_sync.py (schema creation + upsert + scheduler). seo_intelligence.py switched from google_search_console.* to gsc_live.*. Removed all "clicks ≈ 50%" warnings. | dm-dashboard/backend/app/gsc_live_sync.py (new), main.py, seo_intelligence.py | Prompt: prompts/implementation/gsc-live-sync-build.md. Capability: capability/gsc-live-sync-2026-09-18.md. Evidence: evidence/sajeepan/gsc-live-sync-2026-09-18.md | c3075ff on piranv-work, pushed to websitetecteam-arch/dm-dashboard | YES | First sync runs on app restart — gsc_live schema does not exist in prod yet | Deploy to Contabo, then restart backend to trigger first full sync | PASS |
+| DM-SEO-2026-09-18-005 | GSC Live Sync — replace 50%-sampled pipeline with full 100% GSC API data. New gsc_live_sync.py (schema creation + upsert + scheduler). seo_intelligence.py switched from google_search_console.* to gsc_live.*. Removed all "clicks ≈ 50%" warnings. | dm-dashboard/backend/app/gsc_live_sync.py (new), main.py, seo_intelligence.py | Prompt: prompts/implementation/gsc-live-sync-build.md. Capability: capability/2026/09/2026-09-18/gsc-live-sync-2026-09-18.md. Evidence: evidence/sajeepan/gsc-live-sync-2026-09-18.md | c3075ff on piranv-work, pushed to websitetecteam-arch/dm-dashboard | YES | First sync runs on app restart — gsc_live schema does not exist in prod yet | Deploy to Contabo, then restart backend to trigger first full sync | PASS |
 
-| DM-SK-2026-09-18-006 | Sukirtha R6 — OOS and Draft products excluded from Missing Meta list. Two-layer fix: Shopify GraphQL `query:"status:active"` filter at API level + post-process skip for `totalInventory==0`. Wasted AI tasks on unavailable products eliminated. | dm-dashboard/backend/app/sukirtha.py | Prompt: prompts/sukirtha/r6-oos-draft-exclusion.md. Capability: capability/sukirtha-r6-oos-draft-2026-09-18.md | `41576bf` on websitetecteam-arch/dm-dashboard piranv-work | YES | NONE | Deploy to Contabo | PASS |
-| DM-SK-2026-09-18-007 | Sukirtha AI brief variety cap — max 2 tasks per business_rule category. Previously all 5 slots filled with R6 (missing_meta) tasks, R1–R5 never surfaced. Fixed via VARIETY RULE in system prompt: top 2 R6 by impressions + remaining 3 slots from other categories. | dm-dashboard/backend/app/sukirtha_ai.py | Prompt: prompts/sukirtha/ai-brief-variety-cap.md. Capability: capability/sukirtha-ai-brief-variety-2026-09-18.md | `9ed29d3` on websitetecteam-arch/dm-dashboard piranv-work | YES | NONE | Deploy to Contabo + click Regenerate Brief to verify mix | PASS |
+| DM-SK-2026-09-18-006 | Sukirtha R6 — OOS and Draft products excluded from Missing Meta list. Two-layer fix: Shopify GraphQL `query:"status:active"` filter at API level + post-process skip for `totalInventory==0`. Wasted AI tasks on unavailable products eliminated. | dm-dashboard/backend/app/sukirtha.py | Prompt: prompts/sukirtha/r6-oos-draft-exclusion.md. Capability: capability/2026/09/2026-09-18/sukirtha-r6-oos-draft-2026-09-18.md | `41576bf` on websitetecteam-arch/dm-dashboard piranv-work | YES | NONE | Deploy to Contabo | PASS |
+| DM-SK-2026-09-18-007 | Sukirtha AI brief variety cap — max 2 tasks per business_rule category. Previously all 5 slots filled with R6 (missing_meta) tasks, R1–R5 never surfaced. Fixed via VARIETY RULE in system prompt: top 2 R6 by impressions + remaining 3 slots from other categories. | dm-dashboard/backend/app/sukirtha_ai.py | Prompt: prompts/sukirtha/ai-brief-variety-cap.md. Capability: capability/2026/09/2026-09-18/sukirtha-ai-brief-variety-2026-09-18.md | `9ed29d3` on websitetecteam-arch/dm-dashboard piranv-work | YES | NONE | Deploy to Contabo + click Regenerate Brief to verify mix | PASS |
 
 **Session Result: PASS** — Sukirtha R6 OOS/Draft filter live. AI brief variety cap live. Regenerate Brief confirmed working. Sajeepan R4 advanced filters live (previous context). All assets tracked.
 
@@ -437,7 +437,7 @@ Or as a table when multiple tasks exist in one session:
 | PIRANAV-SR01-STAFFIDPERF-2026-08-14 | Staff ID Performance dashboard (5 tabs) + recovery incident (work lost from live, recovered from Vercel snapshot) | `SR-01/pages/staff-id-performance.html` | `closure/piranav/staff-id-performance-2026-08-14.md` | `9ebde22`–`61e2beb`, `fb3a5fe`, `1258fd9` | NO | Merge conflict RESOLVED (commit 1258fd9); no AIOS capability or incident doc | Create capability + incident doc | PARTIAL |
 | PIRANAV-SR01-OVERVIEW-2026-08-14 | SR-01 workstream AIOS overview (scope, dashboards, APIs, git state) | `docs/dashboards/architecture/sr01-workstream-overview.md` (to be created) | `closure/piranav/sr01-workstream-overview-2026-08-14.md` | a4033b8, 61e2beb | NO | No overview doc exists; SR-01 deployment URL not confirmed | Create SR-01 overview doc; confirm deployment URL with Piranav | OPEN |
 | PIRANAV-SEO-AUG07-2026-08-07 | SEO dashboard Aug 7 enhancement — reactive week selector, 26-week history table | `SR-02/pages/seo.html` | `closure/piranav/seo-dashboard-aug07-enhancement-2026-08-07.md` | `6e94b70` | PARTIAL | Existing capability + closure outdated (Aug 3 only); Aug 7 features not in AIOS docs | Extend existing capability + closure files | PARTIAL |
-| PIRANAV-SHOPIFY-SHIPPING-2026-08-11 | Shopify shipping rate update — 9 EU countries +£1.50/€1.50 via Shopify MCP | `capability/piranav/shopify-shipping-rate-update-2026-08-11.md` | `closure/piranav/shopify-shipping-rate-update-2026-08-11.md` | NONE — untracked | NO | Capability file UNTRACKED — will be lost; no git commit; no evidence file | COMMIT untracked file immediately; create evidence file | PARTIAL |
+| PIRANAV-SHOPIFY-SHIPPING-2026-08-11 | Shopify shipping rate update — 9 EU countries +£1.50/€1.50 via Shopify MCP | `capability/2026/08/2026-08-11/shopify-shipping-rate-update-2026-08-11.md` | `closure/piranav/shopify-shipping-rate-update-2026-08-11.md` | NONE — untracked | NO | Capability file UNTRACKED — will be lost; no git commit; no evidence file | COMMIT untracked file immediately; create evidence file | PARTIAL |
 | PIRANAV-EOD-ADS-EXPANSION | eod-ads.html expanded from 6 to 10 ADS members (Thasitha/Theekshy/Ripson/Thanishtika) | `SR-02/pages/eod-ads.html` | git diff output (unstaged) | NONE — unstaged | NO | Changes UNSTAGED and NOT committed — will be lost | COMMIT immediately | OPEN |
 
 **Session Result: PARTIAL** — All 9 items recovered with evidence from git. All are PARTIAL or OPEN because GPT review evidence is missing for all items and AIOS documentation is incomplete. No production changes made in this recovery session.
@@ -451,7 +451,7 @@ Or as a table when multiple tasks exist in one session:
 **Context:** CPPC_30 Google Merchant Center feed reported an XML formatting error (Line 20, Column 127) on upload 2026-08-14. Fix was applied in-session. GMC approval confirmed by Piranav. AIOS closure was not written at session end. This entry is a recovery closure written in a subsequent session. No production changes were made in the recovery session.
 
 **Evidence file:** `evidence/fixes/cppc30-xml-feed-fix-2026-08-14.md`  
-**Capability file:** `capability/piranav/shopify-xml-feed-debugging-2026-08-14.md`
+**Capability file:** `capability/2026/08/2026-08-14/shopify-xml-feed-debugging-2026-08-14.md`
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
@@ -495,10 +495,10 @@ Or as a table when multiple tasks exist in one session:
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
-| DM-TASKVERIFY-2026-09-03 | Staff task verification system — required completion note + Google Ads auto-verify via `google_ads_change_events` + Muguntha approve/reject in TeamTaskMonitor | `dm-dashboard/backend/app/ai_shared.py`, `task_log.py`, `frontend/src/components/DailyBriefWidget.jsx`, `MyTaskLog.jsx`, `admin/pages/TeamTaskMonitor.jsx` | `capability/piranav/task-verification-2026-09-03.md` | `116ca5c` (piranav_aios capability doc) | YES | None | Add key 3 when Piranav provides third Google account | PASS |
-| DM-GEMINI-FALLBACK-2026-09-03 | Gemini multi-key fallback — `call_gemini()` cycles through GEMINI_API_KEY/_2/_3 on 429 quota exhaustion | `dm-dashboard/backend/app/ai_shared.py` | `capability/piranav/gemini-multi-key-fallback-2026-09-03.md` | `eb60cc6` (dm-dashboard repo) | YES | Key 3 not yet provided — slot ready in code | Piranav to provide 3rd API key when available | PASS |
+| DM-TASKVERIFY-2026-09-03 | Staff task verification system — required completion note + Google Ads auto-verify via `google_ads_change_events` + Muguntha approve/reject in TeamTaskMonitor | `dm-dashboard/backend/app/ai_shared.py`, `task_log.py`, `frontend/src/components/DailyBriefWidget.jsx`, `MyTaskLog.jsx`, `admin/pages/TeamTaskMonitor.jsx` | `capability/2026/09/2026-09-03/task-verification-2026-09-03.md` | `116ca5c` (piranav_aios capability doc) | YES | None | Add key 3 when Piranav provides third Google account | PASS |
+| DM-GEMINI-FALLBACK-2026-09-03 | Gemini multi-key fallback — `call_gemini()` cycles through GEMINI_API_KEY/_2/_3 on 429 quota exhaustion | `dm-dashboard/backend/app/ai_shared.py` | `capability/2026/09/2026-09-03/gemini-multi-key-fallback-2026-09-03.md` | `eb60cc6` (dm-dashboard repo) | YES | Key 3 not yet provided — slot ready in code | Piranav to provide 3rd API key when available | PASS |
 | DM-MODEL-FIX-2026-09-03 | Revert Gemini model from `gemini-2.0-flash` (retired/404) to `gemini-3.6-flash` | `dm-dashboard/backend/app/ai_shared.py` | Server log: no 502/404 Gemini errors after restart. Kamsi AI brief working. | `528f6ab` (dm-dashboard repo) | YES | None | None | PASS |
-| AIOS-CAP-2026-09-03 | Write AIOS capability docs for task verification + Gemini fallback + commit to piranav_aios | `capability/piranav/task-verification-2026-09-03.md`, `capability/piranav/gemini-multi-key-fallback-2026-09-03.md` | This closure entry | Pending push | YES | None | Push after closure written | PASS |
+| AIOS-CAP-2026-09-03 | Write AIOS capability docs for task verification + Gemini fallback + commit to piranav_aios | `capability/2026/09/2026-09-03/task-verification-2026-09-03.md`, `capability/2026/09/2026-09-03/gemini-multi-key-fallback-2026-09-03.md` | This closure entry | Pending push | YES | None | Push after closure written | PASS |
 
 **Session Result: PASS** — Task verification live, Gemini fallback live, model fix live, all AIOS docs written. Key 3 slot open.
 
@@ -511,9 +511,9 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset | Evidence | Commit | Queryable | Blockers | Next Step | Status |
 |---|---|---|---|---|---|---|---|---|
 | DM-GROQ-FIX-2026-09-03 | Fix Groq model — switched from decommissioned `llama-3.1-70b-versatile` to `qwen/qwen3.6-27b` (confirmed available via Groq /v1/models API) | `dm-dashboard/backend/app/ai_shared.py` | Server curl: `"ok":true` after merge | dm-dashboard `main` (multiple commits) | YES | None | None | PASS |
-| DM-NVIDIA-FALLBACK-2026-09-03 | Add NVIDIA NIM as 3rd fallback — `meta/llama-3.3-70b-instruct` via `https://integrate.api.nvidia.com/v1/chat/completions` | `dm-dashboard/backend/app/ai_shared.py` | `capability/piranav/ai-fallback-chain-nvidia-2026-09-03.md` | dm-dashboard `main` | YES | `NVIDIA_API_KEY` must be added to server `.env` manually | Add key to server .env then restart | PASS |
+| DM-NVIDIA-FALLBACK-2026-09-03 | Add NVIDIA NIM as 3rd fallback — `meta/llama-3.3-70b-instruct` via `https://integrate.api.nvidia.com/v1/chat/completions` | `dm-dashboard/backend/app/ai_shared.py` | `capability/2026/09/2026-09-03/ai-fallback-chain-nvidia-2026-09-03.md` | dm-dashboard `main` | YES | `NVIDIA_API_KEY` must be added to server `.env` manually | Add key to server .env then restart | PASS |
 | DM-THINK-STRIP-2026-09-03 | Strip `<think>...</think>` reasoning blocks from NVIDIA NIM responses before returning to frontend | `dm-dashboard/backend/app/ai_shared.py` — `_call_nvidia()` uses `re.sub(r"<think>.*?</think>\s*", "", text, flags=re.DOTALL)` | Server curl showed clean output after merge `7137f01` | dm-dashboard `main` `7137f01` | YES | Server needs `git pull && systemctl restart dm-dashboard` after latest merge | Run restart on server | PASS |
-| AIOS-CAP-NVIDIA-2026-09-03 | Write capability doc for AI fallback chain (Groq fix + NVIDIA + think strip) | `capability/piranav/ai-fallback-chain-nvidia-2026-09-03.md` | This closure entry | piranav_aios — pending commit | YES | None | Commit + push piranav_aios | PASS |
+| AIOS-CAP-NVIDIA-2026-09-03 | Write capability doc for AI fallback chain (Groq fix + NVIDIA + think strip) | `capability/2026/09/2026-09-03/ai-fallback-chain-nvidia-2026-09-03.md` | This closure entry | piranav_aios — pending commit | YES | None | Commit + push piranav_aios | PASS |
 
 **Session Result: PASS** — AI assistant fixed, 3-provider fallback chain live (Gemini → Groq qwen → NVIDIA NIM), think blocks stripped, capability doc written.
 
@@ -553,12 +553,12 @@ Or as a table when multiple tasks exist in one session:
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
-| SAJEEPAN-R3-CAP-2026-09-03 | Create capability doc for Sajeepan R3 — Revenue Protection & PPC Actions (8 queries, ROAS bands, OOS override) | `capability/sajeepan/requirement-3-2026-08-11.md` | Commit `b74a7a2` | `b74a7a2` | YES | None | GPT review | PASS |
-| PIRANAV-AUTH-CAP-2026-09-03 | Create capability doc for DB-backed auth system — Neon table schema, page_key model, admin unlock | `capability/piranav/auth-system-2026-08-10.md` | Commit `b74a7a2` | `b74a7a2` | YES | None | GPT review | PASS |
-| PIRANAV-API-CAP-2026-09-03 | Create capability doc for API consolidation — 11→3 functions, Vercel limit, routing pattern | `capability/piranav/api-consolidation-2026-08-10.md` | Commit `b74a7a2` | `b74a7a2` | YES | None | Fix stale sajeepan workflow doc | PASS |
-| PIRANAV-STAFFIDPERF-CAP-2026-09-03 | Create capability doc for Staff ID Performance — 5-tab SPA + full recovery incident | `capability/piranav/staff-id-performance-2026-08-14.md` | Commit `b74a7a2` | `b74a7a2` | YES | None | GPT review | PASS |
+| SAJEEPAN-R3-CAP-2026-09-03 | Create capability doc for Sajeepan R3 — Revenue Protection & PPC Actions (8 queries, ROAS bands, OOS override) | `capability/2026/08/2026-08-11/requirement-3-2026-08-11.md` | Commit `b74a7a2` | `b74a7a2` | YES | None | GPT review | PASS |
+| PIRANAV-AUTH-CAP-2026-09-03 | Create capability doc for DB-backed auth system — Neon table schema, page_key model, admin unlock | `capability/2026/08/2026-08-10/auth-system-2026-08-10.md` | Commit `b74a7a2` | `b74a7a2` | YES | None | GPT review | PASS |
+| PIRANAV-API-CAP-2026-09-03 | Create capability doc for API consolidation — 11→3 functions, Vercel limit, routing pattern | `capability/2026/08/2026-08-10/api-consolidation-2026-08-10.md` | Commit `b74a7a2` | `b74a7a2` | YES | None | Fix stale sajeepan workflow doc | PASS |
+| PIRANAV-STAFFIDPERF-CAP-2026-09-03 | Create capability doc for Staff ID Performance — 5-tab SPA + full recovery incident | `capability/2026/08/2026-08-14/staff-id-performance-2026-08-14.md` | Commit `b74a7a2` | `b74a7a2` | YES | None | GPT review | PASS |
 | PIRANAV-SR01-OVW-2026-09-03 | Create SR-01 workstream overview doc — all pages, APIs, git push instructions | `docs/dashboards/architecture/sr01-workstream-overview.md` | Commit `b74a7a2` | `b74a7a2` | YES | SR-01 Vercel URL not confirmed | Piranav to confirm deployment URL | PASS |
-| PIRANAV-SEO-AUG07-CAP-2026-09-03 | Extend SEO capability doc with Aug 7 reactive week selector + 26-week history table | `capability/piranav/seo-dashboard-2026-08-03.md` | Commit `b74a7a2` | `b74a7a2` | YES | None | None | PASS |
+| PIRANAV-SEO-AUG07-CAP-2026-09-03 | Extend SEO capability doc with Aug 7 reactive week selector + 26-week history table | `capability/2026/08/2026-08-03/seo-dashboard-2026-08-03.md` | Commit `b74a7a2` | `b74a7a2` | YES | None | None | PASS |
 | AIOS-GROUP-A-VERIFY-2026-09-03 | Verified A1 (NVIDIA key) + A2 (server restart) + B3 (eod-ads.html) already done — no action needed | N/A | Piranav confirmed in session | N/A | YES | None | None | PASS |
 | CPPC30-B4-DEFERRED-2026-09-03 | B4 — Liquid feed template commit deferred — file needs to be located in Downloads | N/A | N/A | N/A | YES | File in Downloads — not yet committed | Locate google-feed-fixed.liquid and commit | OPEN |
 
@@ -572,9 +572,9 @@ Or as a table when multiple tasks exist in one session:
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
-| DM-AITASK-2026-09-04-01 | Change `parseTasks()` in DailyBriefWidget to capture full multi-line task blocks (title + → bullets) | `frontend/src/components/DailyBriefWidget.jsx` | `capability/piranav/actionable-ai-task-brief-2026-09-04.md` | Pending commit | YES | None | Commit + push dm-dashboard | PASS |
-| DM-AITASK-2026-09-04-02 | Add `whiteSpace: pre-wrap` to TaskCard in MyTaskLog so → action steps render on separate lines | `frontend/src/components/MyTaskLog.jsx` | `capability/piranav/actionable-ai-task-brief-2026-09-04.md` | Pending commit | YES | None | Commit + push dm-dashboard | PASS |
-| DM-AITASK-2026-09-04-CAP | Write capability doc — item-level data availability per staff, thresholds, architecture | `capability/piranav/actionable-ai-task-brief-2026-09-04.md` | This closure entry | Pending commit | YES | None | Commit + push piranav_aios | PASS |
+| DM-AITASK-2026-09-04-01 | Change `parseTasks()` in DailyBriefWidget to capture full multi-line task blocks (title + → bullets) | `frontend/src/components/DailyBriefWidget.jsx` | `capability/2026/09/2026-09-04/actionable-ai-task-brief-2026-09-04.md` | Pending commit | YES | None | Commit + push dm-dashboard | PASS |
+| DM-AITASK-2026-09-04-02 | Add `whiteSpace: pre-wrap` to TaskCard in MyTaskLog so → action steps render on separate lines | `frontend/src/components/MyTaskLog.jsx` | `capability/2026/09/2026-09-04/actionable-ai-task-brief-2026-09-04.md` | Pending commit | YES | None | Commit + push dm-dashboard | PASS |
+| DM-AITASK-2026-09-04-CAP | Write capability doc — item-level data availability per staff, thresholds, architecture | `capability/2026/09/2026-09-04/actionable-ai-task-brief-2026-09-04.md` | This closure entry | Pending commit | YES | None | Commit + push piranav_aios | PASS |
 
 **Session Result: PASS (Phase 1)** — Multi-line pre-wrap task text implemented. Superseded by Phase 2 below.
 
@@ -606,7 +606,7 @@ Or as a table when multiple tasks exist in one session:
 | DM-SKILL-2026-09-04-04 | Add JSON loading + skill block to sonya_ai.py, theekshy_ai.py, dilaksi_ai.py | 3 AI files | 2026-09-06: all 3 files confirmed loading JSON profile from `staff_profiles/` and importing `build_skill_block` | `websitetecteam-arch/dm-dashboard` piranv-work | YES | None | None | PASS |
 | DM-SKILL-2026-09-04-05 | Remove Sonya escalation path from theekshy_ai.py; use Muguntha-direct | `backend/app/theekshy_ai.py` | 2026-09-06: grep for "sonya" in theekshy_ai.py returns empty — confirmed removed | `websitetecteam-arch/dm-dashboard` piranv-work | YES | None | None | PASS |
 | DM-SKILL-2026-09-04-06 | Extend all 7 existing JSON staff files to read section3 via build_skill_block | All 7 `_ai.py` files | 2026-09-06: `grep -l build_skill_block *_ai.py` returns all 11 staff files; all 11 JSON profiles present in `staff_profiles/` | `websitetecteam-arch/dm-dashboard` piranv-work | YES | None | None | PASS |
-| DM-SKILL-2026-09-04-07 | Create AIOS capability doc for Staff Skill-Aware AI Task Framing | `capability/piranav/staff-skill-aware-ai-task-framing-2026-09-04.md` | File created; covers architecture, implementation, validation, limitations | Pending commit | YES | None | None | PASS |
+| DM-SKILL-2026-09-04-07 | Create AIOS capability doc for Staff Skill-Aware AI Task Framing | `capability/2026/09/2026-09-04/staff-skill-aware-ai-task-framing-2026-09-04.md` | File created; covers architecture, implementation, validation, limitations | Pending commit | YES | None | None | PASS |
 
 **Session Result: PASS** — All skill integration items verified 2026-09-06 via static code checks on deployed server codebase. All 11 staff profiles confirmed present and loaded correctly.
 
@@ -624,7 +624,7 @@ Or as a table when multiple tasks exist in one session:
 | DM-UI-2026-09-04-04 | Make TaskDetailTable URL columns clickable — links use verified backend URLs only | `frontend/src/components/MyTaskLog.jsx` | 2026-09-06: `URL_COLUMNS` Set confirmed; `val.startsWith('/')` guard confirmed; `rel="noopener noreferrer"` confirmed; code deployed to Contabo | `websitetecteam-arch/dm-dashboard` piranv-work | YES | None | None | PASS |
 | DM-UI-2026-09-04-05 | Add `STAFF_URL_BASE` domain map — thread `urlBase` from MyTaskLog → TodayTab → HistoryTab → TaskCard → TaskDetailTable | `frontend/src/components/MyTaskLog.jsx` | `STAFF_URL_BASE` confirmed; `urlBase` prop threaded through all components | Pending commit | YES | Live test required | Verify Sukirtha links open ledsone.de | PASS (static) |
 | DM-UI-2026-09-04-06 | Add `_build_brief_data()` to `sukirtha_ai.py` — return verified GSC + Shopify URLs in `/brief` response | `backend/app/sukirtha_ai.py` | 2026-09-06: ast.parse PASS; `brief_data` confirmed in response (grep); URL source: GSC + Shopify DB; code deployed to Contabo | `websitetecteam-arch/dm-dashboard` piranv-work | YES | None | None | PASS |
-| DM-UI-2026-09-04-07 | Create AIOS capability doc for Clickable Task Items + Priority Icons | `capability/piranav/clickable-task-items-priority-icons-2026-09-04.md` | File created; covers discovery, implementation, staff coverage, validation, limitations | Pending commit | YES | None | None | PASS |
+| DM-UI-2026-09-04-07 | Create AIOS capability doc for Clickable Task Items + Priority Icons | `capability/2026/09/2026-09-04/clickable-task-items-priority-icons-2026-09-04.md` | File created; covers discovery, implementation, staff coverage, validation, limitations | Pending commit | YES | None | None | PASS |
 
 **Session Result: PASS** — All UI items verified 2026-09-06 via static code checks on deployed server codebase. Priority icons live for all 11 staff. Clickable URLs live for Kamsi + Sukirtha.
 
@@ -864,7 +864,7 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 
 | Req ID | Task | Asset Path | Evidence Path | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|
-| DM-BOT-P1-2026-09-09 | Sajeepan Bot Phase 1 — deterministic decision engine, `/api/sajeepan/bot/queue`, Bot Queue frontend panel | `backend/app/sajeepan_bot.py`, `backend/app/main.py`, `frontend/src/sajeepan/pages/SajeepanDailyTaskPage.jsx` | `capability/sajeepan/bot-phase1-2026-09-09.md`, 24/24 tests pass | YES | Deploy to Contabo pending | Deploy to Contabo | PASS |
+| DM-BOT-P1-2026-09-09 | Sajeepan Bot Phase 1 — deterministic decision engine, `/api/sajeepan/bot/queue`, Bot Queue frontend panel | `backend/app/sajeepan_bot.py`, `backend/app/main.py`, `frontend/src/sajeepan/pages/SajeepanDailyTaskPage.jsx` | `capability/2026/09/2026-09-09/bot-phase1-2026-09-09.md`, 24/24 tests pass | YES | Deploy to Contabo pending | Deploy to Contabo | PASS |
 
 **Session Result: PASS** — Committed `fe3433b`, pushed, deployed to Contabo 2026-09-09 07:50:55 CEST. Service active, startup complete.
 
@@ -882,7 +882,7 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 
 | Req ID | Task | Asset Path | Evidence Path | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|
-| DM-ADMIN-REGEN-2026-09-09 | Admin-triggered Sajeepan brief regeneration + 3 bug fixes (duplicate gen, AI/Tasks divergence, auto-selection false positive) | `backend/app/auth.py`, `backend/app/sajeepan_ai.py`, `frontend/src/sajeepan/SajeepanLayout.jsx`, `frontend/src/sajeepan/pages/SajeepanDailyTaskPage.jsx` | `capability/sajeepan/admin-brief-regeneration-2026-09-09.md`, 25/25 code verification checks pass, commits 60eb8b8 + 3472513 + 64356b7 + 4f2c7c3 pushed to piranv-work | YES | (1) Contabo deploy pending — local dist bundle STALE, must run deploy.sh on server; (2) Live two-session browser test not yet performed | (1) Run `bash /var/www/dashboard-dm/deploy.sh` on Contabo; (2) Two-session live test | PASS (code) — PENDING deploy + live test |
+| DM-ADMIN-REGEN-2026-09-09 | Admin-triggered Sajeepan brief regeneration + 3 bug fixes (duplicate gen, AI/Tasks divergence, auto-selection false positive) | `backend/app/auth.py`, `backend/app/sajeepan_ai.py`, `frontend/src/sajeepan/SajeepanLayout.jsx`, `frontend/src/sajeepan/pages/SajeepanDailyTaskPage.jsx` | `capability/2026/09/2026-09-09/admin-brief-regeneration-2026-09-09.md`, 25/25 code verification checks pass, commits 60eb8b8 + 3472513 + 64356b7 + 4f2c7c3 pushed to piranv-work | YES | (1) Contabo deploy pending — local dist bundle STALE, must run deploy.sh on server; (2) Live two-session browser test not yet performed | (1) Run `bash /var/www/dashboard-dm/deploy.sh` on Contabo; (2) Two-session live test | PASS (code) — PENDING deploy + live test |
 
 **Session Result: PASS (code verified)** — All 4 commits pushed to `websitetecteam-arch/dm-dashboard` piranv-work. 25/25 code verification checks pass. Capability doc updated to include auto-selection fix and 4f2c7c3. Local dist bundle is stale — production correctness requires Contabo deploy.sh to be run after last push. Live two-session browser test not yet performed.
 
@@ -929,7 +929,7 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
-| SEO-PAGES-REFRESH-2026-09-21 | Scheduled: SEMrush top-50 organic pages → semrush_pages table (ledsone.co.uk) | `Staff-requirements-02/scripts/semrush-pages-upsert.js`, `prompts/implementation/semrush-organic-pages-upsert.md`, `capability/semrush-organic-pages-pipeline-2026-09-21.md` | `evidence/piranav/semrush-organic-pages-fetch-2026-09-21.md` | (pending push — TBD) | NO | Neon DB blocked by egress policy: `api.c-2.eu-west-2.aws.neon.tech` not in allowlist. Add via https://code.claude.com/docs/en/claude-code-on-the-web network settings | (1) Add `*.neon.tech` to remote session egress allowlist; (2) Re-run scheduled task — script and data are ready | BLOCKED |
+| SEO-PAGES-REFRESH-2026-09-21 | Scheduled: SEMrush top-50 organic pages → semrush_pages table (ledsone.co.uk) | `Staff-requirements-02/scripts/semrush-pages-upsert.js`, `prompts/implementation/semrush-organic-pages-upsert.md`, `capability/2026/09/2026-09-21/semrush-organic-pages-pipeline-2026-09-21.md` | `evidence/piranav/semrush-organic-pages-fetch-2026-09-21.md` | (pending push — TBD) | NO | Neon DB blocked by egress policy: `api.c-2.eu-west-2.aws.neon.tech` not in allowlist. Add via https://code.claude.com/docs/en/claude-code-on-the-web network settings | (1) Add `*.neon.tech` to remote session egress allowlist; (2) Re-run scheduled task — script and data are ready | BLOCKED |
 
 **Session Result: BLOCKED (new blocker type)** — SEMrush now works (previous API units issue resolved). New blocker: Neon DB host blocked by remote container egress policy. 50 rows of organic page data captured in evidence and script — no data lost. Piranav notified via push notification.
 
@@ -940,7 +940,7 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 | DM-ADMIN-UKTOTAL-2026-09-17-001 | Discovery: Sales 2026 — UK (Live) section in Muguntha admin — 14 tabs, attribution rules, endpoints, data source | `prompts/implementation/sales2026-uk-admin-discovery.md` | Full breakdown delivered in session | N/A | YES | NONE | NONE | PASS |
-| DM-ADMIN-UKTOTAL-2026-09-17-002 | Build UK Total 4th sub-tab — UkGrandTotalView with 6 channel groups, KPI cards, CSS bar chart, SVG donut chart, breakdown table, single month picker matching individual tabs | `dm-dashboard/frontend/src/admin/pages/Sales2026.jsx`, `dm-dashboard/frontend/src/admin/AdminLayout.jsx` | `capability/piranav/sales2026-uk-grand-total-2026-09-17.md` | `2c8e16e` on websitetecteam-arch/dm-dashboard piranv-work | YES | Deploy to Contabo pending | `git fetch origin && git checkout piranv-work -- frontend/src/admin/pages/Sales2026.jsx frontend/src/admin/AdminLayout.jsx && npm run build --prefix frontend` | PASS |
+| DM-ADMIN-UKTOTAL-2026-09-17-002 | Build UK Total 4th sub-tab — UkGrandTotalView with 6 channel groups, KPI cards, CSS bar chart, SVG donut chart, breakdown table, single month picker matching individual tabs | `dm-dashboard/frontend/src/admin/pages/Sales2026.jsx`, `dm-dashboard/frontend/src/admin/AdminLayout.jsx` | `capability/2026/09/2026-09-17/sales2026-uk-grand-total-2026-09-17.md` | `2c8e16e` on websitetecteam-arch/dm-dashboard piranv-work | YES | Deploy to Contabo pending | `git fetch origin && git checkout piranv-work -- frontend/src/admin/pages/Sales2026.jsx frontend/src/admin/AdminLayout.jsx && npm run build --prefix frontend` | PASS |
 
 | DM-ADMIN-UKTOTAL-2026-09-17-003 | Refactor Total tab: rename UK Total → Total, add UK/DE/FR region switcher, build DE groups (ADS/ORGANIC/EMAIL) and FR groups (ORGANIC/ADS-BALANCE), extract reusable RegionTotalPanel component | `dm-dashboard/frontend/src/admin/pages/Sales2026.jsx`, `dm-dashboard/frontend/src/admin/AdminLayout.jsx` | `prompts/implementation/sales2026-total-tab-uk-de.md` | `36cc598`, `ffc1958` on websitetecteam-arch/dm-dashboard piranv-work | YES | Deploy to Contabo pending | `git fetch origin && git checkout piranv-work -- frontend/src/admin/pages/Sales2026.jsx frontend/src/admin/AdminLayout.jsx && npm run build --prefix frontend` | PASS |
 
@@ -988,7 +988,7 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
-| DM-MH-2026-09-22-001 | Remove R2 (Stock Management) from Mahima AI brief — align brief to R1/R3/R4 only | `dm-dashboard/backend/app/mahima_ai.py`, `dm-dashboard/backend/app/ai_validator.py` | `capability/mahima-ai-brief-r2-removal-2026-09-22.md` | `2a35f7b` on `websitetecteam-arch/dm-dashboard` piranv-work | YES | None | Deploy: `git pull && systemctl restart dm-dashboard-backend` on Contabo | PASS |
+| DM-MH-2026-09-22-001 | Remove R2 (Stock Management) from Mahima AI brief — align brief to R1/R3/R4 only | `dm-dashboard/backend/app/mahima_ai.py`, `dm-dashboard/backend/app/ai_validator.py` | `capability/2026/09/2026-09-22/mahima-ai-brief-r2-removal-2026-09-22.md` | `2a35f7b` on `websitetecteam-arch/dm-dashboard` piranv-work | YES | None | Deploy: `git pull && systemctl restart dm-dashboard-backend` on Contabo | PASS |
 
 **Session Result: PASS** — Mahima AI brief audited and scoped correctly. R2 fully removed. Commit `2a35f7b` pushed.
 
@@ -1003,7 +1003,7 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 **All 7 AIOS assets completed:**
 - Prompt: `prompts/documentation/aios-reference-folder-import.md`
 - Evidence: `evidence/seo/gsc-pages-2026-08-23/README.md`
-- Capability: `capability/piranav/gsc-reference-guides-ledsone-2026-08-23.md`
+- Capability: `capability/2026/08/2026-08-23/gsc-reference-guides-ledsone-2026-08-23.md`
 - Closure: this row
 - PROMPT_REGISTER: row added
 - source-map: GSC data source row updated
@@ -1067,7 +1067,7 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 - Prompt: `prompts/implementation/shopify-customer-google-signin.md`
 - Evidence: `evidence/piranav/homingmbh-shopify-google-signin-2026-09-24.md`
 - Validation: `validation/piranav/homingmbh-shopify-google-signin-2026-09-24.md`
-- Capability: `capability/piranav/shopify-customer-google-signin.md`
+- Capability: `capability/2026/09/2026-09-24/shopify-customer-google-signin.md`
 - Handover: `handover/piranav/homingmbh-shopify-google-signin-2026-09-24.md`
 - Docs: `docs/homingmbh/shopify-google-sign-in/README.md` + `Homingmbh_Shopify_Google_SignIn_Trainee_Guide.docx`
 - Source-map: N/A — homingmbh.de is an existing project, no new tracked data source
@@ -1153,7 +1153,7 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 **10-Folder Asset Check:**
 - Prompt: N/A — implementation used Level 4C design; design prompt already registered in PROMPT_REGISTER.md
 - Evidence: `evidence/sajeepan/sajeepan-ads-scope-level5-implementation-2026-09-25.md` — CREATED
-- Capability: `capability/piranav/ads-product-scope-admin-page.md` — CREATED
+- Capability: `capability/2026/09/2026-09-25/ads-product-scope-admin-page.md` — CREATED
 - Closure: this entry — DONE
 - PROMPT_REGISTER: N/A — no new prompt created this phase
 - Validation: `validation/piranav/sajeepan-ads-scope-level5-validation-2026-09-25.md` — CREATED
@@ -1182,7 +1182,7 @@ cd /var/www/dashboard-dm && git fetch origin && git checkout piranv-work -- back
 - Prompt: `prompts/dm-dashboard/sajeepan-ads-scope-level6a-lifetime-scope.md` — CREATED
 - Evidence: `evidence/sajeepan/sajeepan-ads-scope-level6a-lifetime-verification-2026-09-25.md` — CREATED
 - Validation: `validation/piranav/sajeepan-ads-scope-level6a-validation-2026-09-25.md` — CREATED
-- Capability: `capability/piranav/ads-product-scope-admin-page.md` — UPDATED (lifetime counts added)
+- Capability: `capability/2026/09/2026-09-25/ads-product-scope-admin-page.md` — UPDATED (lifetime counts added)
 - Handover: `handover/piranav/ads-product-scope-level5-handover-2026-09-25.md` — UPDATED (L6A note added)
 - PROMPT_REGISTER: row added for L6A prompt
 - Docs: N/A — existing docs sufficient

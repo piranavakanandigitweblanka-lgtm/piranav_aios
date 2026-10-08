@@ -1,0 +1,359 @@
+<section id="custom-collection-section">
+{% assign selected_collection = collections[section.settings.collection] %}
+
+<div class="custom-collection-wrapper">
+
+  {% if selected_collection %}
+
+    <div class="product-grid">
+      {% for product in selected_collection.products %}
+        
+        <!-- PRODUCT CARD -->
+        <div class="product-card">
+
+          {% if product.compare_at_price > product.price %}
+            {% assign discount = product.compare_at_price | minus: product.price %}
+            {% assign percent = discount | times: 100 | divided_by: product.compare_at_price %}
+            <span class="offer-badge">{{ percent | round }}% OFF</span>
+          {% endif %}
+
+          {% if section.settings.show_badge %}
+          <span class="deal-badge">{{ section.settings.badge_text }}</span>
+          {% endif %}
+
+          <!-- IMAGE + VARIANT PREVIEW SYSTEM -->
+          <div class="product-image-wrapper">
+            <a href="{{ product.url }}">
+              <img class="main-image" src="{{ product.featured_image | img_url: '500x' }}" alt="{{ product.title }}">
+            </a>
+
+            {% assign variant_images = product.variants | map: 'featured_image' | compact %}
+            {% assign v_count = variant_images.size %}
+
+            {% if v_count > 0 %}
+            <div class="variant-preview">
+              
+              {% if v_count <= 4 %}
+                {% for img in variant_images %}
+                  {% assign v = product.variants | where: 'featured_image', img | first %}
+                  <div class="variant-thumb-box">
+                    <img src="{{ img | img_url: '200x' }}" class="variant-thumb">
+
+                    {% if v %}
+                    <div class="variant-price-popup">{{ v.price | money }}</div>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              {% else %}
+                {% for img in variant_images limit: 3 %}
+                  {% assign v = product.variants | where: 'featured_image', img | first %}
+                  <div class="variant-thumb-box">
+                    <img src="{{ img | img_url: '200x' }}" class="variant-thumb">
+                    {% if v %}
+                    <div class="variant-price-popup">{{ v.price | money }}</div>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+                {% assign extra = v_count | minus: 3 %}
+                <div class="variant-count">+{{ extra }}</div>
+              {% endif %}
+
+            </div>
+            {% endif %}
+          </div>
+          <!-- END IMAGE -->
+
+          <div class="product-info">
+            <h3 class="product-title">{{ product.title }}</h3>
+
+            <div class="price-wrapper">
+              {% if product.compare_at_price > product.price %}
+                <span class="sale-price">{{ product.price | money }}</span>
+                <span class="compare-price">{{ product.compare_at_price | money }}</span>
+              {% else %}
+                <span class="regular-price">{{ product.price | money }}</span>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+        <!-- END PRODUCT CARD -->
+
+        {% if forloop.index == 8 and section.settings.show_custom_row %}
+        <div class="custom-row">
+          {{ section.settings.custom_row_content }}
+        </div>
+        {% endif %}
+
+        {% if forloop.index == 14 and section.settings.banner_right_image %}
+        <div class="banner-wrapper right-banner">
+          <a href="{{ section.settings.banner_right_link }}">
+            <img src="{{ section.settings.banner_right_image | img_url: '800x' }}">
+          </a>
+        </div>
+        {% endif %}
+
+        {% if forloop.index == 18 and section.settings.banner_left_image %}
+        <div class="banner-wrapper left-banner">
+          <a href="{{ section.settings.banner_left_link }}">
+            <img src="{{ section.settings.banner_left_image | img_url: '800x' }}">
+          </a>
+        </div>
+        {% endif %}
+
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <p>Please choose a collection from the theme editor.</p>
+  {% endif %}
+</div>
+
+
+<style>
+.custom-collection-wrapper {
+  max-width: 1200px;
+  margin: auto;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.product-card {
+  position: relative;
+  border: 1px solid #ececec;
+  padding: 12px;
+  background: #ffffff;
+  border-radius: 6px;
+  transition: 0.2s ease;
+  overflow: hidden;
+}
+
+.product-card:hover {
+  border-color: rgb(255, 173, 173);
+}
+
+/* IMAGE */
+.product-image-wrapper {
+  position: relative;
+}
+
+.main-image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  transition: 0.3s ease;
+}
+
+/* VARIANT PREVIEW */
+.variant-preview {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  gap: 10px;
+  opacity: 0;
+  transition: 0.25s ease;
+  pointer-events: none;
+}
+
+.product-card:hover .variant-preview {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.variant-thumb {
+  width: 42px;
+  height: 42px;
+  object-fit: cover;
+  background: white;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.variant-count {
+  width: 42px;
+  height: 42px;
+  background: white;
+  border: 1px solid #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.variant-price-popup {
+  position: absolute;
+  bottom: 50px;
+  left: -5px;
+  padding: 5px 8px;
+  background: #000;
+  color: #fff;
+  font-size: 13px;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: 0.2s ease;
+}
+
+.variant-thumb-box:hover .variant-price-popup {
+  opacity: 1;
+}
+
+.product-title {
+  font-size: 14px;
+  line-height: 1.3;
+  height: 36px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.price-wrapper {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.sale-price {
+  color: #b3001b;
+  font-weight: 700;
+}
+
+.compare-price {
+  text-decoration: line-through;
+  color: #888;
+}
+
+.offer-badge,
+.deal-badge {
+  position: absolute;
+  top: 0;
+  font-size: 12px;
+  padding: 5px 10px;
+  color: #fff;
+  z-index: 10;
+}
+
+.offer-badge {
+  right: 0;
+  background: #008f07;
+}
+
+.deal-badge {
+  left: 0;
+  background: #a80019;
+}
+
+.custom-row {
+  grid-column: 1 / -1;
+  background: #ccc;
+  padding: 30px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.banner-wrapper {
+  grid-column: span 2;
+  margin: 40px 0;
+}
+
+/* -------------------------------------------
+   🔥 MOBILE VIEW EXACTLY LIKE THE IMAGES
+------------------------------------------- */
+@media(max-width: 768px) {
+  
+  #custom-collection-section {
+    padding-left: 15px;
+    padding-right: 15px;
+    box-sizing: border-box;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px;
+  }
+
+  .product-card {
+    padding: 10px;
+  }
+
+  .product-title {
+    font-size: 13px;
+    height: auto;
+    min-height: 32px;
+  }
+
+  .main-image {
+    aspect-ratio: 1 / 1;
+  }
+
+  /* Variant images scaled for mobile */
+  .variant-thumb {
+    width: 36px;
+    height: 36px;
+  }
+
+  .variant-price-popup {
+    font-size: 12px;
+    padding: 3px 6px;
+    bottom: 42px;
+  }
+
+  /* FULL WIDTH BANNERS ON MOBILE */
+  .banner-wrapper {
+    grid-column: 1 / -1 !important;
+    margin: 20px 0;
+  }
+
+  .banner-wrapper img {
+    width: 100%;
+    border-radius: 6px;
+  }
+
+  /* FULL WIDTH CUSTOM ROW */
+  .custom-row {
+    grid-column: 1 / -1 !important;
+    padding: 20px;
+  }
+}
+</style>
+
+
+<script>
+document.querySelectorAll('.product-card').forEach(card => {
+  const mainImg = card.querySelector('.main-image');
+  const thumbs = card.querySelectorAll('.variant-thumb');
+
+  thumbs.forEach(thumb => {
+    thumb.addEventListener('mouseover', () => {
+      mainImg.src = thumb.src;
+    });
+  });
+});
+</script>
+
+
+{% schema %}
+{
+  "name": "Custom Collection Page",
+  "settings": [
+    { "type": "collection", "id": "collection", "label": "Select Collection" },
+    { "type": "checkbox", "id": "show_custom_row", "label": "Show custom row after 2nd row", "default": true },
+    { "type": "richtext", "id": "custom_row_content", "label": "Custom row content", "default": "<p>Place your custom content here.</p>" },
+    { "type": "checkbox", "id": "show_badge", "label": "Show Christmas Deal Badge", "default": true },
+    { "type": "text", "id": "badge_text", "label": "Badge Text", "default": "Christmas Deal" },
+    { "type": "image_picker", "id": "banner_right_image", "label": "Banner after 14th product (Right side)" },
+    { "type": "url", "id": "banner_right_link", "label": "Banner Right Link" },
+    { "type": "image_picker", "id": "banner_left_image", "label": "Banner after 18th product (Left side)" },
+    { "type": "url", "id": "banner_left_link", "label": "Banner Left Link" }
+  ],
+  "presets": [
+    { "name": "Custom Collection Page" }
+  ]
+}
+{% endschema %}
+</section>

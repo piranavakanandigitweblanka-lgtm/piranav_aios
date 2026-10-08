@@ -35,7 +35,7 @@
 | Validation | `validation/piranav/staff-monitor-2026-08-18.md` |
 | Implementation | `implementation/piranav/staff-monitor-2026-08-18.md` |
 | Deployment | `deployment/piranav/staff-monitor-2026-08-18.md` |
-| Capability | `capability/piranav/staff-monitor-2026-08-18.md` |
+| Capability | `capability/2026/08/2026-08-18/staff-monitor-2026-08-18.md` |
 | Closure | `closure/piranav/staff-monitor-2026-08-18.md` |
 
 ---

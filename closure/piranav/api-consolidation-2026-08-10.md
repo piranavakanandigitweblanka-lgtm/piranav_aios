@@ -35,7 +35,7 @@ Consolidate 11 individual member serverless functions into a single `members-api
 - Git commit: `d12c3ee` — API consolidation
 - Git commit: `7945500` — docs updated for 3-API architecture
 - SR-02 docs: `Staff-requirements-02/docs/api-report.md` — CURRENT (updated 2026-08-10)
-- No main AIOS capability file — CREATE REQUIRED: `capability/piranav/api-consolidation-2026-08-10.md`
+- No main AIOS capability file — CREATE REQUIRED: `capability/2026/08/2026-08-10/api-consolidation-2026-08-10.md`
 - No GPT review evidence — GPT REVIEW EVIDENCE MISSING
 
 ## GitHub Path / Commit
@@ -92,7 +92,7 @@ MISSING
 - Stale `docs/dashboards/staff-workflows/sajeepan-live-dashboard.md` — references deleted file
 
 ## Next Step
-1. CREATE: `capability/piranav/api-consolidation-2026-08-10.md`
+1. CREATE: `capability/2026/08/2026-08-10/api-consolidation-2026-08-10.md`
 2. UPDATE: `docs/dashboards/staff-workflows/sajeepan-live-dashboard.md` — correct API path
 3. GPT to review → PASS or FAIL
 

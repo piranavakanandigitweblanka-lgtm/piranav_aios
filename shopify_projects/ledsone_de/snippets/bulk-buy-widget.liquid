@@ -1,0 +1,362 @@
+{% comment %}
+  Bulk Buy Widget - Only renders for specific product handles
+{% endcomment %}
+
+{% assign allowed_handles = "2-3-wege-ip65-wasserdichte-anschlussdose-erdkabel-leitungsschutzstecker" | split: "," %}
+
+{% if allowed_handles contains product.handle %}
+
+<style>
+  /* ── Hide the native "pack" variant picker ── */
+  fieldset.js.product-form__input:has(.bls__option-swatch[data-value="Packung 1"]):has(.bls__option-swatch[data-value="Packung 3"]) {
+    display: none !important;
+  }
+
+  .bb-wrap {
+    margin: 12px 0;
+    font-family: inherit;
+  }
+  .bb-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .bb-header-label {
+    font-size: 9px;
+    font-weight: 500;
+    color: #9ca3af;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .bb-header-line {
+    flex: 1;
+    height: 0.5px;
+    background: #e5e7eb;
+  }
+  .bb-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+  @media (max-width: 480px) {
+    .bb-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+.bb-tile {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+   justify-content: flex-start;
+    padding: 10px 12px;
+    border: 0.5px solid #e5e7eb;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+    gap: 6px;
+  }
+  .bb-tile:hover {
+    border-color: #9ca3af;
+  }
+  .bb-tile.bb-active {
+    border: 2px solid #c0392b;
+  }
+  .bb-tile.bb-best {
+    border: 2px solid #c0392b;
+  }
+  .bb-best-badge {
+    position: absolute;
+    top: -7px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #c0392b;
+    color: #fff;
+    font-size: 7px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 1px 6px;
+    border-radius: 20px;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+  .bb-qty {
+    font-size: 16px;
+    font-weight: 600;
+    color:rgb(113, 23, 23);
+    line-height: 1;
+    white-space: nowrap;
+    margin-right: auto; /* ← add this */
+  }
+  .bb-mid {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    margin-right: 20px;
+    
+  }
+  .bb-total {
+    font-size: 13px;
+    font-weight: 500;
+    color: #111827;
+    white-space: nowrap;
+    line-height: 1.3;
+  }
+  .bb-sub {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    line-height: 1;
+  }
+  .bb-orig {
+    font-size: 13px;
+    color:rgb(81, 0, 0);
+    text-decoration: line-through;
+    white-space: nowrap;
+  }
+  .bb-disc {
+    display: none;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    background:rgb(0, 93, 6);
+    padding: 2px 6px;
+    border-radius: 12px;
+    white-space: nowrap;
+    letter-spacing: 0.03em;
+  }
+  .bb-disc.bb-visible {
+    display: inline-block;
+  }
+  .bb-footer {
+    margin-top: 8px;
+    font-size: 9px;
+    color: #9ca3af;
+    text-align: center;
+  }
+</style>
+
+<div class="bb-wrap">
+  <div class="bb-header">
+    <span class="bb-header-label">Mengenrabatt</span>
+    <div class="bb-header-line"></div>
+  </div>
+  <div class="bb-grid" id="bb-buttons"></div>
+  <div class="bb-footer">Rabatt wird  · Je mehr, desto günstiger</div>
+</div>
+
+<script>
+(function() {
+
+  const variants = [
+    {% for variant in product.variants %}
+    {
+      id: {{ variant.id }},
+      title: {{ variant.title | json }},
+      price: {{ variant.price }},
+      available: {{ variant.available }},
+      option1: {{ variant.option1 | json }},
+      option2: {{ variant.option2 | json }}
+    }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ];
+
+  const BEST_VALUE_QTY = 10;
+
+  let activeVariantId = null;
+  let activeQty       = 1;
+  let activeUnitPrice = 0;
+
+  /* Extract numeric qty from "Packung 10" → 10 */
+  function parseQty(option2) {
+    return parseInt((option2 || '').replace(/[^0-9]/g, ''), 10) || 1;
+  }
+
+  function formatPrice(cents) {
+    return '€' + (cents / 100).toFixed(2).replace('.', ',');
+  }
+
+  function selectVariantById(variantId) {
+    const opt2val = variants.find(v => v.id === variantId)?.option2;
+    if (!opt2val) return;
+
+    /* 1. Click the BLS swatch for option2 */
+    document.querySelectorAll('.bls__option-swatch').forEach(function(swatch) {
+      if (swatch.dataset.value === opt2val) swatch.click();
+    });
+
+    /* 2. Tick any radio button fallback */
+    document.querySelectorAll('input[type="radio"]').forEach(function(radio) {
+      if (radio.value === opt2val) {
+        radio.checked = true;
+        radio.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    });
+
+    /* 3. Update Shopify's variant select (variant-selects / variant-radios) */
+    const variantSelects = document.querySelector('variant-selects, variant-radios');
+    if (variantSelects) {
+      const selects = variantSelects.querySelectorAll('select');
+      selects.forEach(function(sel) {
+        Array.from(sel.options).forEach(function(opt) {
+          if (opt.value === opt2val || opt.text === opt2val) {
+            sel.value = opt.value;
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        });
+      });
+    }
+  }
+
+  function injectCartProperties(qty, unitPriceCents, discountPct) {
+    const form = document.querySelector('form[action="/cart/add"]');
+    if (!form) return;
+
+    form.querySelectorAll('.bb-hidden-prop').forEach(function(el) { el.remove(); });
+
+    const props = {
+      '_bb_qty':              qty,
+      '_bb_discount_pct':     discountPct,
+      '_bb_discounted_price': (unitPriceCents / 100).toFixed(2),
+      '_bb_total_price':      ((unitPriceCents * qty) / 100).toFixed(2)
+    };
+
+    Object.entries(props).forEach(function([key, val]) {
+      const input = document.createElement('input');
+      input.type  = 'hidden';
+      input.name  = 'properties[' + key + ']';
+      input.value = val;
+      input.className = 'bb-hidden-prop';
+      form.appendChild(input);
+    });
+  }
+
+  function getSelectedOption1() {
+    const activeSwatches = document.querySelectorAll('.bls__option-swatch.active');
+    for (let s of activeSwatches) {
+      const val = s.dataset.value || '';
+      if (val.includes('2-Wege') || val.includes('3-Wege')) return val;
+    }
+    const radios = document.querySelectorAll('input[type="radio"]:checked');
+    for (let r of radios) {
+      if (r.value.includes('2-Wege') || r.value.includes('3-Wege')) return r.value;
+    }
+    return variants[0]?.option1 || '';
+  }
+
+  function hidePackPicker() {
+    document.querySelectorAll('fieldset.js.product-form__input').forEach(function(fs) {
+      const legend = fs.querySelector('legend');
+      if (legend && /pack/i.test(legend.textContent)) {
+        fs.style.setProperty('display', 'none', 'important');
+      }
+    });
+  }
+
+  function observeAndHide() {
+    const observer = new MutationObserver(function() {
+      hidePackPicker();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  function renderTiers(selectedOption1) {
+    const container = document.getElementById('bb-buttons');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const matching = variants.filter(v => v.option1 === selectedOption1);
+    if (!matching.length) return;
+
+    /* Base = "Packung 1" variant */
+    const base          = matching.find(v => v.option2 === 'Packung 1') || matching[0];
+    const baseUnitPrice = base.price;
+    const currentActiveId = activeVariantId || matching[0].id;
+
+    matching
+      .sort((a, b) => parseQty(a.option2) - parseQty(b.option2))
+      .forEach(function(variant) {
+        const qty          = parseQty(variant.option2);
+        const variantPrice = variant.price;
+        const origTotal    = baseUnitPrice * qty;
+        const saving       = origTotal - variantPrice;
+        const discountPct  = origTotal > 0 ? Math.round((saving / origTotal) * 100) : 0;
+        const unitPrice    = Math.round(variantPrice / qty);
+
+        const isBest   = qty === BEST_VALUE_QTY;
+        const isActive = variant.id === currentActiveId;
+
+        if (isActive) {
+          activeUnitPrice = unitPrice;
+          activeQty       = qty;
+          injectCartProperties(qty, unitPrice, discountPct);
+        }
+
+        const tile = document.createElement('div');
+        tile.className = 'bb-tile'
+          + (isActive ? ' bb-active' : '')
+          + (isBest   ? ' bb-best'   : '');
+        tile.dataset.variantId = variant.id;
+        tile.dataset.qty       = qty;
+
+        tile.innerHTML =
+          (isBest ? '<span class="bb-best-badge">bester Wert</span>' : '') +
+          '<span class="bb-qty">' + qty + '×</span>' +
+          '<div class="bb-mid">' +
+            '<span class="bb-total">' + formatPrice(variantPrice) + '</span>' +
+            '<div class="bb-sub">' +
+              (discountPct > 0 ? '<span class="bb-orig">' + formatPrice(origTotal) + '</span>' : '') +
+              '<span class="bb-disc' + (discountPct > 0 ? ' bb-visible' : '') + '">' +
+                (discountPct > 0 ? '–' + discountPct + '%' : '') +
+              '</span>' +
+            '</div>' +
+          '</div>';
+
+        tile.addEventListener('click', function() {
+          activeVariantId = variant.id;
+          activeQty       = qty;
+          activeUnitPrice = unitPrice;
+
+          container.querySelectorAll('.bb-tile').forEach(function(t) {
+            t.classList.remove('bb-active');
+          });
+          tile.classList.add('bb-active');
+
+          injectCartProperties(qty, unitPrice, discountPct);
+          selectVariantById(variant.id);
+        });
+
+        container.appendChild(tile);
+      });
+  }
+
+  function init() {
+    hidePackPicker();
+    observeAndHide();
+    renderTiers(getSelectedOption1());
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  document.addEventListener('click', function(e) {
+    const swatch = e.target.closest('.bls__option-swatch');
+    if (!swatch) return;
+    const val = swatch.dataset.value || '';
+    if (val.includes('2-Wege') || val.includes('3-Wege')) {
+      activeVariantId = null;
+      setTimeout(function() { renderTiers(getSelectedOption1()); }, 150);
+    }
+  });
+
+})();
+</script>
+
+{% endif %}

@@ -44,7 +44,7 @@
 | Created | `validation/piranav/ai-assistant-workflow-2026-08-25.md` |
 | Created | `implementation/piranav/ai-assistant-workflow-2026-08-25.md` |
 | Created | `deployment/piranav/ai-assistant-workflow-2026-08-25.md` |
-| Created | `capability/piranav/ai-assistant-workflow-2026-08-25.md` |
+| Created | `capability/2026/08/2026-08-25/ai-assistant-workflow-2026-08-25.md` |
 | Created | `closure/piranav/ai-assistant-workflow-2026-08-25.md` |
 
 ---

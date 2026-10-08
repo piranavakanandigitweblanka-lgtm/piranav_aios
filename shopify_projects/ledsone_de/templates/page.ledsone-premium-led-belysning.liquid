@@ -1,0 +1,73 @@
+{%- layout none -%}<?xml version="1.0" encoding="UTF-8" ?>
+<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
+<channel>
+  <title>{{ shop.name | escape }} Products</title>
+  <link>{{ shop.url }}</link>
+
+  {% assign target_collection = collections['ledsone-premium-led-belysning'] %}
+  {% paginate target_collection.products by 5000 %}
+
+  {%- comment -%}
+    EUR → DKK rate. Update this value when needed (or move to a metafield).
+  {%- endcomment -%}
+  {% assign eur_to_dkk = 7.44 %}
+
+  {% for product in target_collection.products %}
+    {% for variant in product.variants %}
+      <item>
+        <g:id>{{ variant.id }}</g:id>
+
+        <g:title><![CDATA[
+          {{ product.title | strip_html | escape_once }}{% if product.variants.size > 1 %} - {{ variant.title | escape }}{% endif %}
+        ]]></g:title>
+
+        <g:description><![CDATA[
+          {{ product.description | strip_html | escape_once }}
+        ]]></g:description>
+
+        <g:link>{{ shop.url }}{{ variant.url }}</g:link>
+
+        {% if variant.image %}
+          <g:image_link>{{ variant.image | product_img_url: 'large' }}</g:image_link>
+        {% elsif product.featured_image %}
+          <g:image_link>{{ product.featured_image | product_img_url: 'large' }}</g:image_link>
+        {% endif %}
+
+        <g:brand>{{ product.vendor | escape }}</g:brand>
+        <g:product_type>{{ product.type | escape }}</g:product_type>
+        <g:condition>new</g:condition>
+
+        {%- comment -%}
+          Shopify stores variant.price in *cents*. Convert:
+            cents -> EUR -> DKK
+          Then format with exactly two decimals and a dot.
+        {%- endcomment -%}
+        {% assign price_eur = variant.price | divided_by: 100.0 %}
+        {% assign price_dkk = price_eur | times: eur_to_dkk %}
+        {% assign price_str = price_dkk | round: 2 | append: '' %}
+        {% if price_str contains '.' %}
+          {% assign parts = price_str | split: '.' %}
+          {% assign decimals = parts[1] %}
+          {% if decimals.size == 1 %}
+            {% assign price_str = price_str | append: '0' %}
+          {% endif %}
+        {% else %}
+          {% assign price_str = price_str | append: '.00' %}
+        {% endif %}
+        <g:price>{{ price_str | replace: ',', '.' }} DKK</g:price>
+
+        <g:availability>{% if variant.available %}in stock{% else %}out of stock{% endif %}</g:availability>
+
+        {% if variant.barcode %}
+          <g:gtin>{{ variant.barcode }}</g:gtin>
+        {% endif %}
+        {% if variant.sku %}
+          <g:mpn>{{ variant.sku }}</g:mpn>
+        {% endif %}
+      </item>
+    {% endfor %}
+  {% endfor %}
+
+  {% endpaginate %}
+</channel>
+</rss>}

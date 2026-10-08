@@ -3,7 +3,8 @@
   function loadThirdPartyScripts() {
     if (scriptsLoaded) return;
     scriptsLoaded = true;
-    
+    // Defer heavy JS out of the event handler so the browser can paint first (INP fix)
+    var doLoad = function() {
     console.log('Loading third-party scripts on interaction...');
 
     // TikTok Pixel Code
@@ -53,8 +54,8 @@
       y.parentNode.insertBefore(t, y);
     })(window, document, 'clarity', 'script', 'ld9y8d60j4');
 
-   // ============================================
-    // HOMEPAGE SECTION TRACKER (Merged)
+   /* ============================================
+    // HOMEPAGE SECTION TRACKER (Merged) — DISABLED 2026-09-08
     // ============================================
     if (document.body.classList.contains('template-index')) {
       // Sri Lanka check - disable tracking
@@ -135,6 +136,14 @@
         }
       });
       console.log('Homepage tracker initialized (via interaction).');
+    }
+    */ // END DISABLED HOMEPAGE TRACKER
+    }; // end doLoad
+
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(doLoad, { timeout: 3000 });
+    } else {
+      setTimeout(doLoad, 0);
     }
   }
 

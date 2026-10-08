@@ -1,0 +1,237 @@
+{% comment %}
+  Trade Pricing Section
+  Displays trade pricing information in a rectangular layout
+{% endcomment %}
+
+<style>
+  .trade-section-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 20px;
+  }
+
+  .trade-section-wrapper {
+    background-color: {{ section.settings.bg_color }};
+    padding: 50px 100px;
+    border-radius: {{ section.settings.border_radius }}px;
+  }
+
+  @media (max-width: 1024px) {
+    .trade-section-wrapper {
+      padding: 40px 60px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .trade-section-wrapper {
+      padding: 35px 32px;
+    }
+  }
+
+  .trade-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    font-weight: 500;
+    color: {{ section.settings.label_color }};
+  }
+
+  .trade-heading {
+    font-size: 56px;
+    line-height: 1.1;
+    margin-bottom: 32px;
+    font-weight: 300;
+    font-family: var(--font-heading-family, serif);
+    color: {{ section.settings.heading_color }};
+  }
+
+  @media (max-width: 1024px) {
+    .trade-heading {
+      font-size: 48px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .trade-heading {
+      font-size: 40px;
+    }
+  }
+
+  .trade-description {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: {{ section.settings.text_color }};
+  }
+
+  .trade-description:last-of-type {
+    margin-bottom: 48px;
+  }
+
+  .trade-button {
+    display: inline-block;
+    padding: 14px 40px;
+    border: 1px solid {{ section.settings.button_border_color }};
+    border-radius: 50px;
+    background-color: transparent;
+    color: {{ section.settings.button_text_color }};
+    text-decoration: none;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .trade-button:hover {
+    background-color: {{ section.settings.button_hover_bg }};
+    color: {{ section.settings.button_hover_text }};
+    transform: translateY(-2px);
+  }
+</style>
+
+<div class="trade-section-container">
+  <div class="trade-section-wrapper">
+    {% if section.settings.label != blank %}
+      <div class="trade-label">{{ section.settings.label }}</div>
+    {% endif %}
+    
+    {% if section.settings.heading != blank %}
+      <h2 class="trade-heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+    
+    {% if section.settings.description_1 != blank %}
+      <p class="trade-description">{{ section.settings.description_1 }}</p>
+    {% endif %}
+    
+    {% if section.settings.description_2 != blank %}
+      <p class="trade-description">{{ section.settings.description_2 }}</p>
+    {% endif %}
+    
+    {% if section.settings.button_text != blank %}
+      <a href="{{ section.settings.button_url }}" class="trade-button">
+        {{ section.settings.button_text }}
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Trade Pricing",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Border Radius",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#E8E5DF"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Body Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button Border Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg",
+      "label": "Button Hover Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text",
+      "label": "Button Hover Text Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "TRADE"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Trade Pricing & Support"
+    },
+    {
+      "type": "textarea",
+      "id": "description_1",
+      "label": "Description 1",
+      "default": "Access bespoke pricing for bulk orders, tailored deals, and larger-volume projects simply by applying for a trade account."
+    },
+    {
+      "type": "textarea",
+      "id": "description_2",
+      "label": "Description 2",
+      "default": "Once approved, you'll unlock exclusive benefits including trade pricing through our dedicated portal, personalised support, and a curated selection of products built to suit your needs."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Apply Now"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trade Pricing",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

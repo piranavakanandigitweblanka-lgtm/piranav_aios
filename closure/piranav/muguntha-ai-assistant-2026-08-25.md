@@ -49,6 +49,6 @@ Built Muguntha's AI management assistant from scratch. She is a full admin manag
 - `evidence/piranav/muguntha-ai-assistant-2026-08-25.md`
 - `validation/piranav/muguntha-ai-assistant-2026-08-25.md`
 - `deployment/piranav/muguntha-ai-assistant-2026-08-25.md`
-- `capability/piranav/muguntha-ai-assistant-2026-08-25.md`
+- `capability/2026/08/2026-08-25/muguntha-ai-assistant-2026-08-25.md`
 - `prompts/piranav/muguntha-ai-assistant-2026-08-25.md`
 - `workflows/AI-ASSISTANT-WORKFLOW.md` (general pattern reference)

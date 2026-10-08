@@ -1,0 +1,396 @@
+{% liquid
+  assign enable_rtl = settings.rtl
+  assign iso_code = request.locale.iso_code
+  assign lis_language_rtl = settings.language_rtl
+  if lis_language_rtl != blank
+    if lis_language_rtl contains iso_code
+      assign enable_rtl = true
+    else
+      assign enable_rtl = false
+    endif
+  endif
+%}
+
+<!doctype html>
+<html
+  class="no-js{% if enable_rtl %} body-rtl{% endif %} {% if false and settings.pre_load_page %}overflow-hidden{% endif %}"
+  lang="{{ iso_code }}"
+>
+  <head>
+
+    <!-- Kuberan added - Shopify Inbox delay for LCP fix 23-06-2026 -->
+  <style id="chat-hide-style">#shopify-chat { visibility: hidden; }</style>
+  <script>
+    (function() {
+      var done = false;
+      function showChat() {
+        if (done) return;
+        done = true;
+        var style = document.getElementById('chat-hide-style');
+        if (style) style.remove();
+        ['scroll','mousemove','touchstart','keydown'].forEach(function(ev) {
+          document.removeEventListener(ev, showChat);
+        });
+      }
+      ['scroll','mousemove','touchstart','keydown'].forEach(function(ev) {
+        document.addEventListener(ev, showChat, { passive: true, once: true });
+      });
+      setTimeout(showChat, 5000);
+    })();
+  </script>
+  <!-- End Shopify Inbox delay -->  
+
+
+    <!-- Preconnect to speed up 3rd party loads -->
+<link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+<link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+
+
+<link rel="preload" href="{{ 'blueskytechco.woff2' | asset_url }}" as="font" type="font/woff2" crossorigin>
+
+<link rel="preload"
+      href="https://cdn.shopify.com/shopifycloud/shoplift/assets/GTStandardMedium.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous">
+
+
+
+   <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-553096373"></script>
+<script defer > 
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-553096373');
+</script>
+
+     <!-- Google Tag Manager -->
+<script defer >(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NN322MJD');</script>
+<!-- End Google Tag Manager -->
+
+   {% comment %} Clarity  {% endcomment %}
+   <script defer>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "py88ky947l");
+</script>
+
+
+     {% comment %}piranav disable 2025.07.11
+<!-- Sharmi added this Redirection on 04/07/2025   -->
+     <script>
+        (function redirectIfNeeded() {
+            var oldBaseUrl = 'https://ledsone.de/de-pl/';
+            var newBaseUrl = 'https://ledsone.de/';
+            
+            // Get the current URL
+            var currentUrl = window.location.href;
+            
+            // Check if the current URL starts with the old base URL
+            if (currentUrl.indexOf(oldBaseUrl) === 0) {
+                // Replace the old base URL with the new base URL
+                var updatedUrl = currentUrl.replace(oldBaseUrl, newBaseUrl);
+                
+                // Redirect to the updated URL
+                window.location.href = updatedUrl;
+            }
+        })();
+    </script>
+    <!-- end redirection code -->
+    {% endcomment %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="{{ settings.color_mobile_browser }}">
+    <link rel="canonical" href="{{ canonical_url }}" /> 
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+    {%- endif -%}
+    <title>
+      {{ page_title }}
+      {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
+      {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+    </title>
+    <meta name="description" content="{{ page_description | default: shop.description | default: shop.name | escape }}">
+    {% render 'meta-tags' %}
+    {{ content_for_header }}
+    <script>
+      document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+      if (Shopify.designMode) {
+        document.documentElement.classList.add('shopify-design-mode');
+      }
+    </script>
+    {%- render 'head-assets' -%}
+    {%- comment -%}
+      swiper is needed on homepage (carousels below fold) and product/collection pages.
+      easydlg is a dialog library needed globally. Both are deferred so they don't block render.
+    {%- endcomment -%}
+    <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'easydlg.min.js' | asset_url }}" defer="defer"></script>
+
+    {% if false and settings.pre_load_page %}
+      <style>
+        .preloader {
+          position: fixed;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: white;
+          width: inherit;
+          height: inherit;
+          z-index: 99999999;
+          inset: 0;
+        }
+        .preloader-icon {
+          background-position: center;
+          background-repeat: no-repeat;
+          background-size: contain;
+        }
+        .preloader-dot-loading {
+          background-image: url("{{ 'dots-loading.gif' | asset_url }}");
+          width: 35px;
+          height: 35px;
+        }
+        .preloader-infinity {
+          background-image: url("{{ 'infinity.gif' | asset_url }}");
+          width: 50px;
+          height: 50px;
+        }
+        .preloader-spin {
+          background-image: url("{{ 'spin.gif' | asset_url }}");
+          width: 30px;
+          height: 30px;
+        }
+        .preloader-spinner {
+          background-image: url("{{ 'spinner.gif' | asset_url }}");
+          width: 50px;
+          height: 50px;
+        }
+
+  }
+        
+      </style>
+      <script>
+        window.addEventListener('load', function () {
+          setTimeout(() => {
+            document.getElementById('preloader').style.display = 'none';
+            document.querySelector('html').classList.remove('overflow-hidden');
+          }, 500);
+        });
+      </script>
+    {% endif %}
+
+      {% comment %} Kuberan commented on 07/10/2025 {% endcomment %}
+    {% comment %} sharmi add 29/05/2025
+   <link rel="alternate" href="https://ledsone.de/" hreflang="de-DE" />
+  <link rel="alternate" href="https://ledsone.de/" hreflang="de" />
+  {% comment %} piranav add 11/07/2025{% endcomment %}
+ <link rel="alternate" href="https://ledsone.de/de-pl" hreflang="de-PL" />
+  <link rel="alternate" href="https://ledsone.co.uk/" hreflang="en-GB" />
+  <link rel="alternate" href="https://ledsone.co.uk/" hreflang="en" />
+  <link rel="alternate" href="https://ledsone.fr/" hreflang="fr-FR" />
+  <link rel="alternate" href="https://ledsone.fr/" hreflang="fr" />
+  <link rel="alternate" href="https://ledsone.de/" hreflang="x-default" />
+  <link rel="alternate" href="https://ledsone.de/pl" hreflang="pl" /> 
+  <link rel="alternate" href="https://ledsone.de/it" hreflang="it" />  {% endcomment %}
+
+     <link rel="alternate" href="https://ledsone.de/" hreflang="de-EUR"/>
+ 
+  </head>
+  <body class="gradient {% if template.name == 'collection' %}template-collection{% endif %}{% if template.name == 'product' %}template-product {% endif %}{% if template.name == 'index' %}template-index{% endif %} {%- if settings.general_layout == 'boxed' -%}box-layout{% elsif settings.general_layout == 'full_width' %}full-width-layout{% else %}{%- endif -%} {% if settings.content_center %}item-center{% endif %} {% if settings.image_style != blank %}product-images-style-radius{% endif %} {% if template.suffix contains 'layout-2' %}product-digital-layout-2{% endif %}">
+
+
+    
+    <div class="bls-wrapper">
+      {% if false and settings.pre_load_page %}
+        <div class="preloader" id="preloader">
+         <div class="preloader-icon preloader-{{ settings.icon_preload }}"></div>
+        </div>
+      {% endif %}
+      {%- render 'umino-home' -%}
+      <div class="bls__overlay d-none-overlay"></div>
+      {% section 'announcement' %}
+      {%- render 'header' -%}
+      <main
+        id="MainContent"
+        class="content-for-layout focus-none{% if template == 'product' or template == 'page.wishlist' or template == "page.recently-viewed-products" %} skeleton-product-detail{% endif %}"
+        role="main"
+        tabindex="-1"
+      >
+        {{ content_for_layout }}
+      </main>
+      {%- sections 'overlay-group' -%}
+      {%- section 'order-tracker' -%}
+      {%- render 'footer-layout' -%}
+      {%- section 'mobile-stickybar' -%}
+      {%- section 'custom-colors' -%}
+    </div>
+    {%- render 'fake-order' -%}
+    {%- render 'content-bottom' -%}
+    {%- render 'before-you-leave' -%}
+    {%- render 'scripts-tag' -%}
+    <script src="{{ 'home-page-tracking.js' | asset_url }}" defer></script>
+
+
+    {%- if shop.domain == 'umino-demo.myshopify.com'
+      or shop.domain == 'demo-umino.myshopify.com'
+      or shop.domain == 'umino-demo-v2.myshopify.com'
+    -%}
+      <feature-button class="d-none extent-button-right-bar"></feature-button>
+    {%- endif -%}
+
+    {% comment %} Kuberan added for pop up 03-02-2026 
+  {% if template == 'index' %}
+  {% render 'popup' %}
+{% endif %} - disabled 0n 30/04/2026 {% endcomment %}
+
+{% comment %} Kuberan added fix overlay for description and faq slider in product page - 22-04-2026 {% endcomment %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var desc = document.getElementById('product-description');
+    var faq  = document.getElementById('product-faq-drawer');
+    if (desc) document.body.appendChild(desc);
+    if (faq)  document.body.appendChild(faq);
+  });
+</script>
+</body>
+
+
+
+</html>
+
+  {% comment %}
+<!-- Kuberan Added for Offer Popup in Home page - 13/11/2025 -->
+<div id="offer-popup" class="popup-overlay">
+  <div class="popup-content">
+    <span class="close-btn" onclick="closePopup()">&times;</span>
+    <a href="https://ledsone.de/collections/weihnachtsbeleuchtung-rabatt"> 
+      <img src="https://cdn.shopify.com/s/files/1/0414/9864/0551/files/ChatGPT_Image_Dec_1_2025_11_38_20_AM.png?v=1764569378" />
+    </a>
+  </div>
+</div>
+
+<script>
+// Show popup only if on homepage
+if (window.location.pathname === '/' || window.location.pathname === '/index') {
+
+  // Prevent showing again if closed earlier in this session
+  if (!sessionStorage.getItem('popupClosed')) {
+
+    // Function to show popup
+    function showPopup() {
+      document.getElementById('offer-popup').style.display = 'flex';
+
+      // Auto close after 20 seconds
+      setTimeout(function() {
+        document.getElementById('offer-popup').style.display = 'none';
+      }, 20000);
+    }
+
+    // Show popup after 3 seconds
+    setTimeout(function() {
+      showPopup();
+    }, 3000);
+  }
+}
+
+// Close function
+function closePopup() {
+  document.getElementById('offer-popup').style.display = 'none';
+
+// Save that user closed it — do NOT show again this session
+  sessionStorage.setItem('popupClosed', 'true');
+}
+</script>
+
+
+<script>
+  if (window.location.pathname === '/account') {
+    var redirect = localStorage.getItem('redirect_after_register');
+    if (redirect) {
+      localStorage.removeItem('redirect_after_register');
+      window.location.href = redirect;
+    }
+  }
+</script>
+
+
+</body>
+</html>
+
+<style>
+.popup-overlay {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: auto;
+  height: auto;
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-content {
+  position: relative;
+  width: 100px; 
+  height: 100px; 
+  background-color: transparent;
+  border-radius: 50%; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%; 
+}
+
+.close-btn {
+  position: absolute;
+  top: -15px;
+  right: -15px; 
+  font-size: 20px;
+  color:rgb(0, 0, 0); 
+  background: rgba(255, 255, 255, 0.8); 
+  border-radius: 50%; 
+  cursor: pointer;
+  padding: 5px;
+  height: 30px; 
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.close-btn:hover {
+  background-color: rgba(255, 255, 255, 1); 
+  height: 28px;
+  width: 28px; 
+  padding: 0; 
+}
+</style>
+  {% endcomment %}
+
+     {% comment %}  Kuberan added - 11/02/1026 for hide this from below product pages {% endcomment %}
+  {% unless product.handle == 'lampenschirme-in-fur-wand-und-pendelleuchten' or product.handle == 'e27-lampenfassung-vintage-stilinnenbereich' %}
+
+     {% comment %}  Kuberan added - 28/01/1026 {% endcomment %}
+
+  {% endunless %}
+
+ {%- comment -%}new-arrivils removed from global layout — was rendering on every page. Add to homepage template (index.json) instead if needed.{%- endcomment -%}
+

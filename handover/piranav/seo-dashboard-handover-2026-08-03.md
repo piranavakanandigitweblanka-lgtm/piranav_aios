@@ -76,7 +76,7 @@ https://claude.ai/code/routines
 
 ## Documentation Written This Session
 
-- `capability/piranav/seo-dashboard-2026-08-03.md`
+- `capability/2026/08/2026-08-03/seo-dashboard-2026-08-03.md`
 - `implementation/piranav/seo-dashboard-2026-08-03.md`
 - `evidence/piranav/seo-dashboard-evidence-2026-08-03.md`
 - `closure/piranav/seo-dashboard-closure-2026-08-03.md`

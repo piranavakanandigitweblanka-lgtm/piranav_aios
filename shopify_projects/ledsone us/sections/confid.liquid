@@ -1,0 +1,1375 @@
+<style>
+  .hs-{{ section.id }} {
+    position: relative;
+    width: 100%;
+    max-width: {{ section.settings.max_width }}px;
+    margin: {{ section.settings.margin_top }}px auto {{ section.settings.margin_bottom }}px;
+    padding: 0 20px;
+  }
+
+  .hs-{{ section.id }} .hs-head {
+    font-size: {{ section.settings.heading_font_size }}px;
+    text-align: center;
+    margin: 0 0 32px 0;
+    color: #333;
+    line-height: 1.2;
+  }
+
+  .hs-{{ section.id }} .hs-wrap {
+    display: grid;
+    grid-template-columns: 1.4fr 0.6fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  .hs-{{ section.id }} .hs-cont {
+    position: relative;
+    width: 100%;
+  }
+
+  .hs-{{ section.id }} .hs-img {
+    width: 100%;
+    height: auto;
+    object-fit: initial;
+    border-radius: 0;
+    display: block;
+  }
+
+  /* ── Hotspot pin ── */
+  .hs-{{ section.id }} .hs-pin {
+    position: absolute;
+    width: {{ section.settings.hotspot_size }}px;
+    height: {{ section.settings.hotspot_size }}px;
+    border-radius: 50%;
+    background: {{ section.settings.hotspot_color }};
+    border: 2px solid {{ section.settings.hotspot_border_color }};
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    animation: hsPulse 2s ease-in-out infinite;
+    padding: 0;
+    overflow: visible;
+  }
+  .hs-{{ section.id }} .hs-pin::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid {{ section.settings.hotspot_border_color }};
+    opacity: 0;
+    animation: hsRipple 2s ease-out infinite;
+  }
+  .hs-{{ section.id }} .hs-pin::before {
+    content: '+';
+    color: {{ section.settings.hotspot_icon_color }};
+    font-size: {{ section.settings.hotspot_size | minus: 12 }}px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .hs-{{ section.id }} .hs-pin:hover,
+  .hs-{{ section.id }} .hs-pin.active {
+    transform: translate(-50%, -50%) scale(1.15);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+    animation: none;
+    background: {{ section.settings.button_color }};
+    border-color: {{ section.settings.button_color }};
+  }
+  .hs-{{ section.id }} .hs-pin:hover::before,
+  .hs-{{ section.id }} .hs-pin.active::before { color: {{ section.settings.button_text_color }}; }
+  .hs-{{ section.id }} .hs-pin:hover::after,
+  .hs-{{ section.id }} .hs-pin.active::after { animation: none; }
+
+  @keyframes hsPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50%       { transform: translate(-50%, -50%) scale(1.1); }
+  }
+  @keyframes hsRipple {
+    0%   { transform: scale(1);   opacity: 0.6; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+
+  /* ── Sidebar ── */
+  .hs-{{ section.id }} .hs-side {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 10px;
+  }
+
+  /* ── Product card — zero border-radius ── */
+  .hs-{{ section.id }} .hs-prod {
+    background: #fff;
+    border-radius: 0;
+    overflow: hidden;
+    border: 2px solid #e8e8e8;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+  }
+  .hs-{{ section.id }} .hs-prod:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.10); }
+  .hs-{{ section.id }} .hs-prod.selected {
+    border-color: {{ section.settings.button_color }};
+    background: #f8faff;
+  }
+  .hs-{{ section.id }} .hs-prod.pin-highlight {
+    border-color: {{ section.settings.button_color }};
+    box-shadow: 0 4px 18px rgba(0,0,0,0.13);
+  }
+
+  /* Top row: image + info */
+  .hs-{{ section.id }} .hs-prod-top {
+    display: flex;
+    flex-direction: row;
+    padding-top: 10px;
+  }
+  .hs-{{ section.id }} .hs-pimg {
+    width: 96px;
+    min-width: 96px;
+    height: 96px;
+    overflow: hidden;
+    background: #f5f5f5;
+    flex-shrink: 0;
+  }
+  .hs-{{ section.id }} .hs-pimg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    display: block;
+  }
+  .hs-{{ section.id }} .hs-prod:hover .hs-pimg img { transform: scale(1.06); }
+
+  .hs-{{ section.id }} .hs-pinfo {
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    min-width: 0;
+    gap: 3px;
+  }
+  .hs-{{ section.id }} .hs-ptitle {
+    font-size: 12px;
+    font-weight: 700;
+    color: #111;
+    margin: 0;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .hs-{{ section.id }} .hs-pvariant {
+    font-size: 10px;
+    color: #999;
+    font-style: italic;
+  }
+
+  /* Price + checkbox inline */
+  .hs-{{ section.id }} .hs-price-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .hs-{{ section.id }} .hs-pprice {
+    font-size: 13px;
+    font-weight: 700;
+    color: #111;
+  }
+  .hs-{{ section.id }} .hs-chk-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .hs-{{ section.id }} .hs-chk {
+    width: 14px;
+    height: 14px;
+    accent-color: {{ section.settings.button_color }};
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .hs-{{ section.id }} .hs-chk-lbl {
+    font-size: 10px;
+    color: #666;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .hs-{{ section.id }} .hs-viewmore-btn {
+    font-size: 10px;
+    color: #2563eb;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .hs-{{ section.id }} .hs-viewmore-btn:hover { opacity: 0.7; }
+
+  /* ── Variant selector in popup ── */
+  .hs-{{ section.id }} .hs-variants { margin-bottom: 14px; }
+  .hs-{{ section.id }} .hs-variants label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    display: block;
+    margin-bottom: 7px;
+    color: #333;
+  }
+  .hs-{{ section.id }} .hs-var-opts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .hs-{{ section.id }} .hs-var-btn {
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1.5px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    border-radius: 0;
+    color: #333;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+  .hs-{{ section.id }} .hs-var-btn:hover { border-color: {{ section.settings.button_color }}; }
+  .hs-{{ section.id }} .hs-var-btn.active {
+    border-color: {{ section.settings.button_color }};
+    background: {{ section.settings.button_color }};
+    color: {{ section.settings.button_text_color }};
+  }
+  .hs-{{ section.id }} .hs-var-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+
+  /* ── Qty controller ── */
+  .hs-{{ section.id }} .hs-card-qty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 12px 9px;
+    gap: 8px;
+  }
+  .hs-{{ section.id }} .hs-card-qty-lbl {
+    font-size: 10px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .hs-{{ section.id }} .hs-card-qctrl {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid #ddd;
+    border-radius: 0;
+  }
+  .hs-{{ section.id }} .hs-card-qctrl button {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+    padding: 0;
+    line-height: 1;
+  }
+  .hs-{{ section.id }} .hs-card-qctrl button:hover {
+    background: {{ section.settings.button_color }};
+    color: {{ section.settings.button_text_color }};
+  }
+  .hs-{{ section.id }} .hs-card-qctrl input {
+    width: 34px;
+    text-align: center;
+    border: none;
+    border-left: 1.5px solid #ddd;
+    border-right: 1.5px solid #ddd;
+    border-radius: 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: #222;
+    padding: 0;
+    height: 28px;
+    background: #f5f5f5;
+    -moz-appearance: textfield;
+  }
+  .hs-{{ section.id }} .hs-card-qctrl input::-webkit-outer-spin-button,
+  .hs-{{ section.id }} .hs-card-qctrl input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  /* ── Hint text ── */
+  .hs-{{ section.id }} .hs-select-hint {
+    font-size: 11px;
+    color: #aaa;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    line-height: 1.4;
+  }
+
+  /* ── Discount bar — dark green states ── */
+  .hs-{{ section.id }} .hs-discount-bar {
+    background: #f9f9f9;
+    border: 1.5px dashed #d5d5d5;
+    border-radius: 0;
+    padding: 9px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.4s ease, border-color 0.3s ease;
+  }
+  .hs-{{ section.id }} .hs-discount-bar.half {
+    border-color: #15803d;
+    background: linear-gradient(to right, #dcfce7 50%, #f9f9f9 50%);
+  }
+  .hs-{{ section.id }} .hs-discount-bar.enabled {
+    border-color: #15803d;
+    background: #dcfce7;
+  }
+  .hs-{{ section.id }} .hs-discount-text {
+    flex: 1;
+    font-size: 11px;
+    color: #bbb;
+    line-height: 1.4;
+  }
+  .hs-{{ section.id }} .hs-discount-bar.half .hs-discount-text { color: #14532d; }
+  .hs-{{ section.id }} .hs-discount-bar.enabled .hs-discount-text { color: #14532d; }
+  .hs-{{ section.id }} .hs-discount-text strong {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #14532d;
+    font-size: 12px;
+  }
+  .hs-{{ section.id }} .hs-copy-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 0;
+    border: 1.5px solid #d5d5d5;
+    background: #fff;
+    cursor: not-allowed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.18s;
+    padding: 0;
+    opacity: 0.35;
+  }
+  .hs-{{ section.id }} .hs-copy-btn.enabled {
+    border-color: {{ section.settings.button_color }};
+    background: {{ section.settings.button_color }};
+    cursor: pointer;
+    opacity: 1;
+  }
+  .hs-{{ section.id }} .hs-copy-btn.enabled:hover { opacity: 0.82; }
+  .hs-{{ section.id }} .hs-copy-btn svg {
+    width: 14px; height: 14px;
+    fill: none;
+    stroke: #bbb;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .hs-{{ section.id }} .hs-copy-btn.enabled svg { stroke: {{ section.settings.button_text_color }}; }
+  .hs-{{ section.id }} .hs-copy-btn.copied { background: #15803d; border-color: #15803d; }
+  .hs-{{ section.id }} .hs-copy-btn.copied svg { stroke: #fff; }
+
+  /* ── Cart buttons ── */
+  .hs-{{ section.id }} .hs-cart {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+  }
+  .hs-{{ section.id }} .hs-add {
+    flex: 1;
+    padding: 9px 8px;
+    background: {{ section.settings.button_color }};
+    color: {{ section.settings.button_text_color }};
+    border: none;
+    border-radius: 0;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.18s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+  .hs-{{ section.id }} .hs-add:hover:not(:disabled) { opacity: 0.82; }
+  .hs-{{ section.id }} .hs-add:disabled { opacity: 0.35; cursor: not-allowed; }
+  .hs-{{ section.id }} .hs-cnt {
+    background: {{ section.settings.button_text_color }};
+    color: {{ section.settings.button_color }};
+    border-radius: 0;
+    padding: 1px 5px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .hs-{{ section.id }} .hs-view {
+    flex: 0 0 auto;
+    padding: 9px 13px;
+    background: transparent;
+    color: {{ section.settings.button_color }};
+    border: 1.5px solid {{ section.settings.button_color }};
+    border-radius: 0;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.18s;
+    white-space: nowrap;
+  }
+  .hs-{{ section.id }} .hs-view:hover:not(:disabled) {
+    background: {{ section.settings.button_color }};
+    color: {{ section.settings.button_text_color }};
+  }
+  .hs-{{ section.id }} .hs-view:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* ── Popup ── */
+  .hs-{{ section.id }} .hs-pop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.72);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s ease;
+  }
+  .hs-{{ section.id }} .hs-pop.active { display: flex; }
+  .hs-{{ section.id }} .hs-popcont {
+    background: #fff;
+    border-radius: 0;
+    max-width: 1100px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.25s ease;
+  }
+  .hs-{{ section.id }} .hs-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    border-radius: 0;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #444;
+    z-index: 10;
+    transition: background 0.18s;
+    padding: 0;
+    line-height: 1;
+  }
+  .hs-{{ section.id }} .hs-close:hover { background: #e0e0e0; }
+
+  .hs-{{ section.id }} .hs-pgrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .hs-{{ section.id }} .hs-pimgs {
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+  .hs-{{ section.id }} .hs-pimgs img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    min-height: 400px;
+    display: block;
+  }
+  .hs-{{ section.id }} .hs-pdet {
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    max-height: 90vh;
+  }
+  .hs-{{ section.id }} .hs-pdet h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    line-height: 1.3;
+    padding-right: 40px;
+  }
+  .hs-{{ section.id }} .hs-popup-variant {
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+    margin-bottom: 6px;
+  }
+  .hs-{{ section.id }} .hs-popup-sku {
+    font-size: 11px;
+    color: #999;
+    margin-bottom: 10px;
+  }
+  .hs-{{ section.id }} .hs-popup-sku span {
+    background: #f0f0f0;
+    color: #444;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 2px;
+  }
+  .hs-{{ section.id }} .hs-price {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 12px;
+  }
+  .hs-{{ section.id }} .hs-price .compare {
+    font-size: 15px;
+    color: #bbb;
+    text-decoration: line-through;
+    margin-left: 8px;
+    font-weight: 400;
+  }
+
+  /* Expandable description */
+  .hs-{{ section.id }} .hs-desc-wrap {
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .hs-{{ section.id }} .hs-desc {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.65;
+    overflow-y: auto;
+    transition: max-height 0.38s ease;
+  }
+  .hs-{{ section.id }} .hs-desc.collapsed {
+    max-height: 70px;
+    overflow: hidden;
+  }
+  .hs-{{ section.id }} .hs-desc.expanded {
+    max-height: 180px;
+    overflow-y: auto;
+  }
+  .hs-{{ section.id }} .hs-readmore {
+    display: none;
+    margin-top: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    color: {{ section.settings.button_color }};
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* Popup qty */
+  .hs-{{ section.id }} .hs-qty { margin-bottom: 14px; }
+  .hs-{{ section.id }} .hs-qty label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    display: block;
+    margin-bottom: 7px;
+    color: #333;
+  }
+  .hs-{{ section.id }} .hs-qctrl {
+    display: inline-flex;
+    align-items: center;
+    border: 1.5px solid #ddd;
+  }
+  .hs-{{ section.id }} .hs-qctrl button {
+    width: 34px; height: 34px;
+    border: none;
+    background: #f5f5f5;
+    border-radius: 0;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, color 0.15s;
+    color: #333;
+  }
+  .hs-{{ section.id }} .hs-qctrl button:hover {
+    background: {{ section.settings.button_color }};
+    color: {{ section.settings.button_text_color }};
+  }
+  .hs-{{ section.id }} .hs-qctrl input {
+    width: 46px; text-align: center;
+    padding: 0;
+    border: none;
+    border-left: 1.5px solid #ddd;
+    border-right: 1.5px solid #ddd;
+    border-radius: 0;
+    font-size: 14px; font-weight: 700;
+    height: 34px;
+    background: #fff;
+    -moz-appearance: textfield;
+  }
+  .hs-{{ section.id }} .hs-qctrl input::-webkit-outer-spin-button,
+  .hs-{{ section.id }} .hs-qctrl input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  /* Popup ATC */
+  .hs-{{ section.id }} .hs-atc {
+    width: 100%;
+    padding: 13px;
+    background: {{ section.settings.button_color }};
+    color: {{ section.settings.button_text_color }};
+    border: none;
+    border-radius: 0;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.18s;
+    margin-top: 14px;
+  }
+  .hs-{{ section.id }} .hs-atc:hover { opacity: 0.86; }
+  .hs-{{ section.id }} .hs-link {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 12px;
+    color: #aaa;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .hs-{{ section.id }} .hs-link:hover { color: #333; }
+
+  /* Loading */
+  #hs-load-{{ section.id }} {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+  }
+  #hs-load-{{ section.id }}.active { display: flex; }
+  .hs-loadcont {
+    background: #fff;
+    padding: 28px 44px;
+    border-radius: 0;
+    text-align: center;
+  }
+  .hs-spin {
+    width: 44px; height: 44px;
+    border: 4px solid #f0f0f0;
+    border-top-color: {{ section.settings.button_color }};
+    border-radius: 50%;
+    animation: spin 0.85s linear infinite;
+    margin: 0 auto 12px;
+  }
+  .hs-loadtxt { font-size: 14px; font-weight: 600; color: #333; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .hs-{{ section.id }} .hs-popcont { max-width: 98vw; }
+  }
+  @media (max-width: 768px) {
+    .hs-{{ section.id }} .hs-wrap { grid-template-columns: 1fr; gap: 20px; }
+    .hs-{{ section.id }} .hs-pgrid { grid-template-columns: 1fr; }
+    .hs-{{ section.id }} .hs-pimgs img { min-height: 220px; }
+    .hs-{{ section.id }} .hs-pdet { padding: 20px 18px; }
+    .hs-{{ section.id }} .hs-cart { flex-direction: column; }
+    .hs-{{ section.id }} .hs-view { text-align: center; }
+  }
+</style>
+
+{%- assign sku1 = section.settings.sku1 | strip -%}
+{%- assign sku2 = section.settings.sku2 | strip -%}
+{%- assign product1 = section.settings.product1 -%}
+{%- assign product2 = section.settings.product2 -%}
+{%- assign discount_code = section.settings.discount_code | strip -%}
+
+{%- assign mv1 = nil -%}
+{%- if product1 != blank -%}
+  {%- if sku1 != blank -%}
+    {%- for v in product1.variants -%}
+      {%- if v.sku == sku1 -%}{%- assign mv1 = v -%}{%- break -%}{%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- unless mv1 -%}{%- assign mv1 = product1.variants.first -%}{%- endunless -%}
+{%- endif -%}
+
+{%- assign mv2 = nil -%}
+{%- if product2 != blank -%}
+  {%- if sku2 != blank -%}
+    {%- for v in product2.variants -%}
+      {%- if v.sku == sku2 -%}{%- assign mv2 = v -%}{%- break -%}{%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- unless mv2 -%}{%- assign mv2 = product2.variants.first -%}{%- endunless -%}
+{%- endif -%}
+
+{%- assign vimg1 = nil -%}
+{%- if mv1 and mv1.image -%}{%- assign vimg1 = mv1.image -%}{%- elsif product1.featured_image -%}{%- assign vimg1 = product1.featured_image -%}{%- endif -%}
+{%- assign vimg2 = nil -%}
+{%- if mv2 and mv2.image -%}{%- assign vimg2 = mv2.image -%}{%- elsif product2.featured_image -%}{%- assign vimg2 = product2.featured_image -%}{%- endif -%}
+
+{%- assign has_p1 = false -%}
+{%- assign has_p2 = false -%}
+{%- if product1 != blank and mv1 -%}{%- assign has_p1 = true -%}{%- endif -%}
+{%- if product2 != blank and mv2 -%}{%- assign has_p2 = true -%}{%- endif -%}
+
+<div class="hs-{{ section.id }}" data-hs="{{ section.id }}" data-discount="{{ discount_code | escape }}">
+
+  {%- if section.settings.section_heading != blank -%}
+    <h2 class="hs-head">{{ section.settings.section_heading }}</h2>
+  {%- endif -%}
+
+  <div class="hs-wrap">
+
+    <!-- Image + Pins -->
+    <div class="hs-cont">
+      {%- if section.settings.image != blank -%}
+        <img src="{{ section.settings.image | image_url: width: 1500 }}" alt="{{ section.settings.image.alt | escape }}" class="hs-img" loading="lazy" width="1500" height="1000" />
+      {%- else -%}
+        {{ 'image' | placeholder_svg_tag: 'hs-img' }}
+      {%- endif -%}
+
+      {%- if has_p1 -%}
+        <button type="button" class="hs-pin" id="hs-pin1-{{ section.id }}" data-pin="1"
+          style="left:{{ section.settings.pin1_x }}%;top:{{ section.settings.pin1_y }}%;"
+          aria-label="View product 1"></button>
+      {%- endif -%}
+
+      {%- if has_p2 -%}
+        <button type="button" class="hs-pin" id="hs-pin2-{{ section.id }}" data-pin="2"
+          style="left:{{ section.settings.pin2_x }}%;top:{{ section.settings.pin2_y }}%;"
+          aria-label="View product 2"></button>
+      {%- endif -%}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="hs-side">
+
+      {%- if has_p1 -%}
+      <div class="hs-prod" data-prod data-slot="1" data-vid="{{ mv1.id }}" data-pid="{{ product1.id }}">
+        <div class="hs-prod-top">
+          <div class="hs-pimg">
+            {%- if vimg1 -%}
+              <img src="{{ vimg1 | image_url: width: 300, height: 300 }}" alt="{{ vimg1.alt | escape }}" loading="lazy" width="300" height="300" />
+            {%- endif -%}
+          </div>
+          <div class="hs-pinfo">
+            <h4 class="hs-ptitle">{{ product1.title }}</h4>
+            {%- unless mv1.title == "Default Title" -%}<div class="hs-pvariant">{{ mv1.title }}</div>{%- endunless -%}
+            <div class="hs-price-row">
+              <span class="hs-pprice">{{ mv1.price | money }}</span>
+              <div class="hs-chk-row">
+                <!-- FIX 1: Only product 1 is checked by default -->
+                <input type="checkbox" class="hs-chk" id="chk1-{{ section.id }}" data-chk data-slot="1" data-vid="{{ mv1.id }}" data-pid="{{ product1.id }}" checked />
+                <label for="chk1-{{ section.id }}" class="hs-chk-lbl">Select</label>
+                <button type="button" class="hs-viewmore-btn" data-viewmore="1">View more</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hs-card-qty">
+          <span class="hs-card-qty-lbl">Qty</span>
+          <div class="hs-card-qctrl">
+            <button type="button" data-card-dec data-slot="1">&#8722;</button>
+            <input type="number" value="1" min="1" data-card-qinp data-slot="1" />
+            <button type="button" data-card-inc data-slot="1">+</button>
+          </div>
+        </div>
+      </div>
+      {%- endif -%}
+
+      {%- if has_p2 -%}
+      <div class="hs-prod" data-prod data-slot="2" data-vid="{{ mv2.id }}" data-pid="{{ product2.id }}">
+        <div class="hs-prod-top">
+          <div class="hs-pimg">
+            {%- if vimg2 -%}
+              <img src="{{ vimg2 | image_url: width: 300, height: 300 }}" alt="{{ vimg2.alt | escape }}" loading="lazy" width="300" height="300" />
+            {%- endif -%}
+          </div>
+          <div class="hs-pinfo">
+            <h4 class="hs-ptitle">{{ product2.title }}</h4>
+            {%- unless mv2.title == "Default Title" -%}<div class="hs-pvariant">{{ mv2.title }}</div>{%- endunless -%}
+            <div class="hs-price-row">
+              <span class="hs-pprice">{{ mv2.price | money }}</span>
+              <div class="hs-chk-row">
+                <!-- FIX 1: Product 2 is NOT checked by default (removed "checked" attribute) -->
+                <input type="checkbox" class="hs-chk" id="chk2-{{ section.id }}" data-chk data-slot="2" data-vid="{{ mv2.id }}" data-pid="{{ product2.id }}" />
+                <label for="chk2-{{ section.id }}" class="hs-chk-lbl">Select</label>
+                <button type="button" class="hs-viewmore-btn" data-viewmore="2">View more</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hs-card-qty">
+          <span class="hs-card-qty-lbl">Qty</span>
+          <div class="hs-card-qctrl">
+            <button type="button" data-card-dec data-slot="2">&#8722;</button>
+            <input type="number" value="1" min="1" data-card-qinp data-slot="2" />
+            <button type="button" data-card-inc data-slot="2">+</button>
+          </div>
+        </div>
+      </div>
+      {%- endif -%}
+
+      <!-- Hint text beneath both cards -->
+      <p class="hs-select-hint"> <strong>Select each item above to enable the discount </strong> </p>
+
+      <!-- Discount bar -->
+      <!-- FIX 2: Discount code text is hidden from frontend — only "15% off" shown, code applied silently at checkout -->
+      <div class="hs-discount-bar" id="hs-disc-{{ section.id }}">
+        <div class="hs-discount-text">
+          Select each to get <strong>15% off</strong>
+        </div>
+        <button type="button" class="hs-copy-btn" id="hs-copy-{{ section.id }}" data-copybtn disabled aria-label="Copy discount code" title="Copy discount code">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="0" ry="0"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Cart buttons -->
+      <div class="hs-cart">
+        <button type="button" class="hs-add" data-addsel disabled>
+          <span>Add to Cart</span>
+          <span class="hs-cnt" data-cnt>0</span>
+        </button>
+        <button type="button" class="hs-view" data-vcart disabled>View Cart</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Product 1 Popup -->
+  {%- if has_p1 -%}
+  <div class="hs-pop" id="hs-pop1-{{ section.id }}" aria-hidden="true">
+    <div class="hs-popcont" role="dialog" aria-modal="true">
+      <button type="button" class="hs-close" data-closepop="1" aria-label="Close">&#215;</button>
+      <div class="hs-pgrid">
+        <div class="hs-pimgs">
+          {%- if vimg1 -%}
+            <img id="hs-popimg1-{{ section.id }}" src="{{ vimg1 | image_url: width: 900 }}" alt="{{ vimg1.alt | escape }}" loading="lazy" width="900" height="900" />
+          {%- endif -%}
+        </div>
+        <div class="hs-pdet">
+          <h2>{{ product1.title }}</h2>
+          {%- unless mv1.title == "Default Title" -%}<div class="hs-popup-variant">{{ mv1.title }}</div>{%- endunless -%}
+
+          <div class="hs-price" id="hs-pprice1-{{ section.id }}">
+            {{ mv1.price | money }}
+            {%- if mv1.compare_at_price > mv1.price -%}<span class="compare">{{ mv1.compare_at_price | money }}</span>{%- endif -%}
+          </div>
+
+          {%- if product1.variants.size > 1 -%}
+          <div class="hs-variants">
+            <label>{{ product1.options.first }}</label>
+            <div class="hs-var-opts" id="hs-varopts1-{{ section.id }}">
+              {%- for v in product1.variants -%}
+                {%- assign vimg_src = '' -%}
+                {%- if v.image -%}{%- assign vimg_src = v.image | image_url: width: 900 -%}{%- elsif product1.featured_image -%}{%- assign vimg_src = product1.featured_image | image_url: width: 900 -%}{%- endif -%}
+                <button type="button"
+                  class="hs-var-btn{% if v.id == mv1.id %} active{% endif %}"
+                  data-varid="{{ v.id }}"
+                  data-varprice="{{ v.price | money }}"
+                  data-varcompare="{% if v.compare_at_price > v.price %}{{ v.compare_at_price | money }}{% endif %}"
+                  data-vartitle="{{ v.title | escape }}"
+                  data-varimage="{{ vimg_src }}"
+                  data-slot="1"
+                  {% unless v.available %}disabled{% endunless %}>{{ v.title }}</button>
+              {%- endfor -%}
+            </div>
+          </div>
+          {%- endif -%}
+
+          {%- if product1.description != blank -%}
+          <div class="hs-desc-wrap">
+            <div class="hs-desc collapsed" id="hs-desc1-{{ section.id }}">{{ product1.description | strip_html }}</div>
+            <button type="button" class="hs-readmore" data-readmore="1" aria-expanded="false">Read more</button>
+          </div>
+          {%- endif -%}
+          <div class="hs-qty">
+            <label>Quantity</label>
+            <div class="hs-qctrl">
+              <button type="button" data-dec>&#8722;</button>
+              <input type="number" value="1" min="1" data-qinp data-slot="1">
+              <button type="button" data-inc>+</button>
+            </div>
+          </div>
+          <input type="hidden" data-popvid="1" value="{{ mv1.id }}">
+          <button type="button" class="hs-atc" data-popsel="1">Add to Selection</button>
+          <a href="{{ product1.url }}" class="hs-link">View full product &#8594;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {%- endif -%}
+
+  <!-- Product 2 Popup -->
+  {%- if has_p2 -%}
+  <div class="hs-pop" id="hs-pop2-{{ section.id }}" aria-hidden="true">
+    <div class="hs-popcont" role="dialog" aria-modal="true">
+      <button type="button" class="hs-close" data-closepop="2" aria-label="Close">&#215;</button>
+      <div class="hs-pgrid">
+        <div class="hs-pimgs">
+          {%- if vimg2 -%}
+            <img id="hs-popimg2-{{ section.id }}" src="{{ vimg2 | image_url: width: 900 }}" alt="{{ vimg2.alt | escape }}" loading="lazy" width="900" height="900" />
+          {%- endif -%}
+        </div>
+        <div class="hs-pdet">
+          <h2>{{ product2.title }}</h2>
+          {%- unless mv2.title == "Default Title" -%}<div class="hs-popup-variant">{{ mv2.title }}</div>{%- endunless -%}
+
+          <div class="hs-price" id="hs-pprice2-{{ section.id }}">
+            {{ mv2.price | money }}
+            {%- if mv2.compare_at_price > mv2.price -%}<span class="compare">{{ mv2.compare_at_price | money }}</span>{%- endif -%}
+          </div>
+
+          {%- if product2.variants.size > 1 -%}
+          <div class="hs-variants">
+            <label>{{ product2.options.first }}</label>
+            <div class="hs-var-opts" id="hs-varopts2-{{ section.id }}">
+              {%- for v in product2.variants -%}
+                {%- assign vimg_src2 = '' -%}
+                {%- if v.image -%}{%- assign vimg_src2 = v.image | image_url: width: 900 -%}{%- elsif product2.featured_image -%}{%- assign vimg_src2 = product2.featured_image | image_url: width: 900 -%}{%- endif -%}
+                <button type="button"
+                  class="hs-var-btn{% if v.id == mv2.id %} active{% endif %}"
+                  data-varid="{{ v.id }}"
+                  data-varprice="{{ v.price | money }}"
+                  data-varcompare="{% if v.compare_at_price > v.price %}{{ v.compare_at_price | money }}{% endif %}"
+                  data-vartitle="{{ v.title | escape }}"
+                  data-varimage="{{ vimg_src2 }}"
+                  data-slot="2"
+                  {% unless v.available %}disabled{% endunless %}>{{ v.title }}</button>
+              {%- endfor -%}
+            </div>
+          </div>
+          {%- endif -%}
+
+          {%- if product2.description != blank -%}
+          <div class="hs-desc-wrap">
+            <div class="hs-desc collapsed" id="hs-desc2-{{ section.id }}">{{ product2.description | strip_html }}</div>
+            <button type="button" class="hs-readmore" data-readmore="2" aria-expanded="false">Read more</button>
+          </div>
+          {%- endif -%}
+          <div class="hs-qty">
+            <label>Quantity</label>
+            <div class="hs-qctrl">
+              <button type="button" data-dec>&#8722;</button>
+              <input type="number" value="1" min="1" data-qinp data-slot="2">
+              <button type="button" data-inc>+</button>
+            </div>
+          </div>
+          <input type="hidden" data-popvid="2" value="{{ mv2.id }}">
+          <button type="button" class="hs-atc" data-popsel="2">Add to Selection</button>
+          <a href="{{ product2.url }}" class="hs-link">View full product &#8594;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {%- endif -%}
+
+</div>
+
+<!-- Loading overlay -->
+<div id="hs-load-{{ section.id }}">
+  <div class="hs-loadcont">
+    <div class="hs-spin"></div>
+    <div class="hs-loadtxt">Adding to cart&hellip;</div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var SID     = "{{ section.id }}";
+  var sec     = document.querySelector(".hs-" + SID + "[data-hs='" + SID + "']");
+  if (!sec) return;
+
+  var load    = document.getElementById("hs-load-" + SID);
+  var discBar = document.getElementById("hs-disc-" + SID);
+  var copyBtn = document.getElementById("hs-copy-" + SID);
+  var discCode = sec.getAttribute("data-discount") || "";
+
+  var showLoad = function () { if (load) load.classList.add("active"); };
+  var hideLoad = function () { if (load) load.classList.remove("active"); };
+  var sel = new Map();
+
+  /* ── Read-more (init on popup open so scrollHeight is measurable) ── */
+  var readMoreInited = {};
+  function initReadMore(slot) {
+    if (readMoreInited[slot]) return;
+    var btn  = sec.querySelector("[data-readmore='" + slot + "']");
+    var desc = document.getElementById("hs-desc" + slot + "-" + SID);
+    if (!btn || !desc) return;
+    readMoreInited[slot] = true;
+    if (desc.scrollHeight <= 74) { btn.style.display = "none"; return; }
+    btn.style.display = "inline-block";
+    btn.addEventListener("click", function () {
+      var exp = desc.classList.contains("expanded");
+      desc.classList.toggle("collapsed", exp);
+      desc.classList.toggle("expanded", !exp);
+      btn.textContent = exp ? "Read more" : "Read less";
+      btn.setAttribute("aria-expanded", String(!exp));
+    });
+  }
+
+  /* ── Discount bar ── */
+  function updateDiscountBar() {
+    var one  = sel.size === 1;
+    var both = sel.size >= 2;
+    if (discBar) {
+      discBar.classList.toggle("half",    one);
+      discBar.classList.toggle("enabled", both);
+    }
+    if (copyBtn) { copyBtn.classList.toggle("enabled", both); copyBtn.disabled = !both; }
+  }
+  function updateUI() {
+    var cnt = sec.querySelector("[data-cnt]");
+    var btn = sec.querySelector("[data-addsel]");
+    if (cnt) cnt.textContent = sel.size;
+    if (btn) btn.disabled = sel.size === 0;
+    updateDiscountBar();
+  }
+
+  /* ── Copy ── */
+  if (copyBtn && discCode) {
+    copyBtn.addEventListener("click", function () {
+      if (!copyBtn.classList.contains("enabled")) return;
+      var confirm = function () {
+        copyBtn.classList.add("copied");
+        copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        setTimeout(function () {
+          copyBtn.classList.remove("copied");
+          copyBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="0" ry="0"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+        }, 1800);
+      };
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(discCode).then(confirm).catch(function () {
+          var ta = document.createElement("textarea"); ta.value = discCode;
+          ta.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(ta);
+          ta.select(); document.execCommand("copy"); document.body.removeChild(ta); confirm();
+        });
+      } else {
+        var ta = document.createElement("textarea"); ta.value = discCode;
+        ta.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(ta);
+        ta.select(); document.execCommand("copy"); document.body.removeChild(ta); confirm();
+      }
+    });
+  }
+
+  /* ── Popup ── */
+  function openPop(slot) {
+    var pop = document.getElementById("hs-pop" + slot + "-" + SID);
+    if (!pop) return;
+    var cq = sec.querySelector("[data-card-qinp][data-slot='" + slot + "']");
+    var pq = sec.querySelector("[data-qinp][data-slot='" + slot + "']");
+    if (cq && pq) pq.value = cq.value;
+    pop.classList.add("active");
+    pop.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    setTimeout(function () { initReadMore(slot); }, 50);
+  }
+  function closePop(slot) {
+    var pop = document.getElementById("hs-pop" + slot + "-" + SID);
+    if (!pop) return;
+    pop.classList.remove("active");
+    pop.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    var pin = sec.querySelector(".hs-pin[data-pin='" + slot + "']");
+    if (pin) pin.classList.remove("active");
+  }
+  function openCart() {
+    setTimeout(function () {
+      var cd = document.querySelector("cart-drawer");
+      if (cd) { typeof cd.open === "function" ? cd.open() : (cd.classList.add("active","animate"), cd.setAttribute("open","")); return; }
+      var ss = ["#CartDrawer","#cart-drawer",".cart-drawer","[data-cart-drawer]"];
+      for (var i = 0; i < ss.length; i++) { var d = document.querySelector(ss[i]); if (d) { d.classList.add("active","is-open"); d.setAttribute("open",""); return; } }
+      var ci = document.querySelector('[href="/cart"],[data-cart-icon],.header__icon--cart a');
+      if (ci) ci.click();
+    }, 400);
+  }
+
+  /* ── Pin hover ── */
+  sec.querySelectorAll(".hs-pin[data-pin]").forEach(function (pin) {
+    var slot = pin.getAttribute("data-pin");
+    var card = sec.querySelector("[data-prod][data-slot='" + slot + "']");
+    pin.addEventListener("mouseenter", function () { if (card) card.classList.add("pin-highlight"); });
+    pin.addEventListener("mouseleave", function () { if (card) card.classList.remove("pin-highlight"); });
+  });
+
+  /* ── Click delegation ── */
+  sec.addEventListener("click", function (e) {
+
+    // View more button on card
+    var vm = e.target.closest("[data-viewmore]");
+    if (vm) {
+      e.preventDefault();
+      e.stopPropagation();
+      openPop(vm.getAttribute("data-viewmore")); return;
+    }
+
+    // Variant button in popup
+    var vb = e.target.closest(".hs-var-btn");
+    if (vb && !vb.disabled) {
+      e.preventDefault();
+      var slot   = vb.getAttribute("data-slot");
+      var varid  = vb.getAttribute("data-varid");
+      var price  = vb.getAttribute("data-varprice");
+      var comp   = vb.getAttribute("data-varcompare");
+      var varimg = vb.getAttribute("data-varimage");
+      // Update active state
+      var opts = sec.querySelector("#hs-varopts" + slot + "-" + SID);
+      if (opts) opts.querySelectorAll(".hs-var-btn").forEach(function(b){ b.classList.remove("active"); });
+      vb.classList.add("active");
+      // Update hidden vid
+      var vidEl = sec.querySelector("[data-popvid='" + slot + "']");
+      if (vidEl) vidEl.value = varid;
+      // Update price display
+      var priceEl = document.getElementById("hs-pprice" + slot + "-" + SID);
+      if (priceEl) {
+        priceEl.innerHTML = price + (comp ? '<span class="compare">' + comp + '</span>' : '');
+      }
+      // Swap popup image with fade
+      if (varimg) {
+        var imgEl = document.getElementById("hs-popimg" + slot + "-" + SID);
+        if (imgEl) {
+          imgEl.style.transition = "opacity 0.2s ease";
+          imgEl.style.opacity = "0";
+          setTimeout(function() {
+            imgEl.src = varimg;
+            imgEl.style.opacity = "1";
+          }, 200);
+        }
+      }
+      return;
+    }
+
+    // Pin
+    var pin = e.target.closest(".hs-pin[data-pin]");
+    if (pin) {
+      e.preventDefault();
+      var slot = pin.getAttribute("data-pin");
+      sec.querySelectorAll(".hs-pin").forEach(function (p) { if (p !== pin) p.classList.remove("active"); });
+      pin.classList.toggle("active");
+      openPop(slot); return;
+    }
+
+    // Skip read-more (handled by direct listener)
+    if (e.target.closest("[data-readmore]")) return;
+
+    // Card click -> popup (skip qty zone, checkbox, label, viewmore)
+    var prod = e.target.closest("[data-prod]");
+    if (prod && !e.target.closest("[data-chk]") && !e.target.closest("label") && !e.target.closest(".hs-card-qty") && !e.target.closest("[data-viewmore]")) {
+      e.preventDefault(); openPop(prod.getAttribute("data-slot")); return;
+    }
+
+    // Card qty +/-
+    var ci = e.target.closest("[data-card-inc]");
+    var cd = e.target.closest("[data-card-dec]");
+    if (ci || cd) {
+      var slot = (ci || cd).getAttribute("data-slot");
+      var qi = sec.querySelector("[data-card-qinp][data-slot='" + slot + "']");
+      if (qi) { var v = ci ? parseInt(qi.value)+1 : Math.max(1,parseInt(qi.value)-1); qi.value = v; if (sel.has(slot)) sel.get(slot).qty = v; }
+      return;
+    }
+
+    // Close popup
+    var cls = e.target.closest("[data-closepop]");
+    if (cls) { e.preventDefault(); closePop(cls.getAttribute("data-closepop")); return; }
+
+    // Overlay click
+    if (e.target.classList.contains("hs-pop")) {
+      closePop(e.target.id.replace("hs-pop","").replace("-"+SID,"")); return;
+    }
+
+    // Popup qty +/-
+    var inc = e.target.closest("[data-inc]");
+    var dec = e.target.closest("[data-dec]");
+    if (inc || dec) {
+      var det = e.target.closest(".hs-pdet");
+      var qi = det ? det.querySelector("[data-qinp]") : null;
+      if (qi) qi.value = inc ? parseInt(qi.value)+1 : Math.max(1,parseInt(qi.value)-1);
+      return;
+    }
+
+    // Popup "Add to Selection"
+    var ps = e.target.closest("[data-popsel]");
+    if (ps) {
+      e.preventDefault();
+      var slot  = ps.getAttribute("data-popsel");
+      var vidEl = sec.querySelector("[data-popvid='" + slot + "']");
+      var vid   = vidEl ? vidEl.value : null;
+      var qiEl  = sec.querySelector("[data-qinp][data-slot='" + slot + "']");
+      var qty   = parseInt(qiEl ? qiEl.value : "1", 10);
+      var chk   = sec.querySelector("[data-chk][data-slot='" + slot + "']");
+      var pcard = sec.querySelector("[data-prod][data-slot='" + slot + "']");
+      var cqi   = sec.querySelector("[data-card-qinp][data-slot='" + slot + "']");
+      if (vid) {
+        sel.set(slot, { vid: vid, qty: qty });
+        if (chk) { chk.checked = true; chk.setAttribute("data-vid", vid); }
+        if (pcard) pcard.classList.add("selected");
+        if (cqi) cqi.value = qty;
+        updateUI();
+      }
+      closePop(slot); return;
+    }
+
+    // Add to Cart
+    if (e.target.closest("[data-addsel]") && sel.size > 0) {
+      e.preventDefault();
+      var items = [];
+      sel.forEach(function (it) { items.push({ id: it.vid, quantity: it.qty || 1 }); });
+      showLoad();
+      fetch("/cart/add.js", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ items: items }) })
+        .then(function (r) { if (!r.ok) throw new Error("Failed"); return r.json(); })
+        .then(function () {
+          sessionStorage.setItem("hsOpenCart","1");
+          sessionStorage.setItem("hsCartHasItems","1");
+          location.reload();
+        })
+        .catch(function (err) { console.error(err); hideLoad(); alert("Error adding to cart. Please try again."); });
+      return;
+    }
+
+    // View Cart
+    if (e.target.closest("[data-vcart]")) { e.preventDefault(); openCart(); return; }
+  });
+
+  /* ── Checkbox ── */
+  sec.addEventListener("change", function (e) {
+    var chk = e.target.closest("[data-chk]");
+    if (!chk) return;
+    var slot  = chk.getAttribute("data-slot");
+    var vid   = chk.getAttribute("data-vid");
+    var pcard = sec.querySelector("[data-prod][data-slot='" + slot + "']");
+    var cqi   = sec.querySelector("[data-card-qinp][data-slot='" + slot + "']");
+    if (chk.checked) {
+      sel.set(slot, { vid: vid, qty: parseInt(cqi ? cqi.value : "1", 10) });
+      if (pcard) pcard.classList.add("selected");
+    } else {
+      sel.delete(slot);
+      if (pcard) pcard.classList.remove("selected");
+    }
+    updateUI();
+  });
+
+  /* ── Card qty direct input ── */
+  sec.addEventListener("input", function (e) {
+    var qi = e.target.closest("[data-card-qinp]");
+    if (!qi) return;
+    var slot = qi.getAttribute("data-slot");
+    var val  = Math.max(1, parseInt(qi.value) || 1);
+    qi.value = val;
+    if (sel.has(slot)) sel.get(slot).qty = val;
+  });
+
+  /* ── Escape ── */
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      closePop("1"); closePop("2");
+      sec.querySelectorAll(".hs-pin").forEach(function (p) { p.classList.remove("active"); });
+    }
+  });
+
+  /* ── Auto open cart ── */
+  if (sessionStorage.getItem("hsOpenCart") === "1") {
+    sessionStorage.removeItem("hsOpenCart");
+    setTimeout(openCart, 500);
+  }
+
+  /* ── Enable View Cart if items were previously added ── */
+  var vcartBtn = sec.querySelector("[data-vcart]");
+  if (sessionStorage.getItem("hsCartHasItems") === "1" && vcartBtn) {
+    vcartBtn.disabled = false;
+  }
+
+  /* ── FIX 1: Default select only product 1 on load (only slot "1" has checked attr) ── */
+  sec.querySelectorAll("[data-chk]").forEach(function (chk) {
+    if (!chk.checked) return;
+    var slot  = chk.getAttribute("data-slot");
+    var vid   = chk.getAttribute("data-vid");
+    var pcard = sec.querySelector("[data-prod][data-slot='" + slot + "']");
+    var cqi   = sec.querySelector("[data-card-qinp][data-slot='" + slot + "']");
+    sel.set(slot, { vid: vid, qty: parseInt(cqi ? cqi.value : "1", 10) });
+    if (pcard) pcard.classList.add("selected");
+  });
+
+  updateUI();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Image with Hotspot",
+  "settings": [
+    { "type": "text",       "id": "section_heading",    "label": "Section Heading",   "default": "Shop The Look" },
+    { "type": "range",      "id": "heading_font_size",  "label": "Heading Font Size", "min": 16, "max": 48, "step": 2, "unit": "px", "default": 32 },
+    { "type": "image_picker","id": "image",             "label": "Background Image" },
+    { "type": "range",      "id": "max_width",          "label": "Maximum Width",     "min": 600, "max": 2000, "step": 50, "unit": "px", "default": 1400 },
+    { "type": "range",      "id": "margin_top",         "label": "Margin Top",        "min": 0, "max": 100, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range",      "id": "margin_bottom",      "label": "Margin Bottom",     "min": 0, "max": 100, "step": 4, "unit": "px", "default": 40 },
+    { "type": "header",     "content": "Hotspot Pin 1 \u2014 Position" },
+    { "type": "range",      "id": "pin1_x",             "label": "Pin 1 \u2014 Horizontal", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 35 },
+    { "type": "range",      "id": "pin1_y",             "label": "Pin 1 \u2014 Vertical",   "min": 0, "max": 100, "step": 1, "unit": "%", "default": 40 },
+    { "type": "header",     "content": "Hotspot Pin 2 \u2014 Position" },
+    { "type": "range",      "id": "pin2_x",             "label": "Pin 2 \u2014 Horizontal", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 65 },
+    { "type": "range",      "id": "pin2_y",             "label": "Pin 2 \u2014 Vertical",   "min": 0, "max": 100, "step": 1, "unit": "%", "default": 60 },
+    { "type": "header",     "content": "Product 1" },
+    { "type": "product",    "id": "product1",           "label": "Product 1" },
+    { "type": "text",       "id": "sku1",               "label": "Product 1 \u2014 SKU", "info": "Exact SKU for a specific variant. Leave blank for first variant." },
+    { "type": "header",     "content": "Product 2" },
+    { "type": "product",    "id": "product2",           "label": "Product 2" },
+    { "type": "text",       "id": "sku2",               "label": "Product 2 \u2014 SKU", "info": "Exact SKU for a specific variant. Leave blank for first variant." },
+    { "type": "header",     "content": "Discount Offer" },
+    { "type": "text",       "id": "discount_code",      "label": "Discount Code",     "default": "SAVE15", "info": "Applied silently at checkout when both products are selected. Not shown to customers." },
+    { "type": "header",     "content": "Colors" },
+    { "type": "color",      "id": "hotspot_color",       "label": "Hotspot Background",  "default": "#ffffff" },
+    { "type": "color",      "id": "hotspot_border_color","label": "Hotspot Border",       "default": "#000000" },
+    { "type": "color",      "id": "hotspot_icon_color",  "label": "Hotspot Icon",         "default": "#000000" },
+    { "type": "color",      "id": "button_color",        "label": "Button Background",    "default": "#000000" },
+    { "type": "color",      "id": "button_text_color",   "label": "Button Text",          "default": "#ffffff" },
+    { "type": "header",     "content": "Hotspot Pin Size" },
+    { "type": "range",      "id": "hotspot_size",        "label": "Pin Size",             "min": 20, "max": 56, "step": 2, "unit": "px", "default": 32 }
+  ],
+  "blocks": [],
+  "presets": [{ "name": "Image with Hotspot" }]
+}
+{% endschema %}

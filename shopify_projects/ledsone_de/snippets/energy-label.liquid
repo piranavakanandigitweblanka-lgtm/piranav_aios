@@ -1,0 +1,499 @@
+{%- comment -%}
+  Snippet: energy-label.liquid
+
+  Dynamic Shopify Product Energy Label
+
+  Metafields:
+    custom.energy_label_data_sheet — List of File (image + PDF)
+    custom.energy_class            — single_line_text (e.g. A, A+, B, C, D, E, F, G)
+
+  Usage:
+    {% render 'energy-label', product: product %}
+{%- endcomment -%}
+
+{%- assign energy_class_raw = product.metafields.custom.energy_class | default: '' -%}
+{%- assign energy_class     = energy_class_raw | strip | upcase -%}
+{%- assign data_sheets      = product.metafields.custom.energy_label_data_sheet.value -%}
+
+{%- comment -%} EU energy-class colour map {%- endcomment -%}
+{%- assign el_color = '#00a651' -%}
+{%- if    energy_class == 'A+++' -%}{%- assign el_color = '#009640' -%}
+{%- elsif energy_class == 'A++'  -%}{%- assign el_color = '#009640' -%}
+{%- elsif energy_class == 'A+'   -%}{%- assign el_color = '#52ae32' -%}
+{%- elsif energy_class == 'A'    -%}{%- assign el_color = '#52ae32' -%}
+{%- elsif energy_class == 'B'    -%}{%- assign el_color = '#c8d400' -%}
+{%- elsif energy_class == 'C'    -%}{%- assign el_color = '#ffed00' -%}
+{%- elsif energy_class == 'D'    -%}{%- assign el_color = '#fbba00' -%}
+{%- elsif energy_class == 'E'    -%}{%- assign el_color = '#eb6909' -%}
+{%- elsif energy_class == 'F'    -%}{%- assign el_color = '#e2001a' -%}
+{%- elsif energy_class == 'G'    -%}{%- assign el_color = '#c0001a' -%}
+{%- endif -%}
+
+{%- assign el_letter = energy_class | default: '—' -%}
+
+{%- comment -%} Unique IDs per product {%- endcomment -%}
+{%- assign el_modal_id = 'energyLabelModal-' | append: product.id -%}
+{%- assign el_title_id = 'elModalTitle-'     | append: product.id -%}
+
+{%- if data_sheets != blank and data_sheets.size > 0 -%}
+
+  <div class="el-row">
+
+    {%- comment -%} Badge — triggers modal {%- endcomment -%}
+    <div class="el-badge-wrap">
+
+      <button
+        type="button"
+        class="el-trigger"
+        aria-haspopup="dialog"
+        aria-controls="{{ el_modal_id }}"
+        aria-label="Energieeffizienzlabel anzeigen"
+        data-el-modal="{{ el_modal_id }}"
+      >
+        <span
+          class="el-arrow"
+          aria-hidden="true"
+          style="background:{{ el_color }};"
+        >{{ el_letter }}</span>
+
+        <span class="el-caption">
+          Energie-<br>label
+        </span>
+      </button>
+
+    </div>
+
+    {%- comment -%} Image thumbnail + PDF link from data_sheets {%- endcomment -%}
+    <div class="el-datasheet-links">
+
+      {%- for sheet in data_sheets -%}
+        {%- if sheet.media_type == 'image' -%}
+          {{
+            sheet
+            | image_url: width: 60
+            | image_tag:
+              loading: 'lazy',
+              class: 'el-ds-thumb',
+              alt: 'Energieeffizienzlabel'
+          }}
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- for sheet in data_sheets -%}
+        {%- if sheet.media_type == 'generic_file' -%}
+          <a
+            href="{{ sheet.url }}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="el-datasheet-link"
+          >Produktdatenblatt</a>
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+    </div>
+
+  </div>
+
+
+  {{- '<!-- el-modal-teleport-start -->' -}}
+  <div
+    class="el-modal"
+    id="{{ el_modal_id }}"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="{{ el_title_id }}"
+    aria-hidden="true"
+    hidden
+  >
+
+    <div
+      class="el-backdrop"
+      data-el-close="{{ el_modal_id }}"
+      tabindex="-1"
+    ></div>
+
+
+    <div class="el-dialog">
+
+      <div class="el-dialog__head">
+
+        <h2
+          class="el-dialog__title"
+          id="{{ el_title_id }}"
+        >
+          Energieeffizienzlabel
+        </h2>
+
+        <button
+          type="button"
+          class="el-dialog__close"
+          data-el-close="{{ el_modal_id }}"
+          aria-label="Schließen"
+        >
+          &times;
+        </button>
+
+      </div>
+
+
+      <div class="el-dialog__body">
+
+        {%- for sheet in data_sheets -%}
+          {%- if sheet.media_type == 'image' -%}
+            {{
+              sheet
+              | image_url: width: 1000
+              | image_tag:
+                loading: 'lazy',
+                class: 'el-energy-image',
+                alt: 'Energieeffizienzlabel'
+            }}
+            {%- break -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+      </div>
+
+    </div>
+
+  </div>
+  {{- '<!-- el-modal-teleport-end -->' -}}
+
+
+  {%- unless el_styles_loaded -%}
+    {%- assign el_styles_loaded = true -%}
+  <style>
+    .el-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 8px 0 14px;
+    }
+
+    .el-badge-wrap {
+      display: inline-flex;
+    }
+
+    .el-datasheet-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .el-ds-thumb {
+      display: block;
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .el-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+
+      padding: 6px 12px 6px 8px;
+
+      background: #fff;
+      border: 1px solid #d4d4d4;
+      border-radius: 4px;
+
+      font-family: inherit;
+      font-size: inherit;
+      cursor: pointer;
+      line-height: 1;
+
+      transition:
+        border-color 0.18s,
+        box-shadow 0.18s;
+    }
+
+    .el-trigger:hover,
+    .el-trigger:focus-visible {
+      border-color: #888;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+      outline: none;
+    }
+
+
+    .el-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 44px;
+      height: 28px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: inherit;
+      clip-path: polygon(0 0, 80% 0, 100% 50%, 80% 100%, 0 100%);
+    }
+
+
+    .el-caption {
+      font-size: 11px;
+      line-height: 1.25;
+      text-align: left;
+      color: #333;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+
+    .el-datasheet-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #222;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      line-height: 1.3;
+      cursor: pointer;
+    }
+
+    .el-datasheet-link:hover,
+    .el-datasheet-link:focus-visible {
+      color: #000;
+      text-decoration-thickness: 2px;
+      outline: none;
+    }
+
+    .el-datasheet-link::before {
+      content: '';
+      display: inline-block;
+      width: 14px;
+      height: 16px;
+      flex-shrink: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath fill='%23555' d='M320 464c8.8 0 16-7.2 16-16V160H256c-17.7 0-32-14.3-32-32V48H64c-8.8 0-16 7.2-16 16V448c0 8.8 7.2 16 16 16H320zM0 64C0 28.7 28.7 0 64 0H229.5c17 0 33.3 6.7 45.3 18.7l90.5 90.5c12 12 18.7 28.3 18.7 45.3V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+
+
+    /* MODAL */
+
+    .el-modal {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100dvh;
+      z-index: 2147483647;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding:
+        max(16px, env(safe-area-inset-top))
+        max(16px, env(safe-area-inset-right))
+        max(16px, env(safe-area-inset-bottom))
+        max(16px, env(safe-area-inset-left));
+      box-sizing: border-box;
+    }
+
+    .el-modal[hidden] {
+      display: none;
+    }
+
+    .el-backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: rgba(0, 0, 0, 0.65);
+      cursor: pointer;
+    }
+
+    .el-dialog {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      width: min(620px, calc(100vw - 32px));
+      max-height: calc(100dvh - 32px);
+      margin: 0;
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .el-dialog__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid #eee;
+      flex-shrink: 0;
+    }
+
+    .el-dialog__title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: inherit;
+      color: inherit;
+      line-height: 1.3;
+    }
+
+    .el-dialog__close {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      font-size: 26px;
+      line-height: 1;
+      cursor: pointer;
+      color: #555;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .el-dialog__close:hover,
+    .el-dialog__close:focus-visible {
+      background: #f0f0f0;
+      color: #000;
+      outline: none;
+    }
+
+    .el-dialog__body {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .el-energy-image {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      max-height: calc(100dvh - 140px);
+      height: auto;
+      object-fit: contain;
+    }
+
+    .el-error-message {
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+    }
+
+    body.el-no-scroll {
+      overflow: hidden;
+    }
+
+    @media (max-width: 749px) {
+      .el-modal {
+        align-items: center;
+        padding:
+          max(16px, env(safe-area-inset-top))
+          max(16px, env(safe-area-inset-right))
+          max(16px, env(safe-area-inset-bottom))
+          max(16px, env(safe-area-inset-left));
+      }
+
+      .el-dialog {
+        width: min(520px, calc(100vw - 32px));
+        max-height: calc(100dvh - 32px);
+        border-radius: 6px;
+        align-self: auto;
+      }
+
+      .el-dialog__body {
+        padding: 14px;
+      }
+
+      .el-energy-image {
+        max-height: none;
+      }
+
+      .el-arrow {
+        width: 38px;
+        height: 24px;
+        font-size: 14px;
+      }
+
+      .el-caption {
+        font-size: 10px;
+      }
+    }
+
+  </style>
+  {%- endunless -%}
+
+
+  <script>
+    (function () {
+
+      'use strict';
+
+      var modalId = '{{ el_modal_id }}';
+      var modal   = document.getElementById(modalId);
+
+      if (!modal) return;
+
+      if (modal.parentNode !== document.body) {
+        document.body.appendChild(modal);
+      }
+
+      var openers = document.querySelectorAll('[data-el-modal="' + modalId + '"]');
+      var closers = document.querySelectorAll('[data-el-close="' + modalId + '"]');
+      var lastFocus;
+
+      function openModal() {
+        lastFocus = document.activeElement;
+        modal.hidden = false;
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('el-no-scroll');
+        var closeBtn = modal.querySelector('.el-dialog__close');
+        if (closeBtn) closeBtn.focus();
+      }
+
+      function closeModal() {
+        modal.hidden = true;
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('el-no-scroll');
+        if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+      }
+
+      openers.forEach(function (el) { el.addEventListener('click', openModal); });
+      closers.forEach(function (el) { el.addEventListener('click', closeModal); });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !modal.hidden) closeModal();
+      });
+
+      modal.addEventListener('keydown', function (e) {
+        if (e.key !== 'Tab') return;
+        var focusable = modal.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"])');
+        if (!focusable.length) return;
+        var first = focusable[0];
+        var last  = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+          if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
+        }
+      });
+
+    })();
+  </script>
+
+{%- endif -%}

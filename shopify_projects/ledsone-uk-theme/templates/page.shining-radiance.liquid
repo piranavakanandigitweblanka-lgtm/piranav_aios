@@ -4,7 +4,7 @@
 <channel>
 <title>{{shop.name | escape }} Products</title>
 <link>{{shop.url}}</link>
-   {% assign target_collection = collections['shining-radiance'] %}
+   {% assign target_collection = collections['bulk-pendant-light'] %}
 {% paginate target_collection.products by 5000 %}
 
    {% for product in target_collection.products %}

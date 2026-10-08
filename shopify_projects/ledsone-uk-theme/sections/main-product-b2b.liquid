@@ -1,0 +1,403 @@
+{{ 'product-details.css' | asset_url | stylesheet_tag }}
+{{ 'product.css' | asset_url | stylesheet_tag }}
+{{ 'product-b2b.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign st              = section.settings
+  assign current_variant = product.selected_or_first_available_variant
+  assign base_price      = current_variant.price
+
+  comment
+    B2B Tier config — edit here to change tiers or codes.
+    tier_qtys  : minimum quantity for each tier
+    tier_pcts  : discount % for each tier (0 = standard price)
+    tier_codes : Shopify discount code for each tier (blank = no code for standard tier)
+    All three arrays must have the same number of items.
+    Phase 2: override via product metafield custom.b2b_tiers
+  endcomment
+  assign tier_qtys  = '1,2,4,6,8,10,20,50,100' | split: ','
+  assign tier_pcts  = '0,5,10,15,20,25,30,40,50' | split: ','
+  assign tier_codes = ',B2B5,B2B10,B2B15,B2B20,B2B25,B2B30,B2B40,B2B50' | split: ','
+-%}
+
+<div
+  class="bls__section bls__template-product"
+  data-section="{{ section.id }}"
+  data-product-id="{{ product.id }}"
+>
+  <div class="{{ st.layout | default: 'container' }}">
+
+    {%- render 'breadcrumbs' -%}
+
+    <div class="row" style="--bls-gutter-x: 3rem">
+      <div class="bls__template-main-product">
+        <div class="row">
+
+          {%- comment -%}── LEFT: GALLERY — theme product-media snippet ──{%- endcomment -%}
+          <div class="col-lg-6 col-12 bls__product-images bls__product-thumbnails-left">
+            {%- render 'product-media',
+              st: st,
+              design: 'thumbnails-left',
+              variant: product.options_with_values,
+              option_name: 'Color',
+              zoom_option: st.image_action
+            -%}
+          </div>
+
+          {%- comment -%}── RIGHT: PRODUCT INFO ──{%- endcomment -%}
+          <div class="col-lg-6 col-12">
+            <div class="bls__product-details-infor">
+
+              {%- if product.vendor != blank -%}
+                <div class="bls__product-vendors">{{ product.vendor | link_to_vendor }}</div>
+              {%- endif -%}
+
+              <h1 class="bls__product-title mb-5">{{ product.title }}</h1>
+
+              {%- if current_variant.sku != blank -%}
+                <p class="fs-small mb-10">
+                  <span class="heading-weight">SKU:</span>
+                  <span id="b2b-sku-value">{{ current_variant.sku }}</span>
+                </p>
+              {%- endif -%}
+
+              {%- comment -%}── Price: theme snippet (updates on variant change via our B2B JS) ──{%- endcomment -%}
+              <div id="price-{{ section.id }}" class="bls__product-price biger-price pb-10 pt-5">
+                {%- render 'price', product: product, use_variant: true, price_class: 'price--large' -%}
+              </div>
+
+              {%- comment -%}────────────────────────────────────────────────────
+                B2B BULK PRICING TABLE — new B2B-only UI
+              ────────────────────────────────────────────────────{%- endcomment -%}
+              <div class="b2b-pricing-block mb-20">
+                <div class="b2b-pricing-header">
+                  <span class="heading-weight fs-small">B2B Bulk Pricing</span>
+                  <span class="grey-color fs-small"> — Save more when you buy more</span>
+                </div>
+                <div class="b2b-tier-grid" id="b2b-tier-grid">
+                  {%- for tier_qty in tier_qtys -%}
+                    {%- assign i    = forloop.index0 -%}
+                    {%- assign pct  = tier_pcts[i] | plus: 0 -%}
+                    {%- assign code = tier_codes[i] -%}
+                    <div
+                      class="b2b-tier{% if forloop.first %} active{% endif %}"
+                      data-qty="{{ tier_qty }}"
+                      data-discount="{{ pct }}"
+                      data-code="{{ code }}"
+                    >
+                      <div class="b2b-tier-qty">{{ tier_qty }}{%- unless forloop.last -%}+{%- endunless -%}</div>
+                      {%- if pct > 0 -%}
+                        <div class="b2b-tier-save">-{{ pct }}%</div>
+                        <div class="b2b-tier-code">{{ code }}</div>
+                      {%- else -%}
+                        <div class="b2b-tier-save b2b-tier-save--none">Standard</div>
+                      {%- endif -%}
+                    </div>
+                  {%- endfor -%}
+                </div>
+              </div>
+
+              {%- comment -%}────────────────────────────────────────────────────
+                PRODUCT FORM
+                product-form web component handles AJAX add-to-cart
+                Form ID matches what VariantSelects expects: product-form-{{ section.id }}
+              ────────────────────────────────────────────────────{%- endcomment -%}
+              <product-form class="product-form">
+                <div class="product-form__error-message-wrapper" role="alert" hidden>
+                  <span class="product-form__error-message"></span>
+                </div>
+
+                {%- assign b2b_form_id = 'product-form-' | append: section.id -%}
+                {%- form 'product', product,
+                  id: b2b_form_id,
+                  class: 'form',
+                  novalidate: 'novalidate',
+                  data-type: 'add-to-cart-form'
+                -%}
+                  <input type="hidden" name="id" value="{{ current_variant.id }}" id="b2b-variant-id">
+
+                  {%- comment -%}── Variant selector (only for multi-variant products) ──{%- endcomment -%}
+                  {%- unless product.has_only_default_variant -%}
+                    <div class="mb-15">
+                      <label class="form__label mb-8 d-block heading-weight fs-small">
+                        {{- 'products.product.product_variants' | t -}}
+                      </label>
+                      <select
+                        id="b2b-variant-select"
+                        class="select__select border btn-radius px-12 py-8 fs-small"
+                        style="width:100%"
+                        aria-label="{{ 'products.product.product_variants' | t }}"
+                      >
+                        {%- for variant in product.variants -%}
+                          <option
+                            value="{{ variant.id }}"
+                            {% if variant == current_variant %}selected{% endif %}
+                            {% unless variant.available %}disabled{% endunless %}
+                            data-price="{{ variant.price }}"
+                            data-sku="{{ variant.sku }}"
+                          >
+                            {{ variant.title }}
+                            ({{ variant.price | money }})
+                            {%- unless variant.available %} — Sold out{%- endunless -%}
+                          </option>
+                        {%- endfor -%}
+                      </select>
+                    </div>
+                  {%- endunless -%}
+
+                  {%- comment -%}── Quantity: theme quantity-input web component ──{%- endcomment -%}
+                  <div class="product-form__input product-form__quantity mb-15">
+                    <label class="form__label mb-8 d-block heading-weight fs-small" for="Quantity-{{ section.id }}">
+                      {{ 'products.product.quantity.label' | t }}
+                    </label>
+                    <quantity-input class="quantity btn-radius border px-8 bg-grey flex align-items-center text-center min-height-50">
+                      <button
+                        class="btn-reset flex justify-content-center align-items-center quantity__button no-js-hidden width-35"
+                        name="minus"
+                        title="Minus"
+                        type="button">
+                        <svg width="11" height="2" viewBox="0 0 11 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M11 0.5L11 1.5L-4.37114e-08 1.5L0 0.5L11 0.5Z" fill="#111111"/>
+                        </svg>
+                      </button>
+                      <input
+                        class="quantity__input bg-unset border-none text-center width-50 appearance-none p-0-important product-detail__input"
+                        type="number"
+                        name="quantity"
+                        id="Quantity-{{ section.id }}"
+                        min="1"
+                        value="1"
+                        data-b2b-qty
+                        aria-label="{{ 'products.product.quantity.label' | t }}"
+                      >
+                      <button
+                        class="btn-reset btn-add flex justify-content-center align-items-center quantity__button no-js-hidden width-35"
+                        name="plus"
+                        title="Plus"
+                        type="button">
+                        <svg width="11" height="12" viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M5 11.5H6L6 6.5H11V5.5H6L6 0.5H5L5 5.5H0V6.5H5L5 11.5Z" fill="#111111"/>
+                        </svg>
+                      </button>
+                    </quantity-input>
+                  </div>
+
+                  {%- comment -%}── B2B purchase summary ──{%- endcomment -%}
+                  <div class="b2b-purchase-summary mb-15" aria-live="polite" aria-atomic="true">
+                    <div class="b2b-summary-row">
+                      <span class="fs-small grey-color">Unit price</span>
+                      <span class="heading-weight">{{ base_price | money }}</span>
+                    </div>
+                    <div class="b2b-summary-row">
+                      <span class="fs-small grey-color">Quantity</span>
+                      <span class="heading-weight" id="b2b-summary-qty">1 unit</span>
+                    </div>
+                    <div class="b2b-summary-row b2b-summary-total-row">
+                      <span class="fs-small heading-weight">Standard total</span>
+                      <span class="b2b-summary-total heading-weight" id="b2b-summary-total">{{ base_price | money }}</span>
+                    </div>
+                  </div>
+
+                  {%- comment -%}── Discount code panel (shown when a discount tier is active) ──{%- endcomment -%}
+                  <div class="b2b-code-panel mb-15" id="b2b-code-panel" style="display:none">
+                    <div class="b2b-code-panel__header">
+                      <span class="fs-small heading-weight">Your B2B discount code</span>
+                      <span class="b2b-code-panel__pct fs-small primary-color" id="b2b-code-pct"></span>
+                    </div>
+                    <div class="b2b-code-panel__row">
+                      <span class="b2b-code-panel__code heading-weight" id="b2b-code-value"></span>
+                      <button type="button" class="b2b-code-copy-btn fs-small" id="b2b-code-copy" aria-label="Copy discount code">Copy</button>
+                    </div>
+                    <p class="fs-small grey-color mb-0 mt-5">
+                      This code will be pre-filled at cart. Apply it at checkout to receive your discount.
+                    </p>
+                  </div>
+
+                  {%- comment -%}── Stock ──{%- endcomment -%}
+                  <p class="fs-small mb-10">
+                    {%- if current_variant.available -%}
+                      <span class="primary-color">✓
+                        {%- if current_variant.inventory_management == 'shopify' and current_variant.inventory_quantity > 0 -%}
+                          In Stock · {{ current_variant.inventory_quantity }} available
+                        {%- else -%}
+                          Available to order
+                        {%- endif -%}
+                      </span>
+                    {%- else -%}
+                      <span class="grey-color">Out of Stock</span>
+                    {%- endif -%}
+                  </p>
+
+                  {%- comment -%}── Add to Cart: theme button classes ──{%- endcomment -%}
+                  <div class="product-form__buttons bls__product-purchase-row flex mb-15">
+                    <div class="bls__product-buy-row flex flex-1">
+                      <button
+                        type="submit"
+                        name="add"
+                        class="product-form__submit relative whitespace-nowrap min-height-48"
+                        {%- unless current_variant.available %} disabled{% endunless -%}
+                      >
+                        <span class="hidden-loading">
+                          {%- if current_variant.available -%}
+                            {{ 'products.product.add_to_cart' | t }}
+                          {%- else -%}
+                            {{ 'products.product.sold_out' | t }}
+                          {%- endif -%}
+                        </span>
+                        <span class="loader-icon"></span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <p class="fs-small grey-color mb-0" id="b2b-atc-note">
+                    Add to cart, then apply your B2B code at checkout. Standard price applies until the code is entered.
+                  </p>
+
+                {%- endform -%}
+              </product-form>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    {%- comment -%}────────────────────────────────────────────────────
+      TABS — uses theme tab structure exactly:
+      .nav-tabs a[data-block-id] → panel #[data-block-id] > .tab-panel
+    ────────────────────────────────────────────────────{%- endcomment -%}
+    <div class="bls__section bls__product-tabs design-tab mt-40 mb-60" data-section-type="tabs" data-section-id="{{ section.id }}-tabs">
+      <div class="{{ st.layout | default: 'container' }}">
+        <div class="product info detailed">
+          <div class="product data items">
+            <ul class="nav nav-tabs list-none text-center pl-0 flex flex-wrap justify-content-start mb-0 mt-0">
+              <li class="data item active">
+                <a class="is-nav-tabs heading-weight relative heading-color px-20 py-10 inline-block" href="#b2bAbout" data-block-id="b2bAbout">About</a>
+              </li>
+              <li class="data item">
+                <a class="is-nav-tabs heading-weight relative heading-color px-20 py-10 inline-block" href="#b2bSpecs" data-block-id="b2bSpecs">Specifications</a>
+              </li>
+              <li class="data item">
+                <a class="is-nav-tabs heading-weight relative heading-color px-20 py-10 inline-block" href="#b2bDocs" data-block-id="b2bDocs">Documents</a>
+              </li>
+            </ul>
+            <div class="tab-content">
+
+              <div id="b2bAbout" class="tab-item active">
+                <div class="tab-panel rte py-20">
+                  {%- if product.description != blank -%}
+                    {{ product.description }}
+                  {%- else -%}
+                    <p>No description available for this product.</p>
+                  {%- endif -%}
+                </div>
+              </div>
+
+              <div id="b2bSpecs" class="tab-item">
+                <div class="tab-panel py-20" style="display:none">
+                  {%- if product.metafields.custom.specifications != blank -%}
+                    <div class="rte">{{ product.metafields.custom.specifications }}</div>
+                  {%- else -%}
+                    <table class="b2b-spec-table">
+                      <tbody>
+                        {%- if product.vendor != blank -%}<tr><th>Brand</th><td>{{ product.vendor }}</td></tr>{%- endif -%}
+                        {%- if product.type != blank -%}<tr><th>Type</th><td>{{ product.type }}</td></tr>{%- endif -%}
+                        {%- if current_variant.sku != blank -%}<tr><th>SKU</th><td>{{ current_variant.sku }}</td></tr>{%- endif -%}
+                        {%- if current_variant.weight > 0 -%}<tr><th>Weight</th><td>{{ current_variant.weight }} {{ current_variant.weight_unit }}</td></tr>{%- endif -%}
+                        {%- for tag in product.tags -%}
+                          {%- if tag contains ':' -%}
+                            {%- assign tag_parts = tag | split: ':' -%}
+                            <tr><th>{{ tag_parts[0] | capitalize }}</th><td>{{ tag_parts[1] | strip }}</td></tr>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      </tbody>
+                    </table>
+                  {%- endif -%}
+                </div>
+              </div>
+
+              <div id="b2bDocs" class="tab-item">
+                <div class="tab-panel rte py-20" style="display:none">
+                  {%- if product.metafields.custom.documents != blank -%}
+                    {{ product.metafields.custom.documents }}
+                  {%- else -%}
+                    <p>No documents available. <a href="/pages/contact">Contact us</a> to request a datasheet.</p>
+                  {%- endif -%}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{%- comment -%}── Tier + currency data for B2B JS ──{%- endcomment -%}
+<script type="application/json" id="b2b-tier-data">
+{
+  "currencySymbol": {{ cart.currency.symbol | json }},
+  "basePrice": {{ base_price }},
+  "tiers": [
+    {%- for tier_qty in tier_qtys -%}
+      {%- assign i    = forloop.index0 -%}
+      {%- assign pct  = tier_pcts[i] | plus: 0 -%}
+      {%- assign code = tier_codes[i] -%}
+      { "qty": {{ tier_qty | plus: 0 }}, "discount": {{ pct }}, "code": {{ code | json }} }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+}
+</script>
+
+{{ 'product-b2b.js' | asset_url | script_tag }}
+
+{% schema %}
+{
+  "name": "B2B Product",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "container", "label": "Container" },
+        { "value": "container-fluid", "label": "Full width" },
+        { "value": "container-expand", "label": "Expand" }
+      ],
+      "default": "container"
+    },
+    {
+      "type": "select",
+      "id": "image_action",
+      "label": "Image zoom",
+      "options": [
+        { "value": "show_zoom_button", "label": "Zoom button" },
+        { "value": "show_zoom_hover", "label": "Zoom on hover" },
+        { "value": "", "label": "None" }
+      ],
+      "default": "show_zoom_button"
+    },
+    {
+      "type": "select",
+      "id": "thumbnails_mobile",
+      "label": "Mobile thumbnails",
+      "options": [
+        { "value": "1", "label": "Show thumbnails" },
+        { "value": "2", "label": "Show dots" },
+        { "value": "0", "label": "Hide" }
+      ],
+      "default": "1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "B2B Product",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

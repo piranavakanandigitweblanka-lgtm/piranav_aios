@@ -1,0 +1,55 @@
+CONDUIT ACCESSORIES: WEBSITE BUILD TASKS (VERSION 2)
+For: Piranav
+Date: 1 October 2026
+Version 2 replaces version 1. The tasks are the same; the approvers are now split.
+
+WHO APPROVES WHAT FROM 1 OCTOBER 2026
+Every product now has one portfolio holder who owns its content and decisions on every channel. The rule is Create Once, Deploy Everywhere.
+Your work is site-wide website work (theme, collection structure, filters, structured data templates, stock message, pages), so Muguntha, website team leader, approves it. Work on a duplicate of the live theme first, send screenshots to Muguntha, and publish only after his OK.
+Product facts and text that appear inside your templates (intro facts, specs values, FAQ answers about a product) come from Arudchelvi, portfolio holder for Conduit Lighting, and Thurgesan verifies the technical values. Do not write product facts yourself.
+Reference files: Component_listing_standard_staff_2026-10-01_v2.txt (attached). The collection page structure and the structured data examples are available on request; reply to this email if you need them.
+
+STEP 1. Duplicate the live theme (today)
+Name it Conduit build 2026-10. Do every step below on the duplicate.
+
+STEP 2. Variants that show as sold out when stock exists (due Monday 5 October)
+Several variants with 3 or fewer units in UK stock show as unavailable online. Example: listing 5543 terminal box, 2-way PCGZ20MO and 3-way PCGZ20MY show 3 units each in the location stock table but cannot be bought. Note that this table's rows for these SKUs were last updated around 4 May 2026, and the warehouse unit table shows different figures (88 for PCGZ20MO), so first check which stock source Shopify actually reads; a stale feed may be the real cause rather than a buffer. Lamp holders and IP68 boxes show the same pattern.
+Find the rule or app setting that hides them (inventory sync buffer, safety stock or an app). Write down what it is and send it to Muguntha with a proposal. Do not change the rule until he decides. Also tell Arudchelvi, because the same buffer may hide stock on eBay and Amazon, which she owns for her products.
+How to check: after his decision, a variant with 1 to 3 units can be added to the basket.
+
+STEP 3. Collection page structure for Conduit Accessories (due Friday 16 October)
+Use the collection page structure (ask for it if you do not have it): SEO title, meta description, H1, intro text, the six-tile Which fitting do I need block, and new FAQs. Muguntha approves the page. Arudchelvi supplies and confirms any product facts in the intro and FAQs.
+Create 7 sub-collections (Muguntha approves the structure; Arudchelvi confirms which product goes in which): 20mm Conduit Fittings; 20mm Conduit Boxes and Lids; 16mm Lamp Pipe and Fittings; 3/4 inch BSP Pipe Fittings; M10 Lamp Threads and Reducers; Conduit Lamp Holders and Roses; Conduit Switches. Keep each sub-collection to one page of products, because the robots file blocks page 2 and later.
+Add filters for System, Thread, Finish, Pack size and In stock using product metafields.
+How to check: each sub-collection shows all its products on one page; the six tiles link correctly.
+
+STEP 4. Link the guides (due Friday 9 October)
+The collection links to no conduit guide today. Add a guides block on Conduit Accessories and Conduit Lighting linking to: The Ultimate Guide to Full 20mm Conduit Lighting Systems; How to build your own conduit pipe wall light; What Is Conduit Lighting?; Industrial Pipe Lighting UK Conduit Light Kits Buying Guide; Multi-Outlet Ceiling Roses. Take the exact links from the blog.
+How to check: each link opens the right article.
+
+STEP 5. Structured data (due Friday 16 October)
+Collection: add CollectionPage, ItemList, BreadcrumbList and FAQPage using the files in the jsonld folder. Build ItemList from the collection products in Liquid, not hard-coded.
+Product pages: add the review rating from Judge.me as aggregateRating (the M20 to M10 reducer page shows 17 reviews but has no rating in its structured data). Add each specs table field as additionalProperty (see product_template_example_5561.json). The template is Muguntha's; the values come from the specs table that Arudchelvi writes from Thurgesan's measurements. Make the breadcrumb follow the product's sub-collection, for example Home, Conduit Accessories, 20mm Conduit Fittings, product, instead of Home, ALL PRODUCTS, product.
+Only mark up questions that are visible on the page.
+How to check: Google Rich Results Test passes for one collection and three product pages; save the screenshots for Muguntha.
+
+STEP 6. Stock message (due Friday 16 October, after Muguntha decides)
+Show the exact number when 10 or fewer are left, for example Only 4 left. Above 10 show In stock.
+How to check: a product with low stock shows the number on the duplicate theme.
+
+STEP 7. Compatibility chart page (from Monday 19 October, after Thurgesan's measurements)
+Build a new page, Conduit Fittings Compatibility Chart. It is a table of the four systems (20mm conduit, 16mm lamp pipe, 3/4 inch BSP, M10 lamp thread) against components, with thread, pitch, outside and inside diameter, what connects to what, and the adaptors between systems. Thurgesan supplies the data, Arudchelvi confirms the product facts and Muguntha approves the page. Make it a real HTML table that works on mobile, with a printable PDF link. Link it from every conduit listing and both collections.
+How to check: the table reads on a phone; every component listing links to it.
+
+STEP 8. Send to Muguntha
+Send screenshots of each step from the duplicate theme to Muguntha. Publish only after his OK. AI will re-check the live pages afterwards.
+
+SUMMARY OF DUE DATES
+Today: Step 1.
+Monday 5 October: Step 2 (finding and proposal only).
+Friday 9 October: Step 4.
+Friday 16 October: Steps 3, 5 and 6.
+From Monday 19 October: Step 7.
+These are suggested dates. Muguntha can change them.
+
+Reminder: nothing goes live until Muguntha says OK.

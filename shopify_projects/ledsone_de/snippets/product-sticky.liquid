@@ -1,0 +1,464 @@
+
+{%comment %} Kuberan comment for new UI - 10/02/2026
+
+{% assign hidden_price = settings.hidden_price %}
+<div
+  id="bls__sticky-addcart"
+  class="bls__sticky-addcart{% if st.sticky_mode == '1' %} only-show-desktop d-none d-lg-block{% endif %} gradient color-default-color-scheme z-4 fixed inset-x-0 bottom-0 py-15 box-shadow-top"
+>
+  <div class="sticky-addcart flex justify-content-center justify-content-between-lg align-items-center container">
+    <div class="sticky-addcart-product flex-nowrap d-none d-lg-flex align-items-center d-none d-lg-block">
+      {%- liquid
+        assign image = current_variant.featured_image | default: product.featured_image
+      -%}
+      <div class="sticky-addcart-img mr-15 width-60">
+        {%- render 'responsive-image' | image: image | type: 'product' | cls: 'bls__product-grid bls__product-img-sw' -%}
+      </div>
+      <div class="sticky-addcart-infos">
+        {%- if settings.show_vendors -%}
+          <div class="bls__product-vendor fs-small mt-5 mb-5">
+            {{ product.vendor | link_to_vendor }}
+          </div>
+        {%- endif -%}
+        <div class="heading-color heading-weight">{{ product.title }}</div>
+        {% if hidden_price == false %}
+        <div class="price heading-weight fs-small mt-5">
+          {%- render 'price', product: product, use_variant: true, price_class: 'price--large' -%}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="sticky-addcart-product-form">
+      {%- if product.metafields.custom.external_affiliate == blank -%}
+        <product-form class="product-form flex flex-nowrap">
+          {%- assign product_form_id = 'sticky-addcart-form-' | append: section.id -%}
+          {%- form 'product',
+            product,
+            id: product_form_id,
+            class: 'form flex flex-nowrap',
+            novalidate: 'novalidate',
+            data-type: 'add-to-cart-form'
+          -%}
+            {%- if product.variants.size > 1 -%}
+              <select name="id" class="sticky-addcart-opstion mr-10 mr-lg-20 btn-radius">
+                {% for variant in product.variants %}
+                  {% assign selected = false %}
+                  {% assign quantity = variant.inventory_quantity %}
+                  {%- if quantity < 1 and variant.available == false -%}
+                    {% continue %}
+                  {%- endif -%}
+                  {%- if variant.id == product.selected_or_first_available_variant.id -%}
+                    {% assign selected = true %}
+                  {%- endif -%}
+                  {% assign option = variant.title %}
+                  <option
+                    value="{{ variant.id }}"
+                    data-option="{{ option }}"
+                    {% if selected %}
+                      selected="true"
+                    {% endif %}
+                  >
+                    {{ variant.title }} -
+                    {% if settings.currency_code_enabled %}
+                      {{ variant.price | money_with_currency }}
+                    {% else %}
+                      {{ variant.price | money }}
+                    {% endif %}
+                  </option>
+                {% endfor %}
+              </select>
+            {%- else -%}
+              <input
+                type="hidden"
+                name="id"
+                value="{{ product.selected_or_first_available_variant.id }}"
+                disabled
+              >
+            {%- endif -%}
+            <div class="product-form__buttons flex flex-nowrap">
+              <div class="product-form__input product-form__quantity" {{ block.shopify_attributes }}>
+                <label class="form__label visually-hidden" for="Quantity-Sticky-{{ section.id }}">
+                  {{ 'products.product.quantity.label' | t }}
+                </label>
+                <quantity-input class="btn-radius quantity  border bg-grey flex align-items-center text-center mr-10 mr-lg-20 px-8">
+                  <button
+                    class="btn-reset flex justify-content-center align-items-center quantity__button no-js-hidden width-35"
+                    name="minus"
+                    type="button"
+                  >
+                    <svg
+                      width="11"
+                      height="12"
+                      viewBox="0 0 11 2"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M11 0.5L11 1.5L-4.37114e-08 1.5L0 0.5L11 0.5Z" fill="#111111" />
+                    </svg>
+                  </button>
+                  <input
+                    class="quantity__input bg-unset border-none text-center width-50 appearance-none p-0-important product-sticky__input"
+                    type="number"
+                    name="quantity"
+                    id="Quantity-Sticky-{{ section.id }}"
+                    min="1"
+                    value="1"
+                    form="{{ product_form_id }}"
+                  >
+                  <button
+                    class="btn-reset flex justify-content-center align-items-center quantity__button no-js-hidden width-35"
+                    name="plus"
+                    type="button"
+                  >
+                    <svg
+                      width="11"
+                      height="12"
+                      viewBox="0 0 11 12"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M5 11.5H6L6 6.5H11V5.5H6L6 0.5H5L5 5.5H0V6.5H5L5 11.5Z"
+                        fill="#111111" />
+                    </svg>
+                  </button>
+                </quantity-input>
+              </div>
+              <button
+                type="submit"
+                name="add"
+                class="product-form__submit animation relative"
+                {% if product.selected_or_first_available_variant.available == false %}
+                  disabled
+                {% endif %}
+              >
+                <span>
+                  {%- if product.selected_or_first_available_variant.available -%}
+                    {{ 'products.product.add_to_cart' | t }}
+                  {%- else -%}
+                    {{ 'products.product.sold_out' | t }}
+                  {%- endif -%}
+                </span>
+                <span class="loader-icon"></span>
+              </button>
+            </div>
+          {%- endform -%}
+        </product-form>
+      {%- else -%}
+        <a
+          href="{{ product.metafields.custom.external_affiliate.value.external_link }}"
+          rel="nofollow"
+          target="_blank"
+          class="btn product-form__submit animation relative"
+        >
+          {{- product.metafields.custom.external_affiliate.value.button_text -}}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{%endcomment %}
+
+{%comment %} Kuberan added new UI - 10/02/2026 {%endcomment %}
+
+{% assign hidden_price = settings.hidden_price %}
+
+<style>
+  @media (max-width: 991px) {
+    #bls__sticky-addcart .sticky-addcart-wrapper {
+      justify-content: space-between !important; 
+      padding: 8px 8px !important;
+      border-radius: 0 !important;
+      max-width: 100% !important;
+       gap: 8px !important;  
+    }
+    
+    #bls__sticky-addcart .sticky-addcart-img {
+      width: 40px !important;
+      height: 40px !important;
+      margin-right: 8px !important;
+    }
+    
+    #bls__sticky-addcart .sticky-addcart-infos {
+      flex: 1;
+      min-width: 0;
+      max-width: 160px;
+      margin-right: 8px !important;  
+    }
+    
+    #bls__sticky-addcart .sticky-title {
+      font-size: 11px;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 500;
+      
+    }
+    
+    #bls__sticky-addcart .sticky-variant {
+      font-size: 10px;
+      color: #666;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+    
+    #bls__sticky-addcart .sticky-price {
+      display: block !important;
+      margin-left: auto;
+      margin-right: 10px;
+    }
+    
+    #bls__sticky-addcart .sticky-price .price {
+      font-size: 11px;
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+    
+    #bls__sticky-addcart .sticky-price .price__regular,
+    #bls__sticky-addcart .sticky-price .price__sale {
+      font-size: 11px;
+    }
+    
+    #bls__sticky-addcart .sticky-price .price__regular .price-item--regular {
+      font-size: 11px;
+    }
+    
+    #bls__sticky-addcart .sticky-price .price__sale .price-item--sale {
+      font-size: 5px;
+    }
+    
+    #bls__sticky-addcart .sticky-price .price__sale .price-item--regular {
+      font-size: 5px !important;
+    }
+    
+    #bls__sticky-addcart .sticky-addcart-product-form {
+      margin-right: 0 !important;
+      margin-left: auto !important;
+      padding-left: 8px !important;
+    }
+    
+    #bls__sticky-addcart .product-form__submit {
+      padding: 10px !important;
+      min-width: 40px !important;
+      width: 40px !important;
+      height: 40px !important;
+    }
+    
+    #bls__sticky-addcart .product-form__submit svg {
+      width: 18px;
+      height: 18px;
+      margin: 0 !important;
+    }
+    
+    #bls__sticky-addcart .product-form__submit span:not(.loader-icon) {
+      display: none !important;
+    }
+    
+    #bls__sticky-addcart .container {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+  
+  @media (min-width: 992px) {
+    #bls__sticky-addcart .product-form__submit svg {
+      margin-right: 8px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get the main product form on the page
+    const mainProductForm = document.querySelector('form[action*="/cart/add"]:not(#bls__sticky-addcart form)');
+    const stickyForm = document.querySelector('#bls__sticky-addcart form');
+    
+    if (mainProductForm && stickyForm) {
+      // Sync variant selection
+      const mainVariantInput = mainProductForm.querySelector('input[name="id"]');
+      const stickyVariantInput = stickyForm.querySelector('input[name="id"]');
+      
+      // Sync quantity
+      const mainQuantityInput = mainProductForm.querySelector('input[name="quantity"], select[name="quantity"]');
+      const stickyQuantityInput = stickyForm.querySelector('input[name="quantity"]');
+      
+      // Update sticky form when main form variant changes
+      if (mainVariantInput && stickyVariantInput) {
+        const observer = new MutationObserver(function() {
+          stickyVariantInput.value = mainVariantInput.value;
+        });
+        
+        observer.observe(mainVariantInput, { attributes: true, attributeFilter: ['value'] });
+        
+        mainVariantInput.addEventListener('change', function() {
+          stickyVariantInput.value = this.value;
+        });
+      }
+      
+      // Update sticky form when main form quantity changes
+      if (mainQuantityInput && stickyQuantityInput) {
+        mainQuantityInput.addEventListener('change', function() {
+          stickyQuantityInput.value = this.value;
+        });
+        
+        mainQuantityInput.addEventListener('input', function() {
+          stickyQuantityInput.value = this.value;
+        });
+        
+        // For quantity buttons (+/-)
+        const quantityButtons = document.querySelectorAll('[data-quantity-button]');
+        quantityButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            setTimeout(() => {
+              if (mainQuantityInput) {
+                stickyQuantityInput.value = mainQuantityInput.value;
+              }
+            }, 100);
+          });
+        });
+      }
+      
+      // When sticky add-to-cart is clicked, sync values first
+      stickyForm.addEventListener('submit', function(e) {
+        if (mainVariantInput && stickyVariantInput) {
+          stickyVariantInput.value = mainVariantInput.value;
+        }
+        if (mainQuantityInput && stickyQuantityInput) {
+          stickyQuantityInput.value = mainQuantityInput.value;
+        }
+      });
+    }
+  });
+</script>
+
+<div
+  id="bls__sticky-addcart"
+  class="bls__sticky-addcart{% if st.sticky_mode == '1' %} only-show-desktop d-none d-lg-block{% endif %} z-4 fixed inset-x-0 bottom-0 py-15"
+  style="padding-bottom: env(safe-area-inset-bottom);"
+>
+  <div class="sticky-addcart flex justify-content-center container">
+    <div
+      class="sticky-addcart-wrapper bg-white flex align-items-center justify-content-between"
+      style="border-radius: 50px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); max-width:800px; width:100%; padding:10px 20px;"
+    >
+
+      {% liquid
+        assign image = current_variant.featured_image | default: product.featured_image
+        assign current_variant = product.selected_or_first_available_variant
+        assign title_words = product.title | split: ' '
+        assign short_title = title_words[0] | append: ' ' | append: title_words[1] | append: ' ' | append: title_words[2] | append: '...'
+      %}
+
+      <!-- PRODUCT INFO -->
+      <div class="sticky-addcart-product flex-nowrap flex align-items-center">
+        <div
+          class="sticky-addcart-img mr-15"
+          style="width:50px;height:50px;border-radius:10px;overflow:hidden;flex-shrink:0;"
+        >
+          {% render 'responsive-image',
+            image: image,
+            type: 'product',
+            cls: 'bls__product-grid bls__product-img-sw'
+          %}
+        </div>
+
+        <div class="sticky-addcart-infos">
+          <!-- SHORTENED TITLE -->
+          <div class="sticky-title d-none d-lg-block">
+            {{ product.title | truncate: 28, '...' }}
+          </div>
+          <div class="sticky-title d-lg-none">
+            {{ short_title }}
+          </div>
+
+          <!-- Stock Status -->
+          <div class="sticky-variant" style="display: flex; align-items: center; margin-top: 4px;">
+            {% if current_variant.available %}
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="#4CAF50" style="margin-right: 4px; flex-shrink: 0;">
+                <circle cx="10" cy="10" r="10" fill="#4CAF50"/>
+                <path d="M6 10l2.5 2.5L14 7" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span style="color: #4CAF50; font-size: 11px;"> auf Lager </span>
+            {% else %}
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="#f44336" style="margin-right: 4px; flex-shrink: 0;">
+                <circle cx="10" cy="10" r="10" fill="#f44336"/>
+                <path d="M6 6l8 8M14 6l-8 8" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span style="color: #f44336; font-size: 11px;"> ausverkauft </span> 
+            {% endif %}
+          </div>
+
+        </div>
+      </div>
+
+      {% if hidden_price == false %}
+        <div class="sticky-price">
+          {% render 'price', product: product, use_variant: true %}
+        </div>
+      {% endif %}
+
+      <!-- ADD TO CART -->
+      <div class="sticky-addcart-product-form">
+        {% if product.metafields.custom.external_affiliate == blank %}
+          <product-form class="product-form flex flex-nowrap">
+            {% assign product_form_id = 'sticky-addcart-form-' | append: section.id %}
+            {% form 'product',
+              product,
+              id: product_form_id,
+              class: 'form flex flex-nowrap',
+              novalidate: 'novalidate',
+              data-type: 'add-to-cart-form'
+            %}
+
+              <input
+                type="hidden"
+                name="id"
+                value="{{ current_variant.id }}"
+                class="sticky-variant-id"
+              >
+
+              <input 
+                type="hidden" 
+                name="quantity" 
+                value="1"
+                class="sticky-quantity"
+              >
+
+              <button
+                type="submit"
+                name="add"
+                class="product-form__submit animation relative flex align-items-center justify-content-center"
+                style="background:#45789E;color:#fff;border:none;border-radius:50px;padding:12px 24px;font-size:14px;font-weight:500;"
+                {% if current_variant.available == false %}
+                  disabled
+                {% endif %}
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M6 16a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm12 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM1 0h3l2.7 11h9.6l2.5-6H6.1"/>
+                </svg>
+
+                <span>
+                  {% if current_variant.available %}
+                    {{ 'products.product.add_to_cart' | t }}
+                  {% else %}
+                    {{ 'products.product.sold_out' | t }}
+                  {% endif %}
+                </span>
+
+                <span class="loader-icon"></span>
+              </button>
+
+            {% endform %}
+          </product-form>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</div>

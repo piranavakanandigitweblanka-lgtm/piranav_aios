@@ -1,0 +1,677 @@
+<!--  SORT + FILTER TOOLBAR -->
+<div class="ccp-toolbar-wrapper">
+  <div class="ccp-toolbar">
+
+    <div class="ccp-left-controls">
+      <!-- FILTER BUTTON LEFT -->
+      <button id="ccp-filter-open" class="ccp-filter-btn">
+        <svg width="18" height="18" fill="currentColor">
+          <path d="M3 5h12v2H3zm4 4h4v2H7zm2 4h0v2h0z"/>
+        </svg>
+        Filter
+      </button>
+
+      <!-- COLOUR DROPDOWN FILTER -->
+      {% assign all_colors = '' %}
+      {% for product in collection.products %}
+        {% unless product.available %}{% continue %}{% endunless %}
+        {% for option in product.options_with_values %}
+          {% assign option_name_lower = option.name | downcase %}
+          {% if option_name_lower == 'farbe' or option_name_lower == 'color' or option_name_lower == 'colour' %}
+            {% for value in option.values %}
+              {% assign value_lower = value | downcase %}
+              {% unless all_colors contains value_lower %}
+                {% assign all_colors = all_colors | append: value_lower | append: '||' %}
+              {% endunless %}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+
+      {% assign color_list = all_colors | split: '||' %}
+      {% if color_list.size > 0 %}
+        <div class="ccp-color-filter" id="ccp-color-filter">
+          <select id="ccp-color-select">
+            <option value="">Farbe wählen</option>
+            {% for color in color_list %}
+              {% if color != '' %}
+                <option value="{{ color }}">{{ color | capitalize }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- SORT BY DROPDOWN RIGHT -->
+    <form id="ccp-sortby-form" class="ccp-sortby">
+      <label for="ccp-sort">Sortieren nach:</label>
+      <select id="ccp-sort" name="sort_by">
+        {% for option in collection.sort_options %}
+          <option value="{{ option.value }}"
+            {% if option.value == collection.sort_by %}selected{% endif %}>
+            {{ option.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </form>
+
+  </div>
+</div>
+
+<!--  ACTIVE FILTER TAGS  -->
+{% if collection.filters.size > 0 %}
+<div class="ccp-active-filters">
+  {% for filter in collection.filters %}
+    {% for active in filter.active_values %}
+      <a href="{{ active.url_to_remove }}" class="ccp-tag">{{ active.label }} ✕</a>
+    {% endfor %}
+  {% endfor %}
+
+  {% if collection.url_to_remove_all_filters %}
+    <a href="{{ collection.url_to_remove_all_filters }}" class="ccp-clear">Clear all</a>
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- FILTER DRAWER -->
+<div id="ccp-filter-drawer" class="ccp-drawer">
+  <div class="ccp-drawer-header">
+    <h3>Filter</h3>
+    <button id="ccp-filter-close" class="ccp-close">✕</button>
+  </div>
+
+  <div class="ccp-drawer-body">
+    {% for filter in collection.filters %}
+      <div class="ccp-filter-block">
+        <h4>{{ filter.label }}</h4>
+
+        {% case filter.type %}
+
+        {% when 'list' %}
+          {% for value in filter.values %}
+            <label class="ccp-filter-option">
+              <input type="checkbox" data-url="{{ value.url_to_add }}" {% if value.active %}checked{% endif %}>
+              {{ value.label }} ({{ value.count }})
+            </label>
+          {% endfor %}
+
+        {% when 'price_range' %}
+          <form action="{{ filter.url_to_add }}" class="ccp-price-form">
+            <input type="number" name="{{ filter.min_value.param_name }}" placeholder="Min" value="{{ filter.min_value.value | money_without_currency }}">
+            <input type="number" name="{{ filter.max_value.param_name }}" placeholder="Max" value="{{ filter.max_value.value | money_without_currency }}">
+            <button type="submit">Apply</button>
+          </form>
+
+        {% endcase %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- DARK OVERLAY  -->
+<div id="ccp-filter-overlay" class="ccp-overlay"></div>
+
+
+
+
+{% assign selected_collection = collection %}
+
+<div class="custom-collection-wrapper">
+
+  {% if selected_collection %}
+
+    {% paginate selected_collection.products by 60 %}
+
+<div class="product-grid">
+  {% assign show_count = 0 %}
+  {% assign current_page = paginate.current_page | default: 1 %}
+  {% assign products_per_page = 24 %}
+  {% assign skip_count = 0 %}
+  {% assign page_offset = current_page | minus: 1 | times: products_per_page %}
+
+  {% for product in selected_collection.products %}
+    {% unless product.available %}{% continue %}{% endunless %}
+
+    {% if skip_count < page_offset %}
+      {% assign skip_count = skip_count | plus: 1 %}
+      {% continue %}
+    {% endif %}
+
+    {% assign show_count = show_count | plus: 1 %}
+    {% if show_count > 24 %}{% break %}{% endif %}
+
+    <!-- BUILD COLOUR DATA FOR THIS PRODUCT -->
+    {% assign product_colors = '' %}
+    {% for option in product.options_with_values %}
+      {% assign opt_lower = option.name | downcase %}
+      {% if opt_lower == 'farbe' or opt_lower == 'color' or opt_lower == 'colour' %}
+        {% for v in option.values %}
+          {% assign product_colors = product_colors | append: v | downcase | append: '||' %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+
+    <div class="product-card" data-color="{{ product_colors }}">
+
+      {% assign published_time = product.published_at | default: product.created_at | date: '%s' %}
+      {% assign now_time = 'now' | date: '%s' %}
+      {% assign days_since_published = now_time | minus: published_time | divided_by: 86400 %}
+
+      {% if days_since_published <= 7 %}
+        <span class="new-badge">Neu</span>
+      {% endif %}
+
+      {% assign selected_variant = product.variants.first %}
+      {% for variant in product.variants %}
+        {% if variant.available %}
+          {% assign selected_variant = variant %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+
+      {% if selected_variant.compare_at_price > selected_variant.price %}
+        {% assign discount = selected_variant.compare_at_price | minus: selected_variant.price %}
+        {% assign percent = discount | times: 100.0 | divided_by: selected_variant.compare_at_price %}
+        <span class="offer-badge">{{ percent | round }}%  </span>
+      {% endif %}
+
+      {% if product.tags contains 'bulk buy' %}
+      <span class="bulk-badge">% Großabnahme </span>
+      {% endif %}
+
+      {% if section.settings.show_badge and days_since_published > 7 %}
+        <span class="deal-badge">{{ section.settings.badge_text }}</span>
+      {% endif %}
+
+      <div class="product-image-wrapper">
+        <a href="{{ product.url }}">
+          <img
+            class="main-image"
+            src="{{ product.featured_image | image_url: width: 500, height: 500 }}"
+            alt="{{ product.title }}"
+            width="500"
+            height="500"
+          />
+        </a>
+      </div>
+
+      <div class="product-info">
+        <a href="{{ product.url }}" class="product-title-link">
+          <h3 class="product-title">{{ product.title }}</h3>
+        </a>
+
+        <div class="jdgm-widget jdgm-preview-badge" data-id='{{ product.id }}' data-auto-install='false'>
+          {{ product.metafields.judgeme.badge }}
+        </div>
+
+        <div class="price-wrapper">
+          {% if selected_variant.compare_at_price > selected_variant.price %}
+            <span class="sale-price">{{ selected_variant.price | money }}</span>
+            <span class="compare-price">{{ selected_variant.compare_at_price | money }}</span>
+          {% else %}
+            <span class="regular-price">{{ selected_variant.price | money }}</span>
+          {% endif %}
+
+           {% render 'stock-badge', product: product %}
+
+          {% if product.available %}
+            <span class="stock-status in-stock">✓ auf Lager</span>
+          {% else %}
+            <span class="stock-status out-of-stock">Ausverkauft</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if show_count == 8 and section.settings.show_custom_row %}
+      <div class="custom-row">
+        {{ section.settings.custom_row_content }}
+      </div>
+    {% endif %}
+
+    {% if show_count == 16 and section.settings.show_custom_row %}
+      <div class="custom-row">
+        {{ section.settings.custom_row_content }}
+      </div>
+    {% endif %}
+
+    {% if show_count == 14 and section.settings.banner_right_image %}
+      <div class="banner-wrapper right-banner">
+        <a href="{{ section.settings.banner_right_link }}">
+          <img src="{{ section.settings.banner_right_image | img_url: '800x' }}">
+        </a>
+      </div>
+    {% endif %}
+
+    {% if show_count == 18 and section.settings.banner_left_image %}
+      <div class="banner-wrapper left-banner">
+        <a href="{{ section.settings.banner_left_link }}">
+          <img src="{{ section.settings.banner_left_image | img_url: '800x' }}">
+        </a>
+      </div>
+    {% endif %}
+
+  {% endfor %}
+</div>
+
+
+    {% if paginate.pages > 1 %}
+    <div class="custom-pagination-wrapper">
+      <ul class="custom-pagination">
+
+        {% if paginate.previous %}
+          <li>
+            <a href="{{ paginate.previous.url }}" class="circle">&laquo;</a>
+          </li>
+        {% endif %}
+
+        {% for part in paginate.parts %}
+          <li>
+            {% if part.is_link %}
+              <a href="{{ part.url }}" class="circle">{{ part.title }}</a>
+            {% else %}
+              <span class="circle active">{{ part.title }}</span>
+            {% endif %}
+          </li>
+        {% endfor %}
+
+        {% if paginate.next %}
+          <li>
+            <a href="{{ paginate.next.url }}" class="circle">&raquo;</a>
+          </li>
+        {% endif %}
+
+      </ul>
+    </div>
+    {% endif %}
+
+    {% endpaginate %}
+
+  {% else %}
+    <p>No collection found.</p>
+  {% endif %}
+</div>
+
+<style>
+/* CCP TOOLBAR */
+.ccp-toolbar-wrapper {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.ccp-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 25px 0 20px;
+  gap: 10px;
+}
+
+.ccp-left-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ccp-filter-btn {
+  padding: 7px 14px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.ccp-filter-btn:hover { background: #333; }
+
+.ccp-color-filter select {
+  font-size: 14px;
+  padding: 7px 12px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+}
+
+.ccp-sortby select {
+  font-size: 14px;
+  padding: 7px 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+/* ACTIVE FILTER TAGS */
+.ccp-active-filters {
+  max-width: 1220px;
+  margin: 10px auto 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ccp-tag {
+  padding: 6px 10px;
+  background: #eee;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.ccp-clear {
+  color: red;
+  font-weight: 600;
+}
+
+/* DRAWER */
+.ccp-drawer {
+  position: fixed;
+  top: 0;
+  right: -350px;
+  width: 320px;
+  height: 100%;
+  background: #fff;
+  z-index: 99999;
+  transition: 0.35s ease;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.16);
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.ccp-drawer.active { right: 0; }
+
+.ccp-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ccp-close {
+  background: transparent;
+  border: none;
+  font-size: 22px;
+}
+
+.ccp-filter-block { margin-top: 20px; }
+
+.ccp-filter-option {
+  display: flex;
+  gap: 10px;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.ccp-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.45);
+  z-index: 9999;
+}
+
+.ccp-overlay.active { display: block; }
+
+.ccp-price-form { margin-top: 30px; }
+.ccp-price-form input { margin-bottom: 8px; }
+
+.custom-collection-wrapper {
+  max-width: 1200px;
+  margin: auto;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.product-card {
+  position: relative;
+  border: 1px solid #ececec;
+  padding: 12px;
+  background: #fff;
+  border-radius: 6px;
+  transition: 0.2s ease;
+  overflow: hidden;
+}
+
+.product-card:hover { border-color: rgb(0, 72, 136); }
+
+.product-image-wrapper { position: relative; }
+
+.main-image {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: contain;
+  transition: 0.3s ease;
+}
+
+.product-title-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.product-title-link:hover .product-title { color: #4A90E2; }
+
+.product-title {
+  font-size: 14px;
+  line-height: 1.3;
+  height: 36px;
+  overflow: hidden;
+  margin-bottom: 6px;
+  transition: color 0.2s ease;
+}
+
+.price-wrapper {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sale-price { color: #b3001b; font-weight: 700; }
+.compare-price { text-decoration: line-through; color: #888; }
+
+.stock-status {
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.stock-status.in-stock { color: rgb(0, 87, 58); }
+.stock-status.out-of-stock { color: #d32f2f; }
+
+.offer-badge,
+.deal-badge {
+  position: absolute;
+  top: 0;
+  font-size: 12px;
+  padding: 5px 10px;
+  color: #fff;
+  z-index: 2;
+}
+
+.new-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgb(0, 92, 69);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 5px 6px;
+  z-index: 3;
+  text-transform: uppercase;
+}
+
+.offer-badge { right: 0; background: rgb(0, 16, 31); }
+.deal-badge { left: 0; background: #a80019; }
+
+.bulk-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #c8001e;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 8px;
+  z-index: 4;
+  text-transform: uppercase;
+  border-radius: 0 0 4px 0;
+}
+
+.custom-row {
+  grid-column: 1 / -1;
+  background: #ccc;
+  padding: 30px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.banner-wrapper {
+  grid-column: span 2;
+  margin: 40px 0;
+}
+
+/* PAGINATION */
+.custom-pagination-wrapper { text-align: center; margin: 40px 0 20px; }
+
+.custom-pagination {
+  list-style: none;
+  display: inline-flex;
+  gap: 16px;
+  padding: 0;
+  margin: 0;
+}
+
+.custom-pagination .circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1.4px solid #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #111;
+  background: #fff;
+  font-size: 16px;
+  text-decoration: none;
+}
+
+.custom-pagination .active {
+  border-color: #000;
+  font-weight: 600;
+}
+
+@media(max-width:768px){
+  .product-grid {
+    grid-template-columns: repeat(2,1fr) !important;
+    gap: 12px;
+  }
+  .custom-collection-wrapper {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  .variant-preview { display: none !important; }
+  .ccp-toolbar { gap: 20px; flex-wrap: wrap; }
+  .ccp-sortby { display: flex; gap: 5px; align-items: center; }
+}
+</style>
+
+<script>
+
+/* REDIRECT IF PAGE IS EMPTY */
+window.addEventListener('DOMContentLoaded', function () {
+  const cards = document.querySelectorAll('.product-card');
+  if (cards.length === 0) {
+    const url = new URL(window.location.href);
+    const currentPage = parseInt(url.searchParams.get('page')) || 1;
+    if (currentPage > 1) {
+      url.searchParams.set('page', currentPage - 1);
+      window.location.replace(url.toString());
+    } else {
+      url.searchParams.delete('page');
+      window.location.replace(url.toString());
+    }
+  }
+});
+
+/* SORT */
+document.getElementById('ccp-sort')?.addEventListener('change', function () {
+  const url = new URL(window.location.href);
+  url.searchParams.set('sort_by', this.value);
+  window.location.href = url.toString();
+});
+
+/* FILTER DRAWER */
+const drawer = document.getElementById('ccp-filter-drawer');
+const overlay = document.getElementById('ccp-filter-overlay');
+
+document.getElementById('ccp-filter-open')?.addEventListener('click', () => {
+  drawer.classList.add('active');
+  overlay.classList.add('active');
+});
+
+document.getElementById('ccp-filter-close')?.addEventListener('click', () => {
+  drawer.classList.remove('active');
+  overlay.classList.remove('active');
+});
+
+overlay?.addEventListener('click', () => {
+  drawer.classList.remove('active');
+  overlay.classList.remove('active');
+});
+
+/* FILTER CHECKBOX CLICK */
+document.querySelectorAll('.ccp-filter-option input').forEach(item => {
+  item.addEventListener('change', () => {
+    window.location.href = item.dataset.url;
+  });
+});
+
+/* COLOUR DROPDOWN FILTER */
+document.getElementById('ccp-color-select')?.addEventListener('change', function () {
+  const color = this.value;
+  document.querySelectorAll('.product-card').forEach(card => {
+    if (color === '') {
+      card.style.display = '';
+    } else {
+      const cardColors = card.dataset.color || '';
+      card.style.display = cardColors.includes(color + '||') ? '' : 'none';
+    }
+  });
+  document.querySelectorAll('.banner-wrapper, .custom-row').forEach(el => {
+    el.style.display = color === '' ? '' : 'none';
+  });
+});
+
+</script>
+
+{% schema %}
+{
+  "name": "Custom Collection Page2",
+  "settings": [
+    { "type": "checkbox", "id": "show_custom_row", "label": "Show custom row after 2nd row", "default": true },
+    { "type": "richtext", "id": "custom_row_content", "label": "Custom row content", "default": "<p>Place your custom content here.</p>" },
+    { "type": "checkbox", "id": "show_badge", "label": "Show Christmas Deal Badge", "default": true },
+    { "type": "text", "id": "badge_text", "label": "Badge Text", "default": "Christmas Deal" },
+    { "type": "image_picker", "id": "banner_right_image", "label": "Banner after 14th product (Right side)" },
+    { "type": "url", "id": "banner_right_link", "label": "Banner Right Link" },
+    { "type": "image_picker", "id": "banner_left_image", "label": "Banner after 18th product (Left side)" },
+    { "type": "url", "id": "banner_left_link", "label": "Banner Left Link" }
+  ],
+  "presets": [
+    { "name": "Custom Collection Page2" }
+  ]
+}
+{% endschema %}

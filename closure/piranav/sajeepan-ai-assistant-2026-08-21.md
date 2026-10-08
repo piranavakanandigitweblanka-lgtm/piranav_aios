@@ -32,7 +32,7 @@
 | Validation | `validation/piranav/sajeepan-ai-assistant-2026-08-21.md` |
 | Deployment | `deployment/piranav/sajeepan-ai-assistant-2026-08-21.md` |
 | Closure | `closure/piranav/sajeepan-ai-assistant-2026-08-21.md` |
-| Capability | `capability/piranav/sajeepan-ai-assistant-2026-08-21.md` |
+| Capability | `capability/2026/08/2026-08-21/sajeepan-ai-assistant-2026-08-21.md` |
 
 ---
 

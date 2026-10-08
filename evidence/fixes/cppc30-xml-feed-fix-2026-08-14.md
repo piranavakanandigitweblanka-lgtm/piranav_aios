@@ -111,4 +111,4 @@ Both confirmed: `product_img_url: 'large'`, `variant.description`, `variant.url`
 
 ## Capability Reference
 
-See: `capability/piranav/shopify-xml-feed-debugging-2026-08-14.md`
+See: `capability/2026/08/2026-08-14/shopify-xml-feed-debugging-2026-08-14.md`

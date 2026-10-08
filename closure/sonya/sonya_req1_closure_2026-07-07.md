@@ -66,7 +66,7 @@ A full Google Ads Campaign Performance Dashboard for Sonya, embedded in `pages/s
 | `validation/sonya/sonya_req1_validation_checklist_2026-07-07.md` | Created → Updated (v2) |
 | `implementation/sonya/sonya_req1_implementation_notes_2026-07-07.md` | Created → Updated (v2) |
 | `closure/sonya/sonya_req1_closure_2026-07-07.md` | Created (this file) |
-| `capability/sonya/sonya_req1_capability_notes_2026-07-07.md` | Created |
+| `capability/2026/07/2026-07-07/sonya_req1_capability_notes_2026-07-07.md` | Created |
 
 ---
 

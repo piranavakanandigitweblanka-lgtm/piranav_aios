@@ -26,10 +26,10 @@
 | README.md | `README.md` | Documentation | Project overview | All | EXISTS |
 | START_HERE.md | `START_HERE.md` | Protocol | Session protocol + role split | All | EXISTS |
 | PROMPT_REGISTER.md | `PROMPT_REGISTER.md` | Register | Reusable prompt catalog | All | EXISTS |
-| Sajeepan capability R1 | `capability/sajeepan/requirement-1-2026-07-14.md` | Capability | PMax dashboard R1 logic | SR-02 | EXISTS |
-| Sajeepan capability R2 | `capability/sajeepan/requirement-2-2026-07-28.md` | Capability | Waste/Intel dashboard R2 logic | SR-02 | EXISTS |
-| SEO dashboard capability | `capability/piranav/seo-dashboard-2026-08-03.md` | Capability | SEO intelligence dashboard | SR-02 | EXISTS |
-| Shopify shipping capability | `capability/piranav/shopify-shipping-rate-update-2026-08-11.md` | Capability | Bulk shipping rate update via MCP | Shopify | UNTRACKED — not committed |
+| Sajeepan capability R1 | `capability/2026/07/2026-07-14/requirement-1-2026-07-14.md` | Capability | PMax dashboard R1 logic | SR-02 | EXISTS |
+| Sajeepan capability R2 | `capability/2026/07/2026-07-28/requirement-2-2026-07-28.md` | Capability | Waste/Intel dashboard R2 logic | SR-02 | EXISTS |
+| SEO dashboard capability | `capability/2026/08/2026-08-03/seo-dashboard-2026-08-03.md` | Capability | SEO intelligence dashboard | SR-02 | EXISTS |
+| Shopify shipping capability | `capability/2026/08/2026-08-11/shopify-shipping-rate-update-2026-08-11.md` | Capability | Bulk shipping rate update via MCP | Shopify | UNTRACKED — not committed |
 | Germany dashboard closure | `closure/piranav/germany-dashboard-closure-2026-07-23.md` | Closure | Germany sales decline dashboard | SR-01 | EXISTS |
 | SEO dashboard closure | `closure/piranav/seo-dashboard-closure-2026-08-03.md` | Closure | SEO dashboard closure | SR-02 | EXISTS |
 | Report-6 closure | `closure/piranav/2026-08-06-report6-uk-bundle-opportunity.md` | Closure | UK Bundle Opportunity report | SR-01 | EXISTS |
@@ -176,7 +176,7 @@ The diff shows `eod-ads.html` has been expanded to support 4 additional members:
 |---|---|---|---|
 | Merge conflict | `Staff-requirements/pages/staff-id-performance.html` | Unmerged file | Cannot commit/push SR-01 until resolved |
 | Unstaged changes | `Staff-requirements-02/pages/eod-ads.html` | Unstaged | Will be lost if workspace is cleared |
-| Untracked file | `capability/piranav/shopify-shipping-rate-update-2026-08-11.md` | Untracked | Will be lost if workspace is cleared |
+| Untracked file | `capability/2026/08/2026-08-11/shopify-shipping-rate-update-2026-08-11.md` | Untracked | Will be lost if workspace is cleared |
 | Staged pointer | `Staff-requirements` | Staged in parent repo | Uncommitted submodule/folder pointer |
 
 ---
@@ -200,14 +200,14 @@ The diff shows `eod-ads.html` has been expanded to support 4 additional members:
 | 2026-08-13 | Hetheesha tracker | DB-backed fix tracker | `SR-01/hetheesha + api` | Commit 6e719a7 | VERIFIED |
 | 2026-08-10 | SR-01 massive sync | Login, muguntha, 6 member pages, cost.html, blog-tool | 32 files | Commit a4033b8 | VERIFIED |
 | 2026-08-10 | Staff ID performance | Initial dashboard (Kamsi/Dilaksi) | `SR-01/pages/staff-id-performance.html` | Commit 9ebde22 | VERIFIED |
-| 2026-08-11 | Shopify shipping | Bulk shipping rate update | `capability/piranav/shopify-shipping-rate-update-2026-08-11.md` | File exists (untracked) | PARTIAL — not committed |
+| 2026-08-11 | Shopify shipping | Bulk shipping rate update | `capability/2026/08/2026-08-11/shopify-shipping-rate-update-2026-08-11.md` | File exists (untracked) | PARTIAL — not committed |
 
 ### Partial / Unstaged Work
 
 | Task | Asset | Evidence | Status |
 |---|---|---|---|
 | eod-ads.html expansion (4 new members) | `SR-02/pages/eod-ads.html` | `git diff` confirms changes | PARTIAL — unstaged |
-| Shopify shipping capability note | `capability/piranav/shopify-shipping-rate-update-2026-08-11.md` | File exists | PARTIAL — untracked |
+| Shopify shipping capability note | `capability/2026/08/2026-08-11/shopify-shipping-rate-update-2026-08-11.md` | File exists | PARTIAL — untracked |
 
 ### Unproven / No Main AIOS Coverage
 
@@ -245,7 +245,7 @@ The diff shows `eod-ads.html` has been expanded to support 4 additional members:
 | Hetheesha DB-backed tracker | SR-01 | VERIFIED | Commit 6e719a7 |
 | Jefri Req5 sync | SR-01/pages/jefri.html | VERIFIED | Commit b5b3049 |
 | SR-01 massive sync (Aug 10) | SR-01 (32 files) | VERIFIED | Commit a4033b8 |
-| Shopify shipping rate update | capability/piranav/shopify-shipping-rate-update-2026-08-11.md | PARTIAL — untracked | File exists |
+| Shopify shipping rate update | capability/2026/08/2026-08-11/shopify-shipping-rate-update-2026-08-11.md | PARTIAL — untracked | File exists |
 
 ---
 
@@ -289,8 +289,8 @@ Relevant to the missed period (Aug 6–14):
 | Existing Asset | Path | What it Covers | Last Updated |
 |---|---|---|---|
 | Sajeepan workflow doc | `docs/dashboards/staff-workflows/sajeepan-live-dashboard.md` | Sajeepan API structure | 2026-07-17 — STALE (old API paths pre-consolidation) |
-| Sajeepan capability R2 | `capability/sajeepan/requirement-2-2026-07-28.md` | Req 2 only | 2026-07-28 — no R3 |
-| SEO dashboard capability | `capability/piranav/seo-dashboard-2026-08-03.md` | SEO up to Aug 3 | 2026-08-03 — misses Aug 7 enhancements |
+| Sajeepan capability R2 | `capability/2026/07/2026-07-28/requirement-2-2026-07-28.md` | Req 2 only | 2026-07-28 — no R3 |
+| SEO dashboard capability | `capability/2026/08/2026-08-03/seo-dashboard-2026-08-03.md` | SEO up to Aug 3 | 2026-08-03 — misses Aug 7 enhancements |
 | SR-02 docs | `Staff-requirements-02/docs/` | All 6 member + SEO + EOD | 2026-08-10 — most current |
 | API report | `Staff-requirements-02/docs/api-report.md` | 3-API architecture | 2026-08-10 — current |
 
@@ -300,12 +300,12 @@ Relevant to the missed period (Aug 6–14):
 
 | Missing Update | Evidence | Priority | Action |
 |---|---|---|---|
-| Sajeepan Req 3 capability file | Commit 717f3d8 | P1 | CREATE — `capability/sajeepan/requirement-3-2026-08-11.md` |
+| Sajeepan Req 3 capability file | Commit 717f3d8 | P1 | CREATE — `capability/2026/08/2026-08-11/requirement-3-2026-08-11.md` |
 | Sajeepan Req 3 closure file | Commit 717f3d8 | P1 | CREATE — `closure/sajeepan/requirement-3-2026-08-11.md` |
 | Sajeepan Req 3 evidence file | Commit 717f3d8 | P1 | CREATE — `evidence/sajeepan/requirement-3-2026-08-11.md` |
 | SR-02 dashboard-sajeepan.md update (R3 tab) | Commit 717f3d8 | P1 | EXTEND — `Staff-requirements-02/docs/dashboard-sajeepan.md` |
-| Auth system capability | Commits d1fc7c9, 18888cb | P1 | CREATE — `capability/piranav/auth-system-2026-08-10.md` |
-| API consolidation capability | Commit d12c3ee | P1 | CREATE — `capability/piranav/api-consolidation-2026-08-10.md` |
+| Auth system capability | Commits d1fc7c9, 18888cb | P1 | CREATE — `capability/2026/08/2026-08-10/auth-system-2026-08-10.md` |
+| API consolidation capability | Commit d12c3ee | P1 | CREATE — `capability/2026/08/2026-08-10/api-consolidation-2026-08-10.md` |
 | EOD dashboard suite capability | Multiple commits | P1 | CREATE — `capability/piranav/eod-dashboard-suite.md` |
 | SR-01 AIOS documentation (overview) | Commit a4033b8 + 607 total commits | P0 | CREATE — main overview doc for SR-01 workstream |
 | Staff ID Performance capability | Commits 9ebde22, 61e2beb | P0 | CREATE — includes recovery incident |
@@ -328,7 +328,7 @@ Relevant to the missed period (Aug 6–14):
 | SR-01/api/members-api.js | SR-02/api/members-api.js | Both have the same consolidated API | AMBER — SR-01 synced from SR-02; may drift | Document that SR-01 is the production deployment for the combined platform |
 | SR-01/api/auth.js | SR-02/api/auth.js | Both have DB-backed auth | AMBER — same origin, may drift | Document canonical source |
 | `docs/dashboards/staff-workflows/sajeepan-live-dashboard.md` | `SR-02/docs/dashboard-sajeepan.md` | Both document Sajeepan dashboard | RED — staff-workflows doc has OLD API paths (`api/sajeepan/dashboard.js`) — contradicts actual 3-API reality | Update or deprecate the stale staff-workflows doc |
-| `capability/sajeepan/requirement-2-2026-07-28.md` | `SR-02/docs/dashboard-sajeepan.md` | Both describe Sajeepan capabilities | GREEN — complementary, not conflicting | No action |
+| `capability/2026/07/2026-07-28/requirement-2-2026-07-28.md` | `SR-02/docs/dashboard-sajeepan.md` | Both describe Sajeepan capabilities | GREEN — complementary, not conflicting | No action |
 
 ---
 
@@ -336,8 +336,8 @@ Relevant to the missed period (Aug 6–14):
 
 | Claim | Evidence | Evidence Path | Status | Gap |
 |---|---|---|---|---|
-| Sajeepan R1 implemented | Git commit + capability + closure + evidence | `capability/sajeepan/requirement-1-2026-07-14.md` | VERIFIED | None |
-| Sajeepan R2 implemented | Git commit + capability + closure + evidence | `capability/sajeepan/requirement-2-2026-07-28.md` | VERIFIED | None |
+| Sajeepan R1 implemented | Git commit + capability + closure + evidence | `capability/2026/07/2026-07-14/requirement-1-2026-07-14.md` | VERIFIED | None |
+| Sajeepan R2 implemented | Git commit + capability + closure + evidence | `capability/2026/07/2026-07-28/requirement-2-2026-07-28.md` | VERIFIED | None |
 | Sajeepan R3 implemented | Git commit only | Commit 717f3d8 | PARTIAL | No AIOS capability/closure/evidence |
 | API consolidated (3-function) | Git commit + SR-02 docs | Commit d12c3ee + `SR-02/docs/api-report.md` | VERIFIED in code | No main AIOS capability file |
 | DB-backed auth live | Git commit | Commits d1fc7c9, 18888cb | VERIFIED in code | No main AIOS documentation |
@@ -345,7 +345,7 @@ Relevant to the missed period (Aug 6–14):
 | SEO dashboard enhancements (Aug 7) | Git commit | Commit 6e94b70 | VERIFIED in code | Main AIOS capability outdated (pre-Aug 7) |
 | Staff ID Performance live | Git commits (including recovery) | Commits 9ebde22, 61e2beb | VERIFIED in code | No AIOS docs — recovery incident undocumented |
 | SR-01 live deployment | 607 commits + live URL implied | Git history | VERIFIED in code | No main AIOS overview doc |
-| Shopify shipping rates updated | Capability file exists | `capability/piranav/shopify-shipping-rate-update-2026-08-11.md` | PARTIAL | File not committed to git |
+| Shopify shipping rates updated | Capability file exists | `capability/2026/08/2026-08-11/shopify-shipping-rate-update-2026-08-11.md` | PARTIAL | File not committed to git |
 | eod-ads 4-member expansion | git diff output | Unstaged changes | PARTIAL | Not committed |
 
 ---
@@ -409,7 +409,7 @@ Reuse reason: Any new Staff-requirements workstream or member addition will face
 KPI / proxy KPI: Vercel function count (currently 3/12)
 Owner/reviewer: Piranav
 Duplicate-risk check: GREEN — no existing pattern in main AIOS
-Recommended next action: CREATE capability/piranav/api-consolidation-2026-08-10.md
+Recommended next action: CREATE capability/2026/08/2026-08-10/api-consolidation-2026-08-10.md
 PARENT-AIOS CANDIDATE — REVIEW REQUIRED
 ```
 
@@ -422,7 +422,7 @@ Reuse reason: Any new dashboard deployment will need this auth system
 KPI / proxy KPI: All 14+ pages protected without redeploy
 Owner/reviewer: Piranav
 Duplicate-risk check: GREEN — no existing auth capability doc in main AIOS
-Recommended next action: CREATE capability/piranav/auth-system-2026-08-10.md
+Recommended next action: CREATE capability/2026/08/2026-08-10/auth-system-2026-08-10.md
 PARENT-AIOS CANDIDATE — REVIEW REQUIRED
 ```
 
@@ -449,7 +449,7 @@ PARENT-AIOS CANDIDATE — REVIEW REQUIRED
 | P0 | Commit eod-ads.html 4-member expansion | git diff | Unstaged changes will be lost if workspace is cleared; not committed anywhere | COMMIT unstaged changes |
 | P0 | SR-01 workstream AIOS overview document | 607 commits, no main AIOS docs | Unknown developer cannot continue SR-01 work without understanding scope | CREATE overview doc |
 | P0 | Staff ID Performance incident documentation | Commit 61e2beb | Work was lost from live production and had to be recovered from a deployment snapshot — this failure mode must be documented | CREATE incident + capability doc |
-| P1 | Sajeepan R3 capability file | Commit 717f3d8 | R3 is live; business logic, ROAS bands, 8 queries not in any AIOS doc | CREATE `capability/sajeepan/requirement-3-2026-08-11.md` |
+| P1 | Sajeepan R3 capability file | Commit 717f3d8 | R3 is live; business logic, ROAS bands, 8 queries not in any AIOS doc | CREATE `capability/2026/08/2026-08-11/requirement-3-2026-08-11.md` |
 | P1 | Sajeepan R3 closure + evidence | Commit 717f3d8 | Closure chain incomplete for R3 | CREATE closure + evidence |
 | P1 | SR-02 dashboard-sajeepan.md update (R3) | Commit 717f3d8 | Doc says 2 tabs; R3 is now live | EXTEND doc |
 | P1 | Auth system capability doc | Commits d1fc7c9, 18888cb | Architecture pattern not in main AIOS | CREATE capability |
@@ -472,7 +472,7 @@ PARENT-AIOS CANDIDATE — REVIEW REQUIRED
 
 1. **RESOLVE** the merge conflict in `Staff-requirements/pages/staff-id-performance.html`
 2. **COMMIT** the unstaged `eod-ads.html` changes (4 new ADS team members)
-3. **COMMIT** the untracked `capability/piranav/shopify-shipping-rate-update-2026-08-11.md`
+3. **COMMIT** the untracked `capability/2026/08/2026-08-11/shopify-shipping-rate-update-2026-08-11.md`
 
 ### AIOS Documentation (GPT to design prompts for):
 
@@ -496,7 +496,7 @@ PARENT-AIOS CANDIDATE — REVIEW REQUIRED
 | **Claude Claim** | "Revenue Protection & PPC Actions tab added — 8 DB queries, ROAS bands, OOS override, R3 tab in sajeepan.html" |
 | **Actual Proof** | Commit 717f3d8 — members-api.js +185 lines, sajeepan.html +149 lines. Code verified in git. |
 | **Current AIOS State** | Sajeepan capability has R1 (2026-07-14) and R2 (2026-07-28). R3 does not exist anywhere in main AIOS. |
-| **Missing AIOS Update** | CREATE: capability/sajeepan/requirement-3-2026-08-11.md, closure/sajeepan/requirement-3-2026-08-11.md, evidence/sajeepan/requirement-3-2026-08-11.md |
+| **Missing AIOS Update** | CREATE: capability/2026/08/2026-08-11/requirement-3-2026-08-11.md, closure/sajeepan/requirement-3-2026-08-11.md, evidence/sajeepan/requirement-3-2026-08-11.md |
 
 ### API Consolidation (3-function target)
 
@@ -505,7 +505,7 @@ PARENT-AIOS CANDIDATE — REVIEW REQUIRED
 | **Claude Claim** | "11 member APIs merged into members-api.js — Vercel function count 12/12 → 3/12" |
 | **Actual Proof** | Commit d12c3ee — 11 files deleted, members-api.js 2354 lines added. SR-02 docs updated. |
 | **Current AIOS State** | SR-02/docs/api-report.md is current. Main AIOS has no capability or closure for this architecture change. |
-| **Missing AIOS Update** | CREATE: capability/piranav/api-consolidation-2026-08-10.md |
+| **Missing AIOS Update** | CREATE: capability/2026/08/2026-08-10/api-consolidation-2026-08-10.md |
 
 ### Staff ID Performance (Recovery Incident)
 

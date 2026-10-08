@@ -28,7 +28,7 @@
 | Validation | `validation/piranav/dm-dashboard-local-setup-2026-09-01.md` |
 | Implementation | `implementation/piranav/dm-dashboard-local-setup-2026-09-01.md` |
 | Deployment | `deployment/piranav/dm-dashboard-local-setup-2026-09-01.md` |
-| Capability | `capability/piranav/dm-dashboard-local-setup-2026-09-01.md` |
+| Capability | `capability/2026/09/2026-09-01/dm-dashboard-local-setup-2026-09-01.md` |
 | Closure | `closure/piranav/dm-dashboard-local-setup-2026-09-01.md` |
 
 ---

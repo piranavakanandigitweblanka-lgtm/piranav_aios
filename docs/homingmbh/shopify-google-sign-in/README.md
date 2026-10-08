@@ -76,7 +76,7 @@ docs/homingmbh/shopify-google-sign-in/Homingmbh_Shopify_Google_SignIn_Trainee_Gu
 |---|---|
 | Evidence | `evidence/piranav/homingmbh-shopify-google-signin-2026-09-24.md` |
 | Validation | `validation/piranav/homingmbh-shopify-google-signin-2026-09-24.md` |
-| Capability | `capability/piranav/shopify-customer-google-signin.md` |
+| Capability | `capability/2026/09/2026-09-24/shopify-customer-google-signin.md` |
 | Handover | `handover/piranav/homingmbh-shopify-google-signin-2026-09-24.md` |
 | Closure | `closure/README.md` — row HOMINGMBH-GOOGLE-SIGNIN-2026-09-24 |
 | Prompt | `prompts/implementation/shopify-customer-google-signin.md` |

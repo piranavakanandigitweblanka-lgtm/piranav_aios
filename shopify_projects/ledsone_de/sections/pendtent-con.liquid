@@ -1,0 +1,1077 @@
+{% comment %}
+  PENDANT CONFIGURATOR
+  Save as: sections/pendant-configurator.liquid
+{% endcomment %}
+
+{% assign shape_product_1 = all_products[section.settings.roselet_product_1] %}
+{% assign shape_product_2 = all_products[section.settings.roselet_product_2] %}
+{% assign shape_product_3 = all_products[section.settings.roselet_product_3] %}
+{% assign shape_product_4 = all_products[section.settings.roselet_product_4] %}
+{% assign shape_product_5 = all_products[section.settings.roselet_product_5] %}
+{% assign cable_product_1 = all_products[section.settings.cable_product_1] %}
+{% assign cable_product_2 = all_products[section.settings.cable_product_2] %}
+{% assign cable_product_3 = all_products[section.settings.cable_product_3] %}
+{% assign cable_product_4 = all_products[section.settings.cable_product_4] %}
+{% assign cable_product_5 = all_products[section.settings.cable_product_5] %}
+{% assign holder_product_1 = all_products[section.settings.holder_product_1] %}
+{% assign holder_product_2 = all_products[section.settings.holder_product_2] %}
+{% assign holder_product_3 = all_products[section.settings.holder_product_3] %}
+{% assign holder_product_4 = all_products[section.settings.holder_product_4] %}
+{% assign holder_product_5 = all_products[section.settings.holder_product_5] %}
+{% assign shade_product_1 = all_products[section.settings.shade_product_1] %}
+{% assign shade_product_2 = all_products[section.settings.shade_product_2] %}
+{% assign shade_product_3 = all_products[section.settings.shade_product_3] %}
+{% assign shade_product_4 = all_products[section.settings.shade_product_4] %}
+{% assign shade_product_5 = all_products[section.settings.shade_product_5] %}
+
+<!-- ══ BILD-LIGHTBOX ══ -->
+<div id="pcLightbox" class="pc-lightbox" role="dialog" aria-modal="true" aria-label="Bildvorschau">
+  <button class="pc-lb-close" id="pcLbClose" aria-label="Bild schließen">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    <span>Schließen</span>
+  </button>
+  <div class="pc-lb-backdrop" id="pcLbBackdrop"></div>
+  <div class="pc-lb-content">
+    <img id="pcLbImg" src="" alt="" class="pc-lb-img">
+    <p id="pcLbCaption" class="pc-lb-caption"></p>
+  </div>
+</div>
+
+<!-- BENACHRICHTIGUNG -->
+<div id="pcToast" class="pc-toast" aria-live="polite" aria-atomic="true">
+  <div class="pc-toast-inner" id="pcToastInner">
+    <div class="pc-toast-spinner"></div>
+    <span id="pcToastMsg">Wird zum Warenkorb hinzugefügt…</span>
+  </div>
+</div>
+
+<div class="pc-wrap" data-section-id="{{ section.id }}">
+  <div class="pc-grid">
+
+    <!-- ══ LEFT: Preview + Coupon ══ -->
+    <div class="pc-preview">
+      <h2 class="pc-preview-title">Ihr individueller Anhänger</h2>
+
+      <!-- LIVE PREVIEW THUMBNAILS -->
+      <div class="pc-canvas">
+
+        <div class="pc-trio-preview">
+          <div class="pc-trio-col">
+            <p class="pc-trio-label">{{ section.settings.roselet_label | default: 'Roselet' }}</p>
+            <div class="pc-tri-imgs" id="trioImgsR"><div class="pc-tri-placeholder"><svg viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="34" stroke="#c9b8a8" stroke-width="1.5" stroke-dasharray="5 3"/><text x="40" y="44" text-anchor="middle" fill="#c9b8a8" font-size="8" font-family="serif">Roselet</text></svg></div></div>
+          </div>
+          <div class="pc-trio-divider">→</div>
+          <div class="pc-trio-col">
+            <p class="pc-trio-label">{{ section.settings.cable_label | default: 'Kabel' }}</p>
+            <div class="pc-tri-imgs" id="trioImgsC"><div class="pc-tri-placeholder"><svg viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="34" stroke="#c9b8a8" stroke-width="1.5" stroke-dasharray="5 3"/><text x="40" y="44" text-anchor="middle" fill="#c9b8a8" font-size="8" font-family="serif">Kabel</text></svg></div></div>
+          </div>
+          <div class="pc-trio-divider">→</div>
+          <div class="pc-trio-col">
+            <p class="pc-trio-label">{{ section.settings.holder_label | default: 'Halter' }}</p>
+            <div class="pc-tri-imgs" id="trioImgsH"><div class="pc-tri-placeholder"><svg viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="34" stroke="#c9b8a8" stroke-width="1.5" stroke-dasharray="5 3"/><text x="40" y="44" text-anchor="middle" fill="#c9b8a8" font-size="8" font-family="serif">Halter</text></svg></div></div>
+          </div>
+          <div class="pc-trio-divider">→</div>
+          <div class="pc-trio-col">
+            <p class="pc-trio-label">{{ section.settings.shade_label | default: 'Schirm' }}</p>
+            <div class="pc-tri-imgs" id="trioImgsS"><div class="pc-tri-placeholder"><svg viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="34" stroke="#c9b8a8" stroke-width="1.5" stroke-dasharray="5 3"/><text x="40" y="44" text-anchor="middle" fill="#c9b8a8" font-size="8" font-family="serif">Schirm</text></svg></div></div>
+          </div>
+        </div>
+      </div><!-- /pc-canvas -->
+
+      <!-- ══ COUPON WIDGET (only 15% — all 4 categories) ══ -->
+      <div class="pc-coupon-wrap" id="pcCouponWrap"
+        data-code15="{{ section.settings.discount_code_15 | default: 'BUNDLE15' }}">
+
+        <div class="pc-coup-eyebrow">Bundle-Rabatt</div>
+
+        <!-- 4 category status dots -->
+        <div class="pc-coup-cats">
+          <div class="pc-coup-cat" id="catItemR" data-state="empty">
+            <div class="pc-coup-dot">
+              <svg class="pc-coup-check" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span>{{ section.settings.roselet_label | default: 'Roselet' }}</span>
+          </div>
+          <div class="pc-coup-cat" id="catItemC" data-state="empty">
+            <div class="pc-coup-dot">
+              <svg class="pc-coup-check" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span>{{ section.settings.cable_label | default: 'Kabel' }}</span>
+          </div>
+          <div class="pc-coup-cat" id="catItemH" data-state="empty">
+            <div class="pc-coup-dot">
+              <svg class="pc-coup-check" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span>{{ section.settings.holder_label | default: 'Halter' }}</span>
+          </div>
+          <div class="pc-coup-cat" id="catItemS" data-state="empty">
+            <div class="pc-coup-dot">
+              <svg class="pc-coup-check" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span>{{ section.settings.shade_label | default: 'Schirm' }}</span>
+          </div>
+        </div>
+
+        <!-- Simple progress bar (fills 25% per category selected) -->
+        <div class="pc-coup-progress">
+          <div class="pc-tier-bar"><div class="pc-tier-bar-fill" id="tierBarFill"></div></div>
+          <p class="pc-coup-progress-lbl" id="couponProgressText">0 von 4 Kategorien ausgewählt</p>
+        </div>
+
+        <!-- Locked state message -->
+        <p class="pc-coup-locked-msg" id="couponLockedMsg">Wählen Sie alle 4 Kategorien für <strong>15&nbsp;% Rabatt</strong></p>
+
+        <!-- Unlocking animation (briefly shown when all 4 are selected) -->
+        <div class="pc-coup-unlocking" id="couponUnlocking" style="display:none" aria-live="polite">
+          <div class="pc-unlock-spinner"></div>
+          <span class="pc-unlock-text">🔓 Wird entsperrt&nbsp;…</span>
+        </div>
+
+        <!-- Code reveal (shown after unlock animation) -->
+        <div class="pc-coup-code-area" id="couponCodeArea" style="display:none">
+          <div class="pc-coup-code-header">
+            <div class="pc-coup-pct-pill">15% RABATT</div>
+            <span class="pc-coup-code-label-sm">Ihr exklusiver Code</span>
+          </div>
+          <div class="pc-cu-code-row">
+            <div class="pc-cu-code" id="couponCodeDisplay">{{ section.settings.discount_code_15 | default: 'BUNDLE15' }}</div>
+            <button type="button" class="pc-cu-copy" id="couponCopyBtn" onclick="pcCopyCode(event)" title="Code kopieren">
+              <svg id="copyIcon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <svg id="checkIcon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /pc-coupon-wrap -->
+      
+      <!-- ══ MINI ATC UNDER COUPON ══ -->
+      <div id="miniAtcWrap" style="display:none">
+        <button type="button" class="pc-mini-atc" id="miniAtcBtn" onclick="document.getElementById('pcForm').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}))">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          In den Warenkorb — <span id="miniAtcPrice">€0,00</span>
+        </button>
+      </div>
+
+      <!-- VALIDATION HINTS -->
+      <div class="pc-validation" id="pcValidation" style="display:none">
+        <p id="validHintR" class="pc-valid-row hidden"><span class="pc-valid-icon">⚠️</span> Bitte mindestens einen <strong>{{ section.settings.roselet_label | default: 'Roselet' }}</strong> auswählen</p>
+        <p id="validHintC" class="pc-valid-row hidden"><span class="pc-valid-icon">⚠️</span> Bitte mindestens ein <strong>{{ section.settings.cable_label | default: 'Kabel' }}</strong> auswählen</p>
+        <p id="validHintH" class="pc-valid-row hidden"><span class="pc-valid-icon">⚠️</span> Bitte mindestens einen <strong>{{ section.settings.holder_label | default: 'Halter' }}</strong> auswählen</p>
+        <p id="validHintS" class="pc-valid-row hidden"><span class="pc-valid-icon">⚠️</span> Bitte mindestens einen <strong>{{ section.settings.shade_label | default: 'Schirm' }}</strong> auswählen</p>
+      </div>
+
+      <!-- PRICE BOX -->
+      <div class="pc-price-box">
+        <div class="pc-price-row"><span>{{ section.settings.roselet_label | default: 'Roselet' }}:</span><span id="priceR">€0,00</span></div>
+        <div class="pc-price-row"><span>{{ section.settings.cable_label | default: 'Kabel' }}:</span><span id="priceC">€0,00</span></div>
+        <div class="pc-price-row"><span>{{ section.settings.holder_label | default: 'Halter' }}:</span><span id="priceH">€0,00</span></div>
+        <div class="pc-price-row"><span>{{ section.settings.shade_label | default: 'Schirm' }}:</span><span id="priceS">€0,00</span></div>
+        <div class="pc-price-row pc-subtotal-row"><span>Zwischensumme:</span><span id="priceSubtotal">€0,00</span></div>
+        <div class="pc-price-row pc-discount-row" id="discountRow" style="display:none">
+          <span>🏷️ Bundle-Rabatt (15%):</span>
+          <span id="priceDiscount" class="pc-discount-amt">−€0,00</span>
+        </div>
+        <div class="pc-price-row pc-total"><span>Gesamt:</span><span id="priceTotal">€0,00</span></div>
+      </div>
+
+    </div><!-- /pc-preview -->
+
+    <!-- ══ RIGHT: Configuration Form ══ -->
+    <div class="pc-options">
+      <div class="pc-title-row">
+        <h1 class="pc-title">Ihren Anhänger gestalten</h1>
+        <button type="button" class="pc-feedback-btn" id="pcOpenFeedback">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span>Kein Interesse? Feedback geben</span>
+        </button>
+      </div>
+      <form id="pcForm">
+
+        <!-- ══ 1. ROSELET ══ -->
+        <div class="pc-group" id="groupShape">
+          <label class="pc-label">
+            {{ section.settings.roselet_label | default: 'Roselet' }}
+            <span class="pc-req">*</span>
+            <span class="pc-missing-badge hidden" id="badgeR">Mindestens 1 auswählen</span>
+          </label>
+        </div>
+        <p class="pc-dd-sublabel">Wählen Sie einen {{ section.settings.roselet_label | default: 'Roselet' }}-Stil</p>
+        <div class="pc-multitab-row" id="roseletDds">
+          {% if shape_product_1 != blank %}{% assign r1_has_stock = false %}{% for v in shape_product_1.variants %}{% if v.available %}{% assign r1_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if r1_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnR1" data-panel="ddPanelR1"><span>{{ section.settings.roselet_tab_1 | default: shape_product_1.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if shape_product_2 != blank %}{% assign r2_has_stock = false %}{% for v in shape_product_2.variants %}{% if v.available %}{% assign r2_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if r2_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnR2" data-panel="ddPanelR2"><span>{{ section.settings.roselet_tab_2 | default: shape_product_2.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if shape_product_3 != blank %}{% assign r3_has_stock = false %}{% for v in shape_product_3.variants %}{% if v.available %}{% assign r3_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if r3_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnR3" data-panel="ddPanelR3"><span>{{ section.settings.roselet_tab_3 | default: shape_product_3.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if shape_product_4 != blank %}{% assign r4_has_stock = false %}{% for v in shape_product_4.variants %}{% if v.available %}{% assign r4_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if r4_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnR4" data-panel="ddPanelR4"><span>{{ section.settings.roselet_tab_4 | default: shape_product_4.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if shape_product_5 != blank %}{% assign r5_has_stock = false %}{% for v in shape_product_5.variants %}{% if v.available %}{% assign r5_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if r5_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnR5" data-panel="ddPanelR5"><span>{{ section.settings.roselet_tab_5 | default: shape_product_5.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if shape_product_1 != blank and r1_has_stock %}<div class="pc-inline-panel pc-roselet-panel" id="ddPanelR1" tabindex="-1"><p class="pc-panel-name">{{ shape_product_1.title }}</p><div class="pc-roselet-scroll"><div class="pc-btns pc-btns-4col pc-multi" data-opt="shape" data-category="Roselet">{% for v in shape_product_1.variants %}{% unless v.available %}{% continue %}{% endunless %}<div class="pc-card" data-id="{{ v.id }}" data-title="{{ shape_product_1.title | escape }} — {{ v.title | escape }}" data-price-cents="{{ v.price }}" data-img="{% if v.image %}{{ v.image | img_url: '600x600' }}{% else %}{{ shape_product_1.featured_image | img_url: '600x600' }}{% endif %}">{% if v.image %}<img src="{{ v.image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{% if v.image %}{{ v.image | img_url: '800x800' }}{% else %}{{ shape_product_1.featured_image | img_url: '800x800' }}{% endif %}" data-caption="{{ shape_product_1.title | escape }} — {{ v.title | escape }}" loading="lazy">{% elsif shape_product_1.featured_image %}<img src="{{ shape_product_1.featured_image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{{ shape_product_1.featured_image | img_url: '800x800' }}" data-caption="{{ shape_product_1.title | escape }} — {{ v.title | escape }}" loading="lazy">{% endif %}<span class="pc-vname">{{ v.title }}</span><span class="pc-vprice">{{ v.price | money }}</span><div class="pc-qty-wrap"><button type="button" class="pc-qty-btn pc-qty-minus">−</button><span class="pc-qty-val">0</span><button type="button" class="pc-qty-btn pc-qty-plus">+</button></div></div>{% endfor %}</div></div><button type="button" class="pc-dd-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Schließen</button></div>{% endif %}
+          {% if shape_product_2 != blank and r2_has_stock %}<div class="pc-inline-panel pc-roselet-panel" id="ddPanelR2" tabindex="-1"><p class="pc-panel-name">{{ shape_product_2.title }}</p><div class="pc-roselet-scroll"><div class="pc-btns pc-btns-4col pc-multi" data-opt="shape" data-category="Roselet">{% for v in shape_product_2.variants %}{% unless v.available %}{% continue %}{% endunless %}<div class="pc-card" data-id="{{ v.id }}" data-title="{{ shape_product_2.title | escape }} — {{ v.title | escape }}" data-price-cents="{{ v.price }}" data-img="{% if v.image %}{{ v.image | img_url: '600x600' }}{% else %}{{ shape_product_2.featured_image | img_url: '600x600' }}{% endif %}">{% if v.image %}<img src="{{ v.image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{% if v.image %}{{ v.image | img_url: '800x800' }}{% else %}{{ shape_product_2.featured_image | img_url: '800x800' }}{% endif %}" data-caption="{{ shape_product_2.title | escape }} — {{ v.title | escape }}" loading="lazy">{% elsif shape_product_2.featured_image %}<img src="{{ shape_product_2.featured_image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{{ shape_product_2.featured_image | img_url: '800x800' }}" data-caption="{{ shape_product_2.title | escape }} — {{ v.title | escape }}" loading="lazy">{% endif %}<span class="pc-vname">{{ v.title }}</span><span class="pc-vprice">{{ v.price | money }}</span><div class="pc-qty-wrap"><button type="button" class="pc-qty-btn pc-qty-minus">−</button><span class="pc-qty-val">0</span><button type="button" class="pc-qty-btn pc-qty-plus">+</button></div></div>{% endfor %}</div></div><button type="button" class="pc-dd-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Schließen</button></div>{% endif %}
+          {% if shape_product_3 != blank and r3_has_stock %}<div class="pc-inline-panel pc-roselet-panel" id="ddPanelR3" tabindex="-1"><p class="pc-panel-name">{{ shape_product_3.title }}</p><div class="pc-roselet-scroll"><div class="pc-btns pc-btns-4col pc-multi" data-opt="shape" data-category="Roselet">{% for v in shape_product_3.variants %}{% unless v.available %}{% continue %}{% endunless %}<div class="pc-card" data-id="{{ v.id }}" data-title="{{ shape_product_3.title | escape }} — {{ v.title | escape }}" data-price-cents="{{ v.price }}" data-img="{% if v.image %}{{ v.image | img_url: '600x600' }}{% else %}{{ shape_product_3.featured_image | img_url: '600x600' }}{% endif %}">{% if v.image %}<img src="{{ v.image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{% if v.image %}{{ v.image | img_url: '800x800' }}{% else %}{{ shape_product_3.featured_image | img_url: '800x800' }}{% endif %}" data-caption="{{ shape_product_3.title | escape }} — {{ v.title | escape }}" loading="lazy">{% elsif shape_product_3.featured_image %}<img src="{{ shape_product_3.featured_image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{{ shape_product_3.featured_image | img_url: '800x800' }}" data-caption="{{ shape_product_3.title | escape }} — {{ v.title | escape }}" loading="lazy">{% endif %}<span class="pc-vname">{{ v.title }}</span><span class="pc-vprice">{{ v.price | money }}</span><div class="pc-qty-wrap"><button type="button" class="pc-qty-btn pc-qty-minus">−</button><span class="pc-qty-val">0</span><button type="button" class="pc-qty-btn pc-qty-plus">+</button></div></div>{% endfor %}</div></div><button type="button" class="pc-dd-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Schließen</button></div>{% endif %}
+          {% if shape_product_4 != blank and r4_has_stock %}<div class="pc-inline-panel pc-roselet-panel" id="ddPanelR4" tabindex="-1"><p class="pc-panel-name">{{ shape_product_4.title }}</p><div class="pc-roselet-scroll"><div class="pc-btns pc-btns-4col pc-multi" data-opt="shape" data-category="Roselet">{% for v in shape_product_4.variants %}{% unless v.available %}{% continue %}{% endunless %}<div class="pc-card" data-id="{{ v.id }}" data-title="{{ shape_product_4.title | escape }} — {{ v.title | escape }}" data-price-cents="{{ v.price }}" data-img="{% if v.image %}{{ v.image | img_url: '600x600' }}{% else %}{{ shape_product_4.featured_image | img_url: '600x600' }}{% endif %}">{% if v.image %}<img src="{{ v.image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{% if v.image %}{{ v.image | img_url: '800x800' }}{% else %}{{ shape_product_4.featured_image | img_url: '800x800' }}{% endif %}" data-caption="{{ shape_product_4.title | escape }} — {{ v.title | escape }}" loading="lazy">{% elsif shape_product_4.featured_image %}<img src="{{ shape_product_4.featured_image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{{ shape_product_4.featured_image | img_url: '800x800' }}" data-caption="{{ shape_product_4.title | escape }} — {{ v.title | escape }}" loading="lazy">{% endif %}<span class="pc-vname">{{ v.title }}</span><span class="pc-vprice">{{ v.price | money }}</span><div class="pc-qty-wrap"><button type="button" class="pc-qty-btn pc-qty-minus">−</button><span class="pc-qty-val">0</span><button type="button" class="pc-qty-btn pc-qty-plus">+</button></div></div>{% endfor %}</div></div><button type="button" class="pc-dd-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Schließen</button></div>{% endif %}
+          {% if shape_product_5 != blank and r5_has_stock %}<div class="pc-inline-panel pc-roselet-panel" id="ddPanelR5" tabindex="-1"><p class="pc-panel-name">{{ shape_product_5.title }}</p><div class="pc-roselet-scroll"><div class="pc-btns pc-btns-4col pc-multi" data-opt="shape" data-category="Roselet">{% for v in shape_product_5.variants %}{% unless v.available %}{% continue %}{% endunless %}<div class="pc-card" data-id="{{ v.id }}" data-title="{{ shape_product_5.title | escape }} — {{ v.title | escape }}" data-price-cents="{{ v.price }}" data-img="{% if v.image %}{{ v.image | img_url: '600x600' }}{% else %}{{ shape_product_5.featured_image | img_url: '600x600' }}{% endif %}">{% if v.image %}<img src="{{ v.image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{% if v.image %}{{ v.image | img_url: '800x800' }}{% else %}{{ shape_product_5.featured_image | img_url: '800x800' }}{% endif %}" data-caption="{{ shape_product_5.title | escape }} — {{ v.title | escape }}" loading="lazy">{% elsif shape_product_5.featured_image %}<img src="{{ shape_product_5.featured_image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{{ shape_product_5.featured_image | img_url: '800x800' }}" data-caption="{{ shape_product_5.title | escape }} — {{ v.title | escape }}" loading="lazy">{% endif %}<span class="pc-vname">{{ v.title }}</span><span class="pc-vprice">{{ v.price | money }}</span><div class="pc-qty-wrap"><button type="button" class="pc-qty-btn pc-qty-minus">−</button><span class="pc-qty-val">0</span><button type="button" class="pc-qty-btn pc-qty-plus">+</button></div></div>{% endfor %}</div></div><button type="button" class="pc-dd-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Schließen</button></div>{% endif %}
+        </div>
+        <p class="pc-dd-sel-hint" id="hintR"></p>
+
+        <!-- ══ 2. KABEL ══ -->
+        <div class="pc-group" id="groupMaterial">
+          <label class="pc-label">
+            {{ section.settings.cable_label | default: 'Kabel' }}
+            <span class="pc-req">*</span>
+            <span class="pc-missing-badge hidden" id="badgeC">Mindestens 1 auswählen</span>
+          </label>
+        </div>
+        <p class="pc-dd-sublabel">Wählen Sie einen {{ section.settings.cable_label | default: 'Kabel' }}-Stil</p>
+        <div class="pc-multitab-row" id="cableDds">
+          {% if cable_product_1 != blank %}{% assign k1_has_stock = false %}{% for v in cable_product_1.variants %}{% if v.available %}{% assign k1_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if k1_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnK1" data-panel="ddPanelK1"><span>{{ section.settings.cable_tab_1 | default: cable_product_1.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if cable_product_2 != blank %}{% assign k2_has_stock = false %}{% for v in cable_product_2.variants %}{% if v.available %}{% assign k2_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if k2_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnK2" data-panel="ddPanelK2"><span>{{ section.settings.cable_tab_2 | default: cable_product_2.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if cable_product_3 != blank %}{% assign k3_has_stock = false %}{% for v in cable_product_3.variants %}{% if v.available %}{% assign k3_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if k3_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnK3" data-panel="ddPanelK3"><span>{{ section.settings.cable_tab_3 | default: cable_product_3.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if cable_product_4 != blank %}{% assign k4_has_stock = false %}{% for v in cable_product_4.variants %}{% if v.available %}{% assign k4_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if k4_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnK4" data-panel="ddPanelK4"><span>{{ section.settings.cable_tab_4 | default: cable_product_4.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if cable_product_5 != blank %}{% assign k5_has_stock = false %}{% for v in cable_product_5.variants %}{% if v.available %}{% assign k5_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if k5_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnK5" data-panel="ddPanelK5"><span>{{ section.settings.cable_tab_5 | default: cable_product_5.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if cable_product_1 != blank and k1_has_stock %}<div class="pc-inline-panel pc-roselet-panel" id="ddPanelK1" tabindex="-1"><p class="pc-panel-name">{{ cable_product_1.title }}</p><div class="pc-roselet-scroll"><div class="pc-btns pc-btns-4col pc-multi" data-opt="material" data-category="Cable">{% for v in cable_product_1.variants %}{% unless v.available %}{% continue %}{% endunless %}{% if v.title contains '5m' or v.title contains '10m' %}{% continue %}{% endif %}<div class="pc-card" data-id="{{ v.id }}" data-title="{{ cable_product_1.title | escape }} — {{ v.title | escape }}" data-price-cents="{{ v.price }}" data-img="{% if v.image %}{{ v.image | img_url: '600x600' }}{% else %}{{ cable_product_1.featured_image | img_url: '600x600' }}{% endif %}">{% if v.image %}<img src="{{ v.image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{% if v.image %}{{ v.image | img_url: '800x800' }}{% else %}{{ cable_product_1.featured_image | img_url: '800x800' }}{% endif %}" data-caption="{{ cable_product_1.title | escape }} — {{ v.title | escape }}" loading="lazy">{% elsif cable_product_1.featured_image %}<img src="{{ cable_product_1.featured_image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{{ cable_product_1.featured_image | img_url: '800x800' }}" data-caption="{{ cable_product_1.title | escape }} — {{ v.title | escape }}" loading="lazy">{% endif %}<span class="pc-vname">{{ v.title }}</span><span class="pc-vprice">{{ v.price | money }}</span><div class="pc-qty-wrap"><button type="button" class="pc-qty-btn pc-qty-minus">−</button><span class="pc-qty-val">0</span><button type="button" class="pc-qty-btn pc-qty-plus">+</button></div></div>{% endfor %}</div></div><button type="button" class="pc-dd-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Schließen</button></div>{% endif %}
+        </div>
+        <p class="pc-dd-sel-hint" id="hintC"></p>
+
+        <!-- ══ 3. HALTER ══ -->
+        <div class="pc-group" id="groupHolder">
+          <label class="pc-label">
+            {{ section.settings.holder_label | default: 'Halter' }}
+            <span class="pc-req">*</span>
+            <span class="pc-missing-badge hidden" id="badgeH">Mindestens 1 auswählen</span>
+          </label>
+        </div>
+        <p class="pc-dd-sublabel">Wählen Sie einen {{ section.settings.holder_label | default: 'Halter' }}-Stil</p>
+        <div class="pc-multitab-row" id="holderDds">
+          {% if holder_product_1 != blank %}{% assign h1_has_stock = false %}{% for v in holder_product_1.variants %}{% if v.available %}{% assign h1_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if h1_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnH1" data-panel="ddPanelH1"><span>{{ section.settings.holder_tab_1 | default: holder_product_1.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if holder_product_2 != blank %}{% assign h2_has_stock = false %}{% for v in holder_product_2.variants %}{% if v.available %}{% assign h2_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if h2_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnH2" data-panel="ddPanelH2"><span>{{ section.settings.holder_tab_2 | default: holder_product_2.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if holder_product_3 != blank %}{% assign h3_has_stock = false %}{% for v in holder_product_3.variants %}{% if v.available %}{% assign h3_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if h3_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnH3" data-panel="ddPanelH3"><span>{{ section.settings.holder_tab_3 | default: holder_product_3.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if holder_product_4 != blank %}{% assign h4_has_stock = false %}{% for v in holder_product_4.variants %}{% if v.available %}{% assign h4_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if h4_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnH4" data-panel="ddPanelH4"><span>{{ section.settings.holder_tab_4 | default: holder_product_4.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if holder_product_5 != blank %}{% assign h5_has_stock = false %}{% for v in holder_product_5.variants %}{% if v.available %}{% assign h5_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if h5_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnH5" data-panel="ddPanelH5"><span>{{ section.settings.holder_tab_5 | default: holder_product_5.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if holder_product_1 != blank and h1_has_stock %}<div class="pc-inline-panel pc-roselet-panel" id="ddPanelH1" tabindex="-1"><p class="pc-panel-name">{{ holder_product_1.title }}</p><div class="pc-roselet-scroll"><div class="pc-btns pc-btns-4col pc-multi" data-opt="holder" data-category="Holder">{% for v in holder_product_1.variants %}{% unless v.available %}{% continue %}{% endunless %}<div class="pc-card" data-id="{{ v.id }}" data-title="{{ holder_product_1.title | escape }} — {{ v.title | escape }}" data-price-cents="{{ v.price }}" data-img="{% if v.image %}{{ v.image | img_url: '600x600' }}{% else %}{{ holder_product_1.featured_image | img_url: '600x600' }}{% endif %}">{% if v.image %}<img src="{{ v.image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{% if v.image %}{{ v.image | img_url: '800x800' }}{% else %}{{ holder_product_1.featured_image | img_url: '800x800' }}{% endif %}" data-caption="{{ holder_product_1.title | escape }} — {{ v.title | escape }}" loading="lazy">{% elsif holder_product_1.featured_image %}<img src="{{ holder_product_1.featured_image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{{ holder_product_1.featured_image | img_url: '800x800' }}" data-caption="{{ holder_product_1.title | escape }} — {{ v.title | escape }}" loading="lazy">{% endif %}<span class="pc-vname">{{ v.title }}</span><span class="pc-vprice">{{ v.price | money }}</span><div class="pc-qty-wrap"><button type="button" class="pc-qty-btn pc-qty-minus">−</button><span class="pc-qty-val">0</span><button type="button" class="pc-qty-btn pc-qty-plus">+</button></div></div>{% endfor %}</div></div><button type="button" class="pc-dd-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Schließen</button></div>{% endif %}
+          {% if holder_product_2 != blank and h2_has_stock %}<div class="pc-inline-panel pc-roselet-panel" id="ddPanelH2" tabindex="-1"><p class="pc-panel-name">{{ holder_product_2.title }}</p><div class="pc-roselet-scroll"><div class="pc-btns pc-btns-4col pc-multi" data-opt="holder" data-category="Holder">{% for v in holder_product_2.variants %}{% unless v.available %}{% continue %}{% endunless %}<div class="pc-card" data-id="{{ v.id }}" data-title="{{ holder_product_2.title | escape }} — {{ v.title | escape }}" data-price-cents="{{ v.price }}" data-img="{% if v.image %}{{ v.image | img_url: '600x600' }}{% else %}{{ holder_product_2.featured_image | img_url: '600x600' }}{% endif %}">{% if v.image %}<img src="{{ v.image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{% if v.image %}{{ v.image | img_url: '800x800' }}{% else %}{{ holder_product_2.featured_image | img_url: '800x800' }}{% endif %}" data-caption="{{ holder_product_2.title | escape }} — {{ v.title | escape }}" loading="lazy">{% elsif holder_product_2.featured_image %}<img src="{{ holder_product_2.featured_image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{{ holder_product_2.featured_image | img_url: '800x800' }}" data-caption="{{ holder_product_2.title | escape }} — {{ v.title | escape }}" loading="lazy">{% endif %}<span class="pc-vname">{{ v.title }}</span><span class="pc-vprice">{{ v.price | money }}</span><div class="pc-qty-wrap"><button type="button" class="pc-qty-btn pc-qty-minus">−</button><span class="pc-qty-val">0</span><button type="button" class="pc-qty-btn pc-qty-plus">+</button></div></div>{% endfor %}</div></div><button type="button" class="pc-dd-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Schließen</button></div>{% endif %}
+          {% if holder_product_3 != blank and h3_has_stock %}<div class="pc-inline-panel pc-roselet-panel" id="ddPanelH3" tabindex="-1"><p class="pc-panel-name">{{ holder_product_3.title }}</p><div class="pc-roselet-scroll"><div class="pc-btns pc-btns-4col pc-multi" data-opt="holder" data-category="Holder">{% for v in holder_product_3.variants %}{% unless v.available %}{% continue %}{% endunless %}<div class="pc-card" data-id="{{ v.id }}" data-title="{{ holder_product_3.title | escape }} — {{ v.title | escape }}" data-price-cents="{{ v.price }}" data-img="{% if v.image %}{{ v.image | img_url: '600x600' }}{% else %}{{ holder_product_3.featured_image | img_url: '600x600' }}{% endif %}">{% if v.image %}<img src="{{ v.image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{% if v.image %}{{ v.image | img_url: '800x800' }}{% else %}{{ holder_product_3.featured_image | img_url: '800x800' }}{% endif %}" data-caption="{{ holder_product_3.title | escape }} — {{ v.title | escape }}" loading="lazy">{% elsif holder_product_3.featured_image %}<img src="{{ holder_product_3.featured_image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{{ holder_product_3.featured_image | img_url: '800x800' }}" data-caption="{{ holder_product_3.title | escape }} — {{ v.title | escape }}" loading="lazy">{% endif %}<span class="pc-vname">{{ v.title }}</span><span class="pc-vprice">{{ v.price | money }}</span><div class="pc-qty-wrap"><button type="button" class="pc-qty-btn pc-qty-minus">−</button><span class="pc-qty-val">0</span><button type="button" class="pc-qty-btn pc-qty-plus">+</button></div></div>{% endfor %}</div></div><button type="button" class="pc-dd-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Schließen</button></div>{% endif %}
+          {% if holder_product_4 != blank and h4_has_stock %}<div class="pc-inline-panel pc-roselet-panel" id="ddPanelH4" tabindex="-1"><p class="pc-panel-name">{{ holder_product_4.title }}</p><div class="pc-roselet-scroll"><div class="pc-btns pc-btns-4col pc-multi" data-opt="holder" data-category="Holder">{% for v in holder_product_4.variants %}{% unless v.available %}{% continue %}{% endunless %}<div class="pc-card" data-id="{{ v.id }}" data-title="{{ holder_product_4.title | escape }} — {{ v.title | escape }}" data-price-cents="{{ v.price }}" data-img="{% if v.image %}{{ v.image | img_url: '600x600' }}{% else %}{{ holder_product_4.featured_image | img_url: '600x600' }}{% endif %}">{% if v.image %}<img src="{{ v.image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{% if v.image %}{{ v.image | img_url: '800x800' }}{% else %}{{ holder_product_4.featured_image | img_url: '800x800' }}{% endif %}" data-caption="{{ holder_product_4.title | escape }} — {{ v.title | escape }}" loading="lazy">{% elsif holder_product_4.featured_image %}<img src="{{ holder_product_4.featured_image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{{ holder_product_4.featured_image | img_url: '800x800' }}" data-caption="{{ holder_product_4.title | escape }} — {{ v.title | escape }}" loading="lazy">{% endif %}<span class="pc-vname">{{ v.title }}</span><span class="pc-vprice">{{ v.price | money }}</span><div class="pc-qty-wrap"><button type="button" class="pc-qty-btn pc-qty-minus">−</button><span class="pc-qty-val">0</span><button type="button" class="pc-qty-btn pc-qty-plus">+</button></div></div>{% endfor %}</div></div><button type="button" class="pc-dd-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Schließen</button></div>{% endif %}
+          {% if holder_product_5 != blank and h5_has_stock %}<div class="pc-inline-panel pc-roselet-panel" id="ddPanelH5" tabindex="-1"><p class="pc-panel-name">{{ holder_product_5.title }}</p><div class="pc-roselet-scroll"><div class="pc-btns pc-btns-4col pc-multi" data-opt="holder" data-category="Holder">{% for v in holder_product_5.variants %}{% unless v.available %}{% continue %}{% endunless %}<div class="pc-card" data-id="{{ v.id }}" data-title="{{ holder_product_5.title | escape }} — {{ v.title | escape }}" data-price-cents="{{ v.price }}" data-img="{% if v.image %}{{ v.image | img_url: '600x600' }}{% else %}{{ holder_product_5.featured_image | img_url: '600x600' }}{% endif %}">{% if v.image %}<img src="{{ v.image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{% if v.image %}{{ v.image | img_url: '800x800' }}{% else %}{{ holder_product_5.featured_image | img_url: '800x800' }}{% endif %}" data-caption="{{ holder_product_5.title | escape }} — {{ v.title | escape }}" loading="lazy">{% elsif holder_product_5.featured_image %}<img src="{{ holder_product_5.featured_image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{{ holder_product_5.featured_image | img_url: '800x800' }}" data-caption="{{ holder_product_5.title | escape }} — {{ v.title | escape }}" loading="lazy">{% endif %}<span class="pc-vname">{{ v.title }}</span><span class="pc-vprice">{{ v.price | money }}</span><div class="pc-qty-wrap"><button type="button" class="pc-qty-btn pc-qty-minus">−</button><span class="pc-qty-val">0</span><button type="button" class="pc-qty-btn pc-qty-plus">+</button></div></div>{% endfor %}</div></div><button type="button" class="pc-dd-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Schließen</button></div>{% endif %}
+        </div>
+        <p class="pc-dd-sel-hint" id="hintH"></p>
+
+        <!-- ══ 4. SCHIRM ══ -->
+        <div class="pc-group" id="groupCable">
+          <label class="pc-label">
+            {{ section.settings.shade_label | default: 'Schirm' }}
+            <span class="pc-req">*</span>
+            <span class="pc-missing-badge hidden" id="badgeS">Mindestens 1 auswählen</span>
+          </label>
+        </div>
+        <p class="pc-dd-sublabel">Wählen Sie eine {{ section.settings.shade_label | default: 'Schirm' }}-Größe</p>
+        <div class="pc-multitab-row" id="shadeDds">
+          {% if shade_product_1 != blank %}{% assign s1_has_stock = false %}{% for v in shade_product_1.variants %}{% if v.available %}{% assign s1_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if s1_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnS1" data-panel="ddPanelS1"><span>{{ section.settings.shade_tab_1 | default: shade_product_1.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if shade_product_2 != blank %}{% assign s2_has_stock = false %}{% for v in shade_product_2.variants %}{% if v.available %}{% assign s2_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if s2_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnS2" data-panel="ddPanelS2"><span>{{ section.settings.shade_tab_2 | default: shade_product_2.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if shade_product_3 != blank %}{% assign s3_has_stock = false %}{% for v in shade_product_3.variants %}{% if v.available %}{% assign s3_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if s3_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnS3" data-panel="ddPanelS3"><span>{{ section.settings.shade_tab_3 | default: shade_product_3.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if shade_product_4 != blank %}{% assign s4_has_stock = false %}{% for v in shade_product_4.variants %}{% if v.available %}{% assign s4_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if s4_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnS4" data-panel="ddPanelS4"><span>{{ section.settings.shade_tab_4 | default: shade_product_4.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if shade_product_5 != blank %}{% assign s5_has_stock = false %}{% for v in shade_product_5.variants %}{% if v.available %}{% assign s5_has_stock = true %}{% break %}{% endif %}{% endfor %}{% if s5_has_stock %}<div class="pc-multitab-wrap"><button type="button" class="pc-tab-btn" id="ddBtnS5" data-panel="ddPanelS5"><span>{{ section.settings.shade_tab_5 | default: shade_product_5.title }}</span><svg class="pc-dd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>{% endif %}{% endif %}
+          {% if shade_product_1 != blank and s1_has_stock %}<div class="pc-inline-panel" id="ddPanelS1" tabindex="-1"><p class="pc-panel-name">{{ shade_product_1.title }}</p><div class="pc-btns pc-btns-4col pc-multi" data-opt="cable" data-category="Shade">{% for v in shade_product_1.variants %}{% unless v.available %}{% continue %}{% endunless %}<div class="pc-card" data-id="{{ v.id }}" data-title="{{ shade_product_1.title | escape }} — {{ v.title | escape }}" data-price-cents="{{ v.price }}" data-img="{% if v.image %}{{ v.image | img_url: '600x600' }}{% else %}{{ shade_product_1.featured_image | img_url: '600x600' }}{% endif %}">{% if v.image %}<img src="{{ v.image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{% if v.image %}{{ v.image | img_url: '800x800' }}{% else %}{{ shade_product_1.featured_image | img_url: '800x800' }}{% endif %}" data-caption="{{ shade_product_1.title | escape }} — {{ v.title | escape }}" loading="lazy">{% elsif shade_product_1.featured_image %}<img src="{{ shade_product_1.featured_image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{{ shade_product_1.featured_image | img_url: '800x800' }}" data-caption="{{ shade_product_1.title | escape }} — {{ v.title | escape }}" loading="lazy">{% endif %}<span class="pc-vname">{{ v.title }}</span><span class="pc-vprice">{{ v.price | money }}</span><div class="pc-qty-wrap"><button type="button" class="pc-qty-btn pc-qty-minus">−</button><span class="pc-qty-val">0</span><button type="button" class="pc-qty-btn pc-qty-plus">+</button></div></div>{% endfor %}</div><button type="button" class="pc-dd-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Schließen</button></div>{% endif %}
+          {% if shade_product_2 != blank and s2_has_stock %}<div class="pc-inline-panel" id="ddPanelS2" tabindex="-1"><p class="pc-panel-name">{{ shade_product_2.title }}</p><div class="pc-btns pc-btns-4col pc-multi" data-opt="cable" data-category="Shade">{% for v in shade_product_2.variants %}{% unless v.available %}{% continue %}{% endunless %}<div class="pc-card" data-id="{{ v.id }}" data-title="{{ shade_product_2.title | escape }} — {{ v.title | escape }}" data-price-cents="{{ v.price }}" data-img="{% if v.image %}{{ v.image | img_url: '600x600' }}{% else %}{{ shade_product_2.featured_image | img_url: '600x600' }}{% endif %}">{% if v.image %}<img src="{{ v.image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{% if v.image %}{{ v.image | img_url: '800x800' }}{% else %}{{ shade_product_2.featured_image | img_url: '800x800' }}{% endif %}" data-caption="{{ shade_product_2.title | escape }} — {{ v.title | escape }}" loading="lazy">{% elsif shade_product_2.featured_image %}<img src="{{ shade_product_2.featured_image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{{ shade_product_2.featured_image | img_url: '800x800' }}" data-caption="{{ shade_product_2.title | escape }} — {{ v.title | escape }}" loading="lazy">{% endif %}<span class="pc-vname">{{ v.title }}</span><span class="pc-vprice">{{ v.price | money }}</span><div class="pc-qty-wrap"><button type="button" class="pc-qty-btn pc-qty-minus">−</button><span class="pc-qty-val">0</span><button type="button" class="pc-qty-btn pc-qty-plus">+</button></div></div>{% endfor %}</div><button type="button" class="pc-dd-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Schließen</button></div>{% endif %}
+          {% if shade_product_3 != blank and s3_has_stock %}<div class="pc-inline-panel" id="ddPanelS3" tabindex="-1"><p class="pc-panel-name">{{ shade_product_3.title }}</p><div class="pc-btns pc-btns-4col pc-multi" data-opt="cable" data-category="Shade">{% for v in shade_product_3.variants %}{% unless v.available %}{% continue %}{% endunless %}<div class="pc-card" data-id="{{ v.id }}" data-title="{{ shade_product_3.title | escape }} — {{ v.title | escape }}" data-price-cents="{{ v.price }}" data-img="{% if v.image %}{{ v.image | img_url: '600x600' }}{% else %}{{ shade_product_3.featured_image | img_url: '600x600' }}{% endif %}">{% if v.image %}<img src="{{ v.image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{% if v.image %}{{ v.image | img_url: '800x800' }}{% else %}{{ shade_product_3.featured_image | img_url: '800x800' }}{% endif %}" data-caption="{{ shade_product_3.title | escape }} — {{ v.title | escape }}" loading="lazy">{% elsif shade_product_3.featured_image %}<img src="{{ shade_product_3.featured_image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{{ shade_product_3.featured_image | img_url: '800x800' }}" data-caption="{{ shade_product_3.title | escape }} — {{ v.title | escape }}" loading="lazy">{% endif %}<span class="pc-vname">{{ v.title }}</span><span class="pc-vprice">{{ v.price | money }}</span><div class="pc-qty-wrap"><button type="button" class="pc-qty-btn pc-qty-minus">−</button><span class="pc-qty-val">0</span><button type="button" class="pc-qty-btn pc-qty-plus">+</button></div></div>{% endfor %}</div><button type="button" class="pc-dd-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Schließen</button></div>{% endif %}
+          {% if shade_product_4 != blank and s4_has_stock %}<div class="pc-inline-panel" id="ddPanelS4" tabindex="-1"><p class="pc-panel-name">{{ shade_product_4.title }}</p><div class="pc-btns pc-btns-4col pc-multi" data-opt="cable" data-category="Shade">{% for v in shade_product_4.variants %}{% unless v.available %}{% continue %}{% endunless %}<div class="pc-card" data-id="{{ v.id }}" data-title="{{ shade_product_4.title | escape }} — {{ v.title | escape }}" data-price-cents="{{ v.price }}" data-img="{% if v.image %}{{ v.image | img_url: '600x600' }}{% else %}{{ shade_product_4.featured_image | img_url: '600x600' }}{% endif %}">{% if v.image %}<img src="{{ v.image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{% if v.image %}{{ v.image | img_url: '800x800' }}{% else %}{{ shade_product_4.featured_image | img_url: '800x800' }}{% endif %}" data-caption="{{ shade_product_4.title | escape }} — {{ v.title | escape }}" loading="lazy">{% elsif shade_product_4.featured_image %}<img src="{{ shade_product_4.featured_image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{{ shade_product_4.featured_image | img_url: '800x800' }}" data-caption="{{ shade_product_4.title | escape }} — {{ v.title | escape }}" loading="lazy">{% endif %}<span class="pc-vname">{{ v.title }}</span><span class="pc-vprice">{{ v.price | money }}</span><div class="pc-qty-wrap"><button type="button" class="pc-qty-btn pc-qty-minus">−</button><span class="pc-qty-val">0</span><button type="button" class="pc-qty-btn pc-qty-plus">+</button></div></div>{% endfor %}</div><button type="button" class="pc-dd-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Schließen</button></div>{% endif %}
+          {% if shade_product_5 != blank and s5_has_stock %}<div class="pc-inline-panel" id="ddPanelS5" tabindex="-1"><p class="pc-panel-name">{{ shade_product_5.title }}</p><div class="pc-btns pc-btns-4col pc-multi" data-opt="cable" data-category="Shade">{% for v in shade_product_5.variants %}{% unless v.available %}{% continue %}{% endunless %}<div class="pc-card" data-id="{{ v.id }}" data-title="{{ shade_product_5.title | escape }} — {{ v.title | escape }}" data-price-cents="{{ v.price }}" data-img="{% if v.image %}{{ v.image | img_url: '600x600' }}{% else %}{{ shade_product_5.featured_image | img_url: '600x600' }}{% endif %}">{% if v.image %}<img src="{{ v.image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{% if v.image %}{{ v.image | img_url: '800x800' }}{% else %}{{ shade_product_5.featured_image | img_url: '800x800' }}{% endif %}" data-caption="{{ shade_product_5.title | escape }} — {{ v.title | escape }}" loading="lazy">{% elsif shade_product_5.featured_image %}<img src="{{ shade_product_5.featured_image | img_url: '80x80' }}" alt="{{ v.title | escape }}" class="pc-vimg pc-zoomable" data-full="{{ shade_product_5.featured_image | img_url: '800x800' }}" data-caption="{{ shade_product_5.title | escape }} — {{ v.title | escape }}" loading="lazy">{% endif %}<span class="pc-vname">{{ v.title }}</span><span class="pc-vprice">{{ v.price | money }}</span><div class="pc-qty-wrap"><button type="button" class="pc-qty-btn pc-qty-minus">−</button><span class="pc-qty-val">0</span><button type="button" class="pc-qty-btn pc-qty-plus">+</button></div></div>{% endfor %}</div><button type="button" class="pc-dd-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg> Schließen</button></div>{% endif %}
+        </div>
+        <p class="pc-dd-sel-hint" id="hintS"></p>
+
+        <!-- ATC CODE REMINDER -->
+        <div class="pc-atc-code-reminder" id="atcCodeReminder" style="display:none">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <span class="pc-acr-text">Code <strong id="acrCode">{{ section.settings.discount_code_15 | default: 'BUNDLE15' }}</strong> beim Checkout eingeben und 15&nbsp;% sparen!</span>
+          <button type="button" class="pc-acr-copy" id="acrCopyBtn" onclick="pcCopyReminderCode(event)" title="Code kopieren">
+            <svg id="acrCopyIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <svg id="acrCheckIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </div>
+
+        <button type="submit" class="pc-atc" id="atcBtn" disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          In den Warenkorb — <span id="atcPrice">€0,00</span>
+        </button>
+        <p class="pc-atc-hint" id="atcHint">Bitte mindestens einen Artikel auswählen</p>
+
+      </form>
+    </div><!-- /pc-options -->
+
+  </div><!-- /pc-grid -->
+</div><!-- /pc-wrap -->
+
+<!-- ══ FEEDBACK MODAL ══ -->
+<div id="pcFeedbackModal" class="pc-fb-modal">
+  <div class="pc-fb-modal-content">
+    <span class="pc-fb-close" id="pcFbClose">&times;</span>
+    <h3 class="pc-fb-title">Warum haben Sie sich dagegen entschieden?</h3>
+
+    <!-- EMAIL STEP -->
+    <div class="pc-fb-email-step" id="pcFbEmailStep">
+      <p>Bitte geben Sie Ihre E-Mail-Adresse ein, um fortzufahren.</p>
+      <input type="email" id="pcFbEmail" placeholder="Ihre E-Mail-Adresse">
+      <button class="pc-fb-next-btn" id="pcFbNextBtn">Weiter</button>
+    </div>
+
+    <!-- FEEDBACK TEXT STEP -->
+    <div class="pc-fb-text-step" id="pcFbTextStep">
+      <textarea id="pcFbText" class="pc-fb-textarea" placeholder="Teilen Sie uns Ihre Gedanken mit…"></textarea>
+      <button class="pc-fb-submit-btn" id="pcFbSubmitBtn">Absenden</button>
+      <p class="pc-fb-thankyou" id="pcFbThankyou">✅ Vielen Dank für Ihr Feedback!</p>
+    </div>
+  </div>
+</div>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+.pc-mini-atc{background:#16a34a;color:#fff;border:none;padding:13px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;white-space:nowrap;line-height:1.2;box-shadow:0 4px 14px rgba(22,163,74,.25);transition:background .2s,transform .2s,box-shadow .2s}
+.pc-mini-atc:hover{background:#15803d;transform:translateY(-1px);box-shadow:0 8px 22px rgba(22,163,74,.38)}
+
+.pc-wrap *{box-sizing:border-box}
+
+/* ══ LIGHTBOX ══ */
+.pc-lightbox{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.pc-lightbox.open{opacity:1;pointer-events:all}
+.pc-lb-backdrop{position:absolute;inset:0;background:rgba(20,12,6,.88);cursor:pointer}
+.pc-lb-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:min(90vw,580px);max-height:90vh;padding:14px}
+.pc-lb-img{max-width:100%;max-height:calc(90vh - 80px);object-fit:contain;border-radius:10px;box-shadow:0 24px 64px rgba(0,0,0,.55);background:#fff;transform:scale(.88);transition:transform .28s cubic-bezier(.34,1.56,.64,1)}
+.pc-lightbox.open .pc-lb-img{transform:scale(1)}
+.pc-lb-caption{margin:0;color:rgba(255,255,255,.82);font-size:13px;font-family:'Jost',sans-serif;text-align:center}
+.pc-lb-close{position:fixed;top:16px;right:16px;z-index:2;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.28);border-radius:50px;color:#fff;padding:8px 16px 8px 12px;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;font-family:'Jost',sans-serif;cursor:pointer;transition:background .18s;backdrop-filter:blur(6px)}
+.pc-lb-close:hover{background:rgba(255,255,255,.26)}
+.pc-lb-close svg{stroke:#fff;flex-shrink:0}
+.pc-vimg.pc-zoomable,.pc-tri-img{cursor:zoom-in}
+
+/* ══ TOAST ══ */
+.pc-toast{position:fixed;inset:0;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;z-index:99999;pointer-events:none;transition:background .25s}
+.pc-toast.pc-toast-visible{background:rgba(0,0,0,.45);pointer-events:all}
+.pc-toast-inner{background:#fff;border-radius:14px;padding:28px 36px;display:flex;flex-direction:column;align-items:center;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.22);font-family:'Jost',sans-serif;font-size:16px;font-weight:600;color:#3a2e26;transform:scale(.85);opacity:0;transition:transform .25s cubic-bezier(.34,1.56,.64,1),opacity .2s;min-width:200px;text-align:center}
+.pc-toast.pc-toast-visible .pc-toast-inner{transform:scale(1);opacity:1}
+.pc-toast-spinner{width:36px;height:36px;border:3px solid #e0d5ca;border-top-color:#5c3d2e;border-radius:50%;animation:pcSpin .7s linear infinite}
+@keyframes pcSpin{to{transform:rotate(360deg)}}
+.pc-toast-check{width:36px;height:36px;background:#16a34a;border-radius:50%;display:flex;align-items:center;justify-content:center;animation:pcPop .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pcPop{from{transform:scale(0)}to{transform:scale(1)}}
+.pc-toast-check svg{stroke:#fff}
+
+/* ══ LAYOUT ══ */
+.pc-wrap{max-width:1380px;margin:36px auto;padding:0 18px;font-family:'Jost',sans-serif}
+.pc-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;background:#fdfaf7;border-radius:14px;box-shadow:0 6px 36px rgba(80,60,40,.09);padding:36px;border:1px solid #ede6dc}
+.pc-preview{position:sticky;top:18px;height:fit-content;display:flex;flex-direction:column;gap:16px}
+.pc-preview-title{font-size:20px;font-weight:600;color:#3a2e26;margin:0;letter-spacing:.4px}
+
+/* ══ CANVAS (thumbnails) ══ */
+.pc-canvas{background:linear-gradient(155deg,#f9f4ed,#ece4d8);border-radius:12px;padding:18px 14px 14px;display:flex;flex-direction:column;align-items:center;gap:14px;border:1px solid #ddd4c5}
+.pc-pills{display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center}
+.pc-pill{background:#e8ddd0;color:#9e8a78;font-size:10px;padding:3px 9px;border-radius:20px;border:1px solid #d5c9bc;transition:all .3s;white-space:nowrap}
+.pc-pill.active{background:#16a34a;color:#fff;border-color:#16a34a}
+.pc-pill.done{background:#15803d;color:#fff;border-color:#15803d}
+.pc-arrow{color:#c9b8a8;font-size:11px}
+.pc-trio-preview{display:flex;align-items:flex-start;justify-content:center;gap:4px;width:100%}
+.pc-trio-col{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;min-width:0}
+.pc-trio-label{font-size:8px;color:#9e8a78;text-transform:uppercase;letter-spacing:.4px;margin:0;font-weight:600;text-align:center}
+.pc-tri-imgs{display:flex;flex-direction:column;gap:4px;align-items:center;width:100%}
+.pc-tri-placeholder{width:52px;height:52px;opacity:.5;animation:pcPulse 2s ease-in-out infinite}
+@keyframes pcPulse{0%,100%{opacity:.3}50%{opacity:.7}}
+.pc-tri-img{width:50px;height:50px;object-fit:contain;border-radius:6px;border:2px solid #e0d5ca;background:#fff;filter:drop-shadow(0 2px 5px rgba(92,61,46,.12));animation:pcFadeIn .3s ease;cursor:zoom-in}
+@keyframes pcFadeIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+.pc-tri-img-label{font-size:8px;color:#9e8a78;text-align:center;max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pc-trio-divider{color:#c9b8a8;font-size:12px;padding-top:22px;flex-shrink:0}
+
+/* ══ COUPON WIDGET ══ */
+.pc-coupon-wrap{background:#fff;border:1px solid #e8e0d8;border-radius:12px;padding:18px 18px 14px;display:flex;flex-direction:column;gap:14px}
+.pc-coup-eyebrow{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#b5a090;font-family:'Jost',sans-serif;margin:0}
+
+/* Category dots grid */
+.pc-coup-cats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pc-coup-cat{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;border:1.5px solid #e8ddd0;background:#fdf8f3;transition:border-color .25s,background .25s;cursor:pointer}
+.pc-coup-cat:hover{border-color:#9e8a78;background:#f5ede3}
+.pc-coup-cat[data-state="done"]{border-color:#16a34a;background:#f0fdf4}
+.pc-coup-cat[data-state="empty"]{border-color:#e8ddd0;background:#fdf8f3}
+.pc-coup-dot{width:18px;height:18px;min-width:18px;border-radius:50%;border:1.5px solid #d5c4b0;background:#fdf8f3;display:flex;align-items:center;justify-content:center;transition:background .25s,border-color .25s;flex-shrink:0}
+.pc-coup-cat[data-state="done"] .pc-coup-dot{background:#16a34a;border-color:#16a34a}
+.pc-coup-check{stroke:#fff;opacity:0;transition:opacity .2s}
+.pc-coup-cat[data-state="done"] .pc-coup-check{opacity:1}
+.pc-coup-cat span{font-size:13px;color:#5a5450;font-family:'Jost',sans-serif;font-weight:600;transition:color .25s}
+.pc-coup-cat[data-state="done"] span{color:#166534;font-weight:600}
+
+/* Simple progress bar + label */
+.pc-coup-progress{display:flex;flex-direction:column;gap:6px}
+.pc-tier-bar{height:5px;background:#f0e8e0;border-radius:99px;overflow:hidden;position:relative}
+.pc-tier-bar-fill{height:100%;width:0%;border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,#fbbf24,#16a34a)}
+.pc-coup-progress-lbl{margin:0;font-size:11px;color:#9e8a78;font-family:'Jost',sans-serif;text-align:center;font-weight:600;letter-spacing:.2px}
+
+/* Locked message */
+.pc-coup-locked-msg{margin:0;font-size:13px;color:#5a5450;font-family:'Jost',sans-serif;text-align:center;font-weight:500;transition:opacity .3s}
+.pc-coup-locked-msg strong{color:#3a2e26}
+
+/* Dynamic selection hint */
+.pc-coup-sel-hint{margin:0;font-size:12px;color:#92400e;font-family:'Jost',sans-serif;text-align:center;font-weight:600;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:8px 12px;line-height:1.5;display:none}
+
+/* Per-dropdown selection hint */
+.pc-dd-sel-hint{margin:4px 0 0;font-size:12px;font-weight:600;color:#92400e;font-family:'Jost',sans-serif;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:7px 12px;line-height:1.5;display:none;animation:pcFadeIn .25s ease}
+
+/* ══ UNLOCKING ANIMATION ══ */
+.pc-coup-unlocking{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 12px;background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1.5px solid #fde68a;border-radius:10px;animation:pcUnlockFadeIn .3s ease}
+@keyframes pcUnlockFadeIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.pc-unlock-spinner{width:20px;height:20px;min-width:20px;border:2.5px solid #fde68a;border-top-color:#d97706;border-radius:50%;animation:pcSpin .65s linear infinite;flex-shrink:0}
+.pc-unlock-text{font-size:14px;font-weight:700;color:#92400e;font-family:'Jost',sans-serif;letter-spacing:.3px}
+
+/* Code reveal area */
+.pc-coup-code-area{display:flex;flex-direction:column;gap:10px;animation:pcCodeIn .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pcCodeIn{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.pc-coup-code-header{display:flex;align-items:center;gap:8px}
+.pc-coup-pct-pill{background:#7c3aed;color:#fff;font-size:13px;font-weight:800;letter-spacing:1px;padding:6px 14px;border-radius:6px;font-family:'Jost',sans-serif;text-transform:uppercase;white-space:nowrap}
+.pc-coup-code-label-sm{font-size:10px;color:#9e8a78;font-family:'Jost',sans-serif}
+.pc-cu-code-row{display:flex;align-items:center;gap:8px;border:1.5px solid #d5c4b0;border-radius:8px;padding:4px 4px 4px 14px;background:#fdf8f3;min-height:44px}
+.pc-cu-code{flex:1;font-size:14px;font-weight:800;letter-spacing:3px;color:#3a2e26;font-family:'Jost',sans-serif;display:flex;align-items:center;user-select:all;min-width:0}
+.pc-cu-copy{flex-shrink:0;background:#7c3aed;color:#fff;border:none;border-radius:6px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,transform .1s;padding:0}
+.pc-cu-copy:hover{background:#6d28d9;transform:scale(1.05)}
+.pc-cu-copy svg{stroke:#fff}
+.pc-cu-copy.copied{background:#15803d}
+
+/* ══ VALIDATION ══ */
+.pc-validation{background:#fff8f0;border:1px solid #f5c98a;border-radius:8px;padding:10px 14px}
+.pc-valid-row{margin:0;padding:3px 0;font-size:12px;color:#856404;display:flex;align-items:center;gap:6px}
+.pc-valid-row.hidden{display:none}
+
+/* ══ PRICE BOX ══ */
+.pc-price-box{background:#fff;border-radius:9px;padding:14px 16px;border:1px solid #e0d5ca}
+.pc-price-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:#6b5a4e;border-bottom:1px solid #e8ddd0}
+.pc-price-row:last-child{border-bottom:none}
+.pc-subtotal-row{border-bottom:1px solid #d5c4b0!important}
+.pc-discount-row{background:rgba(124,58,237,.05);margin:0 -16px;padding:6px 16px;color:#5b21b6;font-weight:600;border-bottom:1px solid #ddd6fe!important}
+.pc-discount-amt{color:#7c3aed;font-weight:700}
+.pc-total{border-top:2px solid #c9b8a8;margin-top:5px;padding-top:10px;font-size:17px;font-weight:700;color:#2e2018}
+
+/* ══ RIGHT SIDE ══ */
+.pc-options{}
+.pc-title{font-size:20px;font-weight:700;color:#2e2018;margin:0 0 24px}
+form#pcForm{display:flex;flex-direction:column;gap:16px}
+.pc-group{display:flex;flex-direction:column;gap:8px;margin-bottom:0}
+.pc-label{font-size:14px;font-weight:600;color:#3a2e26;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pc-req{color:#c0392b}
+.pc-missing-badge{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:12px;font-size:10px;font-weight:600;padding:2px 8px;font-family:'Jost',sans-serif}
+.pc-missing-badge.hidden{display:none}
+.pc-dd-sublabel{margin:-6px 0 0;font-size:11px;color:#9e8a78;font-style:italic;font-family:'Jost',sans-serif}
+.pc-panel-name{margin:0 0 10px;font-size:12px;font-weight:700;color:#5c3d2e;text-transform:uppercase;letter-spacing:.6px;font-family:'Jost',sans-serif;border-bottom:1px solid #e0d5ca;padding-bottom:7px}
+.pc-multitab-row{display:flex;flex-direction:row;flex-wrap:wrap;gap:6px;width:100%}
+.pc-multitab-wrap{flex:1;min-width:80px}
+.pc-tab-btn{width:100%;padding:10px 14px;background:#f5ede3;border:2px solid #e0d5ca;border-radius:8px;font-family:'Jost',sans-serif;font-size:12px;font-weight:700;color:#5c3d2e;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;text-transform:uppercase;letter-spacing:.4px;min-height:44px;overflow:hidden;transition:border-color .2s,background .2s}
+.pc-tab-btn span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pc-dd-chevron{width:14px;height:14px;min-width:14px;flex-shrink:0;transition:transform .2s}
+.pc-tab-btn:hover{background:#ede0d0;border-color:#b89880}
+.pc-tab-btn.open{border-color:#5c3d2e;background:#ede0d0}
+.pc-tab-btn.has-pick{border-color:#16a34a}
+.pc-tab-btn.has-pick .pc-dd-chevron{stroke:#16a34a}
+.pc-tab-btn.open .pc-dd-chevron{transform:rotate(180deg)}
+.pc-inline-panel{display:none;width:100%;border:2px solid #5c3d2e;border-radius:8px;background:#fdfaf7;padding:14px;margin-top:4px;box-shadow:0 4px 18px rgba(80,60,40,.13)}
+.pc-multitab-row .pc-inline-panel{flex-basis:100%;order:99}
+.pc-inline-panel.open{display:block}
+.pc-roselet-panel.open{display:flex;flex-direction:column}
+.pc-roselet-scroll{max-height:280px;overflow-y:auto;overflow-x:hidden;padding-right:4px;scrollbar-width:thin;scrollbar-color:#c9b8a8 #f5ede3}
+.pc-roselet-scroll::-webkit-scrollbar{width:5px}
+.pc-roselet-scroll::-webkit-scrollbar-track{background:#f5ede3;border-radius:99px}
+.pc-roselet-scroll::-webkit-scrollbar-thumb{background:#c9b8a8;border-radius:99px}
+.pc-dd-close{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:12px;padding:8px 12px;background:#f5ede3;border:1.5px solid #d5c4b0;border-radius:7px;font-family:'Jost',sans-serif;font-size:12px;font-weight:600;color:#5c3d2e;cursor:pointer;transition:background .15s}
+.pc-dd-close:hover{background:#e8d8c8}
+.pc-dd-close svg{flex-shrink:0;stroke:#5c3d2e}
+.pc-group.pc-error .pc-tab-btn{border-color:#fca5a5!important;outline:2px solid #fca5a5;outline-offset:2px}
+
+/* ══ CARDS ══ */
+.pc-btns{display:grid;gap:10px}
+.pc-btns-4col{grid-template-columns:repeat(4,1fr)}
+.pc-card{background:#fff;border:2px solid #e0d5ca;border-radius:10px;padding:10px 8px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;user-select:none;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+.pc-card:hover{border-color:#9e8a78;box-shadow:0 3px 10px rgba(92,61,46,.1)}
+.pc-card.active{border-color:#16a34a;box-shadow:0 4px 14px rgba(22,163,74,.22)}
+.pc-card.active::before{content:'';position:absolute;top:6px;left:6px;width:8px;height:8px;border-radius:50%;background:#16a34a}
+.pc-vimg{width:56px;height:56px;object-fit:cover;border-radius:6px;pointer-events:none;display:block}
+.pc-vimg.pc-zoomable{pointer-events:all}
+.pc-vname{font-size:11px;font-weight:600;text-align:center;color:#3a2e26;line-height:1.3}
+.pc-vprice{font-size:10px;color:#9e8a78}
+.pc-qty-wrap{display:flex;align-items:center;border:1.5px solid #e0d5ca;border-radius:7px;overflow:hidden;margin-top:2px}
+.pc-qty-btn{background:#f5ede3;border:none;width:26px;height:26px;font-size:16px;line-height:1;cursor:pointer;color:#5c3d2e;font-weight:700;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0;padding:0}
+.pc-qty-btn:hover{background:#e8d8c8}
+.pc-qty-val{min-width:28px;text-align:center;font-size:13px;font-weight:700;color:#3a2e26;font-family:'Jost',sans-serif;padding:0 2px}
+.pc-card.active .pc-qty-wrap{border-color:#5c3d2e}
+.pc-card.active .pc-qty-btn{background:#7a5240;color:#fff8f2}
+.pc-card.active .pc-qty-btn:hover{background:#5c3d2e}
+
+/* ══ ATC ══ */
+.pc-atc-code-reminder{display:flex;align-items:center;gap:8px;background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:8px;padding:10px 14px;font-size:13px;color:#4c1d95;font-family:'Jost',sans-serif;margin-top:4px;line-height:1.4}
+.pc-atc-code-reminder>svg{flex-shrink:0;stroke:#7c3aed}
+.pc-atc-code-reminder strong{font-weight:800;letter-spacing:1px;color:#5b21b6}
+.pc-acr-text{flex:1}
+.pc-acr-copy{flex-shrink:0;background:#7c3aed;border:none;border-radius:6px;width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,transform .1s;padding:0}
+.pc-acr-copy:hover{background:#6d28d9;transform:scale(1.08)}
+.pc-acr-copy svg{stroke:#fff}
+.pc-acr-copy.copied{background:#16a34a}
+.pc-atc{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;padding:14px 16px;border-radius:9px;font-size:14px;font-weight:700;font-family:'Jost',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .2s,box-shadow .2s,opacity .2s;letter-spacing:.15px;margin-top:8px;width:100%;white-space:nowrap;overflow:hidden;line-height:1.2}
+.pc-atc:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 9px 22px rgba(21,128,61,.35)}
+.pc-atc:disabled{opacity:.45;cursor:not-allowed}
+.pc-atc-hint{text-align:center;font-size:11px;color:#9e8a78;margin:0;font-style:italic}
+.pc-atc-hint.hidden{display:none}
+
+/* ══ TITLE ROW with feedback button ══ */
+.pc-title-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 24px;flex-wrap:nowrap}
+.pc-title-row .pc-title{margin:0;font-size:20px}
+/* ══ FEEDBACK BUTTON ══ */
+.pc-feedback-btn{flex-shrink:0;padding:7px 12px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;color:#64748b;cursor:pointer;display:inline-flex;align-items:center;gap:5px;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.9);transition:border-color .15s,color .15s,box-shadow .15s,background .15s;line-height:1}
+.pc-feedback-btn svg{stroke:#94a3b8;flex-shrink:0;transition:stroke .15s}
+.pc-feedback-btn:hover{background:#f8fafc;border-color:#94a3b8;color:#334155;box-shadow:0 2px 6px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.9)}
+.pc-feedback-btn:hover svg{stroke:#475569}
+.pc-feedback-btn:hover span,.pc-feedback-btn span{color:inherit}
+
+/* ══ FEEDBACK MODAL ══ */
+.pc-fb-modal{display:none;position:fixed;z-index:999998;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);overflow-y:auto}
+.pc-fb-modal-content{background:#fdfaf7;border-radius:14px;margin:5% auto;padding:28px 24px;width:90%;max-width:520px;box-shadow:0 6px 40px rgba(80,60,40,.18);position:relative;border:1px solid #ede6dc;animation:pcFbIn .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pcFbIn{from{opacity:0;transform:scale(.93) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.pc-fb-close{position:absolute;right:14px;top:10px;font-size:22px;cursor:pointer;color:#9e8a78;line-height:1;transition:color .2s}
+.pc-fb-close:hover{color:#3a2e26}
+.pc-fb-title{font-size:17px;text-align:center;margin:0 0 18px;font-weight:700;color:#3a2e26;font-family:'Jost',sans-serif;letter-spacing:.2px}
+.pc-fb-email-step{text-align:center}
+.pc-fb-email-step p{margin:0 0 12px;font-size:13px;color:#6b5a4e;font-family:'Jost',sans-serif}
+.pc-fb-email-step input{width:100%;padding:9px 13px;border-radius:8px;border:1.5px solid #d5c4b0;margin-bottom:12px;font-size:13px;height:40px;box-sizing:border-box;font-family:'Jost',sans-serif;color:#3a2e26;background:#fff;outline:none;transition:border-color .2s}
+.pc-fb-email-step input:focus{border-color:#9e8a78}
+.pc-fb-next-btn{width:100%;background:linear-gradient(135deg,#5c3d2e,#7a5240);color:#fff;padding:11px;border:none;border-radius:8px;cursor:pointer;font-family:'Jost',sans-serif;font-size:13px;font-weight:700;transition:opacity .2s}
+.pc-fb-next-btn:hover{opacity:.88}
+.pc-fb-text-step{display:none}
+.pc-fb-textarea{width:100%;padding:10px 13px;border-radius:8px;border:1.5px solid #d5c4b0;font-size:13px;resize:vertical;min-height:100px;box-sizing:border-box;margin-bottom:12px;font-family:'Jost',sans-serif;color:#3a2e26;background:#fff;outline:none;transition:border-color .2s}
+.pc-fb-textarea:focus{border-color:#9e8a78}
+.pc-fb-submit-btn{display:block;width:100%;background:linear-gradient(135deg,#5c3d2e,#7a5240);color:#fff;border:none;border-radius:8px;padding:11px;cursor:pointer;font-family:'Jost',sans-serif;font-size:13px;font-weight:700;transition:opacity .2s}
+.pc-fb-submit-btn:hover{opacity:.88}
+.pc-fb-thankyou{display:none;text-align:center;color:#16a34a;font-weight:600;margin-top:10px;font-family:'Jost',sans-serif;font-size:14px}
+
+@media(max-width:1020px){.pc-grid{grid-template-columns:1fr}.pc-preview{position:relative;top:0}}
+@media(max-width:620px){
+  .pc-grid{padding:18px 14px}
+  .pc-btns-4col{grid-template-columns:repeat(2,1fr)}
+  .pc-cu-code{font-size:12px;letter-spacing:2px}
+  .pc-lb-close{top:10px;right:10px;padding:7px 12px 7px 10px;font-size:12px}
+  .pc-roselet-scroll{max-height:220px}
+  .pc-atc{font-size:12px;padding:13px 10px;gap:6px}
+  .pc-coup-cats{grid-template-columns:1fr 1fr}
+  .pc-trio-divider{font-size:10px;padding-top:18px}
+}
+</style>
+
+<script>
+(function(){
+'use strict';
+
+/* ══ ONLY 15% TIER — triggered when all 4 categories are selected ══ */
+var DISCOUNT_PCT = 0.15;
+var wrap = document.querySelector('[data-code15]');
+var CODE15 = wrap ? wrap.dataset.code15 : 'BUNDLE15';
+
+/* Track whether we've already played the unlock animation for the current selection */
+var unlockAnimShown = false;
+
+var state={shape:{},material:{},holder:{},cable:{},submitAttempted:false};
+function g(id){return document.getElementById(id)}
+
+var el={
+  pill1:g('pill1'),pill2:g('pill2'),pill3:g('pill3'),pill4:g('pill4'),
+  trioImgsR:g('trioImgsR'),trioImgsC:g('trioImgsC'),trioImgsH:g('trioImgsH'),trioImgsS:g('trioImgsS'),
+  priceR:g('priceR'),priceC:g('priceC'),priceH:g('priceH'),priceS:g('priceS'),
+  priceSubtotal:g('priceSubtotal'),priceDiscount:g('priceDiscount'),discountRow:g('discountRow'),
+  priceTotal:g('priceTotal'),atcPrice:g('atcPrice'),atcBtn:g('atcBtn'),atcHint:g('atcHint'),
+  pcValidation:g('pcValidation'),
+  validHintR:g('validHintR'),validHintC:g('validHintC'),validHintH:g('validHintH'),validHintS:g('validHintS'),
+  badgeR:g('badgeR'),badgeC:g('badgeC'),badgeH:g('badgeH'),badgeS:g('badgeS'),
+  groupShape:g('groupShape'),groupMaterial:g('groupMaterial'),groupHolder:g('groupHolder'),groupCable:g('groupCable'),
+  toast:g('pcToast'),toastMsg:g('pcToastMsg'),toastInner:g('pcToastInner'),
+  /* coupon elements */
+  catItemR:g('catItemR'),catItemC:g('catItemC'),catItemH:g('catItemH'),catItemS:g('catItemS'),
+  tierBarFill:g('tierBarFill'),
+  couponProgressText:g('couponProgressText'),
+  couponLockedMsg:g('couponLockedMsg'),
+  couponUnlocking:g('couponUnlocking'),
+  couponCodeArea:g('couponCodeArea'),
+  couponCodeDisplay:g('couponCodeDisplay'),
+  /* atc reminder */
+  atcCodeReminder:g('atcCodeReminder'),
+  acrCode:g('acrCode'),
+  /* lightbox */
+  lightbox:g('pcLightbox'),lbImg:g('pcLbImg'),lbCaption:g('pcLbCaption'),
+  lbClose:g('pcLbClose'),lbBackdrop:g('pcLbBackdrop')
+};
+
+/* ══ COUPON UPDATER — only 15% when all 4 selected ══ */
+function updateCoupon(hR, hC, hH, hS) {
+  var done = [hR, hC, hH, hS].filter(Boolean).length;
+
+  /* Update category dot states */
+  function setCat(el, isDone) { if (el) el.setAttribute('data-state', isDone ? 'done' : 'empty'); }
+  setCat(el.catItemR, hR);
+  setCat(el.catItemC, hC);
+  setCat(el.catItemH, hH);
+  setCat(el.catItemS, hS);
+
+  /* Progress bar fills 25% per category (0 → 100% when all 4 done) */
+  if (el.tierBarFill) el.tierBarFill.style.width = Math.round(done / 4 * 100) + '%';
+
+  /* Progress label */
+  if (el.couponProgressText) {
+    el.couponProgressText.textContent = done + ' von 4 Kategorien ausgewählt';
+  }
+
+  /* ── Per-dropdown hints ── */
+  var labelR = '{{ section.settings.roselet_label | default: "Roselet" }}';
+  var labelC = '{{ section.settings.cable_label   | default: "Kabel"   }}';
+  var labelH = '{{ section.settings.holder_label  | default: "Halter"  }}';
+  var labelS = '{{ section.settings.shade_label   | default: "Schirm"  }}';
+
+  /* For each category: if selected AND not all 4 done, show what's still missing */
+  function setHint(el, isSelected, missingLabels) {
+    if (!el) return;
+    if (!isSelected || done === 4) { el.style.display = 'none'; el.textContent = ''; return; }
+    var left = missingLabels.length;
+    var str = missingLabels.join(', ');
+    var msg = '';
+    if (left === 3) msg = '🏷️ ' + str + ' hinzufügen und 15 % sparen!';
+    else if (left === 2) msg = '🏷️ Noch ' + str + ' wählen — 15 % Rabatt warten!';
+    else if (left === 1) msg = '🔥 Fast da! Noch ' + str + ' wählen für 15 % Rabatt.';
+    el.textContent = msg;
+    el.style.display = msg ? 'block' : 'none';
+  }
+
+  var hintR = g('hintR'), hintC = g('hintC'), hintH = g('hintH'), hintS = g('hintS');
+
+  var missingR = []; if (!hC) missingR.push(labelC); if (!hH) missingR.push(labelH); if (!hS) missingR.push(labelS);
+  var missingC = []; if (!hR) missingC.push(labelR); if (!hH) missingC.push(labelH); if (!hS) missingC.push(labelS);
+  var missingH = []; if (!hR) missingH.push(labelR); if (!hC) missingH.push(labelC); if (!hS) missingH.push(labelS);
+  var missingS = []; if (!hR) missingS.push(labelR); if (!hC) missingS.push(labelC); if (!hH) missingS.push(labelH);
+
+  setHint(hintR, hR, missingR);
+  setHint(hintC, hC, missingC);
+  setHint(hintH, hH, missingH);
+  setHint(hintS, hS, missingS);
+
+  if (done < 4) {
+    /* Reset unlock animation flag so it plays again next time all 4 are selected */
+    unlockAnimShown = false;
+
+    /* Show locked message, hide everything else */
+    if (el.couponLockedMsg)  el.couponLockedMsg.style.display  = '';
+    if (el.couponUnlocking)  el.couponUnlocking.style.display  = 'none';
+    if (el.couponCodeArea)   el.couponCodeArea.style.display   = 'none';
+    return;
+  }
+
+  /* ── All 4 selected ── */
+  if (el.couponLockedMsg) el.couponLockedMsg.style.display = 'none';
+  if (el.couponCodeDisplay) el.couponCodeDisplay.textContent = CODE15;
+
+  if (!unlockAnimShown) {
+    unlockAnimShown = true;
+
+    /* 1. Show "Wird entsperrt…" spinner */
+    if (el.couponCodeArea)  el.couponCodeArea.style.display  = 'none';
+    if (el.couponUnlocking) el.couponUnlocking.style.display = 'flex';
+
+    /* 2. After 1.5 s — hide spinner, reveal code with animation */
+    setTimeout(function() {
+      if (el.couponUnlocking) el.couponUnlocking.style.display = 'none';
+      if (el.couponCodeArea)  el.couponCodeArea.style.display  = 'flex';
+    }, 1500);
+
+  } else {
+    /* Animation already played this session — show code directly */
+    if (el.couponUnlocking) el.couponUnlocking.style.display = 'none';
+    if (el.couponCodeArea)  el.couponCodeArea.style.display  = 'flex';
+  }
+}
+
+/* ══ LIGHTBOX ══ */
+function openLightbox(src,caption){
+  if(!el.lightbox||!src)return;
+  el.lbImg.src=src;el.lbCaption.textContent=caption||'';
+  el.lightbox.classList.add('open');document.body.style.overflow='hidden';
+}
+function closeLightbox(){
+  if(!el.lightbox)return;
+  el.lightbox.classList.remove('open');document.body.style.overflow='';
+  setTimeout(function(){el.lbImg.src=''},300);
+}
+function initLightbox(){
+  if(el.lbClose)el.lbClose.addEventListener('click',function(e){e.stopPropagation();closeLightbox()});
+  if(el.lbBackdrop)el.lbBackdrop.addEventListener('click',closeLightbox);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox()});
+  document.addEventListener('click',function(e){
+    var img=e.target.closest('.pc-zoomable');if(!img)return;
+    e.stopPropagation();openLightbox(img.dataset.full||img.src,img.dataset.caption||img.alt||'');
+  });
+  document.addEventListener('click',function(e){
+    var img=e.target.closest('.pc-tri-img');if(!img)return;
+    e.stopPropagation();openLightbox(img.src.replace(/\/\d+x\d+\//,'/800x800/'),img.alt||'');
+  });
+}
+
+/* ══ COPY REMINDER CODE ══ */
+window.pcCopyReminderCode=function(e){
+  if(e){e.preventDefault();e.stopPropagation();}
+  var codeEl=g('acrCode'),btn=g('acrCopyBtn'),ci=g('acrCopyIcon'),ck=g('acrCheckIcon');
+  if(!codeEl)return;var code=codeEl.textContent.trim();
+  function done(){btn.classList.add('copied');ci.style.display='none';ck.style.display='';setTimeout(function(){btn.classList.remove('copied');ci.style.display='';ck.style.display='none'},2500)}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(code).then(done).catch(function(){fb(code);done()})}else{fb(code);done()}
+};
+
+/* ══ COPY CODE FROM WIDGET ══ */
+window.pcCopyCode=function(e){
+  if(e){e.preventDefault();e.stopPropagation();}
+  var codeEl=g('couponCodeDisplay'),btn=g('couponCopyBtn'),ci=g('copyIcon'),ck=g('checkIcon');
+  if(!codeEl)return;var code=codeEl.textContent.trim();
+  function done(){btn.classList.add('copied');ci.style.display='none';ck.style.display='';setTimeout(function(){btn.classList.remove('copied');ci.style.display='';ck.style.display='none'},2500)}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(code).then(done).catch(function(){fb(code);done()})}else{fb(code);done()}
+};
+function fb(t){var a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(a)}
+
+/* ══ TOAST ══ */
+var toastTimer=null;
+function showToast(type,msg){
+  clearTimeout(toastTimer);el.toastMsg.textContent=msg;
+  var sp=el.toastInner.querySelector('.pc-toast-spinner'),ch=el.toastInner.querySelector('.pc-toast-check');
+  if(type==='loading'){
+    if(ch)ch.remove();
+    if(!sp){var s=document.createElement('div');s.className='pc-toast-spinner';el.toastInner.insertBefore(s,el.toastInner.firstChild)}
+  }else{
+    if(sp)sp.remove();
+    if(!ch){var c=document.createElement('div');c.className='pc-toast-check';c.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';el.toastInner.insertBefore(c,el.toastInner.firstChild)}
+  }
+  el.toast.classList.add('pc-toast-visible');
+}
+function hideToast(d){toastTimer=setTimeout(function(){el.toast.classList.remove('pc-toast-visible')},d||0)}
+
+/* ══ HELPERS ══ */
+function cf(card){return parseInt(card.dataset.priceCents||'0',10)/100}
+function ov(o){return Object.keys(o).map(function(k){return o[k]})}
+function fmt(n){return new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(n)}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function sumP(map){return ov(map).reduce(function(a,b){return a+(b.price||0)*(b.qty||0)},0)}
+function hasI(map){return ov(map).some(function(v){return v.qty>0})}
+function actI(map){return ov(map).filter(function(v){return v.qty>0})}
+
+/* ══ PANELS ══ */
+function closeAll(){
+  document.querySelectorAll('.pc-tab-btn.open').forEach(function(b){b.classList.remove('open')});
+  document.querySelectorAll('.pc-inline-panel.open').forEach(function(p){p.classList.remove('open')});
+}
+function openPanel(btn,panel){closeAll();btn.classList.add('open');panel.classList.add('open')}
+function wireTab(btn,panel){
+  if(!btn||!panel)return;
+  btn.addEventListener('mousedown',function(e){e.preventDefault()});
+  btn.addEventListener('click',function(e){
+    e.stopPropagation();
+    btn.classList.contains('open')?closeAll():openPanel(btn,panel);
+  });
+}
+function initTabs(){
+  document.querySelectorAll('.pc-tab-btn[data-panel]').forEach(function(btn){wireTab(btn,g(btn.dataset.panel))});
+}
+function initClose(){
+  var wrap=document.querySelector('.pc-wrap');if(!wrap)return;
+  wrap.addEventListener('mousedown',function(e){if(e.target.closest('.pc-dd-close'))e.preventDefault()});
+  wrap.addEventListener('click',function(e){if(e.target.closest('.pc-dd-close')){e.stopPropagation();closeAll()}});
+}
+
+var PAIRS=[
+  {btn:'ddBtnR1',panel:'ddPanelR1'},{btn:'ddBtnR2',panel:'ddPanelR2'},{btn:'ddBtnR3',panel:'ddPanelR3'},{btn:'ddBtnR4',panel:'ddPanelR4'},{btn:'ddBtnR5',panel:'ddPanelR5'},
+  {btn:'ddBtnK1',panel:'ddPanelK1'},{btn:'ddBtnK2',panel:'ddPanelK2'},{btn:'ddBtnK3',panel:'ddPanelK3'},{btn:'ddBtnK4',panel:'ddPanelK4'},{btn:'ddBtnK5',panel:'ddPanelK5'},
+  {btn:'ddBtnH1',panel:'ddPanelH1'},{btn:'ddBtnH2',panel:'ddPanelH2'},{btn:'ddBtnH3',panel:'ddPanelH3'},{btn:'ddBtnH4',panel:'ddPanelH4'},{btn:'ddBtnH5',panel:'ddPanelH5'},
+  {btn:'ddBtnS1',panel:'ddPanelS1'},{btn:'ddBtnS2',panel:'ddPanelS2'},{btn:'ddBtnS3',panel:'ddPanelS3'},{btn:'ddBtnS4',panel:'ddPanelS4'},{btn:'ddBtnS5',panel:'ddPanelS5'}
+];
+function refreshPick(){
+  PAIRS.forEach(function(p){var b=g(p.btn),pn=g(p.panel);if(b&&pn)b.classList.toggle('has-pick',!!pn.querySelector('.pc-card.active'))});
+}
+
+function stepPill(elem,st){if(!elem)return;elem.classList.remove('active','done');if(st)elem.classList.add(st)}
+function renderCol(container,map){
+  if(!container)return;
+  var items=actI(map);
+  if(!items.length){container.innerHTML='<div class="pc-tri-placeholder"><svg viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="34" stroke="#c9b8a8" stroke-width="1.5" stroke-dasharray="5 3"/></svg></div>';return}
+  container.innerHTML=items.map(function(it){return'<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><img class="pc-tri-img" src="'+it.img+'" alt="'+esc(it.title)+'"><span class="pc-tri-img-label">'+esc(it.title)+(it.qty>1?' ×'+it.qty:'')+'</span></div>'}).join('');
+}
+
+function updateValidation(show){
+  var hR=hasI(state.shape),hC=hasI(state.material),hH=hasI(state.holder),hS=hasI(state.cable),ok=hR&&hC&&hH&&hS;
+  function se(badge,group,miss){var s=show&&miss;if(badge)badge.classList.toggle('hidden',!s);if(group)group.classList.toggle('pc-error',s)}
+  se(el.badgeR,el.groupShape,!hR);se(el.badgeC,el.groupMaterial,!hC);se(el.badgeH,el.groupHolder,!hH);se(el.badgeS,el.groupCable,!hS);
+  if(el.pcValidation){
+    el.pcValidation.style.display=(show&&!ok)?'':'none';
+    if(el.validHintR)el.validHintR.classList.toggle('hidden',hR);
+    if(el.validHintC)el.validHintC.classList.toggle('hidden',hC);
+    if(el.validHintH)el.validHintH.classList.toggle('hidden',hH);
+    if(el.validHintS)el.validHintS.classList.toggle('hidden',hS);
+  }
+  return ok;
+}
+
+function updateAll(){
+  var hR=hasI(state.shape),hC=hasI(state.material),hH=hasI(state.holder),hS=hasI(state.cable);
+  var ok=hR&&hC&&hH&&hS;
+
+  /* Pills */
+  stepPill(el.pill1,hR?(hC&&hH&&hS?'done':'active'):'');
+  stepPill(el.pill2,hC?(hR&&hH&&hS?'done':'active'):'');
+  stepPill(el.pill3,hH?(hR&&hC&&hS?'done':'active'):'');
+  stepPill(el.pill4,hS?(hR&&hC&&hH?'done':'active'):'');
+
+  /* Preview thumbnails */
+  renderCol(el.trioImgsR,state.shape);
+  renderCol(el.trioImgsC,state.material);
+  renderCol(el.trioImgsH,state.holder);
+  renderCol(el.trioImgsS,state.cable);
+
+  /* Prices — 15% discount only when all 4 categories selected */
+  var sp=sumP(state.shape),cp=sumP(state.material),hp=sumP(state.holder),sh=sumP(state.cable);
+  var sub=sp+cp+hp+sh;
+  var disc = ok ? sub * DISCOUNT_PCT : 0;
+  var tot  = sub - disc;
+
+  el.priceR.textContent=fmt(sp);
+  el.priceC.textContent=fmt(cp);
+  el.priceH.textContent=fmt(hp);
+  el.priceS.textContent=fmt(sh);
+  el.priceSubtotal.textContent=fmt(sub);
+  el.priceDiscount.textContent='−'+fmt(disc);
+  el.priceTotal.textContent=fmt(tot);
+  el.atcPrice.textContent=fmt(tot);
+
+  /* Show discount row only when all 4 selected and sub > 0 */
+  var showDiscount = ok && sub > 0;
+  if(el.discountRow) el.discountRow.style.display = showDiscount ? '' : 'none';
+
+  /* ATC reminder bar */
+  if(el.atcCodeReminder){
+    el.atcCodeReminder.style.display = showDiscount ? 'flex' : 'none';
+    if(el.acrCode) el.acrCode.textContent = CODE15;
+  }
+
+  el.atcBtn.disabled = (sub === 0);
+  var miniWrap=g('miniAtcWrap'),miniPrice=g('miniAtcPrice');
+  if(miniWrap) miniWrap.style.display = (sub > 0) ? 'block' : 'none';
+  if(miniPrice) miniPrice.textContent = fmt(tot);
+  if(el.atcHint) el.atcHint.classList.toggle('hidden', sub > 0);
+
+  refreshPick();
+  updateCoupon(hR, hC, hH, hS);
+  if(state.submitAttempted) updateValidation(true);
+}
+
+/* ══ QTY ══ */
+function setQty(card,opt,delta){
+  var id=card.dataset.id,qEl=card.querySelector('.pc-qty-val'),map=state[opt];
+  if(!map[id])map[id]={id:id,title:card.dataset.title,price:cf(card),img:card.dataset.img||'',qty:0};
+  var nq=Math.max(0,(map[id].qty||0)+delta);
+  map[id].qty=nq;qEl.textContent=nq;card.classList.toggle('active',nq>0);
+  if(nq===0)delete map[id];
+  updateAll();
+}
+function initCards(){
+  document.querySelectorAll('.pc-card').forEach(function(card){
+    var cont=card.closest('.pc-btns'),opt=cont?cont.dataset.opt:null;
+    if(!opt)return;
+    card.querySelector('.pc-qty-plus').addEventListener('click',function(e){e.stopPropagation();setQty(card,opt,1)});
+    card.querySelector('.pc-qty-minus').addEventListener('click',function(e){e.stopPropagation();setQty(card,opt,-1)});
+    card.addEventListener('click',function(e){
+      if(e.target.classList.contains('pc-qty-btn'))return;
+      if(e.target.classList.contains('pc-zoomable'))return;
+      var cur=(state[opt][card.dataset.id]&&state[opt][card.dataset.id].qty)||0;
+      setQty(card,opt,cur>0?-cur:1);
+    });
+  });
+}
+
+function buildItems(){
+  var items=[];
+  function push(map,cat){actI(map).forEach(function(v){items.push({id:parseInt(v.id,10),quantity:v.qty,properties:{'_Category':cat,'_Item':v.title}})})}
+  push(state.shape,'Roselet');
+  push(state.material,'Cable');
+  push(state.holder,'Holder');
+  push(state.cable,'Shade');
+  return items;
+}
+
+function openCartDrawer(){
+  document.dispatchEvent(new CustomEvent('cart:open'));
+  document.dispatchEvent(new CustomEvent('drawer:open',{detail:{drawer:'cart'}}));
+  document.dispatchEvent(new CustomEvent('theme:cart:open'));
+  var cd=document.querySelector('cart-drawer');
+  if(cd){if(typeof cd.open==='function'){cd.open();return}cd.removeAttribute('hidden');cd.setAttribute('open','');cd.setAttribute('aria-hidden','false');cd.classList.add('active','animate','is-open');var ov=document.querySelector('.overlay,.drawer-overlay,.js-overlay');if(ov)ov.classList.add('active','is-visible');return}
+  var sel=['#CartDrawer','#cart-drawer','#cart-sidebar','.cart-drawer','.drawer--cart','[data-cart-drawer]','[data-drawer="cart"]','#MiniCart','#mini-cart','.mini-cart'];
+  for(var i=0;i<sel.length;i++){var d=document.querySelector(sel[i]);if(d){d.classList.add('active','is-open','open','drawer--open','is-visible');d.setAttribute('open','');d.setAttribute('aria-hidden','false');d.removeAttribute('hidden');var ov2=document.querySelector('.overlay,.drawer-overlay,.cart-drawer-overlay,.js-overlay');if(ov2)ov2.classList.add('active','is-visible');return}}
+  var icon=document.querySelector('.header__icon--cart,[data-cart-toggle],[data-cart-icon],button[aria-label*="cart" i],a[href="/cart"]');
+  if(icon)icon.click();
+}
+
+function onSubmit(e){
+  e.preventDefault();state.submitAttempted=true;
+  var items=buildItems();if(!items.length)return;
+  showToast('loading','Wird zum Warenkorb hinzugefügt…');el.atcBtn.disabled=true;
+  fetch('/cart/add.js',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({items:items})})
+  .then(function(r){if(!r.ok)return r.json().then(function(d){throw new Error(d.description||d.message||'Warenkorb-Fehler')});return r.json()})
+  .then(function(){try{sessionStorage.setItem('pc_openCart','1')}catch(e){}showToast('success','Zum Warenkorb hinzugefügt!');window.location.reload()})
+  .catch(function(err){console.error('PC:',err);hideToast(0);el.atcBtn.disabled=false;alert('Fehler: '+(err.message||'Bitte versuchen Sie es erneut.'))});
+}
+
+document.addEventListener('mousedown',function(e){
+  if(e.target.closest('.pc-tab-btn')||e.target.closest('.pc-inline-panel')||e.target.closest('#atcBtn')||e.target.closest('#pcToast')||e.target.closest('.pc-cu-copy')||e.target.closest('#pcLightbox')||e.target.closest('.pc-coup-cat'))return;
+  closeAll();
+});
+
+function initCouponCatClicks(){
+  var map = {
+    catItemR: { btnId: 'ddBtnR1', panelId: 'ddPanelR1', groupId: 'groupShape' },
+    catItemC: { btnId: 'ddBtnK1', panelId: 'ddPanelK1', groupId: 'groupMaterial' },
+    catItemH: { btnId: 'ddBtnH1', panelId: 'ddPanelH1', groupId: 'groupHolder' },
+    catItemS: { btnId: 'ddBtnS1', panelId: 'ddPanelS1', groupId: 'groupCable' }
+  };
+  Object.keys(map).forEach(function(catId){
+    var catEl = g(catId);
+    if(!catEl) return;
+    catEl.addEventListener('click', function(){
+      var cfg = map[catId];
+      var btn = g(cfg.btnId), panel = g(cfg.panelId), group = g(cfg.groupId);
+      if(!btn || !panel) return;
+      openPanel(btn, panel);
+      var target = group || btn;
+      setTimeout(function(){
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
+    });
+  });
+}
+
+
+function checkReload(){
+  try{if(sessionStorage.getItem('pc_openCart')==='1'){sessionStorage.removeItem('pc_openCart');setTimeout(openCartDrawer,400)}}catch(e){}
+}
+function init(){
+  initTabs();initClose();initCards();initLightbox();initCouponCatClicks();
+  var form=g('pcForm');if(form)form.addEventListener('submit',onSubmit);
+  updateAll();checkReload();
+  var firstBtn=g('ddBtnR1'),firstPanel=g('ddPanelR1');
+  if(firstBtn&&firstPanel)openPanel(firstBtn,firstPanel);
+}
+document.readyState==='loading'?document.addEventListener('DOMContentLoaded',init):init();
+
+/* ══ FEEDBACK MODAL JS ══ */
+(function(){
+  var fbModal=document.getElementById('pcFeedbackModal');
+  var fbOpen=document.getElementById('pcOpenFeedback');
+  var fbClose=document.getElementById('pcFbClose');
+  var fbEmailStep=document.getElementById('pcFbEmailStep');
+  var fbTextStep=document.getElementById('pcFbTextStep');
+  var fbEmail=document.getElementById('pcFbEmail');
+  var fbNextBtn=document.getElementById('pcFbNextBtn');
+  var fbText=document.getElementById('pcFbText');
+  var fbSubmitBtn=document.getElementById('pcFbSubmitBtn');
+  var fbThankyou=document.getElementById('pcFbThankyou');
+  var fbScrollPos=0;
+
+  function openFb(){
+    fbScrollPos=window.pageYOffset;
+    fbModal.style.display='block';
+    document.body.style.position='fixed';
+    document.body.style.top='-'+fbScrollPos+'px';
+  }
+  function closeFb(){
+    fbModal.style.display='none';
+    document.body.style.position='';
+    document.body.style.top='';
+    window.scrollTo(0,fbScrollPos);
+    fbEmail.value='';fbText.value='';
+    fbThankyou.style.display='none';
+    fbSubmitBtn.style.display='block';
+    fbEmailStep.style.display='block';
+    fbTextStep.style.display='none';
+  }
+
+  if(fbOpen)fbOpen.onclick=openFb;
+  if(fbClose)fbClose.onclick=closeFb;
+  window.addEventListener('click',function(e){if(e.target===fbModal)closeFb()});
+
+  if(fbNextBtn)fbNextBtn.onclick=function(){
+    var email=fbEmail.value.trim();
+    if(!email.includes('@')||!email.includes('.')){alert('Bitte geben Sie eine gültige E-Mail-Adresse ein.');return;}
+    fbEmailStep.style.display='none';
+    fbTextStep.style.display='block';
+  };
+
+  if(fbSubmitBtn)fbSubmitBtn.onclick=function(){
+    var payload={
+      product_id:window.location.href,
+      product_title:window.location.href,
+      shop_domain:'{{ shop.domain }}',
+      customer_email:fbEmail.value.trim(),
+      reason:fbText.value.trim(),
+      other_reason:'N/A',
+      timestamp:new Date().toISOString()
+    };
+    fetch('https://listings.vintageinterior.co.uk/api/get-feedback-from-shopify',{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)
+    }).catch(function(){});
+    fbThankyou.style.display='block';
+    fbSubmitBtn.style.display='none';
+    setTimeout(closeFb,2000);
+  };
+})();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Anhänger Konfigurator",
+  "settings": [
+    { "type": "header", "content": "Bundle-Rabattcode (15% — alle 4 Kategorien)" },
+    { "type": "text", "id": "discount_code_15", "label": "15% Rabattcode (alle 4 Kategorien)", "default": "BUNDLE15", "info": "Wird angezeigt wenn der Kunde alle 4 Kategorien auswählt." },
+    { "type": "header", "content": "Roselet-Produkte (bis zu 5)" },
+    { "type": "product", "id": "roselet_product_1", "label": "Roselet Produkt 1" },
+    { "type": "text",    "id": "roselet_tab_1",     "label": "Roselet Tab 1 Name", "default": "Stil A" },
+    { "type": "product", "id": "roselet_product_2", "label": "Roselet Produkt 2" },
+    { "type": "text",    "id": "roselet_tab_2",     "label": "Roselet Tab 2 Name", "default": "Stil B" },
+    { "type": "product", "id": "roselet_product_3", "label": "Roselet Produkt 3" },
+    { "type": "text",    "id": "roselet_tab_3",     "label": "Roselet Tab 3 Name", "default": "Stil C" },
+    { "type": "product", "id": "roselet_product_4", "label": "Roselet Produkt 4" },
+    { "type": "text",    "id": "roselet_tab_4",     "label": "Roselet Tab 4 Name", "default": "Stil D" },
+    { "type": "product", "id": "roselet_product_5", "label": "Roselet Produkt 5" },
+    { "type": "text",    "id": "roselet_tab_5",     "label": "Roselet Tab 5 Name", "default": "Stil E" },
+    { "type": "text",    "id": "roselet_label",     "label": "Roselet Bezeichnung", "default": "Roselet" },
+    { "type": "header", "content": "Kabel-Produkte (bis zu 5)" },
+    { "type": "product", "id": "cable_product_1", "label": "Kabel Produkt 1" },
+    { "type": "text",    "id": "cable_tab_1",     "label": "Kabel Tab 1 Name", "default": "Typ A" },
+    { "type": "product", "id": "cable_product_2", "label": "Kabel Produkt 2" },
+    { "type": "text",    "id": "cable_tab_2",     "label": "Kabel Tab 2 Name", "default": "Typ B" },
+    { "type": "product", "id": "cable_product_3", "label": "Kabel Produkt 3" },
+    { "type": "text",    "id": "cable_tab_3",     "label": "Kabel Tab 3 Name", "default": "Typ C" },
+    { "type": "product", "id": "cable_product_4", "label": "Kabel Produkt 4" },
+    { "type": "text",    "id": "cable_tab_4",     "label": "Kabel Tab 4 Name", "default": "Typ D" },
+    { "type": "product", "id": "cable_product_5", "label": "Kabel Produkt 5" },
+    { "type": "text",    "id": "cable_tab_5",     "label": "Kabel Tab 5 Name", "default": "Typ E" },
+    { "type": "text",    "id": "cable_label",     "label": "Kabel Bezeichnung", "default": "Kabel" },
+    { "type": "header", "content": "Halter-Produkte (bis zu 5)" },
+    { "type": "product", "id": "holder_product_1", "label": "Halter Produkt 1" },
+    { "type": "text",    "id": "holder_tab_1",     "label": "Halter Tab 1 Name", "default": "Stil A" },
+    { "type": "product", "id": "holder_product_2", "label": "Halter Produkt 2" },
+    { "type": "text",    "id": "holder_tab_2",     "label": "Halter Tab 2 Name", "default": "Stil B" },
+    { "type": "product", "id": "holder_product_3", "label": "Halter Produkt 3" },
+    { "type": "text",    "id": "holder_tab_3",     "label": "Halter Tab 3 Name", "default": "Stil C" },
+    { "type": "product", "id": "holder_product_4", "label": "Halter Produkt 4" },
+    { "type": "text",    "id": "holder_tab_4",     "label": "Halter Tab 4 Name", "default": "Stil D" },
+    { "type": "product", "id": "holder_product_5", "label": "Halter Produkt 5" },
+    { "type": "text",    "id": "holder_tab_5",     "label": "Halter Tab 5 Name", "default": "Stil E" },
+    { "type": "text",    "id": "holder_label",     "label": "Halter Bezeichnung", "default": "Halter" },
+    { "type": "header", "content": "Schirm-Produkte (bis zu 5)" },
+    { "type": "product", "id": "shade_product_1", "label": "Schirm Produkt 1" },
+    { "type": "text",    "id": "shade_tab_1",     "label": "Schirm Tab 1 Name", "default": "32cm" },
+    { "type": "product", "id": "shade_product_2", "label": "Schirm Produkt 2" },
+    { "type": "text",    "id": "shade_tab_2",     "label": "Schirm Tab 2 Name", "default": "34cm" },
+    { "type": "product", "id": "shade_product_3", "label": "Schirm Produkt 3" },
+    { "type": "text",    "id": "shade_tab_3",     "label": "Schirm Tab 3 Name", "default": "36cm" },
+    { "type": "product", "id": "shade_product_4", "label": "Schirm Produkt 4" },
+    { "type": "text",    "id": "shade_tab_4",     "label": "Schirm Tab 4 Name", "default": "38cm" },
+    { "type": "product", "id": "shade_product_5", "label": "Schirm Produkt 5" },
+    { "type": "text",    "id": "shade_tab_5",     "label": "Schirm Tab 5 Name", "default": "40cm" },
+    { "type": "text",    "id": "shade_label",     "label": "Schirm Bezeichnung", "default": "Schirm" }
+  ],
+  "presets": [{ "name": "Anhänger Konfigurator", "category": "Benutzerdefiniert" }]
+}
+{% endschema %}
