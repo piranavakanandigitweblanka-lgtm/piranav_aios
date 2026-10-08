@@ -175,6 +175,7 @@ Session **FAILS** if:
 | `duplicate-risk/README.md` | Known duplicate file risks — log when any new file risks duplicating truth |
 | `evidence/templates/` | Evidence and GPT review templates |
 | `docs/aios-session-workflow-recommendation-2026-08-14.md` | Extended workflow reference |
+| `docs/aios-claude-code-operating-model.md` | **Standing rule** — Claude Code role, 3-person model, 17 operating rules (2026-10-08) |
 
 ---
 

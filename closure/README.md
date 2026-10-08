@@ -2185,3 +2185,33 @@ Capability Decision: NO CHANGE
 Reason: This session reorganised the capability library structure and added governance rules — it did not create a new system capability that requires its own capability file.
 
 **Session Result: PASS** — All 4 tasks complete. 80 files moved, 211 references updated, governance rules embedded in existing prompt files. Pending commit only.
+
+---
+
+## 2026-10-08 — Claude Code Operating Model (Standing Rule)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-OM-2026-10-08-001 | Saved Piranav's standing operating rule for Claude Code — 17 rules covering scope, 3-person model, existing asset first, evidence, validation, capability check, closure, queryability, git, production safety, memory, final AIOS test | `docs/aios-claude-code-operating-model.md` | This closure entry | PENDING — not yet committed | YES | NONE | Commit and push | PASS |
+| AIOS-OM-2026-10-08-002 | CLAUDE.md updated to reference new operating model doc | `CLAUDE.md` | Same | PENDING | YES | NONE | NONE | PASS |
+| AIOS-OM-2026-10-08-003 | PROMPT_REGISTER updated with `claude-code-operating-model` row | `PROMPT_REGISTER.md` | Same | PENDING | YES | NONE | NONE | PASS |
+
+### 10-Folder Asset Check — Claude Code Operating Model
+
+- Prompt: PASS — `docs/aios-claude-code-operating-model.md` IS the prompt/rule document; PROMPT_REGISTER row added
+- Evidence: PASS — this closure entry serves as evidence (document authored by Piranav, saved verbatim)
+- Capability: N/A — operating model rule, not a system capability
+- Closure: PASS — this entry
+- PROMPT_REGISTER: PASS — `claude-code-operating-model` row added
+- Validation: N/A — no executable output to validate; document is authoritative as written by Piranav
+- Source-map: N/A — no new data source
+- Docs: PASS — `docs/aios-claude-code-operating-model.md` created
+- Handover: N/A
+- Reports: N/A
+- Duplicate-risk: GREEN — no equivalent file existed; confirmed via Glob before creation
+
+### Capability Update Check — 2026-10-08 (Operating Model)
+Capability Decision: NO CHANGE
+Reason: This task saved a standing rule document — no system capability was built or proven.
+
+**Session Result: PASS** — Operating model saved, CLAUDE.md updated, PROMPT_REGISTER updated. Ready to commit.
