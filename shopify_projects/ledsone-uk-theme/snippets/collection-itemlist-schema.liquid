@@ -1,0 +1,31 @@
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": {{ collection.title | json }},
+  "url": {{ request.origin | append: collection.url | json }},
+  "numberOfItems": {{ collection.products_count }},
+  "itemListElement": [
+    {% for product in collection.products %}
+      {
+        "@type": "ListItem",
+        "position": {{ forloop.index }},
+        "item": {
+          "@type": "Product",
+          "name": {{ product.title | json }},
+          "url": {{ request.origin | append: product.url | json }},
+          "image": [
+            {{ product.featured_image | image_url: width: 800 | prepend: "https:" | json }}
+          ],
+          "offers": {
+            "@type": "Offer",
+            "priceCurrency": "{{ shop.currency }}",
+            "price": "{{ product.price | money_without_currency | replace: ',', '' }}",
+            "availability": "https://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}"
+          }
+        }
+      }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ]
+}
+</script>

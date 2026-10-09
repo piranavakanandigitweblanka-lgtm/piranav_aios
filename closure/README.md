@@ -116,7 +116,9 @@ Or as a table when multiple tasks exist in one session:
 | CONDUIT-TASK7-2026-10-09-002 | Prompt + PROMPT_REGISTER | `prompts/shopify/conduit-structured-data-discovery.md` | Same | N/A | YES | NONE | NONE | PASS |
 | CONDUIT-TASK7-2026-10-09-003 | Validation | `validation/piranav/conduit-task7-structured-data-discovery-validation-2026-10-09.md` | Same | N/A | YES | NONE | NONE | PASS |
 
-**Session Result: OPEN** — Discovery complete. No files modified. Awaiting approval before implementation.
+| CONDUIT-TASK7-2026-10-09-007 | Task 7 Validation + Evidence — Phase 4 and Phase 5 complete. Browser validation confirmed: 5 JSON-LD blocks, 16 schema types, 0 invalid, BreadcrumbList present (1 instance, 2 entries, absolute URLs correct), ItemList confirmed, FAQPage confirmed (5 questions). Google Rich Results Test: 2 valid items (LocalBusiness × 1, Organisation × 1). TinySEO: all 5 schema types detected. 10 screenshots organised into evidence folder with manifest. Validation report fully updated. Architecture discrepancy (sections/ vs snippets/) recorded. Schema Markup Validator and ItemList URL spot-check remain open but not blocking. | `evidence/shopify/conduit-task7-structured-data/SCREENSHOT-MANIFEST.md` | `validation/piranav/conduit-task7-structured-data-implementation-validation-2026-10-09.md` | Untracked — pending commit | YES | (1) Schema Markup Validator not run. (2) ItemList product URL spot-check not formally documented. (3) sections/ vs snippets/ architecture discrepancy unresolved. (4) All Task 7 AIOS files untracked — pending git commit on Piranav instruction. | Piranav: git commit all Task 7 AIOS files → confirm sections/ vs snippets/ architecture resolution → optionally run Schema Markup Validator | PARTIAL — all major checks PASS, minor items open |
+
+**Session Result: PARTIAL** — Task 7 major implementation goals confirmed live in draft theme. BreadcrumbList, ItemList, FAQPage all verified. Remaining open: Schema Markup Validator, ItemList URL spot-check, sections/snippets architecture decision, git commit.
 
 ---
 
