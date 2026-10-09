@@ -1,0 +1,926 @@
+{%- liquid
+  assign fbt2_related = product.metafields.custom.related_products.value
+  assign fbt2_has_items = false
+  if fbt2_related and fbt2_related.size > 0
+    assign fbt2_has_items = true
+  endif
+-%}
+
+{%- if fbt2_has_items -%}
+  {%- assign fbt2_current_variant = product.selected_or_first_available_variant | default: product.variants.first -%}
+
+  <div class="fbt2-wrapper" id="fbt2-section-{{ section.id }}" data-section-id="{{ section.id }}">
+    <div class="fbt2-inner container">
+      <h2 class="fbt2-heading">{{ section.settings.heading }}</h2>
+
+      <div class="fbt2-products-row">
+        {%- comment -%}=== CURRENT PRODUCT ==={%- endcomment -%}
+        <div
+          class="fbt2-card fbt2-card--current"
+          data-product-id="{{ product.id }}"
+          data-variant-id="{{ fbt2_current_variant.id }}"
+          data-price="{{ fbt2_current_variant.price }}"
+          data-available="{{ fbt2_current_variant.available }}"
+        >
+          <label class="fbt2-checkbox-label">
+            <input
+              class="fbt2-checkbox"
+              type="checkbox"
+              checked
+              data-product-id="{{ product.id }}"
+              aria-label="Include {{ product.title }}"
+            >
+            <span class="fbt2-checkmark" aria-hidden="true"></span>
+          </label>
+
+          <a href="{{ product.url }}" class="fbt2-img-link" tabindex="-1">
+            <img
+              class="fbt2-img"
+              src="{{ product.featured_image | image_url: width: 160 }}"
+              alt="{{ product.title | escape }}"
+              width="80"
+              height="80"
+              loading="lazy"
+            >
+          </a>
+
+          <div class="fbt2-card-body">
+            <a href="{{ product.url }}" class="fbt2-title">{{ product.title }}</a>
+
+            {%- if product.variants.size > 1 -%}
+              <div class="fbt2-variant-wrapper">
+                <select
+                  class="fbt2-variant-select"
+                  data-product-id="{{ product.id }}"
+                  aria-label="Select variant for {{ product.title }}"
+                >
+                  {%- for v in product.variants -%}
+                    <option
+                      value="{{ v.id }}"
+                      data-price="{{ v.price }}"
+                      data-available="{{ v.available }}"
+                      {%- if v.id == fbt2_current_variant.id %}
+                        selected
+                      {%- endif -%}
+                      {%- unless v.available %}
+                        disabled
+                      {%- endunless -%}
+                    >
+                      {{ v.title }}
+                    </option>
+                  {%- endfor -%}
+                </select>
+                <svg
+                  class="fbt2-select-chevron"
+                  viewBox="0 0 24 24"
+                  width="12"
+                  height="12"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            {%- endif -%}
+
+            <div class="fbt2-price-row">
+              {%- unless fbt2_current_variant.available -%}
+                <span class="fbt2-sold-out">Sold out</span>
+              {%- else -%}
+                <span class="fbt2-price" data-product-id="{{ product.id }}">
+                  {{ fbt2_current_variant.price | money }}
+                </span>
+                {%- if fbt2_current_variant.compare_at_price > fbt2_current_variant.price -%}
+                  <del class="fbt2-compare">{{ fbt2_current_variant.compare_at_price | money }}</del>
+                {%- endif -%}
+              {%- endunless -%}
+            </div>
+          </div>
+        </div>
+
+        {%- comment -%}=== RELATED PRODUCTS ==={%- endcomment -%}
+        {%- for rp in fbt2_related -%}
+          {%- unless rp == blank -%}
+            {%- assign rp_variant = rp.selected_or_first_available_variant | default: rp.variants.first -%}
+
+            <span class="fbt2-plus" aria-hidden="true">+</span>
+
+            <div
+              class="fbt2-card{% unless rp_variant.available %} fbt2-card--soldout{% endunless %}"
+              data-product-id="{{ rp.id }}"
+              data-variant-id="{{ rp_variant.id }}"
+              data-price="{{ rp_variant.price }}"
+              data-available="{{ rp_variant.available }}"
+            >
+              <label class="fbt2-checkbox-label">
+                <input
+                  class="fbt2-checkbox"
+                  type="checkbox"
+                  {%- if rp_variant.available %}
+                    checked
+                  {%- endif -%}
+                  {%- unless rp_variant.available %}
+                    disabled
+                  {%- endunless -%}
+                  data-product-id="{{ rp.id }}"
+                  aria-label="Include {{ rp.title }}"
+                >
+                <span class="fbt2-checkmark" aria-hidden="true"></span>
+              </label>
+
+              <a href="{{ rp.url }}" class="fbt2-img-link" tabindex="-1">
+                <img
+                  class="fbt2-img"
+                  src="{{ rp.featured_image | image_url: width: 160 }}"
+                  alt="{{ rp.title | escape }}"
+                  width="80"
+                  height="80"
+                  loading="lazy"
+                >
+              </a>
+
+              <div class="fbt2-card-body">
+                <a href="{{ rp.url }}" class="fbt2-title">{{ rp.title }}</a>
+
+                {%- if rp.variants.size > 1 -%}
+                  <div class="fbt2-variant-wrapper">
+                    <select
+                      class="fbt2-variant-select"
+                      data-product-id="{{ rp.id }}"
+                      aria-label="Select variant for {{ rp.title }}"
+                    >
+                      {%- for v in rp.variants -%}
+                        <option
+                          value="{{ v.id }}"
+                          data-price="{{ v.price }}"
+                          data-available="{{ v.available }}"
+                          {%- if v.id == rp_variant.id %}
+                            selected
+                          {%- endif -%}
+                          {%- unless v.available %}
+                            disabled
+                          {%- endunless -%}
+                        >
+                          {{ v.title }}
+                        </option>
+                      {%- endfor -%}
+                    </select>
+                    <svg
+                      class="fbt2-select-chevron"
+                      viewBox="0 0 24 24"
+                      width="12"
+                      height="12"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+                {%- endif -%}
+
+                <div class="fbt2-price-row">
+                  {%- unless rp_variant.available -%}
+                    <span class="fbt2-sold-out">Sold out</span>
+                  {%- else -%}
+                    <span class="fbt2-price" data-product-id="{{ rp.id }}">
+                      {{ rp_variant.price | money }}
+                    </span>
+                    {%- if rp_variant.compare_at_price > rp_variant.price -%}
+                      <del class="fbt2-compare">{{ rp_variant.compare_at_price | money }}</del>
+                    {%- endif -%}
+                  {%- endunless -%}
+                </div>
+              </div>
+            </div>
+          {%- endunless -%}
+        {%- endfor -%}
+
+      <div class="fbt2-summary-bar">
+        <div class="fbt2-total-label">Total:&nbsp;<strong class="fbt2-total-price">—</strong></div>
+        <button class="fbt2-add-btn" id="fbt2-add-btn-{{ section.id }}" type="button">
+          <span class="fbt2-btn-text">Add selected to cart</span>
+          <span class="fbt2-btn-spinner" aria-hidden="true" style="display:none">
+            <svg
+              class="fbt2-spinner-svg"
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="round"
+            >
+              <circle cx="12" cy="12" r="10" stroke-dasharray="35 15"></circle>
+            </svg>
+          </span>
+        </button>
+      </div>
+
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* ── Custom properties ── */
+    .fbt2-wrapper {
+      --fbt2-accent: #00a8c5;
+      --fbt2-accent-hover: #008aa3;
+      --fbt2-text: #1a1a1a;
+      --fbt2-muted: #718096;
+      --fbt2-border: #e2e8f0;
+      --fbt2-bg: #ffffff;
+      --fbt2-radius: 8px;
+      --fbt2-card-min: 150px;
+      --fbt2-card-max: 210px;
+      font-family: inherit;
+      margin: {{ section.settings.margin_top }}px 0 {{ section.settings.margin_bottom }}px;
+    }
+
+    /* ── Heading ── */
+    .fbt2-heading {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--fbt2-text);
+      margin: 0 0 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--fbt2-border);
+      letter-spacing: -0.01em;
+    }
+
+    /* ── Products row: horizontal scrollable on narrow desktop, wraps on wide ── */
+    .fbt2-products-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    /* ── Plus separator ── */
+    .fbt2-plus {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--fbt2-muted);
+      padding: 0 4px;
+      flex-shrink: 0;
+      align-self: center;
+    }
+
+    /* ── Card ── */
+    .fbt2-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1px solid var(--fbt2-border);
+      border-radius: var(--fbt2-radius);
+      padding: 28px 12px 12px;
+      background: var(--fbt2-bg);
+      flex: 1 1 var(--fbt2-card-min);
+      min-width: var(--fbt2-card-min);
+      max-width: var(--fbt2-card-max);
+      gap: 8px;
+      position: relative;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      box-sizing: border-box;
+    }
+
+    .fbt2-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .fbt2-card--soldout {
+      opacity: 0.6;
+    }
+
+    /* ── Checkbox — top-left corner of card ── */
+    .fbt2-checkbox-label {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    .fbt2-checkbox {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .fbt2-checkmark {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--fbt2-border);
+      border-radius: 4px;
+      background: #fff;
+      transition: background 0.15s, border-color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .fbt2-checkbox:checked + .fbt2-checkmark {
+      background: var(--fbt2-accent);
+      border-color: var(--fbt2-accent);
+    }
+
+    .fbt2-checkbox:checked + .fbt2-checkmark::after {
+      content: '';
+      display: block;
+      width: 5px;
+      height: 9px;
+      border: 2px solid #fff;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg) translateY(-1px);
+    }
+
+    .fbt2-checkbox:focus-visible + .fbt2-checkmark {
+      outline: 2px solid var(--fbt2-accent);
+      outline-offset: 2px;
+    }
+
+    .fbt2-checkbox:disabled + .fbt2-checkmark {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      cursor: not-allowed;
+    }
+
+    /* ── Image ── */
+    .fbt2-img-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100px;
+      height: 100px;
+      background: #f7fafc;
+      border: 1px solid #edf2f7;
+      border-radius: 6px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .fbt2-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+      transition: transform 0.3s ease;
+    }
+
+    .fbt2-card:hover .fbt2-img {
+      transform: scale(1.05);
+    }
+
+    /* ── Card body ── */
+    .fbt2-card-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      width: 100%;
+    }
+
+    .fbt2-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--fbt2-text);
+      text-decoration: none;
+      text-align: center;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .fbt2-title:hover {
+      color: var(--fbt2-accent);
+    }
+
+    /* ── Variant select ── */
+    .fbt2-variant-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .fbt2-variant-select {
+      width: 100%;
+      font-size: 11px;
+      color: var(--fbt2-muted);
+      border: 1px solid var(--fbt2-border);
+      border-radius: 4px;
+      background: #f8fafc;
+      padding: 4px 22px 4px 6px;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      line-height: 1.4;
+    }
+
+    .fbt2-variant-select:focus {
+      outline: 2px solid var(--fbt2-accent);
+      outline-offset: 1px;
+      border-color: var(--fbt2-accent);
+    }
+
+    .fbt2-select-chevron {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--fbt2-muted);
+    }
+
+    /* ── Price ── */
+    .fbt2-price-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .fbt2-price {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--fbt2-accent);
+    }
+
+    .fbt2-compare {
+      font-size: 11px;
+      color: var(--fbt2-muted);
+      font-weight: 400;
+      text-decoration: line-through;
+    }
+
+    .fbt2-sold-out {
+      font-size: 11px;
+      color: #e53e3e;
+      font-weight: 600;
+    }
+
+    /* ── Summary bar — sits inside products-row as last flex item, pushed to far right ── */
+    .fbt2-summary-bar {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      flex-wrap: nowrap;
+      gap: 12px;
+      padding: 12px;
+      margin-left: auto;
+      flex-shrink: 0;
+      border: 1px solid var(--fbt2-border);
+      border-radius: var(--fbt2-radius);
+      background: var(--fbt2-bg);
+      min-width: 180px;
+    }
+
+    .fbt2-total-label {
+      font-size: 14px;
+      color: var(--fbt2-text);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .fbt2-total-price {
+      color: var(--fbt2-accent);
+      font-size: 16px;
+    }
+
+    /* ── Add button ── */
+    .fbt2-add-btn {
+      background: var(--fbt2-accent);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 11px 22px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+      white-space: nowrap;
+      min-width: 180px;
+      justify-content: center;
+      letter-spacing: 0.01em;
+    }
+
+    .fbt2-add-btn:hover:not(:disabled) {
+      background: var(--fbt2-accent-hover);
+    }
+
+    .fbt2-add-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    @keyframes fbt2-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .fbt2-spinner-svg {
+      animation: fbt2-spin 0.8s linear infinite;
+    }
+
+    /* ── Tablet: 768–1023px ── */
+    @media (max-width: 1023px) {
+      .fbt2-wrapper {
+        --fbt2-card-min: 130px;
+        --fbt2-card-max: 180px;
+      }
+
+      .fbt2-img-link {
+        width: 84px;
+        height: 84px;
+      }
+    }
+
+    /* ── Mobile: below 768px ── */
+    @media (max-width: 767px) {
+      .fbt2-wrapper {
+        --fbt2-card-min: 100%;
+        --fbt2-card-max: 100%;
+      }
+
+      .fbt2-products-row {
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .fbt2-plus {
+        display: none;
+      }
+
+      .fbt2-card {
+        flex-direction: row;
+        padding: 12px;
+        gap: 12px;
+        max-width: 100%;
+        min-width: 0;
+        align-items: flex-start;
+      }
+
+      .fbt2-checkbox-label {
+        position: static;
+        flex-shrink: 0;
+        align-self: center;
+      }
+
+      .fbt2-img-link {
+        width: 72px;
+        height: 72px;
+        flex-shrink: 0;
+      }
+
+      .fbt2-card-body {
+        align-items: flex-start;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .fbt2-title {
+        text-align: left;
+        -webkit-line-clamp: 2;
+      }
+
+      .fbt2-price-row {
+        justify-content: flex-start;
+      }
+
+      .fbt2-summary-bar {
+        flex-direction: column;
+        align-items: stretch;
+        margin-left: 0;
+        width: 100%;
+        min-width: 0;
+        gap: 10px;
+      }
+
+      .fbt2-total-label {
+        text-align: left;
+      }
+
+      .fbt2-add-btn {
+        width: 100%;
+        min-width: 0;
+        padding: 13px 16px;
+        font-size: 14px;
+      }
+    }
+
+    /* ── Very small mobile: below 390px ── */
+    @media (max-width: 389px) {
+      .fbt2-img-link {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  </style>
+
+  <script>
+    (() => {
+      const initFBT2 = (sectionEl) => {
+        if (sectionEl.dataset.fbt2Ready) return;
+        sectionEl.dataset.fbt2Ready = '1';
+
+        const addBtn = sectionEl.querySelector('.fbt2-add-btn');
+        const btnText = addBtn.querySelector('.fbt2-btn-text');
+        const spinner = addBtn.querySelector('.fbt2-btn-spinner');
+        const totalEl = sectionEl.querySelector('.fbt2-total-price');
+        const cards = Array.from(sectionEl.querySelectorAll('.fbt2-card'));
+
+        // ── Helpers ──────────────────────────────────────────────────────────────
+
+        const formatMoney = (cents) => {
+          return '£' + (cents / 100).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        };
+
+        // Sync data-price on the card from the selected option, update displayed price
+        const syncCardFromVariant = (card) => {
+          const select = card.querySelector('.fbt2-variant-select');
+          if (!select) return;
+          const opt = select.options[select.selectedIndex];
+          if (!opt) return;
+          const price = opt.dataset.price;
+          const avail = opt.dataset.available;
+          card.dataset.price = price;
+          card.dataset.available = avail;
+          card.dataset.variantId = opt.value;
+
+          const priceEl = card.querySelector('.fbt2-price');
+          const compareEl = card.querySelector('.fbt2-compare');
+          const soldOutEl = card.querySelector('.fbt2-sold-out');
+          const checkbox = card.querySelector('.fbt2-checkbox');
+
+          if (avail === 'true') {
+            if (soldOutEl) soldOutEl.style.display = 'none';
+            if (priceEl) {
+              priceEl.style.display = '';
+              priceEl.textContent = formatMoney(parseInt(price, 10));
+            }
+            if (checkbox) {
+              checkbox.disabled = false;
+            }
+            card.classList.remove('fbt2-card--soldout');
+          } else {
+            if (priceEl) priceEl.style.display = 'none';
+            if (compareEl) compareEl.style.display = 'none';
+            if (soldOutEl) soldOutEl.style.display = '';
+            if (checkbox) {
+              checkbox.disabled = true;
+              checkbox.checked = false;
+            }
+            card.classList.add('fbt2-card--soldout');
+          }
+        };
+
+        const recalcTotal = () => {
+          let total = 0;
+          let anySelected = false;
+          cards.forEach((card) => {
+            const cb = card.querySelector('.fbt2-checkbox');
+            if (cb && cb.checked && !cb.disabled) {
+              const price = parseInt(card.dataset.price, 10);
+              if (!isNaN(price)) total += price;
+              anySelected = true;
+            }
+          });
+          totalEl.textContent = anySelected ? formatMoney(total) : '—';
+          addBtn.disabled = !anySelected;
+        };
+
+        // ── Event listeners ───────────────────────────────────────────────────────
+
+        sectionEl.querySelectorAll('.fbt2-variant-select').forEach((select) => {
+          select.addEventListener('change', () => {
+            const card = select.closest('.fbt2-card');
+            if (card) syncCardFromVariant(card);
+            recalcTotal();
+          });
+        });
+
+        sectionEl.querySelectorAll('.fbt2-checkbox').forEach((cb) => {
+          cb.addEventListener('change', recalcTotal);
+        });
+
+        // ── Add to cart ───────────────────────────────────────────────────────────
+
+        addBtn.addEventListener('click', () => {
+          if (addBtn.disabled) return;
+
+          const items = [];
+          cards.forEach((card) => {
+            const cb = card.querySelector('.fbt2-checkbox');
+            if (!cb || !cb.checked || cb.disabled) return;
+
+            const select = card.querySelector('.fbt2-variant-select');
+            const variantId = select ? parseInt(select.value, 10) : parseInt(card.dataset.variantId, 10);
+
+            if (!isNaN(variantId) && variantId > 0) {
+              items.push({
+                id: variantId,
+                quantity: 1,
+                properties: { _source: 'Frequently Bought Together' },
+              });
+            }
+          });
+
+          if (items.length === 0) return;
+
+          // Loading state
+          addBtn.disabled = true;
+          btnText.style.display = 'none';
+          spinner.style.display = 'inline-flex';
+
+          const themeCart = document.querySelector('cart-notification') || document.querySelector('cart-drawer');
+          const payload = { items };
+
+          if (themeCart && typeof themeCart.getSectionsToRender === 'function') {
+            payload.sections = themeCart.getSectionsToRender().map((s) => s.id);
+            payload.sections_url = window.location.pathname;
+          }
+
+          fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            body: JSON.stringify(payload),
+          })
+            .then((res) => {
+              if (!res.ok) return res.json().then((e) => Promise.reject(e));
+              return res.json();
+            })
+            .then((parsedState) => {
+              // Update cart count
+              fetch('/cart.json')
+                .then((r) => r.json())
+                .then((cartData) => {
+                  document.querySelectorAll('.cart-count').forEach((el) => {
+                    el.textContent = cartData.item_count;
+                  });
+                  const freeShip = document.querySelector('free-ship-progress-bar');
+                  if (freeShip && typeof freeShip.init === 'function') {
+                    freeShip.init(cartData.items_subtotal_price);
+                  }
+                  if (document.querySelector('header-total-price')) {
+                    document.querySelector('header-total-price').updateTotal(cartData);
+                  }
+                })
+                .catch(() => {});
+
+              // Re-render cart drawer sections
+              if (themeCart && typeof themeCart.getSectionsToRender === 'function' && parsedState.sections) {
+                themeCart.getSectionsToRender().forEach((section) => {
+                  const el = document.getElementById(section.id);
+                  if (el && parsedState.sections[section.id]) {
+                    const html = new DOMParser().parseFromString(parsedState.sections[section.id], 'text/html');
+                    const newContent = html.querySelector('#form-mini-cart');
+                    if (newContent) el.innerHTML = newContent.innerHTML;
+
+                    const ct = document.querySelector('.bls__cart-thres-js');
+                    if (ct) {
+                      const newCt = html.querySelector('.bls__cart-thres-js');
+                      if (newCt) {
+                        ct.classList.toggle('cart_shipping_free', newCt.classList.contains('cart_shipping_free'));
+                        const inner = html.querySelector('.bls__cart-thres');
+                        if (inner) ct.querySelector('.bls__cart-thres').innerHTML = inner.innerHTML;
+                        setTimeout(() => {
+                          const bar = html.querySelector('.percent_shipping_bar');
+                          if (bar)
+                            ct.querySelector('.percent_shipping_bar').setAttribute('style', bar.getAttribute('style'));
+                        }, 500);
+                      }
+                    }
+                  }
+                });
+                if (typeof themeCart.cartAction === 'function') themeCart.cartAction();
+                if (typeof themeCart.open === 'function') themeCart.open();
+                if (typeof BlsLazyloadImg !== 'undefined' && typeof BlsLazyloadImg.init === 'function')
+                  BlsLazyloadImg.init();
+              }
+
+              document.dispatchEvent(new CustomEvent('cart:updated', { bubbles: true }));
+
+              // Success feedback
+              spinner.style.display = 'none';
+              btnText.style.display = '';
+              btnText.textContent = 'Added to cart ✓';
+              setTimeout(() => {
+                btnText.textContent = 'Add selected to cart';
+                addBtn.disabled = false;
+              }, 2000);
+            })
+            .catch((err) => {
+              console.error('FBT2 cart add error:', err);
+              spinner.style.display = 'none';
+              btnText.style.display = '';
+              btnText.textContent = 'Error — please try again';
+              setTimeout(() => {
+                btnText.textContent = 'Add selected to cart';
+                addBtn.disabled = false;
+              }, 2500);
+            });
+        });
+
+        // ── Initial state ─────────────────────────────────────────────────────────
+        recalcTotal();
+      };
+
+      const sectionId = '{{ section.id }}';
+      const el = document.getElementById('fbt2-section-' + sectionId);
+      if (el) {
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', () => initFBT2(el));
+        } else {
+          initFBT2(el);
+        }
+      }
+
+      // ── Hide sticky Add To Cart bar when cart drawer opens, restore on close ──
+      const stickyBar = document.getElementById('bls__sticky-addcart');
+      if (stickyBar) {
+        const observer = new MutationObserver(() => {
+          if (document.documentElement.classList.contains('hside_opened')) {
+            stickyBar.style.display = 'none';
+          } else {
+            stickyBar.style.display = '';
+          }
+        });
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+      }
+    })();
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Freq. Bought Together",
+  "tag": "section",
+  "class": "fbt2-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Frequently Bought Together"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top (px)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom (px)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "label": "Horizontal padding (px)",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Frequently Bought Together"
+    }
+  ]
+}
+{% endschema %}
