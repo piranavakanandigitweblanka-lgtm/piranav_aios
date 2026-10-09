@@ -67,6 +67,30 @@ Or as a table when multiple tasks exist in one session:
 | BGCT-TECHDOC-2026-10-09-004 | Prompt registered | `prompts/seo/bgct-technical-seo-doc-pack-prompt.md` | Same | Untracked | YES | NONE | NONE | PASS |
 | BGCT-TECHDOC-2026-10-09-005 | PROMPT_REGISTER updated | `PROMPT_REGISTER.md` | N/A | Untracked | YES | NONE | NONE | PASS |
 
+### 2026-10-09 — End-of-Day Tasks (Conduit FAQs + BGCT CSV)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| EOD-2026-10-09-001 | Generate 5 FAQs for ledsone.co.uk/collections/conduit-lighting | N/A — content only | `evidence/content/conduit-collection-faqs-2026-10-09.md` | Untracked — pending commit | YES | Not added to Shopify yet | Piranav: decide placement (collection page FAQ section or metafield) | PASS |
+| EOD-2026-10-09-002 | Extract BGCT task register (Task name, Owner, Last updated) from 12 .docx files into CSV | `C:\Users\PC\Downloads\...\bgct_task_register.csv` (local only) | `evidence/content/bgct-task-register-extraction-2026-10-09.md` | Untracked — pending commit | YES | BGCT link column blank — Piranav to add manually. Fix_Crawl_Errors duplicate risk flagged. | Piranav: add BGCT links to CSV | PASS |
+
+**10-folder asset check (EOD session):**
+| # | Asset | Status |
+|---|---|---|
+| 1 | Prompt | N/A — no reusable prompt created (FAQ was ad-hoc one-liner, CSV extraction was a local file task) |
+| 2 | Evidence | DONE — 2 evidence files created |
+| 3 | Capability | N/A — no new system capability |
+| 4 | Closure | DONE — this entry |
+| 5 | PROMPT_REGISTER | N/A — no new reusable prompt |
+| 6 | Validation | N/A — output is content/data, not a system change requiring pass/fail validation |
+| 7 | Source-map | N/A — no new tracked data source introduced |
+| 8 | Docs | N/A — no new doc area needed |
+| 9 | Handover | N/A |
+| 10 | Reports | N/A — CSV is local to Downloads, not a reportable AIOS output |
+| 11 | Duplicate-risk | FLAGGED — Fix_Crawl_Errors_BGCT_Handbook.docx appears to duplicate Fix Shopify Crawl Errors.docx |
+
+---
+
 ### 2026-10-09 — BGCT Website UI/UX Documentation Pack
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
