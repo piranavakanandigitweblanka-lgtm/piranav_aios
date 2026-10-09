@@ -57,6 +57,69 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 
+### 2026-10-09 — BGCT Technical SEO Documentation Pack
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| BGCT-TECHDOC-2026-10-09-001 | Phase 1: Inspect BGCT workbook + existing AIOS assets | `docs/bgct-technical-seo/README.md` | `evidence/piranav/bgct-technical-seo-docpack-2026-10-09.md` | Untracked — pending commit | YES | NONE | Piranav: git add + commit all BGCT doc files | PASS |
+| BGCT-TECHDOC-2026-10-09-002 | Phase 2: Build 16 documentation files (4 sheets × 4 resource types) | `docs/bgct-technical-seo/` (all 16 files) | `evidence/piranav/bgct-technical-seo-docpack-2026-10-09.md` | Untracked — pending commit | YES | Liquid code examples need Sajeesan review before team rollout | Sajeesan reviews Liquid code in all Tutorial files → update status from DRAFT to APPROVED | PASS |
+| BGCT-TECHDOC-2026-10-09-003 | Phase 3: Validation + coverage matrix (29/29 tasks covered) | `validation/piranav/bgct-technical-seo-docpack-validation-2026-10-09.md` | Same | Untracked — pending commit | YES | 5 items for human review (see validation file) | Tamil Selvan: queryability review. Sathees: coordinator approval | PASS |
+| BGCT-TECHDOC-2026-10-09-004 | Prompt registered | `prompts/seo/bgct-technical-seo-doc-pack-prompt.md` | Same | Untracked | YES | NONE | NONE | PASS |
+| BGCT-TECHDOC-2026-10-09-005 | PROMPT_REGISTER updated | `PROMPT_REGISTER.md` | N/A | Untracked | YES | NONE | NONE | PASS |
+
+### 2026-10-09 — BGCT Website UI/UX Documentation Pack
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| BGCT-UIUX-2026-10-09-001 | Phase 1: Inspect UI/UX workbook + existing AIOS assets | `docs/bgct-ui-ux/README.md` | `evidence/piranav/bgct-ui-ux-docpack-2026-10-09.md` | Untracked — pending commit | YES | NONE | Piranav: git add + commit all files | PASS |
+| BGCT-UIUX-2026-10-09-002 | Phase 2: Build 16 documentation files (4 sheets × 4 resource types) | `docs/bgct-ui-ux/` (all 16 files) | `evidence/piranav/bgct-ui-ux-docpack-2026-10-09.md` | Untracked — pending commit | YES | Liquid/CSS/JS examples need Sajeesan review before team rollout | Sajeesan reviews Tutorial files → update DRAFT to APPROVED | PASS |
+| BGCT-UIUX-2026-10-09-003 | Phase 3: Validation + coverage matrix (28/28 tasks covered) | `validation/piranav/bgct-ui-ux-docpack-validation-2026-10-09.md` | Same | Untracked — pending commit | YES | 4 claims for human review (see validation file) | Tamil Selvan: queryability review. Sathees: coordinator approval | PASS |
+| BGCT-UIUX-2026-10-09-004 | Prompt registered | `prompts/ui-ux/bgct-ui-ux-doc-pack-prompt.md` | Same | Untracked | YES | NONE | NONE | PASS |
+| BGCT-UIUX-2026-10-09-005 | PROMPT_REGISTER updated | `PROMPT_REGISTER.md` | N/A | Untracked | YES | NONE | NONE | PASS |
+
+**10-folder asset check (UI/UX session):**
+| # | Asset | Status |
+|---|---|---|
+| 1 | Prompt | DONE — `prompts/ui-ux/bgct-ui-ux-doc-pack-prompt.md` |
+| 2 | Evidence | DONE — `evidence/piranav/bgct-ui-ux-docpack-2026-10-09.md` |
+| 3 | Capability | N/A — no new system capability created |
+| 4 | Closure | DONE — this entry |
+| 5 | PROMPT_REGISTER | DONE — row added |
+| 6 | Validation | DONE — `validation/piranav/bgct-ui-ux-docpack-validation-2026-10-09.md` |
+| 7 | Source-map | N/A — no new data source or file introduced |
+| 8 | Docs | DONE — 16 files created in `docs/bgct-ui-ux/` |
+| 9 | Handover | N/A — no handover to another person required this session |
+| 10 | Reports | N/A — output is documentation, not a data export or audit snapshot |
+| 11 | Duplicate-risk | N/A — no duplicate truth found (documented in evidence file) |
+
+**10-Folder Asset Check:**
+1. Prompt: ✅ `prompts/seo/bgct-technical-seo-doc-pack-prompt.md`
+2. Evidence: ✅ `evidence/piranav/bgct-technical-seo-docpack-2026-10-09.md`
+3. Capability: N/A — documentation task, no new system capability created
+4. Closure: ✅ This entry
+5. PROMPT_REGISTER: ✅ Updated
+6. Validation: ✅ `validation/piranav/bgct-technical-seo-docpack-validation-2026-10-09.md`
+7. Source-map: N/A — no new data source introduced
+8. Docs: ✅ `docs/bgct-technical-seo/` (new documentation area created)
+9. Handover: N/A — no personnel handover required
+10. Reports: N/A — output is documentation, not a data report
+11. Duplicate-risk: Checked — no duplicates created (documented in evidence file)
+
+### 2026-10-09 — Conduit Task 7 — Structured Data Discovery
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| CONDUIT-TASK7-2026-10-09-006 | Task 7 Template Correction — removed `schema_breadcrumb` section from local `collection.collection-pipe.json` per Piranav instruction. Screenshot confirmed Piranav manually added the section to collection-pipe in the Shopify draft theme, creating a potential duplicate with our previous implementation. Local file corrected: `schema_breadcrumb` removed, `schema_itemlist` (ItemList) and `custom_liquid_3pi7zt` (FAQ Schema) remain. `product-grid` still disabled. Critical sync risk flagged: do NOT push `collection.collection-pipe.json` without first pulling Shopify version. Snippet files (`collection-breadcrumb-schema.liquid`, `collection-itemlist-schema.liquid`) exist locally in `ledsone-uk-theme/snippets/` — still not pushed to Shopify. | `templates/collection.collection-pipe.json` (local) | `conduit-stock-price-cards/02_implementation/CONDUIT-TASK7-structured-data-implementation-2026-10-09.md` (amendment added) | Untracked — pending commit | YES | (1) Snippets not yet in Shopify. (2) Must pull collection-pipe from Shopify before any push to preserve Piranav's manual addition. (3) BreadcrumbList rendering in Shopify not yet verified (snippet missing from Shopify). | Piranav: `shopify theme push --only snippets/collection-breadcrumb-schema.liquid snippets/collection-itemlist-schema.liquid` → verify BreadcrumbList in DevTools → record result | OPEN — SNIPPET PUSH PENDING |
+| CONDUIT-TASK7-2026-10-09-005 | Task 7 Live Evidence + BreadcrumbList Root Cause — browser/theme-editor evidence confirmed: FAQPage LIVE (5 FAQs, Arudchelvi metafield populated). BreadcrumbList ABSENT — root cause: `collection-breadcrumb-schema.liquid` snippet was not pushed to Shopify when template JSON was pushed. Same likely true for `collection-itemlist-schema.liquid`. Both files exist locally and are correct. Fix: push both snippet files via Shopify CLI. No code changes required. Proposed fix documented in discovery SECTION 15. | `conduit-stock-price-cards/01_discovery/CONDUIT-TASK7-structured-data-discovery-2026-10-09.md` (Sections 0, 14, 15 updated) | `validation/piranav/conduit-task7-structured-data-implementation-validation-2026-10-09.md` (browser evidence updated) | Untracked | YES | Snippet files not in Shopify asset system. Requires Piranav to push via CLI. | Piranav approves → run `shopify theme push --only snippets/collection-breadcrumb-schema.liquid snippets/collection-itemlist-schema.liquid` from theme dir → re-check DevTools → Google Rich Results Test | OPEN — AWAITING APPROVAL TO PUSH SNIPPETS |
+| CONDUIT-TASK7-2026-10-09-004 | Task 7 Implementation — created `snippets/collection-itemlist-schema.liquid` (ItemList JSON-LD only) + `snippets/collection-breadcrumb-schema.liquid` (BreadcrumbList JSON-LD only). Updated `collection.collection-pipe.json` — inserted `schema_itemlist` + `schema_breadcrumb` custom-liquid sections before FAQ Schema. product-grid (main-collection-product) remains disabled. Static validation 9/9 PASS. Browser validation pending Piranav theme push. FAQ metafield status unconfirmed. WebSite duplicate not fixed (separate task). | `conduit-stock-price-cards/02_implementation/CONDUIT-TASK7-structured-data-implementation-2026-10-09.md` | `validation/piranav/conduit-task7-structured-data-implementation-validation-2026-10-09.md` | Untracked — pending commit | YES | Browser validation requires Piranav to push theme to Shopify draft. FAQ metafield status unconfirmed. | (1) Piranav pushes draft theme (2) Run DevTools JSON-LD check + Google Rich Results Test + Schema Markup Validator (3) Check `custom.faq_schema` metafield for conduit-lighting (4) Record results → update closure to PASS | OPEN — CODE COMPLETE, BROWSER VALIDATION PENDING |
+| CONDUIT-TASK7-2026-10-09-001 | Task 7 Discovery — inspected theme.liquid, breadcrumb section, main-collection-product, collection-meta-filters, product-faq-ui, both collection templates. FINDING: main-collection-product is DISABLED in collection-pipe → ItemList absent on main page. Duplicate (conduit-lighting-pk) has main-collection-product ENABLED → ItemList present. BreadcrumbList absent from both pages (breadcrumb section not in either template). FAQPage wired via product-faq-ui → metafield conditional. Recommended: new snippets collection-itemlist-schema.liquid + collection-breadcrumb-schema.liquid + add custom-liquid sections to collection-pipe. Do not enable main-collection-product. FAQPage PENDING — awaiting Arudchelvi metafield. | `conduit-stock-price-cards/01_discovery/CONDUIT-TASK7-structured-data-discovery-2026-10-09.md` | `validation/piranav/conduit-task7-structured-data-discovery-validation-2026-10-09.md` | Untracked — pending commit | YES | FAQPage status (metafield populated?) not confirmed — requires Shopify admin check. Canonical tag for conduit-lightings not confirmed. | Piranav + GPT approve implementation → Claude creates 2 snippets + updates collection-pipe template | OPEN — DISCOVERY COMPLETE, AWAITING APPROVAL |
+| CONDUIT-TASK7-2026-10-09-002 | Prompt + PROMPT_REGISTER | `prompts/shopify/conduit-structured-data-discovery.md` | Same | N/A | YES | NONE | NONE | PASS |
+| CONDUIT-TASK7-2026-10-09-003 | Validation | `validation/piranav/conduit-task7-structured-data-discovery-validation-2026-10-09.md` | Same | N/A | YES | NONE | NONE | PASS |
+
+**Session Result: OPEN** — Discovery complete. No files modified. Awaiting approval before implementation.
+
+---
+
 ### 2026-10-08 — Lidsone IP Infringement Investigation
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
@@ -2215,3 +2278,35 @@ Capability Decision: NO CHANGE
 Reason: This task saved a standing rule document — no system capability was built or proven.
 
 **Session Result: PASS** — Operating model saved, CLAUDE.md updated, PROMPT_REGISTER updated. Ready to commit.
+
+---
+
+## 2026-10-08 — Conduit Task Status Verification (Read-Only)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| CONDUIT-STATUS-2026-10-08-001 | Verified Task 3/CC-05 status — 2.9 MB measurement recorded in CONDUIT-STEP3 implementation file. Target <2 MB not met. Fix 4 required. | `conduit-stock-price-cards/02_implementation/CONDUIT-STEP3-html-reduction-2026-10-08.md` | `reports/daily/2026-10-08-conduit-task-status.md` | PENDING | YES | Fix 4 not yet scoped | GPT to design Fix 4 (lightweight variant card) | PARTIAL |
+| CONDUIT-STATUS-2026-10-08-002 | Verified Task 6 status — code complete, GPT confirmed. No browser validation evidence in AIOS. Status corrected from PASS to PARTIAL. | `conduit-stock-price-cards/02_implementation/CONDUIT-TASK6-finish-swatches-2026-10-08.md` | Same | PENDING | YES | Requires draft theme push + 14-check browser validation | Piranav to push draft theme, validate, save screenshots | PARTIAL |
+| CONDUIT-STATUS-2026-10-08-003 | Verified PI-02 Step 4 — all 5 guide URLs PENDING. No links added. Status: NOT STARTED. Deadline 9 Oct 2026. | `conduit-accessories-build/05_step-04-guides/step-04-guides-working-doc.md` | Same | N/A | YES | All 5 blog URLs not yet confirmed | Obtain URLs from live LEDSone blog immediately | NOT STARTED |
+| CONDUIT-STATUS-2026-10-08-004 | Verified Tasks 1–2 and Task 4 — code complete, static validation PASS. No browser evidence in AIOS. | `conduit-stock-price-cards/02_implementation/` | Same | PENDING | YES | Draft theme push needed | Push draft theme → browser validate → save evidence | PARTIAL |
+| CONDUIT-STATUS-2026-10-08-005 | Created daily status report — structured 5-task status with evidence gaps, correct statuses, next actions | `reports/daily/2026-10-08-conduit-task-status.md` | Same | PENDING | YES | NONE | Commit report | PASS |
+
+### 10-Folder Asset Check — Task Status Verification
+
+- Prompt: N/A — verification task; no new reusable prompt (skip reason: read-only verification, not a repeatable pattern requiring its own prompt)
+- Evidence: PASS — `reports/daily/2026-10-08-conduit-task-status.md` contains full status evidence
+- Capability: N/A — verification task, no new capability
+- Closure: PASS — this entry
+- PROMPT_REGISTER: N/A — no new prompt
+- Validation: N/A — this IS the validation task; the report is the validation output
+- Source-map: N/A
+- Docs: N/A
+- Handover: N/A
+- Reports: PASS — `reports/daily/2026-10-08-conduit-task-status.md` created
+- Duplicate-risk: GREEN — no existing daily report for 2026-10-08 confirmed before creation
+
+### Capability Update Check — 2026-10-08 (Task Verification)
+Capability Decision: NO CHANGE
+Reason: Read-only documentation verification — no system capability built or proven.
+
+**Session Result: PASS** — All 5 tasks verified. Status corrections applied. 2.9 MB measurement recorded. Daily report created. No Shopify changes made.
