@@ -135,6 +135,33 @@ Verified by full read of `muguntha_budget_alerts.py`:
 
 ---
 
+---
+
+## Discord Notification Validation (2026-10-12)
+
+| Check | Result |
+|---|---|
+| `_send_discord()` missing env vars → graceful failure | ✓ PASS — test: `test_missing_token_returns_false`, `test_missing_channel_id_returns_false` |
+| `_send_discord()` successful delivery | ✓ PASS — test: `test_successful_delivery` |
+| Bot token not in URL or error messages | ✓ PASS — test: `test_token_not_exposed_in_error_message` |
+| HTTP 403 from Discord → ok=False, error captured | ✓ PASS — test: `test_http_error_response` |
+| Timeout → ok=False, error captured | ✓ PASS — test: `test_timeout_exception` |
+| Telegram OK + Discord missing config → independent results | ✓ PASS — test: `test_telegram_ok_discord_missing_config` |
+| Discord OK + Telegram missing config → independent results | ✓ PASS — test: `test_discord_ok_telegram_missing_config` |
+| Both fail → separate error messages | ✓ PASS — test: `test_both_fail_independently` |
+| `_discord_alert_text()` uses `**markdown**` not `<b>HTML</b>` | ✓ PASS — test: `test_uses_markdown_bold_not_html` |
+| Schema migration uses `ADD COLUMN IF NOT EXISTS` | ✓ PASS — code inspection |
+| Existing `notified_telegram` / `notify_error` columns unchanged | ✓ PASS — code inspection |
+| No Google Ads mutations | ✓ PASS — no new external calls added |
+| No live Discord messages sent during tests | ✓ PASS — all calls mocked |
+| Live Discord delivery on server | ✗ NOT VERIFIED — requires env vars + server restart |
+
+**Overall Discord verdict:** PARTIAL — code correct, tests 55/55 pass, live delivery pending
+
+**Test count:** 55 passed (38 original + 17 new)
+
+---
+
 ## Overall: PARTIAL → Ready to commit
 
 The implementation is safe and correct. The two PARTIAL verdicts are:

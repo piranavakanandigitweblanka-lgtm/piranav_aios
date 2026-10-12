@@ -168,6 +168,36 @@ YES — `public.muguntha_budget_alerts` queryable via app DB connection.
 
 ---
 
+## Discord Notification Implementation (MUGA-BRAS-2026-10-12-DISCORD)
+
+**Files changed:**
+
+| File | Change |
+|---|---|
+| `backend/app/admin/muguntha_budget_alerts.py` | Added `_send_discord()`, `_discord_alert_text()`, schema migration for `notified_discord` + `notify_discord_error`, updated notification call site |
+| `backend/tests/test_muguntha_budget_alerts.py` | Added 17 new tests: `TestSendDiscord` (6), `TestDiscordAlertText` (8), `TestNotificationIndependence` (3) |
+
+**Schema migration (backward-compatible):**
+```sql
+ALTER TABLE public.muguntha_budget_alerts
+    ADD COLUMN IF NOT EXISTS notified_discord      BOOLEAN NOT NULL DEFAULT FALSE,
+    ADD COLUMN IF NOT EXISTS notify_discord_error  TEXT
+```
+Uses `ADD COLUMN IF NOT EXISTS` — safe to re-run on existing table with existing rows. Existing `notified_telegram` / `notify_error` columns unchanged.
+
+**Notification call site — independent delivery:**
+Both `_send_telegram` and `_send_discord` are called for each new alert. Results are persisted in a single UPDATE — Telegram and Discord statuses written independently in the same query. A failure in one does not affect the other's persisted status.
+
+**Test results:** 55/55 PASS (38 original + 17 new)
+
+**Environment variables required:**
+- `DISCORD_BOT_TOKEN` — Discord bot token (add to `backend/.env`, never hardcode)
+- `MUGUNTHA_DISCORD_CHANNEL_ID` — target channel ID
+
+**Live delivery status:** NOT YET VERIFIED — requires env vars set on server + manual `run-now` trigger.
+
+---
+
 ## Post-Commit Fix: Sidebar Visibility (MUGA-BRAS-2026-10-12-SIDEBAR)
 
 **Problem:** Budget Alerts not visible in Admin sidebar for Piranav and Muguntha despite UAM grants being set.
