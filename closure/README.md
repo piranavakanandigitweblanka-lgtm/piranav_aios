@@ -2508,3 +2508,13 @@ Reason: Read-only documentation verification — no system capability built or p
 - Git diff: PASS — no unintended changes. Conduit file modification is pre-existing from prior session.
 
 **Awaiting Piranav instruction to commit.**
+
+---
+
+## 2026-10-12 — MUGA-BRAS Sidebar Fix (toolKey missing)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| MUGA-BRAS-2026-10-12-SIDEBAR | Fix: Budget Alerts not visible in Admin sidebar despite UAM grant — root cause: `toolKey` missing from `ADMIN_ITEMS` entry in `AdminLayout.jsx`. Added `toolKey: 'tools.AdminBudgetAlerts'`. | `frontend/src/admin/AdminLayout.jsx:264` | `evidence/dm-dashboard/muguntha-budget-rule-alert-step2-implementation-2026-10-12.md` | Uncommitted | YES | None | Commit with other dm-dashboard changes when Piranav instructs | PASS |
+
+**Root cause:** Remote refactor (192 commits) updated `AdminLayout.jsx` to use `useGrantedTasks` hook. All existing items had `toolKey` added; our Budget Alerts item (added in Step 2) was missing it. The hook filters `ALL_GRANTABLE` (TOOLS + TASKS) by granted `taskKeys` — without a matching `toolKey`, the UAM grant cannot be linked to the sidebar item. `taskRegistry.js` entry (`tools.AdminBudgetAlerts`) was correct. Single-line fix: added `toolKey: 'tools.AdminBudgetAlerts'` to the nav item at line 265.

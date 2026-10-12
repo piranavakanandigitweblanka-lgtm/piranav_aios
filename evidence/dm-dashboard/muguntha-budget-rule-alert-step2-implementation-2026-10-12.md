@@ -1,6 +1,6 @@
 # Evidence: Muguntha Budget Rule Alert System — Step 2 Implementation
 **Date:** 2026-10-12
-**Requirement:** MUGA-BRAS-2026-10-12-002 through 006
+**Requirement:** MUGA-BRAS-2026-10-12-002 through 006, MUGA-BRAS-2026-10-12-SIDEBAR
 **Final validation run:** 2026-10-12 (pre-commit)
 
 ---
@@ -165,3 +165,15 @@ New untracked AIOS files (all expected):
 ## Queryability
 YES — `public.muguntha_budget_alerts` queryable via app DB connection.
 `SELECT campaign_name, roas_30d, recommended_action, status, decided_by FROM public.muguntha_budget_alerts ORDER BY created_at DESC LIMIT 20;`
+
+---
+
+## Post-Commit Fix: Sidebar Visibility (MUGA-BRAS-2026-10-12-SIDEBAR)
+
+**Problem:** Budget Alerts not visible in Admin sidebar for Piranav and Muguntha despite UAM grants being set.
+
+**Root cause:** Remote `dm-dashboard` merge (192 commits) updated `AdminLayout.jsx` to use `useGrantedTasks` hook for sidebar filtering. All existing nav items had `toolKey` properties added to link them to UAM grants. Our Budget Alerts nav item (added in Step 2) was missing `toolKey: 'tools.AdminBudgetAlerts'`. Without this, the hook cannot find the item in `ALL_GRANTABLE` and it never appears.
+
+**Fix:** Added `toolKey: 'tools.AdminBudgetAlerts'` to the Budget Alerts entry in `ADMIN_ITEMS` at `AdminLayout.jsx:265`.
+
+**Verification:** `taskRegistry.js` TOOLS entry (`tools.AdminBudgetAlerts`) was already correct from Step 2 UAM integration. Fix is a single-property addition. Visually: Budget Alerts will appear in sidebar for any admin user who has `tools.AdminBudgetAlerts` granted in UAM.
