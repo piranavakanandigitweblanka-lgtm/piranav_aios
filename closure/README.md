@@ -2382,3 +2382,74 @@ Reason: Read-only documentation verification — no system capability built or p
 - Duplicate-risk: GREEN — evidence file is new (2026-10-12), does not duplicate 2026-10-05 file
 
 **Session Result: OPEN** — SEMrush API units exhausted. No DB rows written. Action required: top up API units at https://www.semrush.com/mcp-access.
+
+---
+
+### 2026-10-12 — RC-01 Repeat Customer Ads Exclusion — Step 2 Implementation
+
+| Field | Value |
+|---|---|
+| Requirement ID | RC-01 |
+| Task | Repeat Customer Ads Exclusion — Step 2: Build backend module, API endpoint, frontend page, UAM registration |
+| Asset Path | `frontend/src/admin/pages/RepeatCustomers.jsx`, `backend/app/admin/admin_repeat_customer.py` |
+| Evidence Path | `evidence/dm-dashboard/repeat-customer-ads-exclusion-step2-2026-10-12.md` |
+| Validation Path | `validation/piranav/repeat-customer-ads-exclusion-step2-validation-2026-10-12.md` |
+| GitHub / Commit | Not yet committed — awaiting Piranav instruction |
+| Queryability Result | YES — after first sync runs |
+| Blockers | Runtime validation pending: requires running server + Shopify UK token to complete first sync |
+| Next Step | Stage 5 — Run first sync, verify customer counts against Shopify admin, complete UAM browser test |
+| Result | PARTIAL — implementation complete and build-verified; runtime validation pending |
+
+### 10-Folder Asset Check — 2026-10-12 RC-01 Step 2
+- Prompt: `prompts/dm-dashboard/repeat-customer-ads-exclusion-step2-implementation.md` — CREATED (DM-RC-IMPL-02)
+- Evidence: `evidence/dm-dashboard/repeat-customer-ads-exclusion-step2-2026-10-12.md` — CREATED
+- Capability: N/A — no new reusable system capability (ScheduledSnapshot pattern already registered)
+- Closure: this entry — DONE
+- PROMPT_REGISTER: Row DM-RC-IMPL-02 added
+- Validation: `validation/piranav/repeat-customer-ads-exclusion-step2-validation-2026-10-12.md` — CREATED (PARTIAL)
+- Source-map: N/A — no new data source (existing Shopify UK integration reused)
+- Docs: N/A — discovery doc from Step 1 covers architecture; no new doc needed
+- Handover: N/A — Piranav continues
+- Reports: N/A — implementation task, not a reportable data output
+- Duplicate-risk: GREEN — new dated files, no duplicate files created
+
+**Session Result: PARTIAL — implementation complete, build-verified, runtime validation pending**
+
+---
+
+### 2026-10-12 — RC-01 Repeat Customer Ads Exclusion — Step 3 Runtime Validation
+
+| Field | Value |
+|---|---|
+| Requirement ID | RC-01 |
+| Task | Repeat Customer Ads Exclusion — Step 3: Runtime validation (Shopify sync, spot-check, auth tests, privacy tests, build) |
+| Asset Path | All assets from Step 2 — no new files required |
+| Evidence Path | `evidence/dm-dashboard/repeat-customer-ads-exclusion-step2-2026-10-12.md` (updated) |
+| Validation Path | `validation/piranav/repeat-customer-ads-exclusion-step2-validation-2026-10-12.md` (updated) |
+| GitHub / Commit | Not yet committed — awaiting Piranav instruction |
+| Queryability Result | YES — snapshot confirmed, 1,245 customers at 3+, 470 at 4+ |
+| Blockers | Browser-side UAM visual test pending (Piranav must open dashboard) |
+| Next Step | Piranav: (1) Open dashboard, confirm "Repeat Customers" row in UAM matrix, test Save/Discard. (2) Authorize commit. |
+| Result | PARTIAL — all automated tests PASS; browser UAM test pending |
+
+### Real Data Summary
+- Orders scanned: 66,975 (all-time Shopify UK)
+- Customers at 3+: **1,245**
+- Customers at 4+: **470**
+- 5/5 spot-check customers match Shopify Admin exactly
+- No raw emails in snapshot — privacy rule confirmed
+
+### 10-Folder Asset Check — 2026-10-12 RC-01 Step 3
+- Prompt: N/A — Step 2 prompt covers this task
+- Evidence: Updated — `evidence/dm-dashboard/repeat-customer-ads-exclusion-step2-2026-10-12.md`
+- Capability: N/A
+- Closure: this entry — DONE
+- PROMPT_REGISTER: N/A — no new prompt (Step 2 row covers)
+- Validation: Updated — `validation/piranav/repeat-customer-ads-exclusion-step2-validation-2026-10-12.md`
+- Source-map: N/A
+- Docs: N/A
+- Handover: N/A
+- Reports: N/A
+- Duplicate-risk: GREEN
+
+**Session Result: PARTIAL — automated validation PASS, browser UAM test pending**
