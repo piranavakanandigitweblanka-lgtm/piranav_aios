@@ -2531,3 +2531,18 @@ Reason: Read-only documentation verification — no system capability built or p
 **Independence confirmed:** Telegram and Discord statuses persisted independently. Failure in one does not prevent the other.
 **Safety:** No Google Ads mutations. No live messages sent during tests. Token never logged.
 **Remaining:** Live Discord delivery must be verified on server after env vars are configured.
+
+---
+
+## 2026-10-12 — MUGA-BRAS Final Fixes + 30-Day Cycle
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| MUGA-BRAS-2026-10-12-BUTTONS | Removed Approve/Reject/Dismiss buttons from BudgetAlerts.jsx — dashboard is now view-only | `frontend/src/admin/pages/BudgetAlerts.jsx` | `evidence/dm-dashboard/muguntha-budget-rule-alert-step2-implementation-2026-10-12.md` | `4ee7452` | YES | None | None | PASS |
+| MUGA-BRAS-2026-10-12-CYCLE | Auto-expire pending alerts after 30 days — monthly cycle fully automatic. Added `expired` status, DROP/ADD constraint in ensure_schema, expired_count in summary | `backend/app/admin/muguntha_budget_alerts.py` | `evidence/dm-dashboard/muguntha-budget-rule-alert-step2-implementation-2026-10-12.md` | `dfafb21` | YES | None | Next auto-cycle: 2026-11-11 | PASS |
+
+**System status as of 2026-10-12 EOD:**
+- 42 campaigns live with pending alerts
+- Discord notifications confirmed working
+- Next alert cycle: 2026-11-11 (automatic)
+- No manual action required until Nov 11
