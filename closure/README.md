@@ -2358,3 +2358,27 @@ Capability Decision: NO CHANGE
 Reason: Read-only documentation verification — no system capability built or proven.
 
 **Session Result: PASS** — All 5 tasks verified. Status corrections applied. 2.9 MB measurement recorded. Daily report created. No Shopify changes made.
+
+---
+
+### 2026-10-12 — Scheduled SEO Agent: SEMrush Top 50 Pages Fetch
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-12-001 | Fetch top 50 organic pages (ledsone.co.uk) from SEMrush → upsert into Neon semrush_pages table | N/A — blocked before any file written | `evidence/semrush/semrush-top50-pages-blocked-2026-10-12.md` | N/A — no code change | YES | SEMrush API units exhausted (2nd consecutive block since 2026-10-05) | Piranav must top up SEMrush API units at https://www.semrush.com/mcp-access — task will re-run automatically once units are available | OPEN |
+
+### 10-Folder Asset Check — 2026-10-12
+
+- Prompt: N/A — prompt unchanged; this task uses the existing scheduled prompt, no new reusable prompt pattern to register
+- Evidence: PASS — `evidence/semrush/semrush-top50-pages-blocked-2026-10-12.md`
+- Capability: N/A — no new capability (blocked before execution)
+- Closure: PASS — this entry
+- PROMPT_REGISTER: N/A — no new prompt
+- Validation: N/A — task did not execute; nothing to validate
+- Source-map: N/A — no new data source introduced
+- Docs: N/A
+- Handover: N/A
+- Reports: N/A — no data output produced
+- Duplicate-risk: GREEN — evidence file is new (2026-10-12), does not duplicate 2026-10-05 file
+
+**Session Result: OPEN** — SEMrush API units exhausted. No DB rows written. Action required: top up API units at https://www.semrush.com/mcp-access.
