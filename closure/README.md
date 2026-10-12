@@ -2453,3 +2453,58 @@ Reason: Read-only documentation verification — no system capability built or p
 - Duplicate-risk: GREEN
 
 **Session Result: PARTIAL — automated validation PASS, browser UAM test pending**
+
+---
+
+### 2026-10-12 — Muguntha Budget Rule Alert System — Step 1 Discovery
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| MUGA-BRAS-2026-10-12-001 | Step 1 discovery: DM Dashboard Google Ads data flow, ROAS calculation, notification capabilities, auth system, background job patterns | `prompts/dm-dashboard/muguntha-budget-rule-alert-step1-discovery.md` | `evidence/dm-dashboard/muguntha-budget-rule-alert-step1-discovery-2026-10-12.md` | Uncommitted — pending commit | YES | G1: No Telegram/email integration; G2: cost vs cost_micros column discrepancy; D1–D7: 7 decisions required from Muguntha | Get Muguntha's answers to D1–D7, run DB schema check (G2), then Step 2 | PASS |
+| MUGA-BRAS-2026-10-12-002 | Prompt saved, validation file created, PROMPT_REGISTER updated | `prompts/dm-dashboard/muguntha-budget-rule-alert-step1-discovery.md` | `validation/piranav/muguntha-budget-rule-alert-step1-validation-2026-10-12.md` | Uncommitted | YES | None | Commit all AIOS files | PASS |
+
+**Session Result: PASS — discovery complete, 7 decisions needed from Muguntha before Step 2 can begin**
+
+---
+
+## 2026-10-12 — MUGA-BRAS Step 2 Implementation
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| MUGA-BRAS-2026-10-12-003 | Step 2 backend: muguntha_budget_alerts.py — rule engine, schema, ScheduledSnapshot (6h), 6 FastAPI endpoints, Telegram notifications, dedup index | `prompts/dm-dashboard/muguntha-budget-rule-alert-step2-implementation.md` | `evidence/dm-dashboard/muguntha-budget-rule-alert-step2-implementation-2026-10-12.md` | Uncommitted — pending | YES | None | Commit + runtime test when server restarts | PASS |
+| MUGA-BRAS-2026-10-12-004 | Step 2 frontend: BudgetAlerts.jsx dashboard + AdminLayout.jsx wiring (nav item + LazyPanel) | `frontend/src/admin/pages/BudgetAlerts.jsx` | `evidence/dm-dashboard/muguntha-budget-rule-alert-step2-implementation-2026-10-12.md` | Uncommitted | YES | None | Browser test after server restart | PASS |
+| MUGA-BRAS-2026-10-12-005 | Step 2 tests: 38 unit tests — all ROAS bands, boundary values, GBP cap, no_change None returns, zero cost | `backend/tests/test_muguntha_budget_alerts.py` | `validation/piranav/muguntha-budget-rule-alert-step2-validation-2026-10-12.md` | Uncommitted | YES | None | None — 38/38 PASS | PASS |
+| MUGA-BRAS-2026-10-12-006 | AIOS assets: prompt, evidence, validation, PROMPT_REGISTER, closure | `prompts/dm-dashboard/muguntha-budget-rule-alert-step2-implementation.md` | `validation/piranav/muguntha-budget-rule-alert-step2-validation-2026-10-12.md` | Uncommitted | YES | None | Commit all piranav_aios AIOS files | PASS |
+
+**Folders check:**
+- Prompt: DONE — `prompts/dm-dashboard/muguntha-budget-rule-alert-step2-implementation.md`
+- Evidence: DONE — `evidence/dm-dashboard/muguntha-budget-rule-alert-step2-implementation-2026-10-12.md`
+- Capability: N/A — capability file exists from Step 1 discovery
+- Validation: DONE — `validation/piranav/muguntha-budget-rule-alert-step2-validation-2026-10-12.md`
+- PROMPT_REGISTER: DONE — row added
+- Closure: DONE — this entry
+- Source-map: N/A — no new data sources introduced (all from Step 1)
+- Docs: N/A — no new topic area
+- Handover: N/A — no handover required
+- Reports: N/A — no reportable data export
+- Duplicate-risk: GREEN — all new files, no duplicates
+
+**Session Result: PASS — Step 2 implementation complete. 38/38 tests pass. Backend + frontend written. Not yet committed or runtime-tested.**
+
+---
+
+## 2026-10-12 — MUGA-BRAS Step 2 Final Validation (Pre-Commit)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| MUGA-BRAS-2026-10-12-VAL | Pre-commit validation: UAM, scheduling, notifications, rule correctness, test coverage, git diff | `validation/piranav/muguntha-budget-rule-alert-step2-validation-2026-10-12.md` | `evidence/dm-dashboard/muguntha-budget-rule-alert-step2-implementation-2026-10-12.md` | Uncommitted | YES | UAM: policy gap (all admins can approve — documented); Notifications: Telegram delivery must be verified on server post-deploy | Piranav instruction to commit | PARTIAL |
+
+**Validation verdicts:**
+- UAM: PARTIAL — auth correct (admin-only, staff blocked at API+frontend). Policy gap: all 3 admins can approve/reject. decided_by audit trail in place. No code change needed.
+- Scheduling: PASS — ScheduledSnapshot 6h, startup/restart/dedup/stagger all verified by code inspection.
+- Notifications: PARTIAL — persistence PASS, env-var-safe PASS. Actual Telegram delivery unverified (must test on server with env vars set).
+- Rule correctness: PASS — 38/38 tests, all bands, gap, cap, no Google Ads mutations.
+- Test coverage: PASS (rule engine). DB-dependent tests not included.
+- Git diff: PASS — no unintended changes. Conduit file modification is pre-existing from prior session.
+
+**Awaiting Piranav instruction to commit.**
