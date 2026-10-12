@@ -2546,3 +2546,25 @@ Reason: Read-only documentation verification — no system capability built or p
 - Discord notifications confirmed working
 - Next alert cycle: 2026-11-11 (automatic)
 - No manual action required until Nov 11
+- No manual action required until Nov 11
+
+---
+
+## 2026-10-12 — ledsone-uk Never-Sold Products: Shopify Parent ID Lookup
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| LEDSONE-UK-IDS-2026-10-12 | Query ledsone-db-mcp to retrieve correct Shopify parent product IDs for 81 never-sold ledsone.co.uk products. Filter by listing_url (not site column). Join via parent_child_mapping to get product ID (not variant ID). Export CSV with 79 matched products, 2 exceptions flagged. | `reports/daily/ledsone-uk-neversold-shopify-ids-2026-10-12.csv` | `evidence/shopify/ledsone-uk-neversold-shopify-id-lookup-2026-10-12.md` | `1c490c2` | YES | Row 50 no active listing; Row 70 no SKU in source CSV | None — CSV delivered | PASS |
+
+- Prompt: `prompts/shopify/ledsone-uk-shopify-parent-id-lookup-via-db.md` — SAVED ✓
+- Evidence: `evidence/shopify/ledsone-uk-neversold-shopify-id-lookup-2026-10-12.md` — SAVED ✓
+- Capability: `capability/2026/10/2026-10-12/ledsone-db-shopify-parent-id-query.md` — SAVED ✓
+- Validation: `validation/piranav/ledsone-uk-neversold-shopify-ids-validation-2026-10-12.md` — PASS (79/81) ✓
+- PROMPT_REGISTER: Row added — `ledsone-uk-shopify-parent-id-lookup-via-db` ✓
+- Source-map: Updated — `listings.shopify_listings` + `listings.shopify_listings_parent_child_mapping` noted ✓
+- Reports: `reports/daily/ledsone-uk-neversold-shopify-ids-2026-10-12.csv` committed `1c490c2` ✓
+- Docs: N/A
+- Handover: N/A
+- Duplicate-risk: N/A — new file, no duplicates
+
+**Session Result: PASS**

@@ -138,6 +138,18 @@ Source map FAILS if: a task evidence path cannot be resolved using this map.
 
 ---
 
+## Database Source Map (ledsone-db-mcp)
+
+| Table | Schema | Purpose | Key Columns | Notes |
+|---|---|---|---|---|
+| `shopify_listings` | `listings` | All Shopify listings across all stores and sites | `sku`, `item_id` (variant ID), `listing_url`, `site`, `status`, `is_parent` | `site` = UK/France etc. — NOT store domain. Filter by `listing_url` for store-specific queries. `item_id` = variant ID on child rows |
+| `shopify_listings_parent_child_mapping` | `listings` | Maps child listing rows to parent product rows | `parent_id`, `child_id` | Join to get parent `item_id` = Shopify product ID |
+
+**Access method:** `ledsone-db-mcp` MCP tool → `execute_sql_ledsone`
+**First used for:** ledsone-uk never-sold Shopify parent ID lookup, 2026-10-12
+
+---
+
 ## Known Limits
 
 - Store domains for Electricalsone, Blueskytechco, and Wholesale Trendy are not confirmed — do not use these store names in production commands without verifying
