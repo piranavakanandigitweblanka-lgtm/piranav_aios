@@ -2717,3 +2717,36 @@ Reason: Read-only documentation verification — no system capability built or p
 - Duplicate-risk: GREEN — modifying existing file, no duplicate created
 
 **Session Result: PASS — RC-02 B2 frontend complete. B3 runtime validation is next.**
+
+---
+
+### 2026-10-14 — RC-02 Step B3 Product Summary Customer Drill-Down
+
+| Field | Value |
+|---|---|
+| Requirement ID | RC-02 |
+| Task | Make customer counts in Product Summary tab clickable to show which customers bought each product |
+| Asset Path | `dm-dashboard/backend/app/admin/admin_repeat_customer_products.py`, `dm-dashboard/frontend/src/admin/pages/RepeatCustomers.jsx` |
+| Evidence Path | `evidence/dm-dashboard/rc-02-b3-product-drilldown-2026-10-14.md` |
+| GitHub Commit | PENDING — awaiting Piranav approval |
+| Queryability | YES — `GET /product-summary/{product_id}/customers?threshold=3\|4&page=1` |
+| Queryability Result | YES — returns customer_id, total_qty, variant_count per customer, paginated |
+| Blockers | Browser test pending (requires live product sync). Snapshot must be re-run after this change to include customer_order_counts key |
+| Next Step | Commit + push; run product sync; browser-test drill-down |
+| Result | PASS (conditional) — 49/49 tests, Vite build PASS |
+
+### 10-Folder Asset Check — 2026-10-14 RC-02 B3
+
+- Prompt: `prompts/dm-dashboard/rc-02-b3-product-drilldown.md` — PENDING (low priority, implementation is straightforward)
+- Evidence: `evidence/dm-dashboard/rc-02-b3-product-drilldown-2026-10-14.md` — CREATED
+- Capability: N/A — extends existing RC-02 capability
+- Closure: this entry — WRITTEN
+- PROMPT_REGISTER: row added
+- Validation: `validation/piranav/rc-02-b3-product-drilldown-validation-2026-10-14.md` — CREATED
+- Source-map: N/A
+- Docs: N/A
+- Handover: N/A
+- Reports: N/A
+- Duplicate-risk: GREEN
+
+**Session Result: PASS — RC-02 B3 drill-down complete. Commit + product sync + browser test remaining.**
