@@ -2568,3 +2568,25 @@ Reason: Read-only documentation verification — no system capability built or p
 - Duplicate-risk: N/A — new file, no duplicates
 
 **Session Result: PASS**
+
+
+---
+
+## 2026-10-14 — MUGA-BRAS Campaign Status Verification and Filters
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| MUGA-BRAS-2026-10-14-FILTERS | Extend MUGA-BRAS with campaign status verification (ACTIVE/PAUSED/REMOVED/UNKNOWN) from google_ads.campaigns. Add country/owner/campaignStatus filters to BudgetAlerts.jsx. Add tests. | `backend/app/admin/muguntha_budget_alerts.py`, `frontend/src/admin/pages/BudgetAlerts.jsx`, `backend/tests/test_muguntha_budget_alerts.py` | `evidence/dm-dashboard/muga-bras-campaign-status-filters-2026-10-14.md` | pending push | YES | None | Commit dm-dashboard; browser test filters; Piranav push when ready | PASS |
+
+- Prompt: `prompts/dm-dashboard/muga-bras-campaign-status-verification-and-filters.md` — SAVED ✓
+- Evidence: `evidence/dm-dashboard/muga-bras-campaign-status-filters-2026-10-14.md` — SAVED ✓
+- Validation: `validation/piranav/muga-bras-campaign-status-filters-validation-2026-10-14.md` — 70/70 PASS ✓
+- PROMPT_REGISTER: Row added — `muga-bras-campaign-status-verification-and-filters` ✓
+- Capability: N/A — extends existing MUGA-BRAS capability (already documented)
+- Source-map: N/A — no new data sources (google_ads.campaigns already known)
+- Docs: N/A
+- Handover: N/A
+- Reports: N/A
+- Duplicate-risk: N/A — extending existing files, no new parallel copies
+
+**Session Result: PASS**
