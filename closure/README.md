@@ -57,6 +57,33 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 
+### 2026-10-14 — LEDSone UK Collection HTML Size Optimization
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| LEDSONE-HTML-2026-10-14-001 | Discovery: trace `productinfo`/`productVariantsQty` JS consumers in `theme.js` | `assets/theme.js` (read-only) | `evidence/shopify/ledsone-uk-collection-html-optimization-2026-10-14.md` | No change to this file | YES | NONE | NONE | PASS |
+| LEDSONE-HTML-2026-10-14-002 | Implementation: slim `productinfo` JSON in `product-item.liquid` — replace `product.variants \| json` with 9-field minimal JSON | `shopify_projects/ledsone-uk-theme/snippets/product-item.liquid` | `evidence/shopify/ledsone-uk-collection-html-optimization-2026-10-14.md` | Uncommitted — pending git add | YES | Live validation requires Shopify upload | Piranav: (1) git commit this change, (2) push theme to Shopify unpublished duplicate, (3) measure HTML bytes before/after on conduit-lighting, (4) test swatches/add-to-cart/quick-view | IN PROGRESS |
+| LEDSONE-HTML-2026-10-14-003 | Prompt registered | `prompts/shopify/ledsone-uk-collection-html-size-optimization.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| LEDSONE-HTML-2026-10-14-004 | PROMPT_REGISTER updated | `PROMPT_REGISTER.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| LEDSONE-HTML-2026-10-14-005 | Validation file created | `validation/piranav/ledsone-uk-collection-html-optimization-validation-2026-10-14.md` | Same | Uncommitted | YES | All functional tests NOT TESTED — requires upload | Piranav fills in actual measurements and functional results | IN PROGRESS |
+
+**10-folder asset check:**
+| # | Asset | Status |
+|---|---|---|
+| 1 | Prompt | DONE — `prompts/shopify/ledsone-uk-collection-html-size-optimization.md` |
+| 2 | Evidence | DONE — `evidence/shopify/ledsone-uk-collection-html-optimization-2026-10-14.md` |
+| 3 | Capability | N/A — no new system capability, existing optimization pattern |
+| 4 | Closure | DONE — this entry |
+| 5 | PROMPT_REGISTER | DONE — new row added |
+| 6 | Validation | DONE (partial) — `validation/piranav/ledsone-uk-collection-html-optimization-validation-2026-10-14.md` — functional tests pending upload |
+| 7 | Source-map | N/A — no new data source or file introduced |
+| 8 | Docs | N/A — no new topic area |
+| 9 | Handover | N/A — task is ready for Piranav to upload and validate; no specialist handover needed |
+| 10 | Reports | N/A — no reportable data output yet; will be needed after live measurement |
+| 11 | Duplicate-risk | N/A — no duplicate file risk; existing product-item.liquid modified in-place |
+
+---
+
 ### 2026-10-09 — BGCT Technical SEO Documentation Pack
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
@@ -2590,3 +2617,103 @@ Reason: Read-only documentation verification — no system capability built or p
 - Duplicate-risk: N/A — extending existing files, no new parallel copies
 
 **Session Result: PASS**
+
+
+---
+
+### 2026-10-14 — RC-02 Repeat Customer Product Data Discovery
+
+| Field | Value |
+|---|---|
+| Requirement ID | RC-02 |
+| Task | Product data discovery for three new product analytics tabs on Repeat Customers page |
+| Asset Path | N/A — discovery only, no application code modified |
+| Evidence Path | `evidence/dm-dashboard/rc-02-product-data-discovery-2026-10-14.md` |
+| Validation Path | `validation/piranav/rc-02-product-data-discovery-validation-2026-10-14.md` |
+| GitHub / Commit | Not yet committed — awaiting Piranav instruction |
+| Queryability Result | YES — all required fields confirmed available |
+| Blockers | None. One minor addition needed: `variant { title }` in extended GraphQL query |
+| Next Step | Piranav/GPT approve Stage B implementation plan, then proceed to RC-02 Step 2 |
+| Result | PASS — discovery complete |
+
+### 10-Folder Asset Check — 2026-10-14 RC-02 Step 1
+
+- Prompt: `prompts/dm-dashboard/rc-02-product-data-discovery.md` — CREATED (DM-RC-DISC-02)
+- Evidence: `evidence/dm-dashboard/rc-02-product-data-discovery-2026-10-14.md` — CREATED
+- Capability: N/A — discovery only
+- Closure: this entry — DONE
+- PROMPT_REGISTER: Row DM-RC-DISC-02 added
+- Validation: `validation/piranav/rc-02-product-data-discovery-validation-2026-10-14.md` — CREATED
+- Source-map: N/A — no new data source; listings.shopify_listings already known
+- Docs: N/A
+- Handover: N/A
+- Reports: N/A
+- Duplicate-risk: GREEN — new dated files, no RC-02 files existed before
+
+**Session Result: PASS — discovery complete, no code modified, Stage B ready for approval**
+
+---
+
+### 2026-10-14 — RC-02 Step B1 Repeat Customer Product Analytics Backend
+
+| Field | Value |
+|---|---|
+| Requirement ID | RC-02 |
+| Task | Build backend module for product-level repeat customer analytics: customer_products, product_summary, products_bought_together |
+| Asset Path | `dm-dashboard/backend/app/admin/admin_repeat_customer_products.py` |
+| Evidence Path | `evidence/dm-dashboard/rc-02-b1-backend-implementation-2026-10-14.md` |
+| GitHub Commit | PENDING — to be committed with B2 frontend or separately |
+| Queryability | YES — 4 endpoints: /{customer_id}/products, /product-summary, /products-bought-together, /sync/run-now |
+| Queryability Result | YES — snapshot stores all 3 datasets pre-computed at threshold 3 and 4 |
+| Blockers | python-multipart missing (pre-existing, not RC-02). Full app import blocked; module import clean. Runtime B3 pending |
+| Next Step | RC-02 B2 — Frontend tab strip + 3 sub-components in RepeatCustomers.jsx |
+| Result | PASS (conditional) — backend complete, module imports clean, Vite build passes, tests written |
+
+### 10-Folder Asset Check — 2026-10-14 RC-02 B1
+
+- Prompt: `prompts/dm-dashboard/rc-02-b1-backend-implementation.md` — CREATED (DM-RC-02-B1)
+- Evidence: `evidence/dm-dashboard/rc-02-b1-backend-implementation-2026-10-14.md` — CREATED
+- Capability: N/A — extends RC-01 capability (same ScheduledSnapshot + make_task_auth pattern, already logged)
+- Closure: this entry — WRITTEN
+- PROMPT_REGISTER: DM-RC-02-B1 row ADDED
+- Validation: `validation/piranav/rc-02-b1-backend-validation-2026-10-14.md` — CREATED
+- Source-map: N/A — no new data source introduced; uses same Shopify UK + listings.shopify_listings confirmed in discovery
+- Docs: N/A — no new topic area; RC-02 reference in discovery evidence
+- Handover: N/A
+- Reports: N/A
+- Duplicate-risk: GREEN — new file, no existing admin_repeat_customer_products.py existed before
+
+**Session Result: PASS — RC-02 B1 backend complete. B2 frontend is next.**
+
+---
+
+### 2026-10-14 — RC-02 Step B2 Repeat Customer Product Analytics Frontend
+
+| Field | Value |
+|---|---|
+| Requirement ID | RC-02 |
+| Task | Add four-tab interface to RepeatCustomers.jsx: Customers (preserved), Customer Products, Product Summary, Products Bought Together |
+| Asset Path | `dm-dashboard/frontend/src/admin/pages/RepeatCustomers.jsx` |
+| Evidence Path | `evidence/dm-dashboard/rc-02-b2-frontend-implementation-2026-10-14.md` |
+| GitHub Commit | PENDING — awaiting Piranav approval |
+| Queryability | YES — four tab IDs: customers, customer-products, product-summary, bought-together |
+| Queryability Result | YES — all endpoints wired, threshold-aware, lazy load, privacy preserved |
+| Blockers | Browser tests pending (B3). python-multipart pre-existing. Product sync not yet run (no live data to test against) |
+| Next Step | RC-02 B3 — Piranav runs product sync, opens dashboard, spot-checks data. Then commit B1+B2 together |
+| Result | PASS (conditional) — implementation complete, 33/33 tests pass, Vite build passes |
+
+### 10-Folder Asset Check — 2026-10-14 RC-02 B2
+
+- Prompt: `prompts/dm-dashboard/rc-02-b2-frontend-implementation.md` — CREATED (DM-RC-02-B2)
+- Evidence: `evidence/dm-dashboard/rc-02-b2-frontend-implementation-2026-10-14.md` — CREATED
+- Capability: N/A — extends existing RC-01 frontend capability pattern
+- Closure: this entry — WRITTEN
+- PROMPT_REGISTER: DM-RC-02-B2 row ADDED
+- Validation: `validation/piranav/rc-02-b2-frontend-validation-2026-10-14.md` — CREATED
+- Source-map: N/A — no new data source
+- Docs: N/A
+- Handover: N/A
+- Reports: N/A
+- Duplicate-risk: GREEN — modifying existing file, no duplicate created
+
+**Session Result: PASS — RC-02 B2 frontend complete. B3 runtime validation is next.**
