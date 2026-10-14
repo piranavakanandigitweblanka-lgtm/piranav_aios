@@ -2750,3 +2750,23 @@ Reason: Read-only documentation verification — no system capability built or p
 - Duplicate-risk: GREEN
 
 **Session Result: PASS — RC-02 B3 drill-down complete. Commit + product sync + browser test remaining.**
+
+---
+
+### 2026-10-14 — RC-02 B3 Drill-Down Live Failure Investigation
+
+| Field | Value |
+|---|---|
+| Requirement ID | RC-02-B3-FIX-2026-10-14 |
+| Task | Investigate and fix: clicking customer count in Product Summary shows no customers |
+| Root Cause | `_get_product_customers()` fallback value `MIN_SNAPSHOT_THRESHOLD` (=2) always less than any valid threshold (3 or 4) — all customers in pre-B3 snapshots (missing `customer_order_counts`) excluded |
+| Failure Type | Code bug — wrong fallback constant. Secondary: backend requires restart for B3 endpoint to load |
+| Fix Applied | `admin_repeat_customer_products.py`: fallback changed to `threshold`. Test `test_missing_customer_order_counts_falls_back` rewritten to assert threshold=3 and threshold=4 with two customers |
+| Asset Path | `backend/app/admin/admin_repeat_customer_products.py` + `backend/tests/test_repeat_customer_products.py` |
+| Evidence Path | `evidence/dm-dashboard/rc-02-b3-fallback-fix-2026-10-14.md` |
+| Validation Path | `validation/piranav/rc-02-b3-product-drilldown-validation-2026-10-14.md` (updated) |
+| GitHub Path / Commit | dm-dashboard piranv-work — pending commit |
+| Queryability Result | YES |
+| Blockers | Backend restart required before live test; product sync required for `customer_order_counts` in snapshot (fix works on old snapshot too) |
+| Next Step | Piranav: restart backend, then click ↻ Refresh Products. After sync: open Product Summary tab and click a customer count |
+| Status | OPEN — fix applied and tested, browser verification pending |

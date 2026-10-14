@@ -47,6 +47,30 @@
 
 ---
 
+---
+
+## Regression Fix — 2026-10-14 (RC-02 B3 Fallback Bug)
+
+**Root cause:** `_get_product_customers()` used `MIN_SNAPSHOT_THRESHOLD` (= 2) as the fallback
+when `customer_order_counts` is absent (old snapshot). Any valid threshold is ≥ 3, so
+`2 < threshold` was always true — ALL customers excluded → endpoint returned 404 → frontend
+showed "No qualifying customers found." The bug was masked by the regression test calling
+with `threshold=MIN_SNAPSHOT_THRESHOLD` (2 ≥ 2 trivially passes).
+
+**Fix applied:**
+- `admin_repeat_customer_products.py` line ~697: fallback changed from `MIN_SNAPSHOT_THRESHOLD` to `threshold`
+- `test_repeat_customer_products.py` `test_missing_customer_order_counts_falls_back`: rewritten to
+  test at threshold=3 and threshold=4 with two customers, asserting both are admitted
+
+**Test results after fix:** 49/49 PASS | Vite build: ✓ built in 1.06s
+
+**Deployment dependencies (still pending):**
+1. Backend restart required — B3 endpoint must be loaded in the running process
+2. Product sync required — new snapshot will include `customer_order_counts`; with the fallback
+   fix, even the current stale snapshot now serves drill-down results
+
+---
+
 ## Overall Status
 
-**PASS (conditional)** — All tests pass, build passes. Browser validation deferred to after first live product sync.
+**PASS (conditional)** — All tests pass, build passes. Fallback bug fixed. Browser validation deferred to after backend restart.
