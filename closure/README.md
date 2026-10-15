@@ -3007,3 +3007,37 @@ Reason: Read-only documentation verification — no system capability built or p
 | 11 | Duplicate-risk | N/A — modified existing files in-place; test file is new (no duplicate risk) |
 
 **Session Result: PASS — Phase 2B complete. 4 new endpoints, Eligible SKUs tab, 12 unit tests (131 total). Syntax PASS, build PASS (859ms), 12/12 tests PASS, 0 regressions. Section A permanently BLOCKED_MISSING_DATA. score_is_executable always False. All AIOS assets saved. Awaiting Piranav commit instruction.**
+
+---
+
+### 2026-10-15 — Promotion Automation Phase 2C — Account Filter, Unknown Fix, CSV Export
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| PROMO-02-C-001 | DB Investigation — verified UK Shopify accounts from order_management.sub_source (source_id=3). Confirmed 3 active UK stores: 104=LEDSone UK (10,416 orders), 109=VintageLite UK (93 orders), 112=Electricalsone UK (124 orders). Excluded: 108=DE, 233=FR, 245=US. | N/A — DB query | `evidence/dm-dashboard/promotion-automation-phase2c-account-filter-csv-2026-10-15.md` | Uncommitted | YES | NONE | NONE | PASS |
+| PROMO-02-C-002 | Backend — VERIFIED_UK_SHOPIFY_ACCOUNTS dict (104, 109, 112). GET /accounts endpoint. GET /eligible-skus updated: account_id param, sub_source JOIN for store_name fix, store fields in response. GET /export/csv endpoint: 25 columns, formula injection protection, UTF-8 BOM, StreamingResponse. | `backend/app/dashboard_pages/promotion_automation.py` | Same | Uncommitted | YES | Runtime test requires live env | Piranav: commit + push + browser verify | PASS |
+| PROMO-02-C-003 | Frontend — EligibleSkusPanel: accounts state loaded on mount, account dropdown, handleAccountChange resets + reloads, Export CSV button, Store column in table, Unknown in red, account_name + scanned_at in results summary. | `frontend/src/admin/pages/PromotionAutomation.jsx` | Same | Uncommitted | YES | Runtime test requires live env | Piranav: browser verify dropdown, CSV download, store column | PASS |
+| PROMO-02-C-004 | Tests — 10 new Phase 2C unit tests (T13–T22): VERIFIED_UK_SHOPIFY_ACCOUNTS content, default account, DE/FR/US excluded, _csv_safe formula injection, normal values, None, column count 25, store fields, flat discount fields. | `backend/tests/test_promotion_automation.py` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| PROMO-02-C-005 | Syntax + Build + Tests — python -m py_compile PASS, npm run build ✓ 804ms, 22/22 Phase 2C tests PASS, 141/141 full suite PASS, 0 failures. | — | `validation/piranav/promotion-automation-phase2c-validation-2026-10-15.md` | — | YES | Runtime validation pending | Browser verify in live env | PASS |
+| PROMO-02-C-006 | Prompt saved | `prompts/dm-dashboard/promotion-automation-phase2c-account-filter-csv-export.md` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| PROMO-02-C-007 | Evidence saved | `evidence/dm-dashboard/promotion-automation-phase2c-account-filter-csv-2026-10-15.md` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| PROMO-02-C-008 | Validation saved | `validation/piranav/promotion-automation-phase2c-validation-2026-10-15.md` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| PROMO-02-C-009 | PROMPT_REGISTER updated | `PROMPT_REGISTER.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| PROMO-02-C-010 | Closure written | `closure/README.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+
+**10-Folder Asset Check:**
+| # | Asset | Status |
+|---|---|---|
+| 1 | Prompt | DONE — `prompts/dm-dashboard/promotion-automation-phase2c-account-filter-csv-export.md` |
+| 2 | Evidence | DONE — `evidence/dm-dashboard/promotion-automation-phase2c-account-filter-csv-2026-10-15.md` |
+| 3 | Capability | N/A — no new system capability (extends Phase 2B capability) |
+| 4 | Closure | DONE — this entry |
+| 5 | PROMPT_REGISTER | DONE — row added |
+| 6 | Validation | DONE — `validation/piranav/promotion-automation-phase2c-validation-2026-10-15.md` |
+| 7 | Source-map | N/A — no new data source (used existing sub_source join) |
+| 8 | Docs | N/A — no new topic area |
+| 9 | Handover | N/A — no personnel handover |
+| 10 | Reports | N/A — CSV export is a feature, not a session output report |
+| 11 | Duplicate-risk | N/A — modified existing files in-place, no new duplicate risk |
+
+**Session Result: PASS — Phase 2C complete. Account selector (3 verified UK stores), Unknown store name fixed via DB JOIN, CSV export with 25 columns + formula protection + UTF-8 BOM. 10 new tests (T13–T22), 141 total suite PASS. Syntax PASS, build PASS. All AIOS assets saved. Awaiting Piranav commit instruction.**
