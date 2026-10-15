@@ -2770,3 +2770,240 @@ Reason: Read-only documentation verification — no system capability built or p
 | Blockers | Backend restart required before live test; product sync required for `customer_order_counts` in snapshot (fix works on old snapshot too) |
 | Next Step | Piranav: restart backend, then click ↻ Refresh Products. After sync: open Product Summary tab and click a customer count |
 | Status | OPEN — fix applied and tested, browser verification pending |
+
+---
+
+### 2026-10-15 — PROMO-01 Promotion Automation Phase 1 Discovery
+
+| Field | Value |
+|---|---|
+| Requirement ID | PROMO-01 |
+| Task | Read-only Phase 1 discovery for Promotion Automation page in DM Dashboard |
+| Asset Path | N/A — discovery only, no implementation |
+| Evidence Path | `evidence/dm-dashboard/promotion-automation-phase1-discovery-2026-10-15.md` |
+| GitHub Commit | N/A — no code written |
+| Queryability | N/A — discovery phase |
+| Blockers | (1) `Nishani_Promotion_Multi_Channel.docx` NOT FOUND in AIOS — cannot define score logic; (2) landed cost / variable fee data source unknown; (3) review / return rate data source unknown; (4) conflicting discount ranges need approved resolution |
+| Next Step | Piranav to provide policy doc + data source decisions before Phase 1 implementation begins |
+| Status | OPEN — discovery PASS, implementation blocked pending policy doc and data gap resolution |
+
+### 10-Folder Asset Check — 2026-10-15 PROMO-01
+
+- Prompt: `prompts/dm-dashboard/promotion-automation-phase1-discovery.md` — CREATED
+- Evidence: `evidence/dm-dashboard/promotion-automation-phase1-discovery-2026-10-15.md` — CREATED
+- Capability: N/A — no new system capability implemented; existing patterns (ScheduledSnapshot, make_task_auth) documented in evidence
+- Closure: this entry — WRITTEN
+- PROMPT_REGISTER: PROMO-01 row ADDED
+- Validation: `validation/piranav/promotion-automation-phase1-validation-2026-10-15.md` — CREATED
+- Source-map: N/A — no new data source introduced this session (business DB schemas were already known)
+- Docs: N/A — no new topic index required; discovery report in evidence
+- Handover: N/A — Piranav is owner, GPT is coordinator, no handover to another person
+- Reports: N/A — not a reportable data output
+- Duplicate-risk: GREEN — no existing promotion automation documentation found; no duplicates created
+
+**Session Result: PASS — Phase 1 discovery complete. Implementation blocked on 4 prerequisite decisions.**
+
+---
+
+### 2026-10-15 — PROMO-01-B Promotion Automation Phase 1B (Git Sync + Full Repo + UAM Discovery)
+
+| Field | Value |
+|---|---|
+| Requirement ID | PROMO-01-B |
+| Task | Git synchronization + full repository structure discovery + UAM inspection for Promotion Automation |
+| Assigned by | Muguntha |
+| Asset Path | N/A — discovery + Git sync only |
+| Evidence Path | `evidence/dm-dashboard/promotion-automation-phase1b-discovery-2026-10-15.md` |
+| GitHub Commit | N/A — no code written; Git merge only (not a new commit) |
+| Queryability | N/A — discovery phase |
+| Blockers | D1: policy doc still not found; D2: landed cost source unknown; D3: reviews/return rate unknown; D4: discount range conflict unresolved |
+| Next Step | Piranav to resolve D1–D4 before Phase 2 (schema + score engine) begins. Also push piranv-work to remote (107 commits ahead of origin/piranv-work) when ready. |
+| Status | OPEN — Phase 1B PASS, implementation blocked |
+
+### 10-Folder Asset Check — 2026-10-15 PROMO-01-B
+
+- Prompt: `prompts/dm-dashboard/promotion-automation-phase1b-discovery.md` — CREATED
+- Evidence: `evidence/dm-dashboard/promotion-automation-phase1b-discovery-2026-10-15.md` — CREATED
+- Capability: N/A — no new capability implemented; UAM patterns documented in evidence
+- Closure: this entry — WRITTEN
+- PROMPT_REGISTER: PROMO-01-B row ADDED
+- Validation: `validation/piranav/promotion-automation-phase1b-validation-2026-10-15.md` — CREATED
+- Source-map: N/A — no new data sources found; all sources from Phase 1 re-verified only
+- Docs: N/A — no new topic index required
+- Handover: `handover/piranav/promotion-automation-phase1b-handover-2026-10-15.md` — CREATED (Muguntha assigned task; handover written for next phase)
+- Reports: N/A — not a reportable data output
+- Duplicate-risk: GREEN — all files in new paths; no duplicates created
+
+**Session Result: PASS — Phase 1B complete. Git synced. UAM fully traced. All blockers unchanged. Implementation cannot begin until D1–D4 resolved.**
+
+---
+
+### 2026-10-15 — PROMO-01-C Promotion Automation Phase 1C (Dashboard Page Location + UAM Registration Discovery)
+
+| Field | Value |
+|---|---|
+| Requirement ID | PROMO-01-C |
+| Task | Verify exact dashboard_pages location, page registration pattern, UAM flow, and produce verified implementation file list |
+| Assigned by | Muguntha |
+| Asset Path | N/A — discovery only |
+| Evidence Path | `evidence/dm-dashboard/promotion-automation-phase1c-discovery-2026-10-15.md` |
+| GitHub Commit | N/A — no code written |
+| Queryability | YES — exact file paths, line numbers, and code patterns documented |
+| Blockers | D1–D4 unchanged (policy doc, landed cost, reviews/return rate, discount range conflict) |
+| Next Step | Piranav to resolve D1–D4 before Phase 2 begins. Implementation file list and UAM registration steps are ready. |
+| Status | OPEN — Phase 1C PASS, implementation blocked on D1–D4 |
+
+### 10-Folder Asset Check — 2026-10-15 PROMO-01-C
+
+- Prompt: `prompts/dm-dashboard/promotion-automation-phase1c-discovery.md` — CREATED
+- Evidence: `evidence/dm-dashboard/promotion-automation-phase1c-discovery-2026-10-15.md` — CREATED
+- Capability: N/A — no new capability implemented; architecture patterns documented in evidence
+- Closure: this entry — WRITTEN
+- PROMPT_REGISTER: PROMO-01-C row ADDED
+- Validation: `validation/piranav/promotion-automation-phase1c-validation-2026-10-15.md` — CREATED
+- Source-map: N/A — no new data sources; confirmed all existing sources via code evidence
+- Docs: N/A — no new topic index required
+- Handover: `handover/piranav/promotion-automation-phase1c-handover-2026-10-15.md` — CREATED
+- Reports: N/A — not a reportable data output
+- Duplicate-risk: GREEN — all files in new paths; no duplicates created
+
+**Session Result: PASS — Phase 1C complete. Dashboard_pages architecture, page registration, and UAM flow fully verified with exact file + line evidence. Permission key confirmed: tools.PromotionAutomation with make_admin_task_auth. Implementation file list ready. All blockers unchanged. Implementation cannot begin until D1–D4 resolved.**
+
+---
+
+### 2026-10-15 — PROMO-01-D Promotion Automation Phase 1D (Policy Extraction and Business Rule Validation)
+
+| Field | Value |
+|---|---|
+| Requirement ID | PROMO-01-D |
+| Task | Extract promotion policy from Nishani_Promotion_Multi_Channel.docx; resolve discount conflict; re-verify data gaps; produce rules-ready vs rules-blocked matrix |
+| Assigned by | Muguntha |
+| Asset Path | `prompts/dm-dashboard/promotion-automation-phase1d-policy.md` |
+| Evidence Path | `evidence/dm-dashboard/promotion-automation-phase1d-policy-2026-10-15.md` |
+| GitHub Commit | N/A — no code written |
+| Queryability | YES — full requirements matrix with section/para references |
+| Blockers | D1: RESOLVED. D2: Landed cost still not in DB. D3: Reviews/return rate still not in DB. D4: Discount conflict confirmed (Fast movers only) — NOT APPROVED FOR EXECUTION. D5: Non-Amazon Section D point allocations not in document. |
+| Next Step | Piranav: (1) identify landed cost data source, (2) identify reviews/return rate source, (3) approve Fast mover discount ranges, (4) define non-Amazon Section D allocations OR confirm Amazon-only for Phase 1. Then Phase 2 (schema + score engine) can begin. |
+| Status | OPEN — Phase 1D PASS, implementation blocked on D2/D3/D4 |
+
+### 10-Folder Asset Check — 2026-10-15 PROMO-01-D
+
+- Prompt: `prompts/dm-dashboard/promotion-automation-phase1d-policy.md` — CREATED
+- Evidence: `evidence/dm-dashboard/promotion-automation-phase1d-policy-2026-10-15.md` — CREATED
+- Capability: N/A — no new system capability implemented
+- Closure: this entry — WRITTEN
+- PROMPT_REGISTER: PROMO-01-D row ADDED
+- Validation: `validation/piranav/promotion-automation-phase1d-validation-2026-10-15.md` — CREATED
+- Source-map: N/A — no new data sources found
+- Docs: N/A — no new topic index required
+- Handover: `handover/piranav/promotion-automation-phase1d-handover-2026-10-15.md` — CREATED
+- Reports: N/A — not a reportable data output
+- Duplicate-risk: GREEN — all files in new paths; no duplicates created
+
+**Session Result: PASS — Phase 1D complete. Policy fully extracted (395 paragraphs). D1 resolved. Discount conflict confirmed in Fast mover rows only — marked NOT APPROVED FOR EXECUTION. D2/D3 re-verified NOT FOUND post-merge. 19 rules ready for specification; 8 rules blocked on D2/D3/D4. Implementation cannot begin until Piranav resolves remaining blockers.**
+
+---
+
+### 2026-10-15 — PROMO-01-E Promotion Automation Phase 1E (Data Source Investigation)
+
+| Field | Value |
+|---|---|
+| Requirement ID | PROMO-01-E |
+| Task | Investigate authoritative sources for D2 (landed cost, variable fees) and D3 (product reviews, return rate) via ledsone-db-mcp and ledsone-aios-knowledge-base. Read-only. |
+| Assigned by | Muguntha / Piranav |
+| Asset Path | `prompts/dm-dashboard/promotion-automation-phase1e-data-investigation.md` |
+| Evidence Path | `evidence/dm-dashboard/promotion-automation-phase1e-data-investigation-2026-10-15.md` |
+| GitHub Commit | N/A — no code written |
+| Queryability | YES — decision table with exact DB references |
+| Blockers | D2: PARTIAL — FOB cost found (suppliers.invoices.unit_price), freight/duty missing. D3 reviews: NOT FOUND. D3 return rate: PARTIAL (Amazon only, coverage uncertain). 7 questions for Piranav. |
+| Next Step | Piranav answers Q1–Q7 (cost basis, currency, freight, reviews source, return rate definition, platform scope, Amazon UK coverage). Then Phase 2 can begin with partial Section A. |
+| Status | OPEN — Phase 1E PASS, D2/D3 partially resolved, implementation blocked on 7 business decisions |
+
+### 10-Folder Asset Check — 2026-10-15 PROMO-01-E
+
+- Prompt: `prompts/dm-dashboard/promotion-automation-phase1e-data-investigation.md` — CREATED
+- Evidence: `evidence/dm-dashboard/promotion-automation-phase1e-data-investigation-2026-10-15.md` — CREATED
+- Capability: N/A — no new system capability implemented
+- Closure: this entry — WRITTEN
+- PROMPT_REGISTER: PROMO-01-E row ADDED
+- Validation: `validation/piranav/promotion-automation-phase1e-validation-2026-10-15.md` — CREATED
+- Source-map: N/A — existing DB tables, not new sources
+- Docs: N/A — no new topic index required
+- Handover: `handover/piranav/promotion-automation-phase1e-handover-2026-10-15.md` — CREATED
+- Reports: N/A — investigation output, not a data report
+- Duplicate-risk: GREEN — all new Phase 1E paths, no duplicates
+
+**Session Result: PARTIAL — Phase 1E complete. FOB cost found in suppliers.invoices (PARTIAL for D2). Amazon FBA/referral fees confirmed (PARTIAL for D2). Amazon refund rate found (PARTIAL for D3). Product review count NOT FOUND anywhere in DB. 7 specific questions documented for Piranav to resolve before Section A can be automated. Phase 2 scaffold (Sections B/C/D/E + page structure) can begin without waiting.**
+
+---
+
+### 2026-10-15 — PROMO-02-A Promotion Automation Phase 2A (Safe Foundation Implementation)
+
+| Field | Value |
+|---|---|
+| Requirement ID | PROMO-02-A |
+| Task | Implement Phase 2A foundation: DB schema (5 tables), FastAPI router (13 endpoints), React page (3 tabs), all registrations in main.py / taskRegistry.js / AdminLayout.jsx. Financial gates FAIL-CLOSED. No promotion execution. |
+| Assigned by | Muguntha / Piranav |
+| Asset Path | `prompts/dm-dashboard/promotion-automation-phase2a-foundation.md` |
+| Evidence Path | `evidence/dm-dashboard/promotion-automation-phase2a-foundation-2026-10-15.md` |
+| GitHub Commit | PENDING — awaiting Piranav commit instruction on piranv-work branch |
+| Queryability | YES — all implementation files, validation checks, and financial gate decisions documented |
+| Blockers | (1) Piranav must commit 6 files and grant UAM access (tools.PromotionAutomation). (2) Q1–Q7 financial decisions required before Phase 2B. (3) D4a/D4b fast mover conflict pending. (4) D5 non-Amazon Section D pending. |
+| Next Step | Piranav: git add + commit 6 files on piranv-work, insert access_grants row, test page render, answer Q1–Q7 for Phase 2B |
+| Status | OPEN — Phase 2A PASS (syntax + build). Awaiting commit + UAM grant. |
+
+### 10-Folder Asset Check — 2026-10-15 PROMO-02-A
+
+- Prompt: `prompts/dm-dashboard/promotion-automation-phase2a-foundation.md` — CREATED
+- Evidence: `evidence/dm-dashboard/promotion-automation-phase2a-foundation-2026-10-15.md` — CREATED
+- Capability: N/A — foundation scaffold; no new standalone capability beyond page registration
+- Closure: this entry — WRITTEN
+- PROMPT_REGISTER: PROMO-02-A row ADDED
+- Validation: `validation/piranav/promotion-automation-phase2a-validation-2026-10-15.md` — CREATED
+- Source-map: N/A — no new data sources; uses existing app DB via DATABASE_URL
+- Docs: N/A — no new topic index required
+- Handover: `handover/piranav/promotion-automation-phase2a-handover-2026-10-15.md` — CREATED
+- Reports: N/A — implementation, not a reportable data output
+- Duplicate-risk: GREEN — all 3 new files in new paths; no duplicates created
+
+**Session Result: PASS — Phase 2A complete. 3 new files (promotion_automation_db.py, promotion_automation.py, PromotionAutomation.jsx) + 3 modified files (main.py, taskRegistry.js, AdminLayout.jsx). Syntax PASS, build PASS (3.79s). Financial gates hardcoded FAIL-CLOSED. No Section A scoring. All AIOS assets saved. Awaiting Piranav commit + UAM grant before runtime testing.**
+
+| PROMO-02-A-COMMIT | Commit Promotion Automation foundation | evidence/dm-dashboard/promotion-automation-phase2a-foundation-2026-10-15.md | validation/piranav/promotion-automation-phase2a-validation-2026-10-15.md | 957c79badb9ce66c3d8ccf20a9bc24d839fa88a4 | YES | None | Push + UAM grant + browser verify | PASS |
+
+| PROMO-STEP1-AUDIT | Promotion Automation Step 1 — full system audit | evidence/dm-dashboard/promotion-automation-step1-audit-2026-10-15.md | validation/piranav/promotion-automation-step1-audit-validation-2026-10-15.md | N/A (audit only) | YES | Q1-Q7 + D4/D5 + listing quality source + combo SKU definition | Phase 2B implementation | PASS |
+
+---
+
+### 2026-10-15 — PROMO-02-B Promotion Automation Phase 2B (Shopify Eligibility Engine)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| PROMO-02-B-001 | Add GET /sku/{sku}/snapshot endpoint | `backend/app/dashboard_pages/promotion_automation.py` | `evidence/dm-dashboard/promotion-automation-phase2b-shopify-eligibility-2026-10-15.md` | Uncommitted | YES | NONE | Piranav: commit + push (websitetecteam-arch) | PASS |
+| PROMO-02-B-002 | Add POST /sku/{sku}/evaluate endpoint (B/C/D/E scoring) | Same | Same | Uncommitted | YES | Section A always BLOCKED_MISSING_DATA — Q1-Q7 unresolved | Piranav: answer Q1-Q7 to unblock Section A | PASS |
+| PROMO-02-B-003 | Add GET /eligible-skus endpoint (batch Shopify UK scan) | Same | Same | Uncommitted | YES | NONE | NONE | PASS |
+| PROMO-02-B-004 | Add POST /seed-exclusions endpoint (CO/CH/RO/FG/SN/YB/GB + PLAD) | Same | Same | Uncommitted | YES | Combo SKU definition ambiguous in policy — suffix-only applied | Piranav: confirm combo SKU definition D5 | PASS |
+| PROMO-02-B-005 | Add cool-off enforcement in POST /briefs (30-day kill lock) | Same | Same | Uncommitted | YES | NONE | NONE | PASS |
+| PROMO-02-B-006 | Add 5 auto-kill conditions in POST /monitoring/{brief_id} | Same | Same | Uncommitted | YES | NONE | NONE | PASS |
+| PROMO-02-B-007 | Add Eligible SKUs tab + EligibleSkusPanel to PromotionAutomation.jsx | `frontend/src/admin/pages/PromotionAutomation.jsx` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| PROMO-02-B-008 | Write 12 unit tests | `backend/tests/test_promotion_automation.py` | `validation/piranav/promotion-automation-phase2b-validation-2026-10-15.md` | Uncommitted | YES | NONE | NONE | PASS |
+| PROMO-02-B-009 | Prompt registered | `prompts/dm-dashboard/promotion-automation-phase2b-shopify-eligibility.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| PROMO-02-B-010 | PROMPT_REGISTER updated | `PROMPT_REGISTER.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| PROMO-02-B-011 | Validation file created | `validation/piranav/promotion-automation-phase2b-validation-2026-10-15.md` | Same | Uncommitted | YES | Runtime tests require live env | Piranav: browser verify after commit+push | PASS |
+| PROMO-02-B-012 | Handover written | `handover/piranav/promotion-automation-phase2b-handover-2026-10-15.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+
+**10-folder asset check — PROMO-02-B:**
+| # | Asset | Status |
+|---|---|---|
+| 1 | Prompt | DONE — `prompts/dm-dashboard/promotion-automation-phase2b-shopify-eligibility.md` |
+| 2 | Evidence | DONE — `evidence/dm-dashboard/promotion-automation-phase2b-shopify-eligibility-2026-10-15.md` |
+| 3 | Capability | N/A — extends Phase 2A capability; no new standalone system capability |
+| 4 | Closure | DONE — this entry |
+| 5 | PROMPT_REGISTER | DONE — new row added |
+| 6 | Validation | DONE — `validation/piranav/promotion-automation-phase2b-validation-2026-10-15.md` |
+| 7 | Source-map | N/A — same data sources as Phase 2B audit (sub_source=104 confirmed; no new sources) |
+| 8 | Docs | N/A — no new doc area |
+| 9 | Handover | DONE — `handover/piranav/promotion-automation-phase2b-handover-2026-10-15.md` |
+| 10 | Reports | N/A — no reportable data output |
+| 11 | Duplicate-risk | N/A — modified existing files in-place; test file is new (no duplicate risk) |
+
+**Session Result: PASS — Phase 2B complete. 4 new endpoints, Eligible SKUs tab, 12 unit tests (131 total). Syntax PASS, build PASS (859ms), 12/12 tests PASS, 0 regressions. Section A permanently BLOCKED_MISSING_DATA. score_is_executable always False. All AIOS assets saved. Awaiting Piranav commit instruction.**
