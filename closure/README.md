@@ -57,6 +57,66 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 
+### 2026-10-20 — BOT-20261019-ORGANIC-EXC-03 — LEDSone UK Locale URLs Investigation
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| BOT-20261019-2026-10-20-001 | Theme code audit — canonical + hreflang + seo-noindex.liquid | `shopify_projects/ledsone-uk-theme/snippets/seo-noindex.liquid` + `layout/theme.liquid` | `BOT-20261019-locale-hreflang/01_investigation/BOT-20261019-investigation-2026-10-20.md` | No code change | YES | NONE | NONE | PASS |
+| BOT-20261019-2026-10-20-002 | GSC UK baseline — /pl/ filter: 5 clicks, 14.6K impressions, position 26.2 | Screenshot 2026-10-20 152311.png (OneDrive) | `BOT-20261019-locale-hreflang/03_evidence/evidence-register.md` | N/A | YES | /nl/ and /es/ UK data not yet pulled | Pull /nl/ + /es/ GSC UK data in next session | OPEN |
+| BOT-20261019-2026-10-20-003 | Prompt registered | `prompts/seo/BOT-20261019-locale-hreflang-investigation-prompt.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| BOT-20261019-2026-10-20-004 | PROMPT_REGISTER updated | `PROMPT_REGISTER.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| BOT-20261019-2026-10-20-005 | Validation record created | `BOT-20261019-locale-hreflang/02_validation/BOT-20261019-validation-2026-10-20.md` | Same | Uncommitted | YES | Phase 3 (/nl/, /es/) + Phase 4 (live HTML hreflang check) pending | Complete pending phases | OPEN |
+
+**10-folder asset check:**
+| # | Asset | Status |
+|---|---|---|
+| 1 | Prompt | DONE — `prompts/seo/BOT-20261019-locale-hreflang-investigation-prompt.md` |
+| 2 | Evidence | DONE — `evidence/shopify/ledsone-uk/BOT-20261019-ORGANIC-EXC-03-investigation-2026-10-20.md` |
+| 3 | Capability | N/A — investigation task; no new system capability created |
+| 4 | Closure | DONE — this entry |
+| 5 | PROMPT_REGISTER | DONE — new row added |
+| 6 | Validation | DONE (partial) — `validation/piranav/BOT-20261019-ORGANIC-EXC-03-validation-2026-10-20.md` — Phase 3+4 pending |
+| 7 | Source-map | N/A — GSC data source already tracked from prior sessions; no new source |
+| 8 | Docs | N/A — no new topic area or index needed |
+| 9 | Handover | N/A — investigation continues with Piranav; no separate person handover required |
+| 10 | Reports | N/A — GSC metrics recorded in evidence file; not a separate reportable data export |
+| 11 | Duplicate-risk | N/A — new evidence file in new folder `evidence/shopify/ledsone-uk/`; no prior equivalent |
+
+**Safety confirmation:** No Shopify theme files modified, no Markets settings changed, no redirects/noindex/robots.txt changes, no git commits or deployments.
+
+---
+
+### 2026-10-20 — LEDSone US HTTP 429 Investigation
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| LEDSONE-US-429-2026-10-19-001 | Phase 1 discovery + Phase 1 GSC Live Tests (product + collection URLs added 2026-10-20) | `evidence/shopify/ledsone-us/ledsone-us-429-investigation-2026-10-19.md` | Same file + 2 screenshots in evidence/shopify/ledsone-us/ | Uncommitted | YES | Root cause not confirmed; Phase 2 + Phase 3 pending; product URL screenshot discrepancy (both images show collection URL) | Run Phase 2 PowerShell retest for product + collection URLs with header capture | OPEN |
+| LEDSONE-US-429-2026-10-19-002 | URL register: full 117-URL list with retest columns | `reports/ledsone-us/ledsone-us-429-url-register-2026-10-19.md` | Same | Uncommitted | YES | Retest columns empty except blog/product/collection rows | Fill in as retests are completed | OPEN |
+| LEDSONE-US-429-2026-10-19-003 | Validation plan: Phase 1 COMPLETE (blog+product+collection GSC); Phase 2+3 PENDING | `validation/piranav/ledsone-us-429-validation-plan-2026-10-19.md` | Same | Uncommitted | YES | Phase 2 (PowerShell) + Phase 3 (SF crawl) not run | Run Phase 2 with header capture; see validation plan for script | INCOMPLETE |
+| LEDSONE-US-429-2026-10-19-004 | Handover note — updated with Phase 1 results and screenshot note | `handover/piranav/ledsone-us-429-handover-2026-10-19.md` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| LEDSONE-US-429-2026-10-19-005 | Prompt registered | `prompts/seo/ledsone-us-429-investigation-prompt.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| LEDSONE-US-429-2026-10-19-006 | PROMPT_REGISTER updated | `PROMPT_REGISTER.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| LEDSONE-US-429-2026-10-19-007 | Source-map updated — two external evidence files logged | `source-map/README.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+
+**10-folder asset check:**
+| # | Asset | Status |
+|---|---|---|
+| 1 | Prompt | DONE — `prompts/seo/ledsone-us-429-investigation-prompt.md` |
+| 2 | Evidence | DONE — `evidence/shopify/ledsone-us/ledsone-us-429-investigation-2026-10-19.md` |
+| 3 | Capability | N/A — no new system capability created; investigation task only |
+| 4 | Closure | DONE — this entry |
+| 5 | PROMPT_REGISTER | DONE — new row added |
+| 6 | Validation | DONE (plan only) — `validation/piranav/ledsone-us-429-validation-plan-2026-10-19.md` — actual retests PENDING |
+| 7 | Source-map | DONE — two source files logged in `source-map/README.md` |
+| 8 | Docs | N/A — no new topic area or index needed |
+| 9 | Handover | DONE — `handover/piranav/ledsone-us-429-handover-2026-10-19.md` |
+| 10 | Reports | DONE — `reports/ledsone-us/ledsone-us-429-url-register-2026-10-19.md` |
+| 11 | Duplicate-risk | N/A — no duplicate risk; new folder `reports/ledsone-us/` created, no existing equivalent |
+
+**Safety confirmation:** No website changes, Shopify theme edits, deployments, git commits, or pushes made in this investigation session.
+
+---
+
 ### 2026-10-19 — S1-PIR-02 Conduit Accessories: Filters + CollectionPage JSON-LD + Stock
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
