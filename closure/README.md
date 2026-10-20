@@ -57,6 +57,44 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 
+### 2026-10-19 — S1-PIR-02 Conduit Accessories: Filters + CollectionPage JSON-LD + Stock
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| S1-PIR-02-2026-10-19-001 | Step 5: Add CollectionPage JSON-LD to all collection pages | `sections/breadcrumb.liquid` | `evidence/shopify/s1-pir-02-conduit-filters-jsonld-stock-2026-10-19.md` | Uncommitted — pending git add | YES | NONE | Piranav: commit + verify in browser source on conduit-accessories | PASS |
+| S1-PIR-02-2026-10-19-002 | Step 6: Stock message — confirmed existing theme block handles this | Theme editor "Stock countdown" block | Same evidence file | No code change | YES | NONE | Piranav: confirm block is enabled on product sections | PASS |
+| S1-PIR-02-2026-10-19-003 | Step 3 (Filters): Add F4/F5/F6 optional filter slots to collection-meta-filters.liquid | `sections/collection-meta-filters.liquid` | Same evidence file | Uncommitted — pending git add | YES | Filter 5 option mode not verified post-upload | Piranav: set Filter 5 Option Name = "Type" in theme editor, test Pack filter | PARTIAL PASS |
+| S1-PIR-02-2026-10-19-004 | Fix Pack filter broken (variant option mode for F5) | `sections/collection-meta-filters.liquid` | Same evidence file | Uncommitted — pending git add | YES | Requires upload + theme editor config | Upload confirmed by user 2026-10-19. Set Option Name = Type then re-test | OPEN |
+| S1-PIR-02-2026-10-19-005 | Prompt registered | `prompts/shopify/shopify-collection-filter-variant-option-mode.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| S1-PIR-02-2026-10-19-006 | PROMPT_REGISTER updated | `PROMPT_REGISTER.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| S1-PIR-02-2026-10-19-007 | Validation file created | `validation/piranav/s1-pir-02-conduit-filters-validation-2026-10-19.md` | Same | Uncommitted | YES | Filter + JSON-LD browser checks pending | Piranav to complete pending checks | PARTIAL PASS |
+
+**10-folder asset check:**
+| # | Asset | Status |
+|---|---|---|
+| 1 | Prompt | DONE — `prompts/shopify/shopify-collection-filter-variant-option-mode.md` |
+| 2 | Evidence | DONE — `evidence/shopify/s1-pir-02-conduit-filters-jsonld-stock-2026-10-19.md` |
+| 3 | Capability | N/A — filter slot extension, not a new system capability |
+| 4 | Closure | DONE — this entry |
+| 5 | PROMPT_REGISTER | DONE — new row added |
+| 6 | Validation | DONE (partial) — `validation/piranav/s1-pir-02-conduit-filters-validation-2026-10-19.md` — browser checks pending |
+| 7 | Source-map | N/A — no new data source introduced |
+| 8 | Docs | N/A — no new topic area |
+| 9 | Handover | N/A — Arudchelvi metafield fill is informal, no formal handover doc needed |
+| 10 | Reports | N/A — no reportable data output |
+| 11 | Duplicate-risk | N/A — modified existing files only |
+
+**Remaining S1-PIR-02 items (next session):**
+- Delete redundant `snippets/stock-message.liquid`
+- Create 7 sub-collections (Step 3 Part A)
+- Add six-tile block (Step 3 Part B)
+- Fill `custom.size` on 16 missing products (Arudchelvi)
+- Fill `custom.thread` and `custom.package` on all 37 products
+- Send screenshots to Muguntha for approval
+- Commit + push all changed files
+
+---
+
 ### 2026-10-14 — LEDSone UK Collection HTML Size Optimization
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
@@ -3041,3 +3079,32 @@ Reason: Read-only documentation verification — no system capability built or p
 | 11 | Duplicate-risk | N/A — modified existing files in-place, no new duplicate risk |
 
 **Session Result: PASS — Phase 2C complete. Account selector (3 verified UK stores), Unknown store name fixed via DB JOIN, CSV export with 25 columns + formula protection + UTF-8 BOM. 10 new tests (T13–T22), 141 total suite PASS. Syntax PASS, build PASS. All AIOS assets saved. Awaiting Piranav commit instruction.**
+
+---
+
+### 2026-10-15 — PROMO-INC-01 Promotion Automation — Accidental Exclusion Seeder Incident
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| PROMO-INC-01-001 | Incident investigation — accidental click of Seed Exclusions button. Traced seeder code, confirmed idempotent INSERT ON CONFLICT DO NOTHING, actor + timestamp recorded, no seed_batch_id column. | `backend/app/dashboard_pages/promotion_automation.py` lines 1356–1424 | `evidence/dm-dashboard/promotion-automation-exclusion-incident-2026-10-15.md` | No code change — investigation only | YES | App DB on Contabo — MCP cannot reach it. Piranav must run investigation queries directly. | Piranav: connect to Contabo app DB, run Q1–Q4 from evidence file, share results | OPEN |
+| PROMO-INC-01-002 | Recovery plan produced — targeted DELETE scoped by timestamp+actor+reason (NOT a TRUNCATE). Safe transaction with verify-before-COMMIT. Legitimate pre-existing exclusions preserved. | `evidence/dm-dashboard/promotion-automation-exclusion-incident-2026-10-15.md` section 6 | Same | No change | YES | Timestamps/actor unknown until Q1–Q4 run | Piranav fills in timestamps, runs in transaction, confirms count, COMMIT | OPEN |
+| PROMO-INC-01-003 | Prevention recommendations documented (preview endpoint, confirm modal, seed_batch_id column) | Same | Same | No change | YES | Requires Phase 2D implementation approval | Piranav approves prevention changes; implement in next session | OPEN |
+| PROMO-INC-01-004 | Prompt saved | `prompts/dm-dashboard/promotion-automation-exclusion-incident.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| PROMO-INC-01-005 | PROMPT_REGISTER updated | `PROMPT_REGISTER.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+
+**10-folder asset check — PROMO-INC-01:**
+| # | Asset | Status |
+|---|---|---|
+| 1 | Prompt | DONE — `prompts/dm-dashboard/promotion-automation-exclusion-incident.md` |
+| 2 | Evidence | DONE — `evidence/dm-dashboard/promotion-automation-exclusion-incident-2026-10-15.md` |
+| 3 | Capability | N/A — investigation only, no new system capability |
+| 4 | Closure | DONE — this entry |
+| 5 | PROMPT_REGISTER | DONE — row added |
+| 6 | Validation | N/A — no code changes to validate; recovery SQL is a manual action |
+| 7 | Source-map | N/A — app DB (Contabo) was already a known source; no new source introduced |
+| 8 | Docs | N/A — no new doc topic area |
+| 9 | Handover | N/A — Piranav is owner and executor of DB recovery |
+| 10 | Reports | N/A — investigation output is evidence, not a scheduled report |
+| 11 | Duplicate-risk | N/A — no new files risk duplicating truth |
+
+**Session Result: OPEN — Investigation complete. Recovery SQL ready. Blocked on Piranav running Q1–Q4 on Contabo app DB to get timestamps and actor. No production records deleted. No code changed. All AIOS assets saved.**

@@ -1,0 +1,10 @@
+{%- liquid
+  assign stock_variant = variant | default: product.selected_or_first_available_variant
+-%}
+{%- if stock_variant.inventory_management != blank -%}
+  {%- if stock_variant.available and stock_variant.inventory_quantity >= 1 and stock_variant.inventory_quantity <= 10 -%}
+    <span class="stock-message stock-message--low">Only {{ stock_variant.inventory_quantity }} left</span>
+  {%- elsif stock_variant.available -%}
+    <span class="stock-message stock-message--in">In stock</span>
+  {%- endif -%}
+{%- endif -%}
