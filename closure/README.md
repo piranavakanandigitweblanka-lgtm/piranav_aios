@@ -84,6 +84,34 @@ Or as a table when multiple tasks exist in one session:
 
 **Safety confirmation:** No Shopify theme files modified, no Markets settings changed, no redirects/noindex/robots.txt changes, no git commits or deployments.
 
+### 2026-10-20 — BOT-20261019-ORGANIC-EXC-03 — hreflang Fix (continued same session)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| BOT-20261019-2026-10-20-006 | Root cause confirmed — Markets outputs language-only 'en', no en-GB UK signal | `BOT-20261019-locale-hreflang/01_investigation/BOT-20261019-hreflang-fix-implementation-2026-10-20.md` | Same | `3b14a37` | YES | NONE | NONE | PASS |
+| BOT-20261019-2026-10-20-007 | Fix implemented — en-GB hreflang added to seo-noindex.liquid | `shopify_projects/ledsone-uk-theme/snippets/seo-noindex.liquid` | `BOT-20261019-locale-hreflang/03_evidence/gsc-en-gb-verified-english-page-2026-10-20.png` | `3b14a37` | YES | NONE | NONE | PASS |
+| BOT-20261019-2026-10-20-008 | Verified live — English page: en-GB present, href correct | `03_evidence/gsc-en-gb-verified-english-page-2026-10-20.png` | Same | `3b14a37` | YES | NONE | NONE | PASS |
+| BOT-20261019-2026-10-20-009 | Verified live — /pl/ page: en-GB href points to English URL (no /pl/, single slash) | `03_evidence/gsc-en-gb-verified-pl-page-2026-10-20.png` | Same | `3b14a37` | YES | NONE | NONE | PASS |
+| BOT-20261019-2026-10-20-010 | Fix prompt registered | `prompts/seo/BOT-20261019-hreflang-en-gb-fix-prompt.md` | N/A | `3b14a37` | YES | NONE | NONE | PASS |
+| BOT-20261019-2026-10-20-011 | PROMPT_REGISTER updated | `PROMPT_REGISTER.md` | N/A | `3b14a37` | YES | NONE | NONE | PASS |
+
+**Updated 10-folder asset check (final):**
+| # | Asset | Status |
+|---|---|---|
+| 1 | Prompt | DONE — investigation + fix prompts both registered |
+| 2 | Evidence | DONE — `BOT-20261019-locale-hreflang/03_evidence/` — 8 items including 2 live verification screenshots |
+| 3 | Capability | N/A — theme snippet edit, not a new system capability |
+| 4 | Closure | DONE — this entry |
+| 5 | PROMPT_REGISTER | DONE — 2 rows added (investigation + fix) |
+| 6 | Validation | DONE — `BOT-20261019-locale-hreflang/02_validation/BOT-20261019-validation-2026-10-20.md` — Phase 3 PASS |
+| 7 | Source-map | N/A |
+| 8 | Docs | N/A |
+| 9 | Handover | N/A |
+| 10 | Reports | N/A |
+| 11 | Duplicate-risk | N/A |
+
+**Overall result: PASS** — fix live, verified, committed `3b14a37`. GSC impact visible in 1–4 weeks.
+
 ---
 
 ### 2026-10-20 — LEDSone US HTTP 429 Investigation
