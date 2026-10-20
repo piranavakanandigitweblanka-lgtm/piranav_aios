@@ -11,12 +11,25 @@
   assign f1_parts = st.filter_1_metafield | split: '.'
   assign f1_ns = f1_parts[0] | strip
   assign f1_key = f1_parts[1] | strip
-  
+
   assign f2_parts = st.filter_2_metafield | split: '.'
   assign f2_ns = f2_parts[0] | strip
   assign f2_key = f2_parts[1] | strip
 
   assign f3_option_name = settings.option_name_color | default: 'Colour'
+  assign f5_option_name = st.filter_5_option_name | default: ''
+
+  assign f4_parts = st.filter_4_metafield | split: '.'
+  assign f4_ns = f4_parts[0] | strip
+  assign f4_key = f4_parts[1] | strip
+
+  assign f5_parts = st.filter_5_metafield | split: '.'
+  assign f5_ns = f5_parts[0] | strip
+  assign f5_key = f5_parts[1] | strip
+
+  assign f6_parts = st.filter_6_metafield | split: '.'
+  assign f6_ns = f6_parts[0] | strip
+  assign f6_key = f6_parts[1] | strip
 -%}
 
 <style>
@@ -39,12 +52,14 @@
     gap: 7px;
     width: 100%;
   }
-  .size-buttons, .type-buttons {
+  .size-buttons,
+  .type-buttons {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
   }
-  .size-btn, .type-btn {
+  .size-btn,
+  .type-btn {
     padding: 5px 14px;
     border: 1px solid #ddd;
     background: #fff;
@@ -55,16 +70,18 @@
     transition: all 0.25s ease;
     color: #444;
   }
-  .size-btn:hover, .type-btn:hover {
+  .size-btn:hover,
+  .type-btn:hover {
     border-color: #111;
     color: #111;
     background: #f0f0f0;
   }
-  .size-btn.active, .type-btn.active {
+  .size-btn.active,
+  .type-btn.active {
     background: #111;
     color: #fff;
     border-color: #111;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   }
   .btn-clear-filters {
     padding: 7px 18px;
@@ -132,7 +149,7 @@
     background: #111;
     color: #fff;
     border-color: #111;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   }
   /* Mobile accordion */
   .filter-accordion-header {
@@ -212,10 +229,14 @@
     .filter-group.acc-open .filter-accordion-body {
       display: block;
     }
-    .size-buttons, .type-buttons, .colour-buttons {
+    .size-buttons,
+    .type-buttons,
+    .colour-buttons {
       gap: 6px;
     }
-    .size-btn, .type-btn, .colour-btn {
+    .size-btn,
+    .type-btn,
+    .colour-btn {
       padding: 5px 12px;
       font-size: 12px;
     }
@@ -251,54 +272,6 @@
     display: flex;
     align-items: center;
     gap: 6px;
-  }
-  /* Task 6 — swatch overflow count chip */
-  .bls__swatch-count {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 24px;
-    min-width: 24px;
-    padding: 0 4px;
-    border-radius: 50%;
-    border: 1px solid #ddd;
-    font-size: 11px;
-    color: #555;
-    background: #f5f5f5;
-    cursor: default;
-  }
-  /* Task 6 card-alignment fix v2 — equal-height rows + swatches pinned to bottom */
-
-  /* Step 1: row stretches all grid items to the tallest card height in the row */
-  #bls__product-grid {
-    align-items: stretch;
-  }
-
-  /* Step 2: grid item stretches explicitly (redundant but forces specificity) */
-  #bls__product-grid > .bls__grid__item {
-    align-self: stretch;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Step 3: card fills the stretched grid item via height:100%
-     (flex:1 alone fails here because the grid-item has no explicitly declared height;
-      height:100% references the used/stretched height from the parent row) */
-  #bls__product-grid > .bls__grid__item > .bls__product-item {
-    height: 100%;
-  }
-
-  /* Step 4: details area fills remaining card height after the image */
-  #bls__product-grid .bls__product-item > .bls__product-details {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Step 5: swatches pinned to bottom of details column;
-     !important overrides the mt-4 utility class on the swatch wrapper */
-  #bls__product-grid .bls__product-option.option_color {
-    margin-top: auto !important;
   }
 </style>
 
@@ -337,51 +310,53 @@
             </span>
           </button>
           <div class="filter-accordion-body">
-          <div class="size-buttons">
-            <button class="size-btn size-btn-all active" data-f1="">All {{ st.filter_1_label | split: ' ' | last }}</button>
-            {%- liquid
-              assign sizes_str = ""
-              for product in collection.products limit: 1000
-                if product.available
-                  assign f1_meta = product.metafields[f1_ns][f1_key]
-                  assign val = f1_meta.value
-                  if val != blank
-                    if f1_meta.type contains "list"
-                      for s in val
-                        assign s_clean = s | strip
-                        assign s_check = "|" | append: s_clean | append: "|"
-                        assign wrapped_sizes = "|" | append: sizes_str | append: "|"
+            <div class="size-buttons">
+              <button class="size-btn size-btn-all active" data-f1="">
+                All {{ st.filter_1_label | split: ' ' | last }}
+              </button>
+              {%- liquid
+                assign sizes_str = ''
+                for product in collection.products limit: 1000
+                  if product.available
+                    assign f1_meta = product.metafields[f1_ns][f1_key]
+                    assign val = f1_meta.value
+                    if val != blank
+                      if f1_meta.type contains 'list'
+                        for s in val
+                          assign s_clean = s | strip
+                          assign s_check = '|' | append: s_clean | append: '|'
+                          assign wrapped_sizes = '|' | append: sizes_str | append: '|'
+                          unless wrapped_sizes contains s_check
+                            if sizes_str == ''
+                              assign sizes_str = s_clean
+                            else
+                              assign sizes_str = sizes_str | append: '|' | append: s_clean
+                            endif
+                          endunless
+                        endfor
+                      else
+                        assign s_clean = val | strip
+                        assign s_check = '|' | append: s_clean | append: '|'
+                        assign wrapped_sizes = '|' | append: sizes_str | append: '|'
                         unless wrapped_sizes contains s_check
-                          if sizes_str == ""
+                          if sizes_str == ''
                             assign sizes_str = s_clean
                           else
-                            assign sizes_str = sizes_str | append: "|" | append: s_clean
+                            assign sizes_str = sizes_str | append: '|' | append: s_clean
                           endif
                         endunless
-                      endfor
-                    else
-                      assign s_clean = val | strip
-                      assign s_check = "|" | append: s_clean | append: "|"
-                      assign wrapped_sizes = "|" | append: sizes_str | append: "|"
-                      unless wrapped_sizes contains s_check
-                        if sizes_str == ""
-                          assign sizes_str = s_clean
-                        else
-                          assign sizes_str = sizes_str | append: "|" | append: s_clean
-                        endif
-                      endunless
+                      endif
                     endif
                   endif
-                endif
-              endfor
-              assign sizes_array = sizes_str | split: "|" | sort
-            -%}
-            {% for size in sizes_array %}
-              {% if size != blank %}
-                <button class="size-btn" data-f1="{{ size }}">{{ size }}</button>
-              {% endif %}
-            {% endfor %}
-          </div>
+                endfor
+                assign sizes_array = sizes_str | split: '|' | sort
+              -%}
+              {% for size in sizes_array %}
+                {% if size != blank %}
+                  <button class="size-btn" data-f1="{{ size }}">{{ size }}</button>
+                {% endif %}
+              {% endfor %}
+            </div>
           </div>
         </div>
 
@@ -395,51 +370,53 @@
             </span>
           </button>
           <div class="filter-accordion-body">
-          <div class="type-buttons">
-            <button class="type-btn type-btn-all active" data-f2="">All {{ st.filter_2_label | split: ' ' | last }}</button>
-            {%- liquid
-              assign types_str = ""
-              for product in collection.products limit: 1000
-                if product.available
-                  assign f2_meta = product.metafields[f2_ns][f2_key]
-                  assign val = f2_meta.value
-                  if val != blank
-                    if f2_meta.type contains "list"
-                      for t in val
-                        assign t_clean = t | strip
-                        assign t_check = "|" | append: t_clean | append: "|"
-                        assign wrapped_types = "|" | append: types_str | append: "|"
+            <div class="type-buttons">
+              <button class="type-btn type-btn-all active" data-f2="">
+                All {{ st.filter_2_label | split: ' ' | last }}
+              </button>
+              {%- liquid
+                assign types_str = ''
+                for product in collection.products limit: 1000
+                  if product.available
+                    assign f2_meta = product.metafields[f2_ns][f2_key]
+                    assign val = f2_meta.value
+                    if val != blank
+                      if f2_meta.type contains 'list'
+                        for t in val
+                          assign t_clean = t | strip
+                          assign t_check = '|' | append: t_clean | append: '|'
+                          assign wrapped_types = '|' | append: types_str | append: '|'
+                          unless wrapped_types contains t_check
+                            if types_str == ''
+                              assign types_str = t_clean
+                            else
+                              assign types_str = types_str | append: '|' | append: t_clean
+                            endif
+                          endunless
+                        endfor
+                      else
+                        assign t_clean = val | strip
+                        assign t_check = '|' | append: t_clean | append: '|'
+                        assign wrapped_types = '|' | append: types_str | append: '|'
                         unless wrapped_types contains t_check
-                          if types_str == ""
+                          if types_str == ''
                             assign types_str = t_clean
                           else
-                            assign types_str = types_str | append: "|" | append: t_clean
+                            assign types_str = types_str | append: '|' | append: t_clean
                           endif
                         endunless
-                      endfor
-                    else
-                      assign t_clean = val | strip
-                      assign t_check = "|" | append: t_clean | append: "|"
-                      assign wrapped_types = "|" | append: types_str | append: "|"
-                      unless wrapped_types contains t_check
-                        if types_str == ""
-                          assign types_str = t_clean
-                        else
-                          assign types_str = types_str | append: "|" | append: t_clean
-                        endif
-                      endunless
+                      endif
                     endif
                   endif
-                endif
-              endfor
-              assign types_array = types_str | split: "|" | sort
-            -%}
-            {% for type in types_array %}
-              {% if type != blank %}
-                <button class="type-btn" data-f2="{{ type }}">{{ type }}</button>
-              {% endif %}
-            {% endfor %}
-          </div>
+                endfor
+                assign types_array = types_str | split: '|' | sort
+              -%}
+              {% for type in types_array %}
+                {% if type != blank %}
+                  <button class="type-btn" data-f2="{{ type }}">{{ type }}</button>
+                {% endif %}
+              {% endfor %}
+            </div>
           </div>
         </div>
 
@@ -453,38 +430,247 @@
             </span>
           </button>
           <div class="filter-accordion-body">
-          <div class="colour-buttons">
-            <button class="colour-btn colour-btn-all active" data-f3="">All Finishes</button>
-            {%- liquid
-              assign colours_str = ""
-              for product in collection.products limit: 1000
-                for opt in product.options_with_values
-                  if opt.name == f3_option_name
-                    for v in opt.values
-                      assign c_clean = v | strip
-                      assign c_check = "|" | append: c_clean | append: "|"
-                      assign wrapped_colours = "|" | append: colours_str | append: "|"
-                      unless wrapped_colours contains c_check
-                        if colours_str == ""
-                          assign colours_str = c_clean
-                        else
-                          assign colours_str = colours_str | append: "|" | append: c_clean
-                        endif
-                      endunless
-                    endfor
-                  endif
+            <div class="colour-buttons">
+              <button class="colour-btn colour-btn-all active" data-f3="">All Finishes</button>
+              {%- liquid
+                assign colours_str = ''
+                for product in collection.products limit: 1000
+                  for opt in product.options_with_values
+                    if opt.name == f3_option_name
+                      for v in opt.values
+                        assign c_clean = v | strip
+                        assign c_check = '|' | append: c_clean | append: '|'
+                        assign wrapped_colours = '|' | append: colours_str | append: '|'
+                        unless wrapped_colours contains c_check
+                          if colours_str == ''
+                            assign colours_str = c_clean
+                          else
+                            assign colours_str = colours_str | append: '|' | append: c_clean
+                          endif
+                        endunless
+                      endfor
+                    endif
+                  endfor
                 endfor
-              endfor
-              assign colours_array = colours_str | split: "|" | sort
-            -%}
-            {% for colour in colours_array %}
-              {% if colour != blank %}
-                <button class="colour-btn" data-f3="{{ colour | downcase | strip }}">{{ colour }}</button>
-              {% endif %}
-            {% endfor %}
-          </div>
+                assign colours_array = colours_str | split: '|' | sort
+              -%}
+              {% for colour in colours_array %}
+                {% if colour != blank %}
+                  <button class="colour-btn" data-f3="{{ colour | downcase | strip }}">{{ colour }}</button>
+                {% endif %}
+              {% endfor %}
+            </div>
           </div>
         </div>
+
+        {% comment %} Filter 4 {% endcomment %}
+        {%- if st.filter_4_metafield != blank and st.filter_4_label != blank -%}
+          <div class="filter-group f4-filter-group" data-filter-label="{{ st.filter_4_label }}">
+            <button class="filter-accordion-header" type="button" aria-expanded="false">
+              <span>{{ st.filter_4_label }}</span>
+              <span class="acc-right">
+                <span class="acc-selected-label">All</span>
+                <span class="acc-chevron">▼</span>
+              </span>
+            </button>
+            <div class="filter-accordion-body">
+              <div class="f4-buttons">
+                <button class="size-btn f4-btn-all active" data-f4="">
+                  All {{ st.filter_4_label | split: ' ' | last }}
+                </button>
+                {%- liquid
+                  assign f4_str = ''
+                  for product in collection.products limit: 1000
+                    if product.available
+                      assign f4_meta = product.metafields[f4_ns][f4_key]
+                      assign val = f4_meta.value
+                      if val != blank
+                        if f4_meta.type contains 'list'
+                          for s in val
+                            assign s_clean = s | strip
+                            assign s_check = '|' | append: s_clean | append: '|'
+                            assign wrapped = '|' | append: f4_str | append: '|'
+                            unless wrapped contains s_check
+                              if f4_str == ''
+                                assign f4_str = s_clean
+                              else
+                                assign f4_str = f4_str | append: '|' | append: s_clean
+                              endif
+                            endunless
+                          endfor
+                        else
+                          assign s_clean = val | strip
+                          assign s_check = '|' | append: s_clean | append: '|'
+                          assign wrapped = '|' | append: f4_str | append: '|'
+                          unless wrapped contains s_check
+                            if f4_str == ''
+                              assign f4_str = s_clean
+                            else
+                              assign f4_str = f4_str | append: '|' | append: s_clean
+                            endif
+                          endunless
+                        endif
+                      endif
+                    endif
+                  endfor
+                  assign f4_array = f4_str | split: '|' | sort
+                -%}
+                {% for val in f4_array %}
+                  {% if val != blank %}
+                    <button class="size-btn f4-btn" data-f4="{{ val }}">{{ val }}</button>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {%- endif -%}
+
+        {% comment %} Filter 5 {% endcomment %}
+        {%- if st.filter_5_label != blank -%}
+        {%- if st.filter_5_metafield != blank or st.filter_5_option_name != blank -%}
+          <div class="filter-group f5-filter-group" data-filter-label="{{ st.filter_5_label }}">
+            <button class="filter-accordion-header" type="button" aria-expanded="false">
+              <span>{{ st.filter_5_label }}</span>
+              <span class="acc-right">
+                <span class="acc-selected-label">All</span>
+                <span class="acc-chevron">▼</span>
+              </span>
+            </button>
+            <div class="filter-accordion-body">
+              <div class="f5-buttons">
+                <button class="size-btn f5-btn-all active" data-f5="">
+                  All {{ st.filter_5_label | split: ' ' | last }}
+                </button>
+                {%- liquid
+                  assign f5_str = ''
+                  if f5_option_name != blank
+                    for product in collection.products limit: 1000
+                      for opt in product.options_with_values
+                        if opt.name == f5_option_name
+                          for v in opt.values
+                            assign s_clean = v | strip
+                            assign s_check = '|' | append: s_clean | append: '|'
+                            assign wrapped = '|' | append: f5_str | append: '|'
+                            unless wrapped contains s_check
+                              if f5_str == ''
+                                assign f5_str = s_clean
+                              else
+                                assign f5_str = f5_str | append: '|' | append: s_clean
+                              endif
+                            endunless
+                          endfor
+                        endif
+                      endfor
+                    endfor
+                  else
+                    for product in collection.products limit: 1000
+                      if product.available
+                        assign f5_meta = product.metafields[f5_ns][f5_key]
+                        assign val = f5_meta.value
+                        if val != blank
+                          if f5_meta.type contains 'list'
+                            for s in val
+                              assign s_clean = s | strip
+                              assign s_check = '|' | append: s_clean | append: '|'
+                              assign wrapped = '|' | append: f5_str | append: '|'
+                              unless wrapped contains s_check
+                                if f5_str == ''
+                                  assign f5_str = s_clean
+                                else
+                                  assign f5_str = f5_str | append: '|' | append: s_clean
+                                endif
+                              endunless
+                            endfor
+                          else
+                            assign s_clean = val | strip
+                            assign s_check = '|' | append: s_clean | append: '|'
+                            assign wrapped = '|' | append: f5_str | append: '|'
+                            unless wrapped contains s_check
+                              if f5_str == ''
+                                assign f5_str = s_clean
+                              else
+                                assign f5_str = f5_str | append: '|' | append: s_clean
+                              endif
+                            endunless
+                          endif
+                        endif
+                      endif
+                    endfor
+                  endif
+                  assign f5_array = f5_str | split: '|' | sort
+                -%}
+                {% for val in f5_array %}
+                  {% if val != blank %}
+                    <button class="size-btn f5-btn" data-f5="{{ val | downcase | strip }}">{{ val }}</button>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {%- endif -%}
+        {%- endif -%}
+
+        {% comment %} Filter 6 {% endcomment %}
+        {%- if st.filter_6_metafield != blank and st.filter_6_label != blank -%}
+          <div class="filter-group f6-filter-group" data-filter-label="{{ st.filter_6_label }}">
+            <button class="filter-accordion-header" type="button" aria-expanded="false">
+              <span>{{ st.filter_6_label }}</span>
+              <span class="acc-right">
+                <span class="acc-selected-label">All</span>
+                <span class="acc-chevron">▼</span>
+              </span>
+            </button>
+            <div class="filter-accordion-body">
+              <div class="f6-buttons">
+                <button class="size-btn f6-btn-all active" data-f6="">
+                  All {{ st.filter_6_label | split: ' ' | last }}
+                </button>
+                {%- liquid
+                  assign f6_str = ''
+                  for product in collection.products limit: 1000
+                    if product.available
+                      assign f6_meta = product.metafields[f6_ns][f6_key]
+                      assign val = f6_meta.value
+                      if val != blank
+                        if f6_meta.type contains 'list'
+                          for s in val
+                            assign s_clean = s | strip
+                            assign s_check = '|' | append: s_clean | append: '|'
+                            assign wrapped = '|' | append: f6_str | append: '|'
+                            unless wrapped contains s_check
+                              if f6_str == ''
+                                assign f6_str = s_clean
+                              else
+                                assign f6_str = f6_str | append: '|' | append: s_clean
+                              endif
+                            endunless
+                          endfor
+                        else
+                          assign s_clean = val | strip
+                          assign s_check = '|' | append: s_clean | append: '|'
+                          assign wrapped = '|' | append: f6_str | append: '|'
+                          unless wrapped contains s_check
+                            if f6_str == ''
+                              assign f6_str = s_clean
+                            else
+                              assign f6_str = f6_str | append: '|' | append: s_clean
+                            endif
+                          endunless
+                        endif
+                      endif
+                    endif
+                  endfor
+                  assign f6_array = f6_str | split: '|' | sort
+                -%}
+                {% for val in f6_array %}
+                  {% if val != blank %}
+                    <button class="size-btn f6-btn" data-f6="{{ val }}">{{ val }}</button>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {%- endif -%}
 
         {% comment %} Clear Button {% endcomment %}
         <button id="clear-filters" class="btn-clear-filters">Reset All Filters</button>
@@ -493,46 +679,84 @@
 
     <div id="productgridcontainer" class="flex-1">
       <div class="product-grid-container">
-        <div id="bls__product-grid" 
-             class="grid product-grid {{ product_style }} container-products-switch bls__grid row row-cols-2 row-cols-lg-{{ products_column }}"
-             data-view-mode="{{ products_column }}">
-          
+        <div
+          id="bls__product-grid"
+          class="grid product-grid {{ product_style }} container-products-switch bls__grid row row-cols-2 row-cols-lg-{{ products_column }}"
+          data-view-mode="{{ products_column }}"
+        >
           {%- for product in collection.products limit: products_limit -%}
             {%- liquid
               assign f1_obj = product.metafields[f1_ns][f1_key]
               assign card_f1 = f1_obj.value
-              if f1_obj.type contains "list"
+              if f1_obj.type contains 'list'
                 assign card_f1 = card_f1 | join: ','
               endif
-              
+
               assign f2_obj = product.metafields[f2_ns][f2_key]
               assign card_f2 = f2_obj.value
-              if f2_obj.type contains "list"
+              if f2_obj.type contains 'list'
                 assign card_f2 = card_f2 | join: ','
               endif
 
-              assign colour_index = nil
+              assign f4_obj = product.metafields[f4_ns][f4_key]
+              assign card_f4 = f4_obj.value
+              if f4_obj.type contains 'list'
+                assign card_f4 = card_f4 | join: ','
+              endif
+
+              assign f5_obj = product.metafields[f5_ns][f5_key]
+              assign card_f5 = f5_obj.value
+              if f5_obj.type contains 'list'
+                assign card_f5 = card_f5 | join: ','
+              endif
+
+              assign f6_obj = product.metafields[f6_ns][f6_key]
+              assign card_f6 = f6_obj.value
+              if f6_obj.type contains 'list'
+                assign card_f6 = card_f6 | join: ','
+              endif
+
+              assign colour_index = null
+              assign f5_option_index = null
               for opt in product.options
                 if opt == f3_option_name
                   assign colour_index = forloop.index0
                 endif
+                if f5_option_name != blank and opt == f5_option_name
+                  assign f5_option_index = forloop.index0
+                endif
               endfor
             -%}
-            
-            <div class="bls__grid__item product-card-wrapper is-default-product" 
-                 data-f1="{{ card_f1 | downcase | strip }}"
-                 data-f2="{{ card_f2 | downcase | strip }}"
-                 data-available="{{ product.available }}">
+
+            <div
+              class="bls__grid__item product-card-wrapper is-default-product"
+              data-f1="{{ card_f1 | downcase | strip }}"
+              data-f2="{{ card_f2 | downcase | strip }}"
+              data-f4="{{ card_f4 | downcase | strip }}"
+              data-f5="{{ card_f5 | downcase | strip }}"
+              data-f6="{{ card_f6 | downcase | strip }}"
+              data-available="{{ product.available }}"
+            >
               {%- render 'product-item', product: product -%}
             </div>
 
             {%- for variant in product.variants -%}
               {%- assign card_f3 = variant.options[colour_index] | default: '' | downcase | strip -%}
-              <div class="bls__grid__item product-card-wrapper is-variant-card hidden"
-                   data-f1="{{ card_f1 | downcase | strip }}"
-                   data-f2="{{ card_f2 | downcase | strip }}"
-                   data-f3="{{ card_f3 }}"
-                   data-available="{{ variant.available }}">
+              {%- if f5_option_name != blank and f5_option_index != null -%}
+                {%- assign card_f5_variant = variant.options[f5_option_index] | default: '' | downcase | strip -%}
+              {%- else -%}
+                {%- assign card_f5_variant = card_f5 | downcase | strip -%}
+              {%- endif -%}
+              <div
+                class="bls__grid__item product-card-wrapper is-variant-card hidden"
+                data-f1="{{ card_f1 | downcase | strip }}"
+                data-f2="{{ card_f2 | downcase | strip }}"
+                data-f3="{{ card_f3 }}"
+                data-f4="{{ card_f4 | downcase | strip }}"
+                data-f5="{{ card_f5_variant }}"
+                data-f6="{{ card_f6 | downcase | strip }}"
+                data-available="{{ variant.available }}"
+              >
                 {%- render 'product-item', product: product, variant: variant -%}
               </div>
             {%- endfor -%}
@@ -548,16 +772,24 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const sizeButtons   = document.querySelectorAll('.size-btn');
-    const typeButtons   = document.querySelectorAll('.type-btn');
+  document.addEventListener('DOMContentLoaded', function () {
+    const sizeButtons = document.querySelectorAll(
+      '.size-btn:not(.f4-btn):not(.f4-btn-all):not(.f5-btn):not(.f5-btn-all):not(.f6-btn):not(.f6-btn-all)'
+    );
+    const typeButtons = document.querySelectorAll('.type-btn');
     const colourButtons = document.querySelectorAll('.colour-btn');
-    const clearBtn  = document.getElementById('clear-filters');
+    const f4Buttons = document.querySelectorAll('.f4-btn, .f4-btn-all');
+    const f5Buttons = document.querySelectorAll('.f5-btn, .f5-btn-all');
+    const f6Buttons = document.querySelectorAll('.f6-btn, .f6-btn-all');
+    const clearBtn = document.getElementById('clear-filters');
     const noResults = document.getElementById('no-results');
 
-    let selectedSize   = '';
-    let selectedType   = '';
+    let selectedSize = '';
+    let selectedType = '';
     let selectedColour = '';
+    let selectedF4 = '';
+    let selectedF5 = '';
+    let selectedF6 = '';
 
     function filterProducts() {
       const productCards = document.querySelectorAll('.product-card-wrapper');
@@ -566,8 +798,17 @@
       const availableF1 = new Set();
       const availableF2 = new Set();
       const availableF3 = new Set();
+      const availableF4 = new Set();
+      const availableF5 = new Set();
+      const availableF6 = new Set();
 
-      const isFilterActive = selectedSize !== '' || selectedType !== '' || selectedColour !== '';
+      const isFilterActive =
+        selectedSize !== '' ||
+        selectedType !== '' ||
+        selectedColour !== '' ||
+        selectedF4 !== '' ||
+        selectedF5 !== '' ||
+        selectedF6 !== '';
       const grid = document.getElementById('bls__product-grid');
 
       if (isFilterActive) {
@@ -576,14 +817,35 @@
         grid.classList.remove('filters-active');
       }
 
-      productCards.forEach(card => {
+      productCards.forEach((card) => {
         const f1Attr = (card.dataset.f1 || '').toLowerCase();
         const f2Attr = (card.dataset.f2 || '').toLowerCase();
         const f3Attr = (card.dataset.f3 || '').toLowerCase();
+        const f4Attr = (card.dataset.f4 || '').toLowerCase();
+        const f5Attr = (card.dataset.f5 || '').toLowerCase();
+        const f6Attr = (card.dataset.f6 || '').toLowerCase();
 
-        const cardF1s = f1Attr.split(',').map(s => s.trim()).filter(s => s !== '');
-        const cardF2s = f2Attr.split(',').map(t => t.trim()).filter(t => t !== '');
+        const cardF1s = f1Attr
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => s !== '');
+        const cardF2s = f2Attr
+          .split(',')
+          .map((t) => t.trim())
+          .filter((t) => t !== '');
         const cardF3s = f3Attr !== '' ? [f3Attr] : [];
+        const cardF4s = f4Attr
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => s !== '');
+        const cardF5s = f5Attr
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => s !== '');
+        const cardF6s = f6Attr
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => s !== '');
 
         let isVisible = true;
 
@@ -609,6 +871,21 @@
                 isVisible = false;
               }
             }
+            if (isVisible && selectedF4) {
+              if (!cardF4s.includes(selectedF4.toLowerCase())) {
+                isVisible = false;
+              }
+            }
+            if (isVisible && selectedF5) {
+              if (!cardF5s.includes(selectedF5.toLowerCase())) {
+                isVisible = false;
+              }
+            }
+            if (isVisible && selectedF6) {
+              if (!cardF6s.includes(selectedF6.toLowerCase())) {
+                isVisible = false;
+              }
+            }
           }
         } else {
           if (card.classList.contains('is-variant-card')) {
@@ -628,88 +905,172 @@
         if (card.classList.contains('is-variant-card') && card.dataset.available !== 'false') {
           // F1 available: cards matching current Type AND Colour
           let matchesF2F3 = true;
-          if (selectedType   && !cardF2s.includes(selectedType.toLowerCase()))   matchesF2F3 = false;
+          if (selectedType && !cardF2s.includes(selectedType.toLowerCase())) matchesF2F3 = false;
           if (selectedColour && !cardF3s.includes(selectedColour.toLowerCase())) matchesF2F3 = false;
-          if (matchesF2F3) cardF1s.forEach(s => availableF1.add(s));
+          if (matchesF2F3) cardF1s.forEach((s) => availableF1.add(s));
 
           // F2 available: cards matching current Size AND Colour
           let matchesF1F3 = true;
-          if (selectedSize   && !cardF1s.includes(selectedSize.toLowerCase()))   matchesF1F3 = false;
+          if (selectedSize && !cardF1s.includes(selectedSize.toLowerCase())) matchesF1F3 = false;
           if (selectedColour && !cardF3s.includes(selectedColour.toLowerCase())) matchesF1F3 = false;
-          if (matchesF1F3) cardF2s.forEach(t => availableF2.add(t));
+          if (matchesF1F3) cardF2s.forEach((t) => availableF2.add(t));
 
           // F3 available: cards matching current Size AND Type
           let matchesF1F2 = true;
           if (selectedSize && !cardF1s.includes(selectedSize.toLowerCase())) matchesF1F2 = false;
           if (selectedType && !cardF2s.includes(selectedType.toLowerCase())) matchesF1F2 = false;
-          if (matchesF1F2) cardF3s.forEach(c => availableF3.add(c));
+          if (matchesF1F2) cardF3s.forEach((c) => availableF3.add(c));
+
+          // F4 available
+          let matchesOthersF4 = true;
+          if (selectedSize   && !cardF1s.includes(selectedSize.toLowerCase()))   matchesOthersF4 = false;
+          if (selectedType   && !cardF2s.includes(selectedType.toLowerCase()))   matchesOthersF4 = false;
+          if (selectedColour && !cardF3s.includes(selectedColour.toLowerCase())) matchesOthersF4 = false;
+          if (selectedF5     && !cardF5s.includes(selectedF5.toLowerCase()))     matchesOthersF4 = false;
+          if (selectedF6     && !cardF6s.includes(selectedF6.toLowerCase()))     matchesOthersF4 = false;
+          if (matchesOthersF4) cardF4s.forEach((v) => availableF4.add(v));
+
+          // F5 available
+          let matchesOthersF5 = true;
+          if (selectedSize   && !cardF1s.includes(selectedSize.toLowerCase()))   matchesOthersF5 = false;
+          if (selectedType   && !cardF2s.includes(selectedType.toLowerCase()))   matchesOthersF5 = false;
+          if (selectedColour && !cardF3s.includes(selectedColour.toLowerCase())) matchesOthersF5 = false;
+          if (selectedF4     && !cardF4s.includes(selectedF4.toLowerCase()))     matchesOthersF5 = false;
+          if (selectedF6     && !cardF6s.includes(selectedF6.toLowerCase()))     matchesOthersF5 = false;
+          if (matchesOthersF5) cardF5s.forEach((v) => availableF5.add(v));
+
+          // F6 available
+          let matchesOthersF6 = true;
+          if (selectedSize   && !cardF1s.includes(selectedSize.toLowerCase()))   matchesOthersF6 = false;
+          if (selectedType   && !cardF2s.includes(selectedType.toLowerCase()))   matchesOthersF6 = false;
+          if (selectedColour && !cardF3s.includes(selectedColour.toLowerCase())) matchesOthersF6 = false;
+          if (selectedF4     && !cardF4s.includes(selectedF4.toLowerCase()))     matchesOthersF6 = false;
+          if (selectedF5     && !cardF5s.includes(selectedF5.toLowerCase()))     matchesOthersF6 = false;
+          if (matchesOthersF6) cardF6s.forEach((v) => availableF6.add(v));
         }
       });
 
       // Update F1 button visibility
-      sizeButtons.forEach(btn => {
+      sizeButtons.forEach((btn) => {
         const v = (btn.dataset.f1 || '').toLowerCase();
-        btn.style.display = (v === '' || availableF1.has(v)) ? '' : 'none';
+        btn.style.display = v === '' || availableF1.has(v) ? '' : 'none';
       });
 
       // Update F2 button visibility
-      typeButtons.forEach(btn => {
+      typeButtons.forEach((btn) => {
         const v = (btn.dataset.f2 || '').toLowerCase();
-        btn.style.display = (v === '' || availableF2.has(v)) ? '' : 'none';
+        btn.style.display = v === '' || availableF2.has(v) ? '' : 'none';
       });
 
       // Update F3 button visibility
-      colourButtons.forEach(btn => {
+      colourButtons.forEach((btn) => {
         const v = (btn.dataset.f3 || '').toLowerCase();
-        btn.style.display = (v === '' || availableF3.has(v)) ? '' : 'none';
+        btn.style.display = v === '' || availableF3.has(v) ? '' : 'none';
+      });
+
+      // Update F4 button visibility
+      f4Buttons.forEach((btn) => {
+        const v = (btn.dataset.f4 || '').toLowerCase();
+        btn.style.display = v === '' || availableF4.has(v) ? '' : 'none';
+      });
+
+      // Update F5 button visibility
+      f5Buttons.forEach((btn) => {
+        const v = (btn.dataset.f5 || '').toLowerCase();
+        btn.style.display = v === '' || availableF5.has(v) ? '' : 'none';
+      });
+
+      // Update F6 button visibility
+      f6Buttons.forEach((btn) => {
+        const v = (btn.dataset.f6 || '').toLowerCase();
+        btn.style.display = v === '' || availableF6.has(v) ? '' : 'none';
       });
 
       noResults.style.display = visibleCount === 0 ? 'block' : 'none';
     }
 
     function updateSizeButtons(activeSize) {
-      sizeButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.f1 === activeSize));
+      sizeButtons.forEach((btn) => btn.classList.toggle('active', btn.dataset.f1 === activeSize));
     }
 
     function updateTypeButtons(activeType) {
-      typeButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.f2 === activeType));
+      typeButtons.forEach((btn) => btn.classList.toggle('active', btn.dataset.f2 === activeType));
     }
 
     function updateColourButtons(activeColour) {
-      colourButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.f3 === activeColour));
+      colourButtons.forEach((btn) => btn.classList.toggle('active', btn.dataset.f3 === activeColour));
+    }
+    function updateF4Buttons(v) {
+      f4Buttons.forEach((btn) => btn.classList.toggle('active', btn.dataset.f4 === v));
+    }
+    function updateF5Buttons(v) {
+      f5Buttons.forEach((btn) => btn.classList.toggle('active', btn.dataset.f5 === v));
+    }
+    function updateF6Buttons(v) {
+      f6Buttons.forEach((btn) => btn.classList.toggle('active', btn.dataset.f6 === v));
     }
 
-    sizeButtons.forEach(btn => {
-      btn.addEventListener('click', function() {
+    sizeButtons.forEach((btn) => {
+      btn.addEventListener('click', function () {
         selectedSize = this.dataset.f1;
         updateSizeButtons(selectedSize);
         filterProducts();
       });
     });
 
-    typeButtons.forEach(btn => {
-      btn.addEventListener('click', function() {
+    typeButtons.forEach((btn) => {
+      btn.addEventListener('click', function () {
         selectedType = this.dataset.f2;
         updateTypeButtons(selectedType);
         filterProducts();
       });
     });
 
-    colourButtons.forEach(btn => {
-      btn.addEventListener('click', function() {
+    colourButtons.forEach((btn) => {
+      btn.addEventListener('click', function () {
         selectedColour = this.dataset.f3;
         updateColourButtons(selectedColour);
         filterProducts();
       });
     });
 
-    clearBtn.addEventListener('click', function() {
+    f4Buttons.forEach((btn) => {
+      btn.addEventListener('click', function () {
+        selectedF4 = this.dataset.f4;
+        updateF4Buttons(selectedF4);
+        filterProducts();
+      });
+    });
+
+    f5Buttons.forEach((btn) => {
+      btn.addEventListener('click', function () {
+        selectedF5 = this.dataset.f5;
+        updateF5Buttons(selectedF5);
+        filterProducts();
+      });
+    });
+
+    f6Buttons.forEach((btn) => {
+      btn.addEventListener('click', function () {
+        selectedF6 = this.dataset.f6;
+        updateF6Buttons(selectedF6);
+        filterProducts();
+      });
+    });
+
+    clearBtn.addEventListener('click', function () {
       selectedSize   = '';
       selectedType   = '';
       selectedColour = '';
+      selectedF4     = '';
+      selectedF5     = '';
+      selectedF6     = '';
       updateSizeButtons('');
       updateTypeButtons('');
       updateColourButtons('');
+      updateF4Buttons('');
+      updateF5Buttons('');
+      updateF6Buttons('');
       filterProducts();
     });
 
@@ -722,14 +1083,14 @@
     function initMobileAccordion() {
       const groups = document.querySelectorAll('.filter-group');
 
-      groups.forEach(function(group) {
+      groups.forEach(function (group) {
         const header = group.querySelector('.filter-accordion-header');
         if (!header) return;
 
-        header.addEventListener('click', function() {
+        header.addEventListener('click', function () {
           const isOpen = group.classList.contains('acc-open');
           // Close all, open clicked
-          groups.forEach(function(g) {
+          groups.forEach(function (g) {
             g.classList.remove('acc-open');
             const h = g.querySelector('.filter-accordion-header');
             if (h) h.setAttribute('aria-expanded', 'false');
@@ -748,30 +1109,51 @@
         lbl.textContent = value || 'All';
       }
 
-      sizeButtons.forEach(function(btn) {
-        btn.addEventListener('click', function() {
+      sizeButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
           const group = this.closest('.filter-group');
           updateAccSummary(group, this.dataset.f1 || '');
         });
       });
 
-      typeButtons.forEach(function(btn) {
-        btn.addEventListener('click', function() {
+      typeButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
           const group = this.closest('.filter-group');
           updateAccSummary(group, this.dataset.f2 || '');
         });
       });
 
-      colourButtons.forEach(function(btn) {
-        btn.addEventListener('click', function() {
+      colourButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
           const group = this.closest('.filter-group');
           updateAccSummary(group, this.dataset.f3 || '');
         });
       });
 
+      f4Buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          const group = this.closest('.filter-group');
+          updateAccSummary(group, this.dataset.f4 || '');
+        });
+      });
+
+      f5Buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          const group = this.closest('.filter-group');
+          updateAccSummary(group, this.dataset.f5 || '');
+        });
+      });
+
+      f6Buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          const group = this.closest('.filter-group');
+          updateAccSummary(group, this.dataset.f6 || '');
+        });
+      });
+
       // Reset clears all summaries
-      clearBtn.addEventListener('click', function() {
-        groups.forEach(function(group) {
+      clearBtn.addEventListener('click', function () {
+        groups.forEach(function (group) {
           updateAccSummary(group, '');
         });
       });
@@ -856,6 +1238,58 @@
       "label": "Filter 3 Label",
       "default": "FINISH / COLOUR",
       "info": "Filter 3 reads from the variant option name set in Theme Settings > Product > Option name > Color."
+    },
+    {
+      "type": "header",
+      "content": "Filter 4 Settings (optional)"
+    },
+    {
+      "type": "text",
+      "id": "filter_4_label",
+      "label": "Filter 4 Label",
+      "info": "Leave blank to hide this filter."
+    },
+    {
+      "type": "text",
+      "id": "filter_4_metafield",
+      "label": "Filter 4 Metafield (namespace.key)"
+    },
+    {
+      "type": "header",
+      "content": "Filter 5 Settings (optional)"
+    },
+    {
+      "type": "text",
+      "id": "filter_5_label",
+      "label": "Filter 5 Label",
+      "info": "Leave blank to hide this filter."
+    },
+    {
+      "type": "text",
+      "id": "filter_5_metafield",
+      "label": "Filter 5 Metafield (namespace.key)",
+      "info": "Use this OR Option Name below — not both."
+    },
+    {
+      "type": "text",
+      "id": "filter_5_option_name",
+      "label": "Filter 5 Variant Option Name",
+      "info": "Fill this if the filter value comes from a variant option (e.g. Type, Pack Size). Leave blank to use metafield above."
+    },
+    {
+      "type": "header",
+      "content": "Filter 6 Settings (optional)"
+    },
+    {
+      "type": "text",
+      "id": "filter_6_label",
+      "label": "Filter 6 Label",
+      "info": "Leave blank to hide this filter."
+    },
+    {
+      "type": "text",
+      "id": "filter_6_metafield",
+      "label": "Filter 6 Metafield (namespace.key)"
     }
   ],
   "presets": [

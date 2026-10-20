@@ -302,7 +302,7 @@
                   {%- when 'review_sold' -%}
                   <div class="bls__product-review-sold flex flex-wrap align-items-center fs-small">
                     {%- if bk_st.show_review -%}
-                      {% render 'product-review' | review_star: true %}
+                      {% render 'product-review', review_star: true %}
                     {%- endif -%}
                     {%- if bk_st.show_sold_product -%}
                       <div class="bls__sold-product">
@@ -1128,7 +1128,7 @@
                                   width="{{ featured_image.width }}"
                                   loading="lazy">
                                 {%- else -%}
-                                  {%- render 'placeholder-render' | type: 'image' | cls: 'bls__collection-grid-plh' -%}
+                                  {%- render 'placeholder-render', type: 'image', cls: 'bls__collection-grid-plh' -%}
                                 {%- endif -%}
                                 {%- when '1' -%}
                                 {%- if bk_st.page != blank -%}
@@ -2574,3 +2574,18 @@
     {% render 'single-product-table', collection_handle: c.handle %}
   {% endif %}
 {% endfor %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{% render 'product-review' | review_star: true %}"
+  to: "{% render 'product-review', review_star: true %}"
+  position: 12204..12252
+- from: "{%- render 'placeholder-render' | type: 'image' | cls: 'bls__collection-grid-plh'
+    -%}"
+  to: "{%- render 'placeholder-render', type: 'image', cls: 'bls__collection-grid-plh'
+    -%}"
+  position: 84917..85000
+{% endcomment %}

@@ -115,7 +115,7 @@
           <div class="bls__before-product-content">
             {% for product in collection.products limit: limit %}
               <div class="product-before-items">
-                {%- render 'product-popular-list-item' | product: product -%}
+                {%- render 'product-popular-list-item', product: product -%}
               </div>
             {% endfor %}
           </div>
@@ -166,3 +166,13 @@
     </div>
   </div>
 {%- endif -%}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- render 'product-popular-list-item' | product: product -%}"
+  to: "{%- render 'product-popular-list-item', product: product -%}"
+  position: 6161..6221
+{% endcomment %}

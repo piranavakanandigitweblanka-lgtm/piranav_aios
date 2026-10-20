@@ -41,7 +41,7 @@
                             {%- if predictive_search_type == 'search_suggest' -%}
                                 {%- for product in results -%}
                                   {%- if product.available -%}
-                                    {%- render 'product-popular-list-item' | product: product, search_terms: search_terms -%}
+                                    {%- render 'product-popular-list-item', product: product, search_terms: search_terms -%}
                                     {%- assign displayed_count = displayed_count | plus: 1 -%}
                                     {%- if displayed_count >= 6 -%}{% break %}{%- endif -%}
                                   {%- endif -%}
@@ -49,7 +49,7 @@
                             {%- else -%}
                                 {%- for product in results -%}
                                   {%- if product.available -%}
-                                    {%- render 'product-popular-list-item' | product: product, search_terms: search_terms -%}
+                                    {%- render 'product-popular-list-item', product: product, search_terms: search_terms -%}
                                     {%- assign displayed_count = displayed_count | plus: 1 -%}
                                     {%- if displayed_count >= 4 -%}{% break %}{%- endif -%}
                                   {%- endif -%}
@@ -89,4 +89,20 @@
         {%- endif -%}
     </div>
 {%- endif -%}
-  
+  {%- comment -%}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- render 'product-popular-list-item' | product: product, search_terms:
+    search_terms -%}"
+  to: "{%- render 'product-popular-list-item', product: product, search_terms: search_terms
+    -%}"
+  position: 2394..2482
+- from: "{%- render 'product-popular-list-item' | product: product, search_terms:
+    search_terms -%}"
+  to: "{%- render 'product-popular-list-item', product: product, search_terms: search_terms
+    -%}"
+  position: 2968..3056
+{%- endcomment -%}

@@ -31,7 +31,7 @@
                   -%}
                   <a class="bls__img-url" href="{{ product.url }}" title=" {{ product.title }}">
                     <div class="main-image">
-                      {%- render 'responsive-image' | image: image | type: 'product' | cls: 'bls__product-grid bls__product-img-sw' -%}
+                      {%- render 'responsive-image', image: image, type: 'product', cls: 'bls__product-grid bls__product-img-sw' -%}
                     </div>
                   </a>
                 </div>
@@ -200,3 +200,15 @@
     {%- endif -%}
   </div>
 </div>
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- render 'responsive-image' | image: image | type: 'product' | cls: 'bls__product-grid
+    bls__product-img-sw' -%}"
+  to: "{%- render 'responsive-image', image: image, type: 'product', cls: 'bls__product-grid
+    bls__product-img-sw' -%}"
+  position: 1800..1910
+{% endcomment %}

@@ -116,7 +116,7 @@
               <div class="bls__product-item flex flex-nowrap mb-15">
                 <div class="bls__product-img overflow-hidden relative col-3 mr-15 border mw-100">
                   <a role="link" aria-disabled="true">
-                    {%- render 'placeholder-render' | type: 'product' -%}
+                    {%- render 'placeholder-render', type: 'product' -%}
                   </a>
                 </div>
                 <div class="bls__product-details flex-1">
@@ -233,9 +233,9 @@
                 <div class="bls__product-img overflow-hidden relative col-3 mr-15">
                   <a href="{{ product.url }}">
                     {%- if product.featured_image != blank -%}
-                      {%- render 'responsive-image' | image: product.featured_image | type: 'product' -%}
+                      {%- render 'responsive-image', image: product.featured_image, type: 'product' -%}
                     {%- else -%}
-                      {%- render 'placeholder-render' | type: 'product' | cls: 'bls__product-list-plh' -%}
+                      {%- render 'placeholder-render', type: 'product', cls: 'bls__product-list-plh' -%}
                     {%- endif -%}
                   </a>
                 </div>
@@ -500,3 +500,23 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- render 'placeholder-render' | type: 'product' -%}"
+  to: "{%- render 'placeholder-render', type: 'product' -%}"
+  position: 4296..4348
+- from: "{%- render 'responsive-image' | image: product.featured_image | type: 'product'
+    -%}"
+  to: "{%- render 'responsive-image', image: product.featured_image, type: 'product'
+    -%}"
+  position: 9386..9467
+- from: "{%- render 'placeholder-render' | type: 'product' | cls: 'bls__product-list-plh'
+    -%}"
+  to: "{%- render 'placeholder-render', type: 'product', cls: 'bls__product-list-plh'
+    -%}"
+  position: 9523..9605
+{% endcomment %}

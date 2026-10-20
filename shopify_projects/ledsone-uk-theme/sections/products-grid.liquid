@@ -200,7 +200,7 @@
           </div>
         {%- endif -%}
         <div class="bls__product-with-banner {{ show_banner }} {{ show_sticky_banner }}">
-          {%- render 'product-grid-layout' | st: st -%}
+          {%- render 'product-grid-layout', st: st -%}
         </div>
       </div>
     </div>
@@ -573,3 +573,13 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- render 'product-grid-layout' | st: st -%}"
+  to: "{%- render 'product-grid-layout', st: st -%}"
+  position: 7610..7654
+{% endcomment %}

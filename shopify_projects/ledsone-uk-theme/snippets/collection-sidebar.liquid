@@ -795,7 +795,7 @@ added 'custom-' classes
                       {%- for i in (1..block.settings.maximum) -%}
                         <div
                           class="swiper-slide">
-                          {%- render 'responsive-image' | type: 'product' | cls: 'bls__product-tab-plh' -%}
+                          {%- render 'responsive-image', type: 'product', cls: 'bls__product-tab-plh' -%}
                           <div
                             class="bls__product-details">
                             <a
@@ -809,7 +809,7 @@ added 'custom-' classes
                       {%- for product in collection.products limit: block.settings.maximum -%}
                         <div
                           class="swiper-slide">
-                          {%- render 'product-item' | product: product -%}
+                          {%- render 'product-item', product: product -%}
                         </div>
                       {%- endfor -%}
                     {%- endif -%}
@@ -823,7 +823,7 @@ added 'custom-' classes
                     {%- for i in (1..3) -%}
                       <div
                         class="bls__product-item list-view-item plh-product flex flex-nowrap mb-20 pb-15">
-                        {%- render 'responsive-image' | type: 'product' | cls: 'overflow-hidden relative col-3 mr-15 border mw-100 bls__product-tab-plh' -%}
+                        {%- render 'responsive-image', type: 'product', cls: 'overflow-hidden relative col-3 mr-15 border mw-100 bls__product-tab-plh' -%}
                         <div
                           class="bls__product-details flex-1">
                           <a
@@ -835,7 +835,7 @@ added 'custom-' classes
                     {%- endfor -%}
                   {%- else -%}
                     {%- for product in collection.products limit: 3 -%}
-                      {%- render 'product-popular-list-item' | product: product -%}
+                      {%- render 'product-popular-list-item', product: product -%}
                     {%- endfor -%}
                   {%- endif -%}
                 </div>
@@ -898,7 +898,7 @@ added 'custom-' classes
                   width="{{ featured_image.width }}"
                   loading="lazy">
                 {%- else -%}
-                  {%- render 'placeholder-render' | type: 'image' | cls: 'bls__collection-grid-plh' -%}
+                  {%- render 'placeholder-render', type: 'image', cls: 'bls__collection-grid-plh' -%}
                 {%- endif -%}
               </div>
             </a>
@@ -907,4 +907,31 @@ added 'custom-' classes
       {%- endif -%}
     {%- endfor -%}
   </div>
-</div>
+</div>{%- comment -%}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- render 'responsive-image' | type: 'product' | cls: 'bls__product-tab-plh'
+    -%}"
+  to: "{%- render 'responsive-image', type: 'product', cls: 'bls__product-tab-plh'
+    -%}"
+  position: 38287..38366
+- from: "{%- render 'product-item' | product: product -%}"
+  to: "{%- render 'product-item', product: product -%}"
+  position: 39027..39074
+- from: "{%- render 'responsive-image' | type: 'product' | cls: 'overflow-hidden relative
+    col-3 mr-15 border mw-100 bls__product-tab-plh' -%}"
+  to: "{%- render 'responsive-image', type: 'product', cls: 'overflow-hidden relative
+    col-3 mr-15 border mw-100 bls__product-tab-plh' -%}"
+  position: 39675..39805
+- from: "{%- render 'product-popular-list-item' | product: product -%}"
+  to: "{%- render 'product-popular-list-item', product: product -%}"
+  position: 40349..40409
+- from: "{%- render 'placeholder-render' | type: 'image' | cls: 'bls__collection-grid-plh'
+    -%}"
+  to: "{%- render 'placeholder-render', type: 'image', cls: 'bls__collection-grid-plh'
+    -%}"
+  position: 43592..43675
+{%- endcomment -%}

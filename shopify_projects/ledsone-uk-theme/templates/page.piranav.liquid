@@ -16,7 +16,7 @@
 
       <g:title><![CDATA[{{ product.title | strip_html | strip_newlines | escape | replace: 'amp;', 'and' | replace: '&#38;', 'and' | replace: "Ã©", "e" | replace: "Ã ", "a" }}]]></g:title>
 
-      <g:description><![CDATA[{{ product.description | strip_html | strip_newlines | replace: 'amp;', 'and' | replace: '&#38;', 'and' | replace: "..", ". " | replace: " ", " " | replace: "â€˜", "&#39;" | replace: "â€™", "&#39;" | replace: "&#8216;", "&#39;" | replace: "&#8217;", "&#39;" | replace: "Ã¢â‚¬â„¢", "&#39;" | replace: "Ã¢â‚¬Å"", "&#39;" | replace: "Ã¢â‚¬Ëœ", "&#39;" | replace: "Ã‚Â´", "&#39;" | replace: "â€œ", "&#34;" | replace: "â€", "&#34;" | replace: "&#8211;", "-" | replace: "Ã¢â‚¬â€œ", "-" | replace: "Ã¢â‚¬â€", "-" | replace: "â€"", "&mdash;" | replace: "â€"", "&mdash;" | replace: "%", "&#37;" | replace: "Ã‚Â©", "&copy;" | replace: "Ã‚Â®", "&reg;" | replace: "Ã¢â€žÂ¢", "&trade;" | replace: "Ã‚Â£", "&pound;" | replace: "Ã¯Â¿Â", "&#42;" | replace: "Ã¢â‚¬Â¢", "&#42;" | replace: "Ã¢â‚¬Â", "&#39;" | replace: "&#233;", "e" | replace: "Ã©", "e" | replace: "Ã ", "a" | replace: "Ã³", "o" | replace: "Ãª", "e" | replace: "ÃƒËœ", "O" | replace: "&#8482;", "" | replace: "&#174;", "" }}]]></g:description>
+      <g:description><![CDATA[{{ product.description | strip_html | strip_newlines | replace: 'amp;', 'and' | replace: '&#38;', 'and' | replace: "..", ". " | replace: " ", " " | replace: "â€˜", "&#39;" | replace: "â€™", "&#39;" | replace: "&#8216;", "&#39;" | replace: "&#8217;", "&#39;" | replace: "Ã¢â‚¬â„¢", "&#39;" | replace: "Ã¢â‚¬Å", "&#39;", "Ã¢â‚¬Ëœ", "&#39;", "Ã‚Â´", "&#39;", "â€œ", "&#34;", "â€", "&#34;", "&#8211;", "-", "Ã¢â‚¬â€œ", "-", "Ã¢â‚¬â€", "-", "â€", "&mdash;" | replace: "â€", "&mdash;", "%", "&#37;", "Ã‚Â©", "&copy;", "Ã‚Â®", "&reg;", "Ã¢â€žÂ¢", "&trade;", "Ã‚Â£", "&pound;", "Ã¯Â¿Â", "&#42;", "Ã¢â‚¬Â¢", "&#42;", "Ã¢â‚¬Â", "&#39;", "&#233;", "e", "Ã©", "e", "Ã ", "a", "Ã³", "o", "Ãª", "e", "ÃƒËœ", "O", "&#8482;", "", "&#174;" }}]]></g:description>
 
       <g:link>{{ shop.url }}{{ product.url }}</g:link>
 
@@ -59,7 +59,7 @@
           <g:title><![CDATA[{{ product.title | strip_html | strip_newlines | escape | replace: 'amp;', 'and' | replace: '&#38;', 'and' | replace: "Ã©", "e" | replace: "Ã ", "a" }} - Variant: {{ variant.title | escape }}]]></g:title>
 
           <!-- FIX: variant.description does not exist — using product.description -->
-          <g:description><![CDATA[{{ product.description | strip_html | strip_newlines | replace: 'amp;', 'and' | replace: '&#38;', 'and' | replace: "..", ". " | replace: " ", " " | replace: "â€˜", "&#39;" | replace: "â€™", "&#39;" | replace: "&#8216;", "&#39;" | replace: "&#8217;", "&#39;" | replace: "Ã¢â‚¬â„¢", "&#39;" | replace: "Ã¢â‚¬Å"", "&#39;" | replace: "Ã¢â‚¬Ëœ", "&#39;" | replace: "Ã‚Â´", "&#39;" | replace: "â€œ", "&#34;" | replace: "â€", "&#34;" | replace: "&#8211;", "-" | replace: "Ã¢â‚¬â€œ", "-" | replace: "Ã¢â‚¬â€", "-" | replace: "â€"", "&mdash;" | replace: "â€"", "&mdash;" | replace: "%", "&#37;" | replace: "Ã‚Â©", "&copy;" | replace: "Ã‚Â®", "&reg;" | replace: "Ã¢â€žÂ¢", "&trade;" | replace: "Ã‚Â£", "&pound;" | replace: "Ã¯Â¿Â", "&#42;" | replace: "Ã¢â‚¬Â¢", "&#42;" | replace: "Ã¢â‚¬Â", "&#39;" | replace: "&#233;", "e" | replace: "Ã©", "e" | replace: "Ã ", "a" | replace: "Ã³", "o" | replace: "Ãª", "e" | replace: "ÃƒËœ", "O" | replace: "&#8482;", "" | replace: "&#174;", "" }}]]></g:description>
+          <g:description><![CDATA[{{ product.description | strip_html | strip_newlines | replace: 'amp;', 'and' | replace: '&#38;', 'and' | replace: "..", ". " | replace: " ", " " | replace: "â€˜", "&#39;" | replace: "â€™", "&#39;" | replace: "&#8216;", "&#39;" | replace: "&#8217;", "&#39;" | replace: "Ã¢â‚¬â„¢", "&#39;" | replace: "Ã¢â‚¬Å", "&#39;", "Ã¢â‚¬Ëœ", "&#39;", "Ã‚Â´", "&#39;", "â€œ", "&#34;", "â€", "&#34;", "&#8211;", "-", "Ã¢â‚¬â€œ", "-", "Ã¢â‚¬â€", "-", "â€", "&mdash;" | replace: "â€", "&mdash;", "%", "&#37;", "Ã‚Â©", "&copy;", "Ã‚Â®", "&reg;", "Ã¢â€žÂ¢", "&trade;", "Ã‚Â£", "&pound;", "Ã¯Â¿Â", "&#42;", "Ã¢â‚¬Â¢", "&#42;", "Ã¢â‚¬Â", "&#39;", "&#233;", "e", "Ã©", "e", "Ã ", "a", "Ã³", "o", "Ãª", "e", "ÃƒËœ", "O", "&#8482;", "", "&#174;" }}]]></g:description>
 
           <g:link>{{ shop.url }}{{ variant.url }}</g:link>
 
@@ -105,3 +105,58 @@
 
 </channel>
 </rss>
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: '{{ product.description | strip_html | strip_newlines | replace: ''amp;'',
+    ''and'' | replace: ''&#38;'', ''and'' | replace: "..", ". " | replace: " ", "
+    " | replace: "â€˜", "&#39;" | replace: "â€™", "&#39;" | replace: "&#8216;", "&#39;"
+    | replace: "&#8217;", "&#39;" | replace: "Ã¢â‚¬â„¢", "&#39;" | replace: "Ã¢â‚¬Å"",
+    "&#39;" | replace: "Ã¢â‚¬Ëœ", "&#39;" | replace: "Ã‚Â´", "&#39;" | replace: "â€œ",
+    "&#34;" | replace: "â€", "&#34;" | replace: "&#8211;", "-" | replace: "Ã¢â‚¬â€œ",
+    "-" | replace: "Ã¢â‚¬â€", "-" | replace: "â€"", "&mdash;" | replace: "â€"", "&mdash;"
+    | replace: "%", "&#37;" | replace: "Ã‚Â©", "&copy;" | replace: "Ã‚Â®", "&reg;"
+    | replace: "Ã¢â€žÂ¢", "&trade;" | replace: "Ã‚Â£", "&pound;" | replace: "Ã¯Â¿Â",
+    "&#42;" | replace: "Ã¢â‚¬Â¢", "&#42;" | replace: "Ã¢â‚¬Â", "&#39;" | replace:
+    "&#233;", "e" | replace: "Ã©", "e" | replace: "Ã ", "a" | replace: "Ã³", "o" |
+    replace: "Ãª", "e" | replace: "ÃƒËœ", "O" | replace: "&#8482;", "" | replace:
+    "&#174;", "" }}'
+  to: '{{ product.description | strip_html | strip_newlines | replace: ''amp;'', ''and''
+    | replace: ''&#38;'', ''and'' | replace: "..", ". " | replace: " ", " " | replace:
+    "â€˜", "&#39;" | replace: "â€™", "&#39;" | replace: "&#8216;", "&#39;" | replace:
+    "&#8217;", "&#39;" | replace: "Ã¢â‚¬â„¢", "&#39;" | replace: "Ã¢â‚¬Å", "&#39;",
+    "Ã¢â‚¬Ëœ", "&#39;", "Ã‚Â´", "&#39;", "â€œ", "&#34;", "â€", "&#34;", "&#8211;",
+    "-", "Ã¢â‚¬â€œ", "-", "Ã¢â‚¬â€", "-", "â€", "&mdash;" | replace: "â€", "&mdash;",
+    "%", "&#37;", "Ã‚Â©", "&copy;", "Ã‚Â®", "&reg;", "Ã¢â€žÂ¢", "&trade;", "Ã‚Â£",
+    "&pound;", "Ã¯Â¿Â", "&#42;", "Ã¢â‚¬Â¢", "&#42;", "Ã¢â‚¬Â", "&#39;", "&#233;",
+    "e", "Ã©", "e", "Ã ", "a", "Ã³", "o", "Ãª", "e", "ÃƒËœ", "O", "&#8482;", "", "&#174;"
+    }}'
+  position: 806..1531
+- from: '{{ product.description | strip_html | strip_newlines | replace: ''amp;'',
+    ''and'' | replace: ''&#38;'', ''and'' | replace: "..", ". " | replace: " ", "
+    " | replace: "â€˜", "&#39;" | replace: "â€™", "&#39;" | replace: "&#8216;", "&#39;"
+    | replace: "&#8217;", "&#39;" | replace: "Ã¢â‚¬â„¢", "&#39;" | replace: "Ã¢â‚¬Å"",
+    "&#39;" | replace: "Ã¢â‚¬Ëœ", "&#39;" | replace: "Ã‚Â´", "&#39;" | replace: "â€œ",
+    "&#34;" | replace: "â€", "&#34;" | replace: "&#8211;", "-" | replace: "Ã¢â‚¬â€œ",
+    "-" | replace: "Ã¢â‚¬â€", "-" | replace: "â€"", "&mdash;" | replace: "â€"", "&mdash;"
+    | replace: "%", "&#37;" | replace: "Ã‚Â©", "&copy;" | replace: "Ã‚Â®", "&reg;"
+    | replace: "Ã¢â€žÂ¢", "&trade;" | replace: "Ã‚Â£", "&pound;" | replace: "Ã¯Â¿Â",
+    "&#42;" | replace: "Ã¢â‚¬Â¢", "&#42;" | replace: "Ã¢â‚¬Â", "&#39;" | replace:
+    "&#233;", "e" | replace: "Ã©", "e" | replace: "Ã ", "a" | replace: "Ã³", "o" |
+    replace: "Ãª", "e" | replace: "ÃƒËœ", "O" | replace: "&#8482;", "" | replace:
+    "&#174;", "" }}'
+  to: '{{ product.description | strip_html | strip_newlines | replace: ''amp;'', ''and''
+    | replace: ''&#38;'', ''and'' | replace: "..", ". " | replace: " ", " " | replace:
+    "â€˜", "&#39;" | replace: "â€™", "&#39;" | replace: "&#8216;", "&#39;" | replace:
+    "&#8217;", "&#39;" | replace: "Ã¢â‚¬â„¢", "&#39;" | replace: "Ã¢â‚¬Å", "&#39;",
+    "Ã¢â‚¬Ëœ", "&#39;", "Ã‚Â´", "&#39;", "â€œ", "&#34;", "â€", "&#34;", "&#8211;",
+    "-", "Ã¢â‚¬â€œ", "-", "Ã¢â‚¬â€", "-", "â€", "&mdash;" | replace: "â€", "&mdash;",
+    "%", "&#37;", "Ã‚Â©", "&copy;", "Ã‚Â®", "&reg;", "Ã¢â€žÂ¢", "&trade;", "Ã‚Â£",
+    "&pound;", "Ã¯Â¿Â", "&#42;", "Ã¢â‚¬Â¢", "&#42;", "Ã¢â‚¬Â", "&#39;", "&#233;",
+    "e", "Ã©", "e", "Ã ", "a", "Ã³", "o", "Ãª", "e", "ÃƒËœ", "O", "&#8482;", "", "&#174;"
+    }}'
+  position: 3513..4238
+{% endcomment %}

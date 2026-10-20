@@ -111,7 +111,7 @@
                   {% endif %}
                 >
                   <a href="#" class="bls__instagram-item ins-{{ ins_images_style }}">
-                    {%- render 'responsive-image' | type: image | cls: 'bls_instagram-image' -%}
+                    {%- render 'responsive-image', type: image, cls: 'bls_instagram-image' -%}
                     <span class="bls__instagram-icon"></span>
                   </a>
                 </div>
@@ -143,7 +143,7 @@
                         aspect_ratio: aspect_ratio
                       %}
                     {%- else -%}
-                      {%- render 'responsive-image' | type: image | cls: 'bls_instagram-image' -%}
+                      {%- render 'responsive-image', type: image, cls: 'bls_instagram-image' -%}
                     {%- endif -%}
                     <span class="bls__instagram-icon"></span>
                   </a>
@@ -174,7 +174,7 @@
                   {% endif %}
                 >
                   <a href="#">
-                    {%- render 'responsive-image' | type: image | cls: 'bls_instagram-image' -%}
+                    {%- render 'responsive-image', type: image, cls: 'bls_instagram-image' -%}
                     <span class="bls__instagram-icon"></span>
                   </a>
                 </div>
@@ -204,7 +204,7 @@
                       aspect_ratio: aspect_ratio
                     %}
                   {%- else -%}
-                    {%- render 'responsive-image' | type: image | cls: 'bls_instagram-image' -%}
+                    {%- render 'responsive-image', type: image, cls: 'bls_instagram-image' -%}
                   {%- endif -%}
                   <span class="bls__instagram-icon"></span>
                 </a>
@@ -517,3 +517,26 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- render 'responsive-image' | type: image | cls: 'bls_instagram-image'
+    -%}"
+  to: "{%- render 'responsive-image', type: image, cls: 'bls_instagram-image' -%}"
+  position: 4020..4094
+- from: "{%- render 'responsive-image' | type: image | cls: 'bls_instagram-image'
+    -%}"
+  to: "{%- render 'responsive-image', type: image, cls: 'bls_instagram-image' -%}"
+  position: 5434..5508
+- from: "{%- render 'responsive-image' | type: image | cls: 'bls_instagram-image'
+    -%}"
+  to: "{%- render 'responsive-image', type: image, cls: 'bls_instagram-image' -%}"
+  position: 6757..6831
+- from: "{%- render 'responsive-image' | type: image | cls: 'bls_instagram-image'
+    -%}"
+  to: "{%- render 'responsive-image', type: image, cls: 'bls_instagram-image' -%}"
+  position: 8059..8133
+{% endcomment %}

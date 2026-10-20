@@ -868,7 +868,7 @@ a:focus, a:hover {
                         {%  assign bookpages = same_type_products_count | divided_by: products_in_page %}
 
                         {%  assign reel_products_in_page = bookpages | times: products_in_page %}
-                        {%	if(reel_products_in_page < same_type_products_count) %}
+                        {% if reel_products_in_page < same_type_products_count %}
               				{%  assign bookpages = bookpages | plus: 1 %}
                         {%	endif %}
 
@@ -882,9 +882,9 @@ a:focus, a:hover {
                                   <div class="page-wrap w-100">
                                     {%	for row in (1..row_of_page) %}
                                       <div class="row m-1">
-                                          {%	if(product_index < same_type_products_count) %}
+                                          {% if product_index < same_type_products_count %}
                                               {%	for prod in (1..products_in_row) %}
-                                        		{%	if(product_index < same_type_products_count) %}
+                                        		{% if product_index < same_type_products_count %}
                                                   {% if prodType contains '_Lamp_' %}
                                                       {%	paginate collections['catalog_lampshades'].products by 1000 %}
                                                           {%	assign image = same_type_available_products_array[product_index].featured_image	%}
@@ -1268,3 +1268,19 @@ a:focus, a:hover {
 	});
 
 </script>
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%\tif(reel_products_in_page < same_type_products_count) %}"
+  to: "{% if reel_products_in_page < same_type_products_count %}"
+  position: 39356..39413
+- from: "{%\tif(product_index < same_type_products_count) %}"
+  to: "{% if product_index < same_type_products_count %}"
+  position: 40269..40318
+- from: "{%\tif(product_index < same_type_products_count) %}"
+  to: "{% if product_index < same_type_products_count %}"
+  position: 40446..40495
+{% endcomment %}

@@ -165,7 +165,7 @@
           </div>
         {%- endif -%}
         <div class="bls__product-with-banner{{ show_banner }}">
-          {%- render 'product-carousel-layout' | st: st -%}
+          {%- render 'product-carousel-layout', st: st -%}
         </div>
       </div>
     </div>
@@ -483,3 +483,13 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- render 'product-carousel-layout' | st: st -%}"
+  to: "{%- render 'product-carousel-layout', st: st -%}"
+  position: 6037..6085
+{% endcomment %}

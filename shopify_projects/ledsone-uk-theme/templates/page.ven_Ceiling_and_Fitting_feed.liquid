@@ -57,10 +57,10 @@
           <g:mpn>{{ first_variant.sku }}</g:mpn>
         {%- endif -%}
         
-        {%- assign has_brand = product.vendor != blank -%}
-        {%- assign has_mpn = first_variant.sku != blank -%}
-        {%- assign has_gtin = first_variant.barcode != blank -%}
-        <g:identifier_exists>{% if has_gtin or (has_brand and has_mpn) %}yes{% else %}no{% endif %}</g:identifier_exists>
+        {%- assign has_brand = product.vendor -%}
+        {%- assign has_mpn = first_variant.sku -%}
+        {%- assign has_gtin = first_variant.barcode -%}
+        <g:identifier_exists>{% if has_gtin or has_brand and has_mpn %}yes{% else %}no{% endif %}</g:identifier_exists>
       </item>
 
       <!-- Variants -->
@@ -109,10 +109,10 @@
               <g:mpn>{{ variant.sku }}</g:mpn>
             {%- endif -%}
             
-            {%- assign v_has_brand = product.vendor != blank -%}
-            {%- assign v_has_mpn = variant.sku != blank -%}
-            {%- assign v_has_gtin = variant.barcode != blank -%}
-            <g:identifier_exists>{% if v_has_gtin or (v_has_brand and v_has_mpn) %}yes{% else %}no{% endif %}</g:identifier_exists>
+            {%- assign v_has_brand = product.vendor -%}
+            {%- assign v_has_mpn = variant.sku -%}
+            {%- assign v_has_gtin = variant.barcode -%}
+            <g:identifier_exists>{% if v_has_gtin or v_has_brand and v_has_mpn %}yes{% else %}no{% endif %}</g:identifier_exists>
             
             <!-- Variant attributes -->
             {%- for option in product.options -%}
@@ -142,4 +142,34 @@
   </item>
 {%- endif -%}
 </channel>
-</rss>
+</rss>{%- comment -%}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- assign has_brand = product.vendor != blank -%}"
+  to: "{%- assign has_brand = product.vendor -%}"
+  position: 2715..2756
+- from: "{%- assign has_mpn = first_variant.sku != blank -%}"
+  to: "{%- assign has_mpn = first_variant.sku -%}"
+  position: 2765..2807
+- from: "{%- assign has_gtin = first_variant.barcode != blank -%}"
+  to: "{%- assign has_gtin = first_variant.barcode -%}"
+  position: 2816..2863
+- from: "{% if has_gtin or (has_brand and has_mpn) %}"
+  to: "{% if has_gtin or has_brand and has_mpn %}"
+  position: 2893..2935
+- from: "{%- assign v_has_brand = product.vendor != blank -%}"
+  to: "{%- assign v_has_brand = product.vendor -%}"
+  position: 5218..5261
+- from: "{%- assign v_has_mpn = variant.sku != blank -%}"
+  to: "{%- assign v_has_mpn = variant.sku -%}"
+  position: 5274..5312
+- from: "{%- assign v_has_gtin = variant.barcode != blank -%}"
+  to: "{%- assign v_has_gtin = variant.barcode -%}"
+  position: 5325..5368
+- from: "{% if v_has_gtin or (v_has_brand and v_has_mpn) %}"
+  to: "{% if v_has_gtin or v_has_brand and v_has_mpn %}"
+  position: 5402..5450
+{%- endcomment -%}

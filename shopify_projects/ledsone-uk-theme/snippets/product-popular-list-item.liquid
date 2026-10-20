@@ -37,7 +37,7 @@
     {%- if img != blank -%}
       <img src="{{ img | image_url: width: 150 }}" alt="{{ display_title | escape }}" width="60" height="60" style="object-fit: contain;">
     {%- else -%}
-      {%- render 'placeholder-render' | type: 'product' -%}
+      {%- render 'placeholder-render', type: 'product' -%}
     {%- endif -%}
   </div>
   <div class="bls__product-details">
@@ -49,3 +49,13 @@
     </div>
   </div>
 </a>
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- render 'placeholder-render' | type: 'product' -%}"
+  to: "{%- render 'placeholder-render', type: 'product' -%}"
+  position: 1466..1518
+{% endcomment %}

@@ -80,10 +80,10 @@
         true if we have GTIN or (brand AND MPN);
         false if none available.
       {%- endcomment -%}
-      {%- assign has_brand = product.vendor and product.vendor != '' -%}
-      {%- assign has_mpn = parent_sku and parent_sku != '' -%}
-      {%- assign has_gtin = parent_barcode and parent_barcode != '' -%}
-      <g:identifier_exists>{% if has_gtin or (has_brand and has_mpn) %}TRUE{% else %}FALSE{% endif %}</g:identifier_exists>
+      {%- assign has_brand = product.vendor -%}
+      {%- assign has_mpn = parent_sku -%}
+      {%- assign has_gtin = parent_barcode -%}
+      <g:identifier_exists>{% if has_gtin or has_brand and has_mpn %}TRUE{% else %}FALSE{% endif %}</g:identifier_exists>
     </item>
 
     {% if product.variants.size > 1 %}
@@ -145,10 +145,10 @@
             <g:mpn>{{ variant.sku }}</g:mpn>
           {%- endif -%}
 
-          {%- assign v_has_brand = product.vendor and product.vendor != '' -%}
-          {%- assign v_has_mpn = variant.sku and variant.sku != '' -%}
-          {%- assign v_has_gtin = variant.barcode and variant.barcode != '' -%}
-          <g:identifier_exists>{% if v_has_gtin or (v_has_brand and v_has_mpn) %}TRUE{% else %}FALSE{% endif %}</g:identifier_exists>
+          {%- assign v_has_brand = product.vendor -%}
+          {%- assign v_has_mpn = variant.sku -%}
+          {%- assign v_has_gtin = variant.barcode -%}
+          <g:identifier_exists>{% if v_has_gtin or v_has_brand and v_has_mpn %}TRUE{% else %}FALSE{% endif %}</g:identifier_exists>
 
           {%- comment -%}
             Optional common attributes you can uncomment / adapt:
@@ -163,3 +163,34 @@
   {% endpaginate %}
 </channel>
 </rss>
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- assign has_brand = product.vendor and product.vendor != '' -%}"
+  to: "{%- assign has_brand = product.vendor -%}"
+  position: 3765..3806
+- from: "{%- assign has_mpn = parent_sku and parent_sku != '' -%}"
+  to: "{%- assign has_mpn = parent_sku -%}"
+  position: 3813..3848
+- from: "{%- assign has_gtin = parent_barcode and parent_barcode != '' -%}"
+  to: "{%- assign has_gtin = parent_barcode -%}"
+  position: 3855..3895
+- from: "{% if has_gtin or (has_brand and has_mpn) %}"
+  to: "{% if has_gtin or has_brand and has_mpn %}"
+  position: 3923..3965
+- from: "{%- assign v_has_brand = product.vendor and product.vendor != '' -%}"
+  to: "{%- assign v_has_brand = product.vendor -%}"
+  position: 7017..7060
+- from: "{%- assign v_has_mpn = variant.sku and variant.sku != '' -%}"
+  to: "{%- assign v_has_mpn = variant.sku -%}"
+  position: 7071..7109
+- from: "{%- assign v_has_gtin = variant.barcode and variant.barcode != '' -%}"
+  to: "{%- assign v_has_gtin = variant.barcode -%}"
+  position: 7120..7163
+- from: "{% if v_has_gtin or (v_has_brand and v_has_mpn) %}"
+  to: "{% if v_has_gtin or v_has_brand and v_has_mpn %}"
+  position: 7195..7243
+{% endcomment %}

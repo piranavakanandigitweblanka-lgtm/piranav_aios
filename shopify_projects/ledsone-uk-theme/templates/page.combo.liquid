@@ -1,4 +1,15 @@
 {{ all_products['cluster-lampshade-chandelier-pendant-ceiling-light-decor-lamp'].title }}
 
-{% assign all_products.current_variant = product.selected_or_first_available_variant %}
-<span class="variant-sku">{{ current_variant.sku }}</span>
+{% assign renamed_variable_all_products_2e_current_variant = product.selected_or_first_available_variant %}
+<span class="variant-sku">{{ current_variant.sku }}</span>{%- comment -%}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{% assign all_products.current_variant = product.selected_or_first_available_variant
+    %}"
+  to: "{% assign renamed_variable_all_products_2e_current_variant = product.selected_or_first_available_variant
+    %}"
+  position: 91..198
+{%- endcomment -%}

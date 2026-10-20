@@ -154,7 +154,7 @@
                   style="--animation-order: {{ forloop.index }};"
                 {% endif %}
               >
-                {%- render 'product-item' | product: product -%}
+                {%- render 'product-item', product: product -%}
               </div>
             {%- endfor -%}
           </div>
@@ -471,3 +471,13 @@ document.addEventListener('DOMContentLoaded', function () {
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- render 'product-item' | product: product -%}"
+  to: "{%- render 'product-item', product: product -%}"
+  position: 6803..6850
+{% endcomment %}

@@ -76,7 +76,7 @@
           <div class="swiper-wrapper">
             {%- for product in recommendations.products -%}
               <div class="swiper-slide bls__product-preload-js bls__rcm-product-js">
-                {%- render 'product-item' | product: product -%}
+                {%- render 'product-item', product: product -%}
               </div>
             {%- endfor -%}
           </div>
@@ -268,3 +268,13 @@
 }
 {% endschema %}
 
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- render 'product-item' | product: product -%}"
+  to: "{%- render 'product-item', product: product -%}"
+  position: 3078..3125
+{% endcomment %}

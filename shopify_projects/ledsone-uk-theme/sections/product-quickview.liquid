@@ -63,9 +63,9 @@
                 >
                   {%- assign media_position_q = 1 -%}
                   {%- if featured_media != blank -%}
-                    {%- render 'responsive-image' | image: featured_media | type: 'product' | cls: 'bls__product-grid bls__product-img-sw' -%}
+                    {%- render 'responsive-image', image: featured_media, type: 'product', cls: 'bls__product-grid bls__product-img-sw' -%}
                   {%- else -%}
-                    {%- render 'responsive-image' | type: 'product' | cls: 'bls__product-grid-plh' -%}
+                    {%- render 'responsive-image', type: 'product', cls: 'bls__product-grid-plh' -%}
                   {%- endif -%}
                 </div>
               {%- endif -%}
@@ -80,7 +80,7 @@
                     data-position="{{ media_position_q }}"
                   >
                     {%- if media != blank -%}
-                      {%- render 'responsive-image' | image: media | type: 'product' | cls: 'bls__product-grid bls__product-img-sw' -%}
+                      {%- render 'responsive-image', image: media, type: 'product', cls: 'bls__product-grid bls__product-img-sw' -%}
                     {%- endif -%}
                   </div>
                 {%- endunless -%}
@@ -798,4 +798,25 @@
       </div>
     </div>
   </div>
-</div>
+</div>{%- comment -%}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- render 'responsive-image' | image: featured_media | type: 'product' |
+    cls: 'bls__product-grid bls__product-img-sw' -%}"
+  to: "{%- render 'responsive-image', image: featured_media, type: 'product', cls:
+    'bls__product-grid bls__product-img-sw' -%}"
+  position: 3135..3254
+- from: "{%- render 'responsive-image' | type: 'product' | cls: 'bls__product-grid-plh'
+    -%}"
+  to: "{%- render 'responsive-image', type: 'product', cls: 'bls__product-grid-plh'
+    -%}"
+  position: 3306..3386
+- from: "{%- render 'responsive-image' | image: media | type: 'product' | cls: 'bls__product-grid
+    bls__product-img-sw' -%}"
+  to: "{%- render 'responsive-image', image: media, type: 'product', cls: 'bls__product-grid
+    bls__product-img-sw' -%}"
+  position: 4023..4133
+{%- endcomment -%}

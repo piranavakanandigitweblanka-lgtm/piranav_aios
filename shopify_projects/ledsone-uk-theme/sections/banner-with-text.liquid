@@ -172,7 +172,7 @@
             >
               {%- if st.image != blank -%}
                 <div class="desktop {% if image_mobile != blank %}medium-hide{% endif %}">
-                  {% render 'responsive-image', image: st.image | width: "100vw" %}
+                  {% render 'responsive-image', image: st.image, width: "100vw" %}
                 </div>
               {%- else -%}
                 <div class="desktop {% if image_mobile != blank %}medium-hide{% endif %}">
@@ -181,7 +181,7 @@
               {%- endif -%}
               {%- if image_mobile != blank -%}
                 <div class="mobile d-block d-md-none">
-                  {% render 'responsive-image', image: st.image_mobile | width: "100vw" %}
+                  {% render 'responsive-image', image: st.image_mobile, width: "100vw" %}
                 </div>
               {%- endif -%}
             </a>
@@ -1284,3 +1284,16 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: '{% render ''responsive-image'', image: st.image | width: "100vw" %}'
+  to: '{% render ''responsive-image'', image: st.image, width: "100vw" %}'
+  position: 6669..6733
+- from: '{% render ''responsive-image'', image: st.image_mobile | width: "100vw" %}'
+  to: '{% render ''responsive-image'', image: st.image_mobile, width: "100vw" %}'
+  position: 7098..7169
+{% endcomment %}
