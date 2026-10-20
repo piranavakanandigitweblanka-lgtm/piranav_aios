@@ -40,3 +40,16 @@
 
 {%- comment -%} Noindex for collection by a tag URLs update 2026.09.28 piranav {%- endcomment -%}
 {%- if current_tags -%}<meta name="robots" content="noindex, follow">{%- endif -%}
+
+{%- comment -%} en-GB hreflang — Markets outputs 'en' (language-only); this adds UK region signal piranav 2026-10-20 {%- endcomment -%}
+{%- for locale in shop.published_locales -%}
+  {%- if locale.iso_code == 'en' -%}
+    {%- if request.locale.iso_code == 'en' -%}
+      {%- assign en_canonical = canonical_url -%}
+    {%- else -%}
+      {%- assign en_canonical = canonical_url | replace: request.locale.root_url, '' -%}
+    {%- endif -%}
+    <link rel="alternate" hreflang="en-GB" href="{{ en_canonical }}">
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}

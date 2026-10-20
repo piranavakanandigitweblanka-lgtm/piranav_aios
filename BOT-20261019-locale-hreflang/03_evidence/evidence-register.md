@@ -8,3 +8,5 @@
 | E04 | PDF Investigation Report | `03_evidence/BOT-20261019-ORGANIC-EXC-03_SEO-Investigation-Report.pdf` | 2026-10-19 | 6.9MB, 67 screenshots + 2 pages findings. Original report — do not overwrite. |
 | E05 | Theme file — seo-noindex.liquid | `shopify_projects/ledsone-uk-theme/snippets/seo-noindex.liquid` | Read 2026-10-20 | Custom hreflang loop confirmed commented out. Active rules: search, srsltid, current_tags noindex. |
 | E06 | Theme file — theme.liquid | `shopify_projects/ledsone-uk-theme/layout/theme.liquid` | Read 2026-10-20 | Line 53: canonical. Line 148: render seo-noindex. |
+| E07 | Verification — en-GB on English page (live source) | `03_evidence/gsc-en-gb-verified-english-page-2026-10-20.png` | 2026-10-20 | ledsone.co.uk/products/screw-e27-... — hreflang="en-GB" confirmed present, href correct |
+| E08 | Verification — en-GB on /pl/ page (live source) | `03_evidence/gsc-en-gb-verified-pl-page-2026-10-20.png` | 2026-10-20 | ledsone.co.uk/pl/products/screw-e27-... — en-GB href points to English URL (no /pl/) PASS |
