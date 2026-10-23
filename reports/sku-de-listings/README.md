@@ -28,3 +28,5 @@ Deduplicate: Combo SKUs that also appear in inventory.products are kept as Combo
 | PHSH1HETYB-listings-DE-2026-10-19.csv | PHSH1HETYB | 128 | 112 | 4 | 2026-10-19 |
 | WSNWBM-listings-DE-2026-10-19.csv | WSNWBM | 9 | 8 | 0 | 2026-10-19 |
 | LSCY290CO-listings-DE-2026-10-19.csv | LSCY290CO | 33 | 28 | 13 | 2026-10-19 |
+| LSCY290BU-listings-DE-2026-10-19.csv | LSCY290BU | 33 | 31 | 8 | 2026-10-19 |
+| LSCY290NB-listings-DE-2026-10-19.csv | LSCY290NB | 25 | 25 | 4 | 2026-10-19 |

@@ -150,6 +150,17 @@ Source map FAILS if: a task evidence path cannot be resolved using this map.
 
 ---
 
+## External Evidence Source Files (non-git, read-only)
+
+| File | Local Path | Git Tracked | Purpose | Do Not Modify |
+|---|---|---|---|---|
+| Screaming Frog crawl export | `C:\Users\PC\Downloads\Robesan - DigitWeb Lanka.xlsx` | NO — Downloads folder | Original 429 crawl data for LEDSone US (117 URLs). Sheet2 = "Internal Link Error - 429 Error". | YES — preserve as original evidence |
+| 429 Investigation Report | `C:\Users\PC\Downloads\LEDSone_US_HTTP_429_Investigation_Report.pdf` | NO — Downloads folder | Full investigation report (19 Oct 2026): Screaming Frog vs GSC vs PowerShell findings, Evidence A–K. | YES — preserve as original evidence |
+
+AIOS evidence derived from these files: `evidence/shopify/ledsone-us/ledsone-us-429-investigation-2026-10-19.md`
+
+---
+
 ## Known Limits
 
 - Store domains for Electricalsone, Blueskytechco, and Wholesale Trendy are not confirmed — do not use these store names in production commands without verifying
