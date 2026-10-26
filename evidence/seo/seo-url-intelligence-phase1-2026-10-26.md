@@ -126,3 +126,33 @@ All ACTIVE products show as Unlisted pre-sync because `published_at IS NULL` unt
 ### Remaining: Re-sync Required
 
 Listing Status and Inventory Status filter values will be accurate only after next sync triggers updated GraphQL query (fetches `publishedAt` + `totalInventory`). Current data: all Untracked, all ACTIVE show as Unlisted.
+
+---
+
+## Commit: Analysis Batch Upsert Fix (2026-10-26)
+
+**Commit hash:** `139ef2d`
+**Branch:** `piranv-work`
+**Remote:** `websitetecteam-arch/dm-dashboard`
+**Push result:** `0da1924..139ef2d piranv-work -> piranv-work` ✓
+
+### Files committed
+
+| File | Change |
+|---|---|
+| `backend/app/dashboard_pages/seo_url_intelligence.py` | Added `_upsert_analysis_batched()` + 4 constants; replaced 46-line single-connection loop with 1-line call |
+| `frontend/src/admin/pages/SeoUrlIntelligence.jsx` | Error banner sub-text added for partial-sync state warning |
+| `backend/tests/test_seo_url_analysis_batch.py` | New — 7 unit tests (all PASS) |
+
+### Test results at commit
+
+```
+7/7 PASS — backend/tests/test_seo_url_analysis_batch.py (1.11s)
+T1 single batch | T2 two independent batches | T3 transient retry
+T4 retries exhausted | T5 non-transient no retry | T6 row counts
+T7 delay sequence
+```
+
+### Production sync and deployment
+
+NOT run. Local only. Dev tunnel not restarted.

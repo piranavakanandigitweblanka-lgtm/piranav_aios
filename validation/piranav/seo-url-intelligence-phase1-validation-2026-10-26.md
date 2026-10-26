@@ -476,3 +476,112 @@ Python syntax: PASS
 - `CREATE INDEX IF NOT EXISTS seo_url_product_store_idx` is still run unconditionally. `CREATE INDEX IF NOT EXISTS` is cheaper than `ALTER TABLE` (shared lock, not exclusive) and has not caused failures — no change made.
 - Fix is local only — not committed or pushed (per task instructions).
 - Production sync still not run — awaiting Piranav instruction after commit/push.
+
+---
+
+## Section 6 — Analysis Upsert Batch Fix (2026-10-26)
+
+### Problem
+
+`_run_sync()` held a single pooled connection open for **5,335 individual `conn.execute()`** calls before committing.  Over the Contabo internet path the TCP connection drops mid-loop, the transaction is implicitly rolled back (no partial writes), and the sync fails with `OperationalError: consuming input failed`.
+
+Confirmed in task output `b0plh1pd2`: full computation succeeded (14,778/17,654 GSC keys, 5,335 products, ranking + mismatch computed) — only the persist step failed.
+
+### Fix applied
+
+**`_upsert_analysis_batched(store, analysis_rows)`** — new helper function in `seo_url_intelligence.py` replacing lines 541–586 of `_run_sync()`.
+
+Key properties:
+- Splits rows into batches of `_ANALYSIS_BATCH_SIZE = 500`
+- Each batch acquires a fresh `get_conn()` context — connection held for ~500 rows, not ~5,335
+- Uses `conn.executemany()` (pipeline-compatible) not a per-row loop
+- On `OperationalError` matching `_ANALYSIS_RETRYABLE` markers: retries up to 3× with 2/5/10 s backoff
+- On non-retryable error: re-raises immediately (no retry)
+- On permanent batch failure: re-raises so `_SyncJob` records `error`, `/sync/status` returns `{"status":"error"}` — incomplete sync is NOT silently presented as complete
+
+**Partial-commit trade-off:** If batch N fails after all retries, rows 0..N-1 are committed with new `computed_at`; rows N..end retain previous values. This is visible in the DB but `sync_status = error` signals the incomplete state. Re-running the sync overwrites all rows idempotently.
+
+**Files changed:**
+- `backend/app/dashboard_pages/seo_url_intelligence.py` — added `_ANALYSIS_UPSERT_SQL`, `_ANALYSIS_BATCH_SIZE`, `_ANALYSIS_RETRY_DELAYS`, `_ANALYSIS_RETRYABLE`, `_upsert_analysis_batched()`; replaced 46-line single-connection loop with 1-line call
+- `backend/tests/test_seo_url_analysis_batch.py` — 7 new unit tests
+
+### Tests (7/7 PASS — pure unit tests, mock DB)
+
+| Test | Scenario | Result |
+|---|---|---|
+| T1 | Single batch < BATCH_SIZE — one executemany, one commit | PASS |
+| T2 | 600 rows → 2 batches (500+100), each committed independently | PASS |
+| T3 | Transient OperationalError on attempt 1, success on attempt 2 | PASS |
+| T4 | All retries exhausted → exception propagates | PASS |
+| T5 | Non-transient error propagates immediately (no retry) | PASS |
+| T6 | Row count integrity: 0/1/499/500/501/1000/5335 rows all correct | PASS |
+| T7 | Retry delays match _ANALYSIS_RETRY_DELAYS sequence | PASS |
+
+Python syntax check: PASS (`py_compile`)
+
+### Status
+
+Fix local only — not committed or pushed. Production sync not run. Awaiting Piranav instruction.
+
+---
+
+## Section 7 — Safety Review: Batch Fix Pre-Commit Check (2026-10-26)
+
+### Review scope
+
+1. Actual code diff inspected
+2. Dashboard read path confirmed
+3. Partial data visibility traced end-to-end
+4. Smallest safe fix proposed and applied
+5. Retry corruption analysis
+6. Tests re-run
+
+### Finding 1 — Partial data CAN become visible
+
+The `/products` endpoint uses `LEFT JOIN seo_url_analysis` with no filter on `computed_at` or sync generation. The products component loads independently of `syncStatus.status`. If a later batch fails permanently, rows from that batch retain their previous `computed_at` and old GSC-period analysis values while earlier batches already committed new values.
+
+**Status:** Not silently presented — error banner (`jreq-error-banner`) is shown. But original banner text only showed the raw exception message, not an explanation of what it means for data integrity.
+
+### Finding 2 — Partial commit is worse than original single-transaction failure
+
+Original code: sync fails → single transaction rolled back → ALL rows still from last successful sync (consistent, one GSC window).
+
+New batch code with partial failure: rows 0–N are from new GSC window, rows N–5335 are from old GSC window. Summary pill counts aggregate across both.
+
+**Mitigated by:** error banner + new explanatory sub-text (see Fix 1 below).
+
+### Fix 1 applied — error banner sub-text (SeoUrlIntelligence.jsx)
+
+Added sub-text to the error banner:
+
+> "Ranking and mismatch analysis may reflect a previous sync period. Re-run sync to resolve. Product, listing and inventory data is unaffected."
+
+This is accurate: `seo_url_product` (listing status, inventory status) is upserted in a separate step before analysis, always completes cleanly, and is not batched.
+
+### Finding 3 — Retry is safe (no corruption)
+
+ON CONFLICT (store, shopify_id) DO UPDATE SET [all columns] = EXCLUDED.* is a full overwrite. When a connection drops mid-batch:
+- PostgreSQL server: rolls back the incomplete batch transaction (no partial rows committed)
+- psycopg3: reports OperationalError
+- `_upsert_analysis_batched`: sleeps, acquires fresh connection, retries all 500 rows from scratch
+- Result: idempotent — same 500 rows committed as if the drop never happened
+
+`computed_at = now()` for retried rows reflects the retry timestamp, not the original attempt. This is correct.
+
+### Tests re-run
+
+`backend/tests/test_seo_url_analysis_batch.py` — 7/7 PASS (1.36s)
+
+### Files changed in this session
+
+| File | Change |
+|---|---|
+| `backend/app/dashboard_pages/seo_url_intelligence.py` | `_upsert_analysis_batched()` + constants added; 46-line single-connection loop replaced with 1-line call |
+| `frontend/src/admin/pages/SeoUrlIntelligence.jsx` | Error banner sub-text added |
+| `backend/tests/test_seo_url_analysis_batch.py` | New — 7 unit tests |
+
+### Status
+
+All changes local only. No commit, push, deploy, or production sync. Awaiting Piranav approval.
+
+**Pre-commit verdict: SAFE TO COMMIT with the banner fix applied.**
