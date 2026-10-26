@@ -57,6 +57,166 @@ Or as a table when multiple tasks exist in one session:
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
 |---|---|---|---|---|---|---|---|---|
 
+### 2026-10-26 — CONDUIT-DYN-01 — Conduit Sold Dynamic Reporting Month Fix
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| CONDUIT-DYN-01-001 | Prompt saved — conduit-sold-dynamic-month-fix | `prompts/dm-dashboard/conduit-sold-dynamic-month-fix.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-01-002 | Backend: added `_reporting_period()` using Europe/London TZ | `backend/app/dashboard_pages/conduit_sold.py` | `evidence/dm-dashboard/conduit-sold-dynamic-month-fix-2026-10-26.md` | Uncommitted | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-01-003 | Backend: `_fetch_uk_orders_in_range(start, end)` dynamic params | Same file | Same | Uncommitted | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-01-004 | Backend: `_build_report(collections, orders, months)` accepts months param | Same file | Same | Uncommitted | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-01-005 | Backend: `_compute_conduit_sold()` calls `_reporting_period()` end-to-end | Same file | Same | Uncommitted | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-01-006 | Frontend: `_periodSlug()` helper + dynamic CSV filename | `frontend/src/admin/pages/ConduitSold.jsx` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-01-007 | Frontend: hardcoded text strings updated (3 locations) | Same file | Same | Uncommitted | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-01-008 | Tests: 13 tests in `test_conduit_sold.py` — all PASS | `backend/tests/test_conduit_sold.py` | `validation/piranav/conduit-sold-dynamic-month-fix-validation-2026-10-26.md` | Uncommitted | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-01-009 | Evidence file created | `evidence/dm-dashboard/conduit-sold-dynamic-month-fix-2026-10-26.md` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-01-010 | Validation file created | `validation/piranav/conduit-sold-dynamic-month-fix-validation-2026-10-26.md` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-01-011 | PROMPT_REGISTER updated — new row | `PROMPT_REGISTER.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+
+**10-folder asset check:**
+| # | Asset | Status |
+|---|---|---|
+| 1 | Prompt | DONE — `prompts/dm-dashboard/conduit-sold-dynamic-month-fix.md` |
+| 2 | Evidence | DONE — `evidence/dm-dashboard/conduit-sold-dynamic-month-fix-2026-10-26.md` |
+| 3 | Capability | N/A — extending existing Conduit Sold capability; no new system capability |
+| 4 | Closure | DONE — this entry |
+| 5 | PROMPT_REGISTER | DONE — new row added |
+| 6 | Validation | DONE — `validation/piranav/conduit-sold-dynamic-month-fix-validation-2026-10-26.md` |
+| 7 | Source-map | N/A — no new data source introduced |
+| 8 | Docs | N/A — no new topic area |
+| 9 | Handover | N/A — implementation complete, awaiting Piranav deploy approval |
+| 10 | Reports | N/A — implementation task, not a data export |
+| 11 | Duplicate-risk | N/A — modified existing files, new test file only |
+
+**Safety confirmation:** No git commit or push made. No deploy triggered. No production server or DB touched. No secrets read. Awaiting Piranav approval before commit/push/deploy.
+
+**Status: PASS — all 13 tests passing. Ready for Piranav review and deploy approval.**
+
+### 2026-10-26 — CONDUIT-DYN-02 — Conduit Sold Pre-Deployment Validation
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| CONDUIT-DYN-02-001 | Git state confirmed — 2 files modified, 1 untracked, no other files touched | `git diff --name-only` | `validation/piranav/conduit-sold-dynamic-month-fix-validation-2026-10-26.md` | No change | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-02-002 | Hardcoded date grep — zero hits in changed files | Grep scan | Same | No change | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-02-003 | Logic review — Europe/London TZ, PHASE1_START unchanged, end exclusive boundary | Code diff review | Same | No change | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-02-004 | Component Stock confirmed untouched | `git diff --name-only` output | Same | No change | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-02-005 | conduit_sold tests: 13/13 PASS (post stash-pop, final run) | `pytest tests/test_conduit_sold.py -v` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-02-006 | Full suite regression check: 22 pre-existing failures, 0 new failures | `pytest tests/ -q` both before and after | Same | No change | YES | 22 pre-existing failures in budget_alerts, promotion, repeat_customer | Pre-existing, out of scope | PASS |
+| CONDUIT-DYN-02-007 | Validation file updated with full pre-deploy findings | `validation/piranav/conduit-sold-dynamic-month-fix-validation-2026-10-26.md` | Same | Uncommitted | YES | NONE | NONE | PASS |
+
+**Safety confirmation:** No commit, push, or deploy. No DB writes. No live services triggered. `git stash` used transiently for baseline comparison, then `git stash pop` restored all changes cleanly.
+
+### 2026-10-26 — CONDUIT-DYN-03 — Branch Divergence Safety Check
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| CONDUIT-DYN-03-001 | Remote fetch — origin/main moved to `3a760bb` (11 new commits beyond local HEAD) | `git fetch origin` | `closure/README.md — CONDUIT-DYN-03` | No change | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-03-002 | piranv-work is 0 commits ahead of origin/main — all 111 ahead-of-origin/piranv-work commits already merged | `git rev-list` | Same | No change | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-03-003 | 11 new origin/main commits confirmed non-overlapping — sales/, order_conversion, internal_linking, NOT conduit | `git diff --name-only piranv-work origin/main` | Same | No change | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-03-004 | main.py change in origin/main is sales import path only — conduit wiring confirmed intact | `git diff piranv-work origin/main -- main.py` + grep | Same | No change | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-03-005 | conduit_sold.py and ConduitSold.jsx identical between local HEAD and origin/main — stash-pop will be zero-conflict | `git diff piranv-work origin/main -- conduit_sold.py/ConduitSold.jsx` (empty output) | Same | No change | YES | NONE | NONE | PASS |
+| CONDUIT-DYN-03-006 | Recommended strategy: new branch `conduit-dynamic-months` from `origin/main` — NOT push to stale piranv-work | N/A | Same | No change | YES | NONE | Piranav to approve and execute commit sequence | PASS |
+| CONDUIT-DYN-03-007 | Tests: 13/13 PASS (post-fetch confirmation) | `pytest tests/test_conduit_sold.py -v` | `validation/piranav/conduit-sold-dynamic-month-fix-validation-2026-10-26.md` | Uncommitted | YES | NONE | NONE | PASS |
+
+**Safety confirmation:** Fetch only — no merge, rebase, reset, or branch switch. All implementation files intact.
+
+---
+
+### 2026-10-26 — CONDUIT-ARCH-01 — Conduit Sold Storage Architecture Verification
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| CONDUIT-ARCH-01-001 | Storage architecture traced — app DB snapshot confirmed | `backend/app/core/scheduled_snapshot.py` | `evidence/dm-dashboard/conduit-sold-storage-architecture-2026-10-26.md` | No change | YES | NONE | NONE | PASS |
+| CONDUIT-ARCH-01-002 | db.py traced — 3 connection pools confirmed (app, business, business2) | `backend/app/core/db.py` | Same | No change | YES | NONE | NONE | PASS |
+| CONDUIT-ARCH-01-003 | Normal GET confirmed zero Shopify calls (reads snapshot only) | `conduit_sold.py` lines 447-465 | Same | No change | YES | NONE | NONE | PASS |
+| CONDUIT-ARCH-01-004 | Component Stock confirmed in-process cache only (no DB snapshot) | `conduit_stock.py` lines 63-64 | Same | No change | YES | NONE | NONE | PASS |
+| CONDUIT-ARCH-01-005 | Live health confirmed — backend running at 158.220.99.127:8499 | curl output | Same | No change | YES | NONE | NONE | PASS |
+| CONDUIT-ARCH-01-006 | Live DB content NOT verified — port 5432 closed, all endpoints need auth | — | Same | No change | YES | Piranav must run 4 SQL queries via SSH | Run queries in Section G of evidence file | OPEN |
+| CONDUIT-ARCH-01-007 | Evidence file created | `evidence/dm-dashboard/conduit-sold-storage-architecture-2026-10-26.md` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| CONDUIT-ARCH-01-008 | Validation file created | `validation/piranav/conduit-sold-storage-architecture-validation-2026-10-26.md` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| CONDUIT-ARCH-01-009 | PROMPT_REGISTER updated | `PROMPT_REGISTER.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+
+**10-folder asset check:**
+| # | Asset | Status |
+|---|---|---|
+| 1 | Prompt | DONE — row in PROMPT_REGISTER (no separate prompt file; investigation is direct code trace) |
+| 2 | Evidence | DONE — `evidence/dm-dashboard/conduit-sold-storage-architecture-2026-10-26.md` |
+| 3 | Capability | N/A — no new capability; architecture confirmed from existing code |
+| 4 | Closure | DONE — this entry |
+| 5 | PROMPT_REGISTER | DONE — new row added |
+| 6 | Validation | DONE — `validation/piranav/conduit-sold-storage-architecture-validation-2026-10-26.md` |
+| 7 | Source-map | N/A — app DB and business DB already tracked; no new source |
+| 8 | Docs | N/A — no new topic area |
+| 9 | Handover | N/A — steps for Piranav documented in evidence file Section G |
+| 10 | Reports | N/A — investigation, not a data export |
+| 11 | Duplicate-risk | N/A — new file in existing dm-dashboard evidence folder |
+
+**Safety confirmation:** No application code modified. No git commits or pushes. No DB rows modified. No secrets read or printed. Live check was health endpoint only (unauthenticated).
+
+### 2026-10-26 — CONDUIT-INV-01 — Conduit Sold Page Investigation (Read-Only)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| CONDUIT-INV-01-001 | Prompt saved — conduit-sold-investigation | `prompts/dm-dashboard/conduit-sold-investigation-2026-10-26.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| CONDUIT-INV-01-002 | Backend traced — conduit_sold.py (478 lines) | `backend/app/dashboard_pages/conduit_sold.py` | `evidence/dm-dashboard/conduit-sold-investigation-2026-10-26.md` | No change | YES | NONE | NONE | PASS |
+| CONDUIT-INV-01-003 | Backend traced — conduit_stock.py (364 lines) | `backend/app/dashboard_pages/conduit_stock.py` | Same | No change | YES | NONE | NONE | PASS |
+| CONDUIT-INV-01-004 | Frontend traced — ConduitSold.jsx (777 lines) | `frontend/src/admin/pages/ConduitSold.jsx` | Same | No change | YES | NONE | NONE | PASS |
+| CONDUIT-INV-01-005 | Navigation wiring confirmed — AdminLayout.jsx + taskRegistry.jsx | Both files | Same | No change | YES | NONE | NONE | PASS |
+| CONDUIT-INV-01-006 | ISSUE confirmed — date range hardcoded Apr–Sep 2026 (stale) | `conduit_sold.py` lines 57–74 | Same | No change | YES | Phase 2 approval needed | Piranav to approve date range extension | OPEN |
+| CONDUIT-INV-01-007 | ISSUE confirmed — UTC timezone, no BST conversion | `conduit_sold.py` line 238 | Same | No change | YES | Low severity | Fix in Phase 2 if needed | OPEN |
+| CONDUIT-INV-01-008 | ISSUE confirmed — duplicate imports in main.py lines 139-141 + 151-153 | `main.py` | Same | No change | YES | Low severity — harmless | Remove duplicate block in Phase 2 | OPEN |
+| CONDUIT-INV-01-009 | Capability file updated with current state | `capability/2026/10/2026-10-01/dm-dashboard-conduit-sold-history-pattern-2026-10-01.md` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| CONDUIT-INV-01-010 | Validation record created | `validation/piranav/conduit-sold-investigation-validation-2026-10-26.md` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| CONDUIT-INV-01-011 | PROMPT_REGISTER updated | `PROMPT_REGISTER.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+
+**10-folder asset check:**
+| # | Asset | Status |
+|---|---|---|
+| 1 | Prompt | DONE — `prompts/dm-dashboard/conduit-sold-investigation-2026-10-26.md` |
+| 2 | Evidence | DONE — `evidence/dm-dashboard/conduit-sold-investigation-2026-10-26.md` |
+| 3 | Capability | DONE — existing capability file updated with current state |
+| 4 | Closure | DONE — this entry |
+| 5 | PROMPT_REGISTER | DONE — new row added |
+| 6 | Validation | DONE — `validation/piranav/conduit-sold-investigation-validation-2026-10-26.md` |
+| 7 | Source-map | N/A — no new data source introduced; conduit uses existing ledsone-db-mcp + Shopify UK |
+| 8 | Docs | N/A — no new topic area |
+| 9 | Handover | N/A — no person handover |
+| 10 | Reports | N/A — investigation only, no data export |
+| 11 | Duplicate-risk | N/A — new evidence file in existing dm-dashboard folder, no duplicates |
+
+**Safety confirmation:** No application code modified. No git commits or pushes. No production server or Contabo VPS accessed. No .env values read.
+
+### 2026-10-26 — DMDASH-GIT-RECOVERY-01 — DM Dashboard Git Origin Recovery & Local Verification (Phase 1)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DMDASH-GIT-RECOVERY-01-001 | Prompt saved — dm-dashboard-git-origin-recovery | `prompts/discovery/dm-dashboard-git-origin-recovery.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| DMDASH-GIT-RECOVERY-01-002 | AIOS discovery — confirmed remote, branch, local path | `docs/dm-dashboard-dev-knowledge.md` | `evidence/dm-dashboard/git-origin-recovery-2026-10-26.md` | No change | YES | NONE | NONE | PASS |
+| DMDASH-GIT-RECOVERY-01-003 | Git safety audit — remote, branch, HEAD, working tree | `evidence/dm-dashboard/git-origin-recovery-2026-10-26.md` | Same | No change | YES | NONE | NONE | PASS |
+| DMDASH-GIT-RECOVERY-01-004 | Ahead/behind analysis — 111 ahead of origin/piranv-work, HEAD matches origin/main | `evidence/dm-dashboard/git-origin-recovery-2026-10-26.md § 5` | Same | No change | YES | origin/piranv-work stale (no code at risk) | Push origin/piranv-work when Piranav instructs | PASS |
+| DMDASH-GIT-RECOVERY-01-005 | Page selected for verification — Login `/` (App.jsx + auth.py + users table) | `evidence/dm-dashboard/git-origin-recovery-2026-10-26.md § 7` | Same | No change | YES | frontend/.env port 8199→8499; backend/.env must exist | Fix .env before Phase 2 start | PASS |
+| DMDASH-GIT-RECOVERY-01-006 | Local setup plan documented — startup commands, prereqs | `evidence/dm-dashboard/git-origin-recovery-2026-10-26.md § 8` | Same | No change | YES | Piranav approval required before executing | Approve then run | OPEN |
+| DMDASH-GIT-RECOVERY-01-007 | Source-map updated — dm-dashboard git row added | `source-map/README.md` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| DMDASH-GIT-RECOVERY-01-008 | Validation file created | `validation/piranav/dm-dashboard-git-recovery-validation-2026-10-26.md` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| DMDASH-GIT-RECOVERY-01-009 | PROMPT_REGISTER updated | `PROMPT_REGISTER.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+
+**10-folder asset check:**
+| # | Asset | Status |
+|---|---|---|
+| 1 | Prompt | DONE — `prompts/discovery/dm-dashboard-git-origin-recovery.md` |
+| 2 | Evidence | DONE — `evidence/dm-dashboard/git-origin-recovery-2026-10-26.md` |
+| 3 | Capability | N/A — no new system capability; existing knowledge confirmed |
+| 4 | Closure | DONE — this entry |
+| 5 | PROMPT_REGISTER | DONE — new row added |
+| 6 | Validation | DONE — `validation/piranav/dm-dashboard-git-recovery-validation-2026-10-26.md` |
+| 7 | Source-map | DONE — dm-dashboard git row added |
+| 8 | Docs | N/A — no new topic area |
+| 9 | Handover | N/A — no person handover required |
+| 10 | Reports | N/A — not a reportable data export |
+| 11 | Duplicate-risk | N/A — new files in existing dm-dashboard evidence folder; no duplicates created |
+
+**Safety confirmation:** No application code modified. No git commits or pushes. No production server or Contabo VPS touched. No .env values read or exposed.
+
 ### 2026-10-20 — BOT-20261019-ORGANIC-EXC-03 — LEDSone UK Locale URLs Investigation
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |

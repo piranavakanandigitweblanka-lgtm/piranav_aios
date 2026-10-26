@@ -97,11 +97,28 @@ FAIL: Product IDs don't match between DB and Shopify, OR order data missing, OR 
 Owner: Piranav
 Reviewer: GPT Coordinator
 
+## Current Status (verified 2026-10-26 — code inspection, no runtime)
+
+| Item | State |
+|---|---|
+| Date range | HARDCODED Apr–Sep 2026. Now Oct 2026 — no new months added yet. Phase 2 required. |
+| Backend path | `dashboard_pages/conduit_sold.py` (not `admin/admin_conduit_sold.py` as original build doc says — refactored) |
+| Stock backend path | `dashboard_pages/conduit_stock.py` |
+| Cache type | ScheduledSnapshot (Postgres) — replaced original 15-min in-process cache |
+| Schedule | 12-hour background refresh |
+| cancelledAt exclusion | Added 2026-10-02 — original code only excluded VOIDED financial status |
+| Duplicate imports | `main.py` lines 139-141 and 151-153 both import conduit_sold/stock — harmless, merge artifact |
+| Browser validation (Phase 2) | Still pending as of 2026-10-26 — never confirmed live |
+
 ## Known Limits
-- Shopify GraphQL has a 250-orders-per-page limit — for long date ranges, pagination is required
-- Stock data is PostgreSQL-only (warehouse system) — Shopify stock quantities are not used
-- `product_mapping.alternative_inventory_id` may not exist for all products — handle NULL gracefully
-- Phase 2 browser validation was pending as of 2026-10-02
+- Date range is HARDCODED to Apr–Sep 2026 — must be extended for Oct 2026+ data
+- Shopify `createdAt` is UTC — UK BST (UTC+1) not applied to month bucketing (cosmetic issue)
+- Revenue is `originalTotalSet.shopMoney.amount` = pre-discount gross; discounts not deducted
+- REFUNDED orders included (gross sold — by design); only VOIDED + cancelledAt excluded
+- Phase 2 browser validation was still pending as of 2026-10-26
+
+## Investigation Evidence
+`evidence/dm-dashboard/conduit-sold-investigation-2026-10-26.md`
 
 ## Reuse Path
 Apply to any product category where:

@@ -32,6 +32,7 @@ The source map is the single place to look up "where does this file live?"
 | Parent home repo | `C:\Users\PC` | `https://github.com/piranavakanandigitweblanka-lgtm/aios-piranav.git` (remote name: `aios`) | `master` | Tracks all piranav work — Desktop session files and Downloads theme snapshot |
 | piranav_aios subfolder | `C:\Users\PC\Documents\piranav_aios` | _(inherits from parent — no standalone remote yet)_ | `master` | This AIOS workspace; empty until starter build 2026-06-25 |
 | Expected AIOS repo (per assignment) | _(not yet cloned as standalone)_ | `https://github.com/piranavakanandigitweblanka-lgtm/piranav_aios` | _(unknown — awaiting Varmen confirmation)_ | Name mismatch with actual remote — to be resolved |
+| dm-dashboard | `C:\Users\PC\Documents\piranav_aios\dm-dashboard\` | `https://github.com/websitetecteam-arch/dm-dashboard.git` (remote name: `origin`) | active: `piranv-work`, stable: `main` | Verified 2026-10-26. HEAD `103de7b` matches origin/main. piranv-work ahead 111 of origin/piranv-work (code all on origin/main — no lost work). Push account: `websitetecteam-arch`. |
 
 ---
 
