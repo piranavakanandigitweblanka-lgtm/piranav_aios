@@ -263,3 +263,44 @@ GSC match rate: **4,840 of 5,335 products** (90.7%) — up from 4 (0.07%) before
 - GSC data source: public.blog_optimization_gsc_page — must be populated by gsc_sync.py
 - If blog_optimization_gsc_page has no data for ledsone.co.uk products, all ranking_status will be "No GSC Data"
 - All mismatch detection is regex-only — no spec sheet data, no verified mismatches
+
+---
+
+## Listing + Inventory Filter Validation (2026-10-26 — post-push)
+
+### Changes vs initial push (c7157a9)
+
+| Change | Detail |
+|---|---|
+| Added `Unknown Inventory` as filterable option | `_INVENTORY_STATUS_SQL["Unknown Inventory"] = "total_inventory IS NULL"` |
+| Renamed "Untracked" → "Unknown Inventory" | Matches filter value — CASE expression + frontend pill map updated |
+| Published `publishedAt` limitation documented | Comment in `_LISTING_STATUS_SQL`: reflects Online Store channel only, not all channels |
+
+### Test Results — 8 Tests (all PASS)
+
+| Test | Result | Evidence |
+|---|---|---|
+| T1 Migration idempotency — ALTER TABLE twice | PASS | No error on second run |
+| T2 NULL inventory → Unknown, not Out of Stock | PASS | unknown=5335, oos=0, sum=total |
+| T3 Listing status NULL handling | PASS | active=0, unlisted=5069, draft=172, archived=1 |
+| T4 Analysis row count unchanged | PASS | 5335 rows |
+| T5 Combined filter (Draft + Out of Stock) | PASS | 0 rows, no error |
+| T6 Unknown Inventory filter SQL | PASS | 5335 rows (all NULL pre-sync) |
+| T7 Ranking Drop count unchanged | PASS | 381 |
+| T8 Potential Mismatch count unchanged | PASS | 281 |
+| Python syntax (ast.parse) | PASS | — |
+| Frontend build (npm run build) | PASS | `SeoUrlIntelligence` emitted, 0 errors, 910ms |
+
+### publishedAt Limitation — Documented
+
+`published_at IS NULL` on an ACTIVE product means the product was never published to the Shopify Online Store channel. It does NOT confirm the product is invisible on all channels (POS, wholesale, custom storefronts may still serve it). The Unlisted label is a heuristic consistent with project convention in `duplicate_price_check.py`.
+
+### Pre-sync State (expected, correct)
+
+- All 5,335 inventory rows: Unknown Inventory (total_inventory NULL)
+- Active = 0, Unlisted = 5,069 (all ACTIVE show as Unlisted because published_at NULL)
+- Listing and inventory filter values become accurate after re-sync only
+
+### Production Re-sync Status
+
+**REQUIRED** — `publishedAt` and `totalInventory` will only populate after next sync triggers the updated GraphQL query. Until then: all products show Unknown Inventory; all ACTIVE show as Unlisted.
