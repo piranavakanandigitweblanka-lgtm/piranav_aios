@@ -3388,3 +3388,110 @@ Reason: Read-only documentation verification — no system capability built or p
 | 11 | Duplicate-risk | N/A — new tables, no duplicate risk |
 
 **Session Result: OPEN — SEMrush data fetched successfully (authority_score=30, total_backlinks=20,078, referring_domains=834, 170 refdomains rows). Script written and ready. Blocked on DB upsert: Neon host (ep-soft-leaf-zavu7dmm.c-2.eu-west-2.aws.neon.tech) is blocked by remote container proxy (403). Piranav must run `node Staff-requirements-02/scripts/semrush-backlinks-upsert.js` from local machine to complete the upsert.**
+
+---
+
+### 2026-10-26 — SEO-URL-INTEL-PHASE0 — Multi-Website SEO URL Intelligence Phase 0 Account Verification
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SEO-URL-INTEL-P0-001 | Prompt saved — multi-website-seo-url-intelligence-phase0-verification | `prompts/seo/multi-website-seo-url-intelligence-phase0-verification.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| SEO-URL-INTEL-P0-002 | Shopify live product count — 4 stores verified (UK 5335, DE 2794, FR 1150, US 295) | `backend/app/core/shopify_client.py` | `evidence/seo/phase0-multi-website-account-verification-2026-10-26.md` | No change | YES | SHOPIFY_DC_ADMIN_TOKEN absent | Add DC token to .env | PASS |
+| SEO-URL-INTEL-P0-003 | DCvoltage token absent — SHOPIFY_DC_ADMIN_TOKEN not in .env | `.env` inspection | Same | No change | YES | Token missing | Piranav to add token | OPEN |
+| SEO-URL-INTEL-P0-004 | GSC live verification — vintagelite.co.uk NEW PASS (sc-domain HTTP 200) | Live API test | Same | No change | YES | NONE | NONE | PASS |
+| SEO-URL-INTEL-P0-005 | GSC live — besbet, relicelectrical.ca/.com, homingmbh all HTTP 404 (not verified) | Live API test | Same | No change | YES | Service account not added in GSC | Piranav to add SA to GSC for each site | OPEN |
+| SEO-URL-INTEL-P0-006 | GA4 live — UK 408110563 PASS (10524 sessions), DE 462018160 PASS (4246 sessions) | Live API test | Same | No change | YES | NONE | NONE | PASS |
+| SEO-URL-INTEL-P0-007 | GA4 property IDs missing for FR, US, electricalsone, dcvoltage, vintagelite, besbet | Codebase grep | Same | No change | YES | Property IDs not in codebase | Piranav to provide 6 GA4 property IDs | OPEN |
+| SEO-URL-INTEL-P0-008 | GSC business DB — 8 sites confirmed with web rows (ledsone.us 34,828 rows from 2025-09-16) | SQL query | Same | No change | YES | Must filter search_type='web' always | NONE | PASS |
+| SEO-URL-INTEL-P0-009 | Spec data join discovery — listing_attributes.reference_id does NOT join shopify_listings (ID ranges don't overlap); joins inventory.products (ranges overlap 1–22782 vs 1–45305) | SQL id range check | Same | No change | YES | Join path unconfirmed | Piranav to confirm: listing_attributes → inventory.products | OPEN |
+| SEO-URL-INTEL-P0-010 | Evidence file created | `evidence/seo/phase0-multi-website-account-verification-2026-10-26.md` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| SEO-URL-INTEL-P0-011 | Validation file created | `validation/piranav/phase0-multi-website-verification-validation-2026-10-26.md` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| SEO-URL-INTEL-P0-012 | PROMPT_REGISTER updated — new row added | `PROMPT_REGISTER.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+
+**10-folder asset check — SEO-URL-INTEL-PHASE0:**
+| # | Asset | Status |
+|---|---|---|
+| 1 | Prompt | DONE — `prompts/seo/multi-website-seo-url-intelligence-phase0-verification.md` |
+| 2 | Evidence | DONE — `evidence/seo/phase0-multi-website-account-verification-2026-10-26.md` |
+| 3 | Capability | N/A — discovery phase, no new system capability deployed yet |
+| 4 | Closure | DONE — this entry |
+| 5 | PROMPT_REGISTER | DONE — row added |
+| 6 | Validation | DONE — `validation/piranav/phase0-multi-website-verification-validation-2026-10-26.md` |
+| 7 | Source-map | N/A — no new data source introduced; sources already known |
+| 8 | Docs | N/A — verification report is in evidence; no new doc topic area |
+| 9 | Handover | N/A — blockers documented in evidence; Piranav actions listed |
+| 10 | Reports | N/A — verification, not a data export report |
+| 11 | Duplicate-risk | N/A — new files in existing seo folder |
+
+**Safety confirmation:** READ-ONLY throughout. No Shopify writes, no DB writes, no credential changes, no code modified. No secrets printed (token variable names and masked emails only).
+
+**Session Result: PASS (Phase 0 complete) — 5 sites ready for Phase 1. 9 blockers documented for Piranav. Awaiting Piranav approval before Phase 1 implementation begins.**
+
+---
+
+## 2026-10-26 — SEO URL Intelligence — Phase 1 Implementation (LEDSone UK)
+
+**Requirement ID:** SEO-URL-INTEL-001
+**Task:** Build SEO URL Intelligence page inside existing DM Dashboard — LEDSone UK Phase 1
+**Status:** PASS (local implementation complete — not deployed, not pushed)
+
+### Assets
+
+| Asset | Path |
+|---|---|
+| Prompt | `prompts/seo/seo-url-intelligence-implementation-prompt.md` |
+| Evidence | `evidence/seo/seo-url-intelligence-phase1-2026-10-26.md` |
+| Validation | `validation/piranav/seo-url-intelligence-phase1-validation-2026-10-26.md` |
+| Backend page | `dm-dashboard/backend/app/dashboard_pages/seo_url_intelligence.py` |
+| Frontend page | `dm-dashboard/frontend/src/admin/pages/SeoUrlIntelligence.jsx` |
+
+### Changes Made
+
+| File | Change |
+|---|---|
+| `main.py` | +2 lines: import + include_router |
+| `taskRegistry.jsx` | +1 TOOLS entry: tools.SeoUrlIntelligence |
+| `taskAddedDates.json` | +1 date entry: 2026-10-26 |
+
+### UAM
+
+No existing UAM system changed. New task `tools.SeoUrlIntelligence` automatically appears in UAM matrix. Admin grants/revokes via existing workflow. Backend enforces via `make_task_auth("tools.SeoUrlIntelligence")` on write endpoints.
+
+### Queryable: YES
+
+### 10-Folder Asset Check
+
+| # | Asset | Status |
+|---|---|---|
+| 1 | Prompt | DONE — saved before execution per Rule 1 |
+| 2 | Evidence | DONE — `evidence/seo/seo-url-intelligence-phase1-2026-10-26.md` |
+| 3 | Capability | N/A — no new reusable system capability; extends existing dashboard pattern |
+| 4 | Closure | DONE — this entry |
+| 5 | PROMPT_REGISTER | PENDING — update after this entry |
+| 6 | Validation | DONE — `validation/piranav/seo-url-intelligence-phase1-validation-2026-10-26.md` |
+| 7 | Source-map | N/A — reuses existing tables and connections; no new data source |
+| 8 | Docs | N/A — implementation documented in evidence |
+| 9 | Handover | N/A — no person handover required |
+| 10 | Reports | N/A — not a data report output |
+| 11 | Duplicate-risk | N/A — new files, no existing equivalent |
+
+### Static Tests Passed
+
+- Python syntax: PASS (ast.parse)
+- main.py additions verified: PASS
+- taskRegistry.jsx entry verified: PASS
+- taskAddedDates.json JSON valid + entry present: PASS
+
+### Remaining (requires running environment)
+
+- Run sync and verify product count matches Shopify live count
+- Verify UAM 403 on unauthorized POST /sync/start
+- Verify independent ranking_status and mismatch_status filters
+- Verify Insufficient Data products not labelled Ranking Drop
+- Frontend build verification
+
+### Safety
+
+READ-ONLY Shopify access. No product writes. No production deployment. No git push. No secrets in any file. All changes local only.
+
+**Session Result: PASS (Phase 1 local implementation complete — static checks pass — runtime tests pending Piranav approval to start environment)**
