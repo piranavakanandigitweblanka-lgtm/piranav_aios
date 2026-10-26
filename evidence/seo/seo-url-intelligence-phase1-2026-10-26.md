@@ -68,3 +68,61 @@
 - DB tables created on first sync (ensure_schema called inside sync job)
 - Frontend build required (Vite dev server)
 - GSC data in blog_optimization_gsc_page must be populated by gsc_sync.py weekly job
+
+---
+
+## Phase 1 Extension — Listing Status + Inventory Status Filters (2026-10-26)
+
+### Changes Made
+
+| File | Change |
+|---|---|
+| `seo_url_intelligence.py` | Added `published_at`, `total_inventory` columns to schema + ALTER TABLE migration; added to GraphQL query, upsert, and `_query_products`; new filter params on `/products` and `/products/csv`; new CSV columns |
+| `SeoUrlIntelligence.jsx` | Added `listingFilter`, `inventoryFilter` state; two new `<select>` filter dropdowns; `LISTING_PILL`, `INVENTORY_PILL` color maps; two new table columns (Listing, Inventory); colSpan 11→13; expanded row detail updated |
+
+### Schema Migration
+
+```sql
+ALTER TABLE public.seo_url_product ADD COLUMN IF NOT EXISTS published_at TIMESTAMPTZ;
+ALTER TABLE public.seo_url_product ADD COLUMN IF NOT EXISTS total_inventory INT;
+```
+- Additive only. No data loss. Ran against Contabo production dm_dashboard: PASS.
+
+### Unlisted — Exact Definition (project convention from duplicate_price_check.py line 61)
+
+| Filter Value | SQL Condition |
+|---|---|
+| Active   | `status = 'ACTIVE' AND published_at IS NOT NULL` |
+| Unlisted | `status = 'ACTIVE' AND published_at IS NULL` |
+| Draft    | `status = 'DRAFT'` |
+| Archived | `status = 'ARCHIVED'` |
+| In Stock     | `total_inventory > 0` |
+| Out of Stock | `total_inventory IS NOT NULL AND total_inventory <= 0` |
+| (unclassified) | `total_inventory IS NULL` → shown as "Untracked" |
+
+**Unlisted source field:** Shopify GraphQL `Product.publishedAt` — returns ISO datetime of publication to Online Store channel; null = not published to any channel. Product is active in Shopify admin but invisible on the storefront.
+
+### Pre-sync state (after schema migration, before re-sync)
+
+| Status | Count |
+|---|---|
+| ACTIVE products (all showing as Unlisted pre-sync) | 5,069 |
+| Draft | 172 |
+| Archived | 1 |
+| Inventory Untracked (published_at and total_inventory NULL) | 5,335 |
+
+All ACTIVE products show as Unlisted pre-sync because `published_at IS NULL` until re-sync fetches `publishedAt` from Shopify. This is correct and expected. Listing and inventory filter accuracy requires a re-sync.
+
+### Build Tests
+
+| Test | Result |
+|---|---|
+| Python syntax (ast.parse) | PASS |
+| npm run build | PASS — `SeoUrlIntelligence-igsBoS8V.js` emitted, 0 errors, 904ms |
+| DB schema migration (Contabo production) | PASS |
+| Filter SQL expressions against live data | PASS |
+| Existing ranking/mismatch counts unchanged | PASS — 381 Ranking Drop, 281 Potential Mismatch, 26 High unchanged |
+
+### Remaining: Re-sync Required
+
+Listing Status and Inventory Status filter values will be accurate only after next sync triggers updated GraphQL query (fetches `publishedAt` + `totalInventory`). Current data: all Untracked, all ACTIVE show as Unlisted.

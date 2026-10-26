@@ -3546,3 +3546,47 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 - Trigger fresh sync via dashboard to confirm `{"status":"done"}` flow end-to-end
 
 **Session Result: PASS**
+
+---
+
+## 2026-10-26 — SEO URL Intelligence — Listing Status + Inventory Status Filters
+
+| Field | Value |
+|---|---|
+| Task | Add Listing Status (Active/Draft/Archived/Unlisted) and Inventory Status (In Stock/Out of Stock) filters |
+| Requirement ID | BOT-20261026-SEOURL-FILTERS |
+| Status | **PASS** |
+| Queryability | YES |
+
+### What Was Done
+
+1. **Defined "Unlisted"** using existing project convention (duplicate_price_check.py line 61): `status='ACTIVE' AND publishedAt IS NULL`. Shopify `publishedAt` = publication timestamp to Online Store; null = not published.
+2. **Added `published_at` and `total_inventory` columns** to `seo_url_product` via additive `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`. Migration ran against Contabo production PASS.
+3. **Updated GraphQL query** — added `publishedAt` and `totalInventory` to `_PRODUCT_QUERY`.
+4. **Updated upsert** — new fields written on every sync.
+5. **Added `_LISTING_STATUS_SQL` and `_INVENTORY_STATUS_SQL` dicts** — maps filter value → SQL fragment; prevents hardcoded strings in WHERE clauses.
+6. **Updated `_query_products`** — new `listing_status` and `inventory_status` params; new columns in SELECT with computed `listing_status` and `inventory_status` CASE expressions.
+7. **Updated routes** — `/products` and `/products/csv` accept new query params.
+8. **Updated CSV** — added Listing Status, Inventory Status, Total Inventory columns.
+9. **Updated frontend** — two new filter dropdowns, `LISTING_PILL`/`INVENTORY_PILL` color maps, two new table columns, colSpan updated, expanded row detail shows listing + inventory.
+
+### Tests
+
+| Test | Result |
+|---|---|
+| Python syntax | PASS |
+| npm run build | PASS — 0 errors |
+| DB schema migration (Contabo production) | PASS |
+| Filter SQL validated against live data | PASS |
+| Existing ranking/mismatch counts unchanged | PASS |
+
+### Evidence
+- `evidence/seo/seo-url-intelligence-phase1-2026-10-26.md` (updated)
+- `validation/piranav/seo-url-intelligence-phase1-validation-2026-10-26.md`
+
+### Outstanding
+- Listing Status and Inventory Status filter values accurate only after next re-sync (new Shopify fields: `publishedAt`, `totalInventory`)
+- 93 products have status outside ACTIVE/DRAFT/ARCHIVED — pre-existing data issue, not introduced here
+- No deploy, no push, no commit (per task safety rules)
+
+**Session Result: PASS (local — awaiting Piranav commit/push approval)**
