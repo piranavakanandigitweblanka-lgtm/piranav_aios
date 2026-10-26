@@ -3356,3 +3356,35 @@ Reason: Read-only documentation verification — no system capability built or p
 | 11 | Duplicate-risk | N/A — no new files risk duplicating truth |
 
 **Session Result: OPEN — Investigation complete. Recovery SQL ready. Blocked on Piranav running Q1–Q4 on Contabo app DB to get timestamps and actor. No production records deleted. No code changed. All AIOS assets saved.**
+
+---
+
+### 2026-10-26 — SEO-BACKLINKS-UPSERT-20261026 — SEMrush Backlinks Daily Upsert (Scheduled Run)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SEO-BACKLINKS-UPSERT-20261026-001 | Fetch SEMrush backlinks_overview for ledsone.co.uk | N/A (API call) | `evidence/seo/semrush-backlinks-neon-upsert-2026-10-26.md` | N/A | YES | NONE | NONE | PASS |
+| SEO-BACKLINKS-UPSERT-20261026-002 | Fetch SEMrush backlinks_refdomains (top 200) for ledsone.co.uk | N/A (API call) | `evidence/seo/semrush-backlinks-neon-upsert-2026-10-26.md` | N/A | YES | NONE | NONE | PASS |
+| SEO-BACKLINKS-UPSERT-20261026-003 | Write Node.js upsert script | `Staff-requirements-02/scripts/semrush-backlinks-upsert.js` | `evidence/seo/semrush-backlinks-neon-upsert-2026-10-26.md` | Uncommitted | YES | NONE | Piranav runs script locally | PASS |
+| SEO-BACKLINKS-UPSERT-20261026-004 | DB upsert into Neon (semrush_backlinks + semrush_refdomains) | N/A | N/A | N/A | NO | Neon DB host blocked by remote container proxy policy (403) | Piranav runs `node scripts/semrush-backlinks-upsert.js` from local machine | OPEN |
+| SEO-BACKLINKS-UPSERT-20261026-005 | Prompt file saved | `prompts/seo/semrush-backlinks-neon-upsert-prompt.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| SEO-BACKLINKS-UPSERT-20261026-006 | PROMPT_REGISTER updated | `PROMPT_REGISTER.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+| SEO-BACKLINKS-UPSERT-20261026-007 | Validation file created | `validation/piranav/semrush-backlinks-upsert-validation-2026-10-26.md` | Same | Uncommitted | YES | NONE | NONE | PASS |
+| SEO-BACKLINKS-UPSERT-20261026-008 | Source-map updated | `source-map/README.md` | N/A | Uncommitted | YES | NONE | NONE | PASS |
+
+**10-folder asset check — SEO-BACKLINKS-UPSERT-20261026:**
+| # | Asset | Status |
+|---|---|---|
+| 1 | Prompt | DONE — `prompts/seo/semrush-backlinks-neon-upsert-prompt.md` |
+| 2 | Evidence | DONE — `evidence/seo/semrush-backlinks-neon-upsert-2026-10-26.md` |
+| 3 | Capability | N/A — no new system capability created (script written but not yet executed against DB) |
+| 4 | Closure | DONE — this entry |
+| 5 | PROMPT_REGISTER | DONE — row added |
+| 6 | Validation | DONE — `validation/piranav/semrush-backlinks-upsert-validation-2026-10-26.md` |
+| 7 | Source-map | DONE — Neon tables added to source-map/README.md |
+| 8 | Docs | N/A — no new doc topic area |
+| 9 | Handover | N/A — Piranav runs script locally; instructions in evidence file |
+| 10 | Reports | N/A — snapshot not yet in DB; no reportable output |
+| 11 | Duplicate-risk | N/A — new tables, no duplicate risk |
+
+**Session Result: OPEN — SEMrush data fetched successfully (authority_score=30, total_backlinks=20,078, referring_domains=834, 170 refdomains rows). Script written and ready. Blocked on DB upsert: Neon host (ep-soft-leaf-zavu7dmm.c-2.eu-west-2.aws.neon.tech) is blocked by remote container proxy (403). Piranav must run `node Staff-requirements-02/scripts/semrush-backlinks-upsert.js` from local machine to complete the upsert.**

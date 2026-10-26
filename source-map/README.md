@@ -99,6 +99,8 @@ The source map is the single place to look up "where does this file live?"
 | Google Merchant Center | GMC web UI | YES | Referenced in 2026-06-24 GMC fix |
 | Google Search Console | GSC web UI | YES | Reference guides imported to `evidence/seo/gsc-pages-2026-08-23/` — covers 5xx errors, crawled-not-indexed, canonical/Shopify Markets |
 | GitHub remote | `git push aios master` | YES — SSH/HTTPS auth | Remote: `aios-piranav` |
+| SEMrush API (backlinks) | SEMrush MCP tools (`mcp__Semrush__backlinks_research`, `mcp__Semrush__execute_report`) | YES — MCP config | Backlinks overview + refdomains for ledsone.co.uk. Added 2026-10-26. Script: `Staff-requirements-02/scripts/semrush-backlinks-upsert.js` |
+| Neon PostgreSQL — Staff-requirements-02 | `pg` Client or `@neondatabase/serverless` | YES — connection string in task config | Host: `ep-soft-leaf-zavu7dmm.c-2.eu-west-2.aws.neon.tech` DB: `neondb`. Tables: `semrush_backlinks` (DATE PK), `semrush_refdomains` (DATE+domain PK). NOTE: blocked from remote container proxy — use local machine. Added 2026-10-26 |
 
 ---
 
