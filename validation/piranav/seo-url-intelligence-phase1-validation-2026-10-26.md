@@ -1,5 +1,5 @@
 # SEO URL Intelligence — Phase 1 Validation Record
-## Date: 2026-10-26 | Validator: Claude Code | Status: PENDING — requires running environment
+## Date: 2026-10-26 | Validator: Claude Code | Status: PARTIAL PASS — sidebar bug fixed, runtime pending
 
 ## Validation Checklist
 
@@ -20,6 +20,10 @@
 | 13 | tools.SeoUrlIntelligence appears in UAM task list | taskRegistry.jsx grep | **PASS** | Line 514 confirmed, `lazy: true, kind: 'tool'` |
 | 14 | Staff without grant gets 403 on POST /sync/start | Static code audit: `_REQUIRE_ACCESS = make_task_auth(...)` | **PASS (static)** | Route decorator confirmed, runtime test pending |
 | 15 | Frontend builds without error | `npm run build` | **PASS** | 501 modules, `SeoUrlIntelligence-DmL4xJUs.js` emitted, 0 errors |
+| 16 | Sidebar fix — entry added to RAW_ADMIN_ITEMS in AdminLayout.jsx | grep AdminLayout.jsx | **PASS** | Line 198: `{ key: 'seo-url-intelligence', toolKey: 'tools.SeoUrlIntelligence', enabled: true }` |
+| 17 | Sidebar fix — build passes after AdminLayout.jsx change | `npm run build` | **PASS** | `SeoUrlIntelligence-Cj5iUot1.js` emitted, 0 errors, 788ms |
+| 18 | Sidebar grant-filter — entry not in ALWAYS_VISIBLE_KEYS, uses `grantedAtByKey.has(item.toolKey)` | static code audit AdminLayout.jsx line 297 | **PASS** | Users without grant: hidden. Users with grant: visible. Dev role: always visible. |
+| 19 | Sidebar visible in running dashboard after grant | Browser test | PENDING — manual check required after deploy |
 
 ## Routes Confirmed (static)
 
@@ -59,6 +63,18 @@ Entry added: `taskKey: 'tools.SeoUrlIntelligence'`
 
 ### taskAddedDates.json check (grep)
 Entry added: `"tools.SeoUrlIntelligence": "2026-10-26"`
+
+## Sidebar Bug — Root Cause and Fix (2026-10-26)
+
+**Root cause:** `tools.SeoUrlIntelligence` was registered in `taskRegistry.jsx` (makes it grantable in UAM) but was missing from `RAW_ADMIN_ITEMS` in `AdminLayout.jsx` (the hardcoded sidebar list). UAM reads from taskRegistry — sidebar reads from RAW_ADMIN_ITEMS. They are independent. Both must be updated for a new tool.
+
+**Fix applied:** One line added to `AdminLayout.jsx` line 198, immediately after `tools.SeoIntelligence`:
+```javascript
+{ key: 'seo-url-intelligence', toolKey: 'tools.SeoUrlIntelligence', enabled: true },
+```
+
+**File changed:** `frontend/src/admin/AdminLayout.jsx`
+**Build after fix:** PASS — `SeoUrlIntelligence-Cj5iUot1.js` emitted, 0 errors
 
 ## Notes
 - Tables (seo_url_product, seo_url_analysis) created on first sync via _ensure_schema()
