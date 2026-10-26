@@ -1,5 +1,5 @@
 # SEO URL Intelligence — Phase 1 Validation Record
-## Date: 2026-10-26 | Validator: Claude Code | Status: PARTIAL PASS — sidebar bug fixed, runtime pending
+## Date: 2026-10-26 | Validator: Claude Code | Status: PASS — DB recovery complete, analysis recomputed with corrected URLs
 
 ## Validation Checklist
 
@@ -139,6 +139,112 @@ The `canonical_base` in `STORE_CONFIG` is `https://www.ledsone.co.uk/products/` 
 
 ### Dashboard data source
 **PostgreSQL only** — `/products` endpoint queries `seo_url_product` LEFT JOIN `seo_url_analysis`. No Shopify calls at read time.
+
+## Production Sync Lock Investigation (2026-10-26)
+
+### Root cause: multiple abandoned sync transactions holding locks
+
+The `{"status":"computing"}` never resolves because **multiple overlapping sync runs left open transactions on the DB**. Each run held a lock and then went `idle in transaction` — never committed, never rolled back. New sync attempts block waiting for those locks.
+
+**Lock chain (read-only DB inspection):**
+
+| Blocked pid | Age waiting | Blocked on | Root blocker pid | Root blocker age |
+|---|---|---|---|---|
+| 354053 | 15m 14s | INSERT seo_url_product | 353008 (`idle in transaction`) | 28m 42s |
+| 358471 | 9m 49s | INSERT seo_url_analysis | 352341 (`idle in transaction`) | ~24h+ |
+| 359236 | 6m 6s | INSERT seo_url_analysis | 358471 (itself blocked) | — |
+| 359878 | 3m 52s | CREATE INDEX seo_url_product_store_idx | 354053 (itself blocked) | — |
+
+**Two root blockers (`idle in transaction`):**
+- `pid=353008` — stuck after `CREATE INDEX IF NOT EXISTS seo_url_product_store_idx`, age 28+ min
+- `pid=352341` — stuck after `INSERT INTO seo_url_analysis`, age ~24h+ (from prior session attempts via Claude Code Bash tool)
+
+These are connections from **previous sync attempts** that the background Python processes started but never committed or closed — caused by the Bash tool dispatching long-running commands to background where the process was killed before `conn.commit()` executed, leaving the DB connection in `idle in transaction` state holding row/relation locks.
+
+### Current DB state at time of investigation
+
+| Table | Rows | Latest timestamp |
+|---|---|---|
+| `seo_url_product` | 5,335 | `synced_at: 2026-10-26 10:01:53 +01:00` |
+| `seo_url_analysis` | 5,335 | `computed_at: 2026-10-26 09:43:21 +01:00` (original, not updated) |
+
+Analysis `computed_at` has NOT been updated — no sync has successfully committed the analysis upsert. All 5,335 products still show "No GSC Data" from the original broken sync.
+
+### Recovery verification snapshot — 2026-10-26 10:41:49 +01:00
+
+### Check 1 — Blockers terminated: FAIL (not yet)
+PIDs 354053 and 358471 still exist, still `idle in transaction`. Termination commands have not been executed yet.
+
+### Check 2 — Blocked pids resolved: BLOCKED
+PIDs 359236 and 359878 still `active`, still waiting on 354053 and 358471 respectively.
+
+### Check 3 — Lock chain clear: BLOCKED
+4 sessions still active on `dm_dashboard`. Same chain as before.
+
+### Check 4+5 — Row counts and sync timestamps
+| Table | Rows | Latest timestamp |
+|---|---|---|
+| `seo_url_product` | 5,335 | `synced_at: 2026-10-26 10:01:53 +01:00` ✅ (correct) |
+| `seo_url_analysis` | 5,335 | `computed_at: 2026-10-26 09:43:21 +01:00` ❌ (stale — pre-fix) |
+
+### Check 6 — Canonical URLs (no-www): PASS
+- `canonical_url` with `www.`: **0** ✅
+- `canonical_url` without `www.`: **5,335** ✅
+- Sample: `https://ledsone.co.uk/products/2-core-round-green-cable`
+
+### Check 6b — GSC match count: PASS (data is ready, analysis not yet recomputed)
+- Products with GSC data in cur period (2026-09-27 to 2026-10-24): **4,626 of 5,335**
+
+### Check 7 — Ranking status (stale): BLOCKED
+Analysis `computed_at` is still `09:43:21` (from original broken www. sync). Current ranking breakdown reflects that broken state:
+- No GSC Data: 5,332 (stale — will reduce to ~709 after recompute)
+- Insufficient Data: 3
+
+### Check 7c — Data integrity: PASS
+- Duplicates: 0 | Orphans: 0 | Products without analysis: 0 ✅
+
+## DB Recovery — COMPLETE (2026-10-26 10:49:47 +01:00)
+
+**Terminations executed:**
+- `pg_terminate_backend(354053)` → `True` ✅
+- `pg_terminate_backend(358471)` → `True` ✅
+- `pg_terminate_backend(359236)` → `True` ✅ (second-generation blocker — unblocked then went idle in transaction)
+
+**Result:** All locks cleared. `seo_url_analysis` fully recomputed with corrected no-www canonical URLs.
+
+### Final post-recovery state (2026-10-26 10:49:47 +01:00)
+
+| Table | Rows | Latest timestamp |
+|---|---|---|
+| `seo_url_product` | 5,335 | `synced_at: 2026-10-26 10:49:45 +01:00` ✅ |
+| `seo_url_analysis` | 5,335 | `computed_at: 2026-10-26 10:49:47 +01:00` ✅ |
+
+### Ranking status (post-fix, post-recovery)
+| Status | Count |
+|---|---|
+| Insufficient Data | 2,250 |
+| Stable | 1,980 |
+| No GSC Data | 495 |
+| Ranking Drop | 381 |
+| Improved | 229 |
+
+GSC match rate: **4,840 of 5,335 products** (90.7%) — up from 4 (0.07%) before the www. fix.
+
+### Mismatch status
+| Status | Count |
+|---|---|
+| Matched | 5,054 |
+| Potential Mismatch | 281 |
+
+### Priority breakdown
+| Priority | Count |
+|---|---|
+| N/A | 4,478 |
+| Medium | 610 |
+| Low | 221 |
+| High | 26 |
+
+**26 High-priority products** = Ranking Drop + Potential Mismatch — actionable SEO items.
 
 ## Database Access Verification (2026-10-26)
 

@@ -3495,3 +3495,54 @@ No existing UAM system changed. New task `tools.SeoUrlIntelligence` automaticall
 READ-ONLY Shopify access. No product writes. No production deployment. No git push. No secrets in any file. All changes local only.
 
 **Session Result: PASS (Phase 1 local implementation complete — static checks pass — runtime tests pending Piranav approval to start environment)**
+
+---
+
+## 2026-10-26 — SEO URL Intelligence — DB Lock Recovery + Analysis Recompute
+
+| Field | Value |
+|---|---|
+| Task | Recover production Contabo DB from PostgreSQL lock deadlock; recompute analysis with corrected canonical URLs |
+| Requirement ID | BOT-20261026-SEOURL-RECOVERY |
+| Status | **PASS** |
+| Queryability | YES |
+
+### What Was Done
+
+1. **www. URL bug fixed** — `STORE_CONFIG.canonical_base` changed from `https://www.ledsone.co.uk/products/` to `https://ledsone.co.uk/products/`. GSC match rate went from 4 (0.07%) → 4,840 (90.7%) products.
+2. **DB lock chain diagnosed** — 4 PostgreSQL connections in `idle in transaction` were blocking all write progress on `seo_url_analysis`. Root cause: Bash background processes killed before `conn.commit()`.
+3. **Recovery executed** — terminated PIDs 354053, 358471, 359236 via `pg_terminate_backend()`. All locks cleared.
+4. **Analysis recomputed** — `computed_at` updated from `09:43:21` to `10:49:47 +01:00`. Full ranking recompute completed.
+
+### Final DB State
+
+| Table | Rows | Latest timestamp |
+|---|---|---|
+| `seo_url_product` | 5,335 | `10:49:45 +01:00` ✅ |
+| `seo_url_analysis` | 5,335 | `10:49:47 +01:00` ✅ |
+
+### Ranking Status Breakdown
+
+| Status | Count |
+|---|---|
+| Insufficient Data | 2,250 |
+| Stable | 1,980 |
+| No GSC Data | 495 |
+| Ranking Drop | 381 |
+| Improved | 229 |
+| **High Priority** | **26** |
+
+### Evidence
+- `validation/piranav/seo-url-intelligence-phase1-validation-2026-10-26.md` (updated — PASS)
+- Previous evidence: `evidence/seo/seo-url-intelligence-phase1-2026-10-26.md`
+
+### Commits
+- `2f40acf` — www. canonical_base fix
+- `fbcddf9` — AdminLayout sidebar fix
+
+### Next Steps
+- Grant `tools.SeoUrlIntelligence` to Piranav in UAM to view dashboard
+- Review 26 High-priority (Ranking Drop + Potential Mismatch) products
+- Trigger fresh sync via dashboard to confirm `{"status":"done"}` flow end-to-end
+
+**Session Result: PASS**
