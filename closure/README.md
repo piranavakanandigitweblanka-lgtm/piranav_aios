@@ -3642,3 +3642,69 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 | SEO-BATCH-COMMIT-007 | Production sync and deploy NOT run | — | — | — | N/A | — | Run sync via dashboard when ready | PASS |
 
 **Session Result: PASS — commit 139ef2d pushed to piranv-work. Production sync not run.**
+
+---
+
+## Session: SEO URL Intelligence — Production Sync Preflight (2026-10-26)
+
+| Req ID | Task | Asset | Evidence | Commit | Queryable | Blockers | Next Step | Status |
+|---|---|---|---|---|---|---|---|---|
+| SEO-PREFLIGHT-001 | Branch + commit verified | piranv-work @ 139ef2d | `validation/piranav/seo-url-intelligence-phase1-validation-2026-10-26.md` §8 | `139ef2d` | YES | — | — | PASS |
+| SEO-PREFLIGHT-002 | Working tree clean | git status: clean | Same | — | YES | — | — | PASS |
+| SEO-PREFLIGHT-003 | Sync endpoint / backend state | Backend not running — no sync active | Same | — | YES | Must start backend | Start backend via Dev Tunnel | PASS (no sync running) |
+| SEO-PREFLIGHT-004 | DB lock check (Contabo) | 0 active sessions, 0 ungranted locks | Same | — | YES | — | — | PASS |
+| SEO-PREFLIGHT-005 | Error banner sub-text present | JSX line 269 confirmed | Same | `139ef2d` | YES | — | — | PASS |
+| SEO-PREFLIGHT-006 | published_at + total_inventory columns | Columns exist; values NULL (populated on next sync) | Same | — | YES | — | — | PASS (columns ready) |
+| SEO-PREFLIGHT-007 | Production sync triggered | NOT triggered | — | — | N/A | Awaiting Piranav approval | Approve sync | OPEN |
+
+**Session Result: OPEN — all preflight checks PASS. Awaiting Piranav approval to start backend and run production sync.**
+
+---
+
+## Session: SEO URL Intelligence — Live Verification + executemany Defect (2026-10-26)
+
+| Req ID | Task | Asset | Evidence | Commit | Queryable | Blockers | Next Step | Status |
+|---|---|---|---|---|---|---|---|---|
+| SEO-LIVEVERIFY-001 | Inspect sync/status implementation | `_SyncJob.status` lines 479–488 | `validation/piranav/seo-url-intelligence-phase1-validation-2026-10-26.md` §9 | — | YES | — | — | PASS |
+| SEO-LIVEVERIFY-002 | Confirm summary endpoint cannot prove sync success | Summary reads DB unconditionally | Same | — | YES | — | — | PASS |
+| SEO-LIVEVERIFY-003 | Identify conn.executemany defect in 139ef2d | `conn.executemany()` does not exist in psycopg3 — must be `conn.cursor().executemany()` | Same | 139ef2d | YES | Fix required | Apply 1-line fix, re-test, recommit | FAIL — defect |
+| SEO-LIVEVERIFY-004 | Confirm live data is from pre-fix VPS sync (13:07) | lastSync 13:07 predates commit 17:17; VPS not deployed with 139ef2d | Same | — | YES | — | — | PASS |
+| SEO-LIVEVERIFY-005 | Manual browser check for live sync/status | Cannot verify in-memory state remotely | Same | — | NO | Browser required | Open DevTools → check sync/status response | OPEN |
+| SEO-LIVEVERIFY-006 | No sync, deploy, code change, commit or push performed | — | Same | — | N/A | — | — | PASS |
+
+**Session Result: BLOCKED — conn.executemany defect confirmed in commit 139ef2d. Fix is 1 line. Awaiting Piranav approval.**
+
+---
+
+## Session: SEO URL Intelligence — executemany Defect Fix (2026-10-26)
+
+| Req ID | Task | Asset | Evidence | Commit | Queryable | Blockers | Next Step | Status |
+|---|---|---|---|---|---|---|---|---|
+| SEO-EXFIX-001 | Verify branch, HEAD, status before fix | piranv-work @ 139ef2d, clean | `validation/piranav/seo-url-intelligence-phase1-validation-2026-10-26.md` §10 | 139ef2d (pre-fix HEAD) | YES | — | — | PASS |
+| SEO-EXFIX-002 | Confirm defect in 139ef2d via git show | Line 575 `conn.executemany` confirmed | Same | 139ef2d | YES | — | — | PASS |
+| SEO-EXFIX-003 | Apply one-line fix | `conn.cursor().executemany(...)` | Same | Uncommitted | YES | — | — | PASS |
+| SEO-EXFIX-004 | Update tests — rewire mocks to cursor path | All 7 tests updated; T8 regression added | Same | Uncommitted | YES | — | — | PASS |
+| SEO-EXFIX-005 | Run tests — 8/8 PASS | `backend/tests/test_seo_url_analysis_batch.py` | Same | Uncommitted | YES | — | Piranav approves commit/push | PASS |
+
+**Session Result: PASS (local) — fix applied, 8/8 tests pass. Awaiting Piranav commit/push approval.**
+
+---
+
+## Session: SEO URL Intelligence — psycopg Cursor Fix Commit + Push (2026-10-26)
+
+| Req ID | Task | Asset | Evidence | Commit | Queryable | Blockers | Next Step | Status |
+|---|---|---|---|---|---|---|---|---|
+| SEO-CURFIX-001 | git status, branch, diff verified pre-commit | piranv-work clean, 2 files only, no secrets | `validation/piranav/seo-url-intelligence-phase1-validation-2026-10-26.md` §10 | `44f16f9` | YES | — | — | PASS |
+| SEO-CURFIX-002 | 8/8 tests PASS pre-commit | `backend/tests/test_seo_url_analysis_batch.py` | Same | `44f16f9` | YES | — | — | PASS |
+| SEO-CURFIX-003 | Committed 2 files | seo_url_intelligence.py + test_seo_url_analysis_batch.py | Same | `44f16f9` | YES | — | — | PASS |
+| SEO-CURFIX-004 | Pushed piranv-work to origin | 139ef2d..44f16f9 | Same | `44f16f9` | YES | — | — | PASS |
+| SEO-CURFIX-005 | Production sync and deploy NOT run | — | — | — | N/A | — | Start backend, run Sync Now | PASS |
+
+### Remaining deployment + sync steps
+
+1. Start backend locally: `cd backend && venv\Scripts\python.exe -m uvicorn app.main:app --port 8499`
+2. Open dashboard → SEO URL Intelligence → click **Sync Now**
+3. Monitor `/api/seo-url-intelligence/sync/status?store=ledsone_uk` until `"status":"done"`
+4. Verify `published_at` and `total_inventory` populated on products after sync
+
+**Session Result: PASS — commit 44f16f9 pushed. Production sync not run. Awaiting Piranav approval to start backend and run sync.**

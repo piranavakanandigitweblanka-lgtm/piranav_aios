@@ -585,3 +585,188 @@ ON CONFLICT (store, shopify_id) DO UPDATE SET [all columns] = EXCLUDED.* is a fu
 All changes local only. No commit, push, deploy, or production sync. Awaiting Piranav approval.
 
 **Pre-commit verdict: SAFE TO COMMIT with the banner fix applied.**
+
+---
+
+## Section 8 — Production Sync Preflight (2026-10-26)
+
+### DB connection: Contabo (158.220.99.127:5432/dm_dashboard)
+
+Note: the ph_dashboard MCP tool connects to a different server (169.58.91.229) and does not have access to the dm_dashboard Contabo tables. DB checks were performed via the backend Python venv (read-only queries, no credential values printed).
+
+### Check results
+
+| # | Check | Result | Detail |
+|---|---|---|---|
+| 1 | Branch and commit | PASS | piranv-work @ 139ef2d — matches pushed commit |
+| 2 | Working tree clean | PASS | git status: no staged or unstaged changes |
+| 3 | Remote sync | PASS | origin/piranv-work @ 139ef2d — local matches remote |
+| 4 | Batch fix present in code | PASS | `_upsert_analysis_batched()`, `_ANALYSIS_BATCH_SIZE=500`, `_ANALYSIS_RETRY_DELAYS=(2,5,10)` confirmed at lines 526–637 |
+| 5 | Error banner sub-text | PASS | JSX line 269: "Ranking and mismatch analysis may reflect a previous sync period..." |
+| 6a | `published_at` column in DB | PASS | Column exists in `seo_url_product` |
+| 6b | `total_inventory` column in DB | PASS | Column exists in `seo_url_product` |
+| 6c | `published_at` / `total_inventory` values populated | NOTE | Both columns are NULL for all 5,336 rows — populated on next sync (columns were added after last successful sync) |
+| 6d | Fields in GraphQL query | PASS | `publishedAt` and `totalInventory` in `_PRODUCT_QUERY` (lines 176–177) |
+| 6e | Fields in DB upsert | PASS | `published_at`, `total_inventory` in INSERT and ON CONFLICT DO UPDATE (lines 221–243) |
+| 7 | Backend running | NOTE | Port 8000 not listening — backend not running. Sync status is in-memory; will be `idle` on next start |
+| 8 | Active/stuck DB sessions | PASS | 0 active or idle-in-transaction sessions on dm_dashboard |
+| 9 | Ungranted DB locks | PASS | 0 ungranted locks |
+| 10 | seo_url_product rows | PASS | 5,336 rows present |
+| 11 | seo_url_analysis rows | PASS | 5,336 rows, all `computed_at = 2026-10-26 12:13:19` (consistent — 1 distinct minute) |
+| 12 | Production sync triggered | PASS — NOT run | Awaiting Piranav approval |
+
+### Pre-sync state summary
+
+- DB is clean: no locks, no stuck sessions
+- Both SEO tables exist with 5,336 rows each
+- Analysis data is consistent (all from one sync run, same timestamp)
+- `published_at` and `total_inventory` columns exist but values are NULL — will be populated by the next sync
+- Backend must be started before sync can be triggered
+- The batch fix (commit 139ef2d) is the HEAD commit and matches origin
+
+**Pre-sync verdict: CLEAR — safe to start backend and run production sync when approved.**
+
+---
+
+## Section 9 — Live Verification + Code Defect Discovery (2026-10-26)
+
+### Critical finding — `conn.executemany` does not exist in psycopg3
+
+**Confirmed via local inspection:**
+
+```
+psycopg version: 3.2.10
+Connection execute methods: ['execute']          # NO executemany
+Cursor execute methods: ['execute', 'executemany']  # executemany is on Cursor only
+```
+
+**Line 575 of `seo_url_intelligence.py` (commit 139ef2d):**
+```python
+conn.executemany(_ANALYSIS_UPSERT_SQL, params)   # ← WRONG — AttributeError
+```
+
+**Correct pattern (as used in the same codebase — link_opportunities.py:325, schema.py:288, 425):**
+```python
+conn.cursor().executemany(_ANALYSIS_UPSERT_SQL, params)   # ← CORRECT
+```
+
+In psycopg3, `Connection.execute()` exists as a shorthand for a single statement. `Connection.executemany()` does NOT exist. `executemany` is a method on `Cursor` only.
+
+The local error screenshot (`'Connection' object has no attribute 'executemany'`) is confirmed as a real code defect in commit 139ef2d.
+
+### Live environment vs local environment
+
+| Environment | Code version | executemany bug | Sync at 13:07 possible? |
+|---|---|---|---|
+| Contabo VPS (live, 158.220.99.127) | Pre-139ef2d (not deployed) | Not present | YES — old code used conn.execute() loop |
+| Local dev (Windows, localhost:8499) | 139ef2d (batch fix) | PRESENT | NO — will fail with AttributeError |
+
+The live summary data (`lastSync: 2026-10-26T13:07:43`, 5,336 products, ranking/mismatch counts) reflects a sync run on the VPS at 13:07 using the OLD code (single-connection loop, no batch fix). Commit 139ef2d was not on the VPS at that time and has NOT been deployed to it.
+
+### Sync status endpoint — what proves success vs error
+
+`GET /api/seo-url-intelligence/sync/status?store=ledsone_uk` returns:
+
+| Response | Meaning |
+|---|---|
+| `{"status": "idle"}` | Backend restarted since last sync; no sync run yet this session |
+| `{"status": "computing"}` | Sync in progress |
+| `{"status": "error", "error": "..."}` | Sync failed — error message in `error` field |
+| `{"status": "done", "productsUpserted": N, "analysisRows": N, "gscCurrentPeriod": {...}, ...}` | Sync COMPLETED SUCCESSFULLY |
+
+**The `summary` endpoint CANNOT confirm sync success.** It reads from the DB unconditionally, returning data from any previous sync. A `summary` result of `ok=true` with product counts proves the DB contains rows — not that a new sync completed.
+
+**The only confirmation of sync success is `sync/status` returning `{"status": "done", ...}`.**
+
+### Current live evidence — what is proven vs unverified
+
+**PROVEN (from summary endpoint):**
+- 5,336 products in `seo_url_product`
+- 5,336 analysis rows in `seo_url_analysis`
+- All analysis rows share a single `computed_at` timestamp (consistent)
+- `lastSync: 2026-10-26T13:07:43+01:00` — at least one sync completed before that time
+- Ranking/mismatch distribution is non-zero and plausible
+
+**UNVERIFIED:**
+- Whether `sync/status` returns `done`, `idle`, or `error` on the live VPS right now (in-memory — resets on backend restart)
+- Whether the 13:07 sync used the old or new analysis upsert path (old code — pre-139ef2d — is confirmed)
+- Whether `published_at` and `total_inventory` are populated on the live VPS (the 13:07 sync used old _PRODUCT_QUERY without those fields)
+
+**MANUAL BROWSER VERIFICATION REQUIRED:**
+Navigate to the SEO URL Intelligence page, open browser DevTools → Network, and check the response from:
+`/api/seo-url-intelligence/sync/status?store=ledsone_uk`
+
+Confirm `status` field is `"done"` (not `"idle"` or `"error"`) to prove the in-memory state reflects a completed sync this session.
+
+### Actions performed this session
+
+- Code inspected (read-only)
+- No code changes, commits, pushes, deployments, or syncs performed
+- No production data modified
+
+### Status: BLOCKED — code defect must be fixed before local sync can succeed
+
+**Defect:** `conn.executemany()` → must be `conn.cursor().executemany()` (line 575, `seo_url_intelligence.py`)
+**Fix scope:** 1 line. Does not affect logic, batch size, retry, or transaction structure.
+**Next action:** Piranav approves fix → apply, re-run tests, commit, push.
+
+---
+
+## Section 10 — executemany Defect Fix + Regression Test (2026-10-26)
+
+### Git state at fix
+
+| Item | Value |
+|---|---|
+| Branch | piranv-work |
+| HEAD before fix | 139ef2d (Fix SEO URL analysis batch upsert reliability) |
+| Working tree before fix | Clean |
+| Origin tracking | piranv-work up to date with origin/piranv-work |
+| Defect confirmed in 139ef2d | YES — `git show 139ef2d:...seo_url_intelligence.py | grep executemany` → line 575 |
+
+### Defect
+
+**File:** `backend/app/dashboard_pages/seo_url_intelligence.py`, line 575
+
+In psycopg3, `executemany` is a method on `Cursor`, not on `Connection`. `Connection.execute()` exists as a shorthand for single statements only.
+
+| | Code |
+|---|---|
+| Broken (139ef2d) | `conn.executemany(_ANALYSIS_UPSERT_SQL, params)` |
+| Fixed | `conn.cursor().executemany(_ANALYSIS_UPSERT_SQL, params)` |
+
+Pattern confirmed from existing codebase: `link_opportunities.py:325`, `schema.py:288`, `schema.py:425` all use `conn.cursor().executemany(...)`.
+
+### Diff
+
+```diff
+-                    conn.executemany(_ANALYSIS_UPSERT_SQL, params)
++                    conn.cursor().executemany(_ANALYSIS_UPSERT_SQL, params)
+```
+
+One character change. Logic, batch size, retry structure, and commit placement are all unchanged.
+
+### Test file update
+
+All 7 existing tests were wired to `conn.executemany` — they passed before only because `MagicMock()` auto-creates any attribute silently. After the fix, mocks rewired to `conn.cursor.return_value.executemany`. Added `_cursor_of()` helper for clarity.
+
+**T8 regression test added:** `test_cursor_executemany_called_not_conn_executemany` — explicitly asserts `conn.cursor()` was called, `cursor.executemany` was called, and `conn.executemany` call count is 0. This test would have caught the defect in 139ef2d had it existed at the time.
+
+### Test results (8/8 PASS)
+
+```
+backend/tests/test_seo_url_analysis_batch.py — 8 passed in 1.15s
+
+T1  test_successful_single_batch                          PASS
+T2  test_two_batches_committed_independently              PASS
+T3  test_transient_failure_then_success                   PASS
+T4  test_all_retries_exhausted_raises                     PASS
+T5  test_non_transient_error_no_retry                     PASS
+T6  test_row_count_integrity                              PASS
+T7  test_retry_delay_sequence                             PASS
+T8  test_cursor_executemany_called_not_conn_executemany   PASS
+```
+
+### Status
+
+Fix local only. Not committed or pushed. No production sync, deploy. Awaiting Piranav approval.

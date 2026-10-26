@@ -156,3 +156,33 @@ T7 delay sequence
 ### Production sync and deployment
 
 NOT run. Local only. Dev tunnel not restarted.
+
+---
+
+## Commit: psycopg Cursor Fix (2026-10-26)
+
+**Commit hash:** `44f16f9`
+**Branch:** `piranv-work`
+**Push result:** `139ef2d..44f16f9 piranv-work -> piranv-work` ✓
+
+### Root cause
+
+In psycopg3 (v3.2.10), `executemany` is a method on `Cursor`, not on `Connection`. The previous commit `139ef2d` called `conn.executemany()` which raises `AttributeError: 'Connection' object has no attribute 'executemany'`. The fix is `conn.cursor().executemany()` — matching the pattern used in the rest of the codebase.
+
+### Files committed
+
+| File | Change |
+|---|---|
+| `backend/app/dashboard_pages/seo_url_intelligence.py` | `conn.executemany(` → `conn.cursor().executemany(` (1 line) |
+| `backend/tests/test_seo_url_analysis_batch.py` | Mocks rewired to `cursor.return_value.executemany`; T8 regression test added |
+
+### Test results
+
+```
+8/8 PASS — 1.08s
+T1–T7 unchanged logic | T8 NEW regression (asserts conn.executemany never called)
+```
+
+### Production sync and deployment
+
+NOT run. Awaiting Piranav approval to start backend and trigger sync.
