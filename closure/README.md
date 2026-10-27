@@ -3792,3 +3792,21 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 **Test Results:** 24/24 PASS | **Build:** PASS (970ms) | **Git pull:** Already up to date
 
 **Session Result: PASS — 3 new files, 3 modified files. Not committed. Awaiting Piranav instruction.**
+
+---
+
+### 2026-10-27 — SKU Stock Lookup — Results Table Enhancement
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SKU-STOCK-TABLE-001 | Add results table to SkuStockLookup.jsx — client-side CSV parse, pagination (PAGE_SIZE 50), status pills, priority column order | `dm-dashboard/frontend/src/admin/pages/SkuStockLookup.jsx` | `evidence/dm-dashboard/sku-stock-lookup-implementation-2026-10-27.md` (Task 5 section) | Not committed — awaiting Piranav instruction | YES | UAM grant required post-deploy | Piranav: commit + push both repos, deploy, then grant `tools.SkuStockLookup` to self via UAM page | PASS |
+| SKU-STOCK-TABLE-PROMPT | Prompt saved before execution (Rule 1) | `prompts/dm-dashboard/sku-stock-lookup-results-table-2026-10-27.md` | PROMPT_REGISTER.md | N/A | YES | NONE | NONE | PASS |
+| SKU-STOCK-TABLE-VALID | Validation record updated | `validation/piranav/sku-stock-lookup-implementation-2026-10-27-validation.md` | Same | N/A | YES | NONE | NONE | PASS |
+
+**Approach:** `blob.text()` on existing response blob — zero backend changes, single DB query, single network call.
+**Build:** PASS — 691ms, 0 errors
+**CSS verified:** jreq-pill-solid-green/red/amber + jreq-scroll + jreq-pagectl all confirmed in dashboard.css
+**Scope note:** No DB writes. No new endpoints. No changes to Shopify/Avasam inventory.
+
+**Session Result: PASS — frontend-only enhancement. Not committed. Awaiting Piranav instruction.**
+

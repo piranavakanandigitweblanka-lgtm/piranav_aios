@@ -128,6 +128,38 @@ Python compile: `app/main.py` — **PASS**
 
 ---
 
+---
+
+## Task 5 — Results Table Enhancement (2026-10-27)
+
+### What changed
+`frontend/src/admin/pages/SkuStockLookup.jsx` — complete rewrite to add results table.
+
+### Approach
+`blob.text()` called on the existing response blob before `URL.createObjectURL()`.
+Single network call, single DB query. No backend changes.
+
+### Client-side CSV parser
+`parseCsv(text)` — RFC 4180 compliant. Handles quoted fields with `""` escaping,
+CRLF and LF line endings, empty trailing lines. Returns `{ header, rows }`.
+
+### Table behaviour
+- Columns rendered in priority order: SKU, Quantity, UK_Current_Stock, Stock_Status, Matched_By, Matched_Product_ID, then all other original columns
+- `Stock_Status` shown as solid-colour pill: MATCHED=green, UNMATCHED=red, AMBIGUOUS=amber
+- `UK_Current_Stock` for UNMATCHED/AMBIGUOUS rows shown as `—` (blank, never zero)
+- Row counter shown in `#` column
+
+### Pagination
+- PAGE_SIZE = 50
+- Top bar: "Showing X–Y of Z rows" + jreq-pagectl prev/next (only when >1 page)
+- Bottom jreq-pagebar: first/prev/next/last + "Z rows · page X of Y"
+- `setPage(1)` on every new upload
+
+### Build result
+`npm run build` — PASS, 691ms, 0 errors
+
+---
+
 ## Git Status (post-implementation)
 
 No commits made. All changes in working tree on `piranv-work`.
