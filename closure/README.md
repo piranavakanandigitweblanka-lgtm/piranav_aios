@@ -3742,3 +3742,53 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 4. Verify `published_at` and `total_inventory` populated on products after sync
 
 **Session Result: PASS — commit 44f16f9 pushed. Production sync not run. Awaiting Piranav approval to start backend and run sync.**
+
+---
+
+### 2026-10-27 — Avasam UK Stock Retrieval
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AVASAM-STOCK-001 | Retrieve current UK stock for all 2,656 Avasam SKUs from ledsone-db-mcp and produce extended output CSV | `evidence/avasam/avasam_uk_current_stock_2026-10-27.csv` | `evidence/avasam/avasam_stock_update_2026-10-27_evidence.md` | Not committed — awaiting Piranav instruction | YES | NONE | Piranav: review 25 AMBIGUOUS SKUs and 3 single unmatched (ENC3548, SWGS1GBL1, PHSF1PWR40WH???). Commit when ready. | PASS |
+| AVASAM-STOCK-PROMPT | Prompt saved before execution (Rule 1) | `prompts/reusable/avasam-uk-stock-retrieve-extended-output-2026-10-27.md` | PROMPT_REGISTER.md row added | N/A | YES | NONE | NONE | PASS |
+| AVASAM-STOCK-VALID | Validation report saved | `validation/piranav/avasam-stock-update-2026-10-27-validation.md` | Same | N/A | YES | NONE | NONE | PASS |
+
+**Validation Summary:**
+- Input rows: 2,656 | Output rows: 2,656 ✓
+- Matched: 2,605 (98.1%) | Unmatched: 26 | Ambiguous: 25
+- Zero stock: 812 | Positive stock: 1,793
+- DB rows scanned: 45,314
+
+**Session Result: PASS — output CSV at `evidence/avasam/avasam_uk_current_stock_2026-10-27.csv`. Not committed — awaiting Piranav instruction.**
+
+---
+
+### 2026-10-27 — Avasam UK Stock CSV Tool — Phase 1 Discovery
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AVASAM-P1-DISC-001 | Phase 1 discovery: AIOS assets, DM Dashboard architecture, git safety, DB integration, UAM, implementation plan | `evidence/avasam/avasam-uk-stock-csv-tool-phase1-discovery-2026-10-27.md` | Same | Not committed | YES | 3 approvals required (see evidence section J) | Piranav reviews findings and approves Phase 2 | PASS |
+| AVASAM-P1-PROMPT | Prompt saved before execution (Rule 1) | `prompts/dm-dashboard/avasam-uk-stock-csv-tool-phase1-discovery-2026-10-27.md` | PROMPT_REGISTER.md | N/A | YES | NONE | NONE | PASS |
+
+**Key Findings:**
+- `inventory.*` already accessible via `get_business_conn()` — no new DB pool or env var needed
+- Upload pattern exists in `listing_issues.py` (UploadFile + StreamingResponse)
+- dm-dashboard branch `piranv-work` is clean, safe to pull
+- 2 files to create + 3 files to modify for Phase 2 implementation
+- 3 approvals needed: UAM model, AMBIGUOUS resolution rule, implementation plan sign-off
+
+**Session Result: PASS — Phase 1 discovery complete. Awaiting 3 approvals before Phase 2.**
+
+---
+
+### 2026-10-27 — SKU Stock Lookup — Implementation (Phase 2)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SKU-STOCK-IMPL-001 | Implement SKU Stock Lookup page in DM Dashboard (backend + frontend + tests) | `dm-dashboard/backend/app/dashboard_pages/sku_stock_lookup.py`, `frontend/src/admin/pages/SkuStockLookup.jsx`, `backend/tests/test_sku_stock_lookup.py` | `evidence/dm-dashboard/sku-stock-lookup-implementation-2026-10-27.md` | Not committed — awaiting Piranav instruction | YES | UAM grant required post-deploy | Piranav: commit, push, deploy, then grant `tools.SkuStockLookup` to self via UAM page | PASS |
+| SKU-STOCK-IMPL-PROMPT | Prompt saved before execution (Rule 1) | `prompts/dm-dashboard/sku-stock-lookup-implementation-2026-10-27.md` | PROMPT_REGISTER.md | N/A | YES | NONE | NONE | PASS |
+| SKU-STOCK-IMPL-VALID | Validation saved | `validation/piranav/sku-stock-lookup-implementation-2026-10-27-validation.md` | Same | N/A | YES | NONE | NONE | PASS |
+
+**Test Results:** 24/24 PASS | **Build:** PASS (970ms) | **Git pull:** Already up to date
+
+**Session Result: PASS — 3 new files, 3 modified files. Not committed. Awaiting Piranav instruction.**
