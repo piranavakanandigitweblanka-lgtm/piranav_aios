@@ -3828,3 +3828,39 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 
 **Session Result: PASS — 3 files modified. Not committed. Awaiting Piranav instruction.**
 
+---
+
+### 2026-10-27 — SKU Stock Lookup: AMBIGUOUS Combo SKU Investigation
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SKU-AMB-INV-001 | Investigate why CRSF100BM+PHSH1PBRYB+LSSS300PI+ICST64E2740 is AMBIGUOUS — read-only DB investigation, root cause, fix recommendation | Investigation only — no code changes | `evidence/dm-dashboard/sku-stock-lookup-ambiguous-combo-investigation-2026-10-27.md` | Not committed — investigation only | YES | Fix requires Piranav approval before implementation | Review recommendation and approve fix scope | PASS |
+| SKU-AMB-INV-PROMPT | Prompt saved before execution (Rule 1) | `prompts/dm-dashboard/sku-stock-lookup-ambiguous-combo-investigation-2026-10-27.md` | PROMPT_REGISTER.md | N/A | YES | NONE | NONE | PASS |
+| SKU-AMB-INV-VALID | Validation record created | `validation/piranav/sku-stock-lookup-ambiguous-combo-investigation-2026-10-27-validation.md` | Same | N/A | YES | NONE | NONE | PASS |
+
+**Root cause (confirmed from DB):**
+- Input `CRSF100BM+PHSH1PBRYB+LSSS300PI+ICST64E2740` matches **two** product records:
+  - Product 6304 via `p.sku` (direct combo) — UK stock = 66
+  - Product 36517 (ENC8523) via `p.sku_original` (ENC alias, sku_original = combo string) — UK stock = 66
+- Current `_fetch_stock_map` logic sees two different product IDs → AMBIGUOUS (correct by current rules, false positive by business meaning)
+
+**Fix recommended (awaiting approval):**
+- In `_fetch_stock_map`: when the **input SKU contains `+`**, skip indexing into `by_sku_original`. Combo strings should only match via `p.sku`, never via another product's `p.sku_original`. Aligns with Conduit Stock COMBO RULE (which queries `p.sku` only).
+
+**Session Result: PASS — Investigation complete. No code changes. Recommendation ready for approval.**
+
+---
+
+### 2026-10-27 — SKU Stock Lookup: Fix False AMBIGUOUS for Combo SKUs
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SKU-AMB-FIX-001 | Fix _fetch_stock_map: skip sku_original indexing when input SKU contains '+' — prevents ENC alias records from triggering false AMBIGUOUS | `backend/app/dashboard_pages/sku_stock_lookup.py`, `backend/tests/test_sku_stock_lookup.py` | `evidence/dm-dashboard/sku-stock-lookup-ambiguous-combo-investigation-2026-10-27.md` (updated with fix) | Not committed — awaiting Piranav instruction | YES | NONE | Piranav: commit + push both repos | PASS |
+| SKU-AMB-FIX-PROMPT | Prompt saved before execution (Rule 1) | `prompts/dm-dashboard/sku-stock-lookup-combo-ambiguous-fix-2026-10-27.md` | PROMPT_REGISTER.md | N/A | YES | NONE | NONE | PASS |
+| SKU-AMB-FIX-VALID | Validation record created | `validation/piranav/sku-stock-lookup-combo-ambiguous-fix-2026-10-27-validation.md` | Same | N/A | YES | NONE | NONE | PASS |
+
+**Fix:** `"+" not in sku_orig` guard on one line in `_fetch_stock_map`. Combo string `CRSF100BM+PHSH1PBRYB+LSSS300PI+ICST64E2740` now returns MATCHED, product 6304, stock 66.
+**Tests:** 36/36 PASS (30 prior + 6 new). **Build:** PASS — 878ms. **Git diff:** 2 files only.
+
+**Session Result: PASS — Fix implemented. Not committed. Awaiting Piranav instruction.**
+
