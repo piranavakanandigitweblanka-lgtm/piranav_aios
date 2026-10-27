@@ -3810,3 +3810,21 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 
 **Session Result: PASS — frontend-only enhancement. Not committed. Awaiting Piranav instruction.**
 
+---
+
+### 2026-10-27 — SKU Stock Lookup — Single SKU Search Tab
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SKU-SINGLE-001 | Add Single SKU Search tab — new GET /single endpoint, tab selector UI, Enter key submit, result display with status pills | `backend/app/dashboard_pages/sku_stock_lookup.py`, `frontend/src/admin/pages/SkuStockLookup.jsx`, `backend/tests/test_sku_stock_lookup.py` | `evidence/dm-dashboard/sku-stock-lookup-single-sku-search-2026-10-27.md` | Not committed — awaiting Piranav instruction | YES | UAM grant required post-deploy (same tools.SkuStockLookup key) | Piranav: commit + push both repos, deploy | PASS |
+| SKU-SINGLE-PROMPT | Prompt saved before execution (Rule 1) | `prompts/dm-dashboard/sku-stock-lookup-single-sku-search-2026-10-27.md` | PROMPT_REGISTER.md | N/A | YES | NONE | NONE | PASS |
+| SKU-SINGLE-VALID | Validation record created | `validation/piranav/sku-stock-lookup-single-sku-search-2026-10-27-validation.md` | Same | N/A | YES | NONE | NONE | PASS |
+
+**Tests:** 30/30 PASS (24 original + 6 new single-SKU tests)
+**Build:** PASS — 658ms, 0 errors
+**Endpoint:** GET `/api/sku-stock-lookup/single?sku=` — reuses `_fetch_stock_map`, no SQL duplication
+**Auth:** Same `make_task_auth("tools.SkuStockLookup")` — no UAM changes needed
+**Zero stock:** Displayed as "0" in Single SKU tab (confirmed warehouse value, not blank)
+
+**Session Result: PASS — 3 files modified. Not committed. Awaiting Piranav instruction.**
+
