@@ -31,3 +31,4 @@ Deduplicate: Combo SKUs that also appear in inventory.products are kept as Combo
 | LSCY290BU-listings-DE-2026-10-19.csv | LSCY290BU | 33 | 31 | 8 | 2026-10-19 |
 | LSCY290NB-listings-DE-2026-10-19.csv | LSCY290NB | 25 | 25 | 4 | 2026-10-19 |
 | LSCY290YB-listings-DE-2026-10-19.csv | LSCY290YB | 32 | 27 | 12 | 2026-10-19 |
+| LSCY290BM-listings-DE-2026-10-19.csv | LSCY290BM | 83 | 75 | 18 | 2026-10-19 |

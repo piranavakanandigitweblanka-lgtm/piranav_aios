@@ -59,6 +59,194 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-10-28 — DM Campaign Overall Performance — Discovery Audit
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-28-001 | Read-only full audit of DM Dashboard: Sales & Performance → DM Campaign — Overall Performance. Traced navigation, components, 3 API endpoints, SQL queries, 3 data sources, KPI formulas, snapshot caching, and risks. | `evidence/piranav/dm-campaign-overall-performance-audit-2026-10-28.md` | `evidence/piranav/dm-campaign-overall-performance-audit-2026-10-28.md` + `validation/piranav/dm-campaign-overall-performance-audit-2026-10-28.md` | No code changed — audit only | YES | NONE | Live-verify snapshot table contents; confirm sub_source_id=38/market_place=23 mapping; get Piranav/GPT approval before any modification | PASS |
+
+**Prompt saved:** `prompts/discovery/dm-dashboard-page-audit.md` (Rule 1 — saved before task executed)
+**10-folder check:**
+1. Prompt — DONE: `prompts/discovery/dm-dashboard-page-audit.md`
+2. Evidence — DONE: `evidence/piranav/dm-campaign-overall-performance-audit-2026-10-28.md`
+3. Capability — N/A: no new capability created; existing DM Dashboard capability unchanged
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added below
+6. Validation — DONE: `validation/piranav/dm-campaign-overall-performance-audit-2026-10-28.md`
+7. Source-map — N/A: no new data source introduced (all existing: google_ads, listings, order_management)
+8. Docs — N/A: audit evidence covers this; no new topic area
+9. Handover — N/A: no handover required
+10. Reports — N/A: audit is internal discovery, not a reportable data export
+11. Duplicate-risk — N/A: evidence file is new and unique; confirmed no duplicate
+
+---
+
+### 2026-10-28 — DM Campaign Stock Status Discovery
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-28-010 | Read-only discovery for DM Campaign product stock status feature. Authoritative source confirmed: `inventory.local_inventory_current_stock_location_wise` on Business DB (same instance as PRODUCT_PERF_QUERY — no cross-DB issue). Full mapping chain verified live: product_item_id → variant_id → variant SKU (parent SKU=NULL — critical) → inventory.products → UK stock. Coverage: 8,791 products, 99.9% SKU, 97.7% UK stock row, 90.9% In Stock, 6.8% Out of Stock, 2.3% Unknown. Each product_item_id = unique variant SKU — no aggregation needed. `_classify_stock(uk_stock, inventory_bool, product_matched)` contract defined. SQL: 2 LEFT JOINs on `l.sku`. Frontend: filter + column (colSpan 9→10) + CSV + modal. 9 tests required. | `evidence/piranav/dm-campaign-stock-status-discovery-2026-10-28.md` | `evidence/piranav/dm-campaign-stock-status-discovery-2026-10-28.md` + `validation/piranav/dm-campaign-stock-status-discovery-2026-10-28.md` | Read-only — no commit | YES | None — awaiting Piranav approval to proceed to implementation | Piranav to approve, then implement Stage 1 backend (SQL JOINs + _classify_stock + product dict) and Stage 2 frontend | PASS |
+
+**Prompt saved:** `prompts/discovery/dm-campaign-stock-status-discovery.md`
+**10-folder check:**
+1. Prompt — DONE: `prompts/discovery/dm-campaign-stock-status-discovery.md`
+2. Evidence — DONE: `evidence/piranav/dm-campaign-stock-status-discovery-2026-10-28.md`
+3. Capability — N/A: discovery session; no capability created
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added
+6. Validation — DONE: `validation/piranav/dm-campaign-stock-status-discovery-2026-10-28.md`
+7. Source-map — N/A: `inventory.local_inventory_current_stock_location_wise` already used by sku_stock_lookup.py; no new source introduced
+8. Docs — N/A: no new topic area
+9. Handover — N/A: same workflow; Piranav approves then implementation begins
+10. Reports — N/A: discovery session, not a data export
+11. Duplicate-risk — N/A: new uniquely-named evidence files; no duplicate
+
+---
+
+### 2026-10-28 — DM Campaign Stock Status Implementation
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-28-011 | Implement In Stock / Out of Stock / Unknown status in DM Campaign Products page. Backend: `_classify_stock(uk_stock, inventory_bool, product_matched)` + `stock_lookup` CTE (DISTINCT ON sku) + product dict fields. Frontend: `STOCK_META` + `StockBadge`, stock state + filter, Stock column (colSpan 9→10), CSV column, modal rows. 74 tests PASS. Build clean. | `prompts/dm-dashboard/dm-campaign-stock-status-implementation.md` | `evidence/piranav/dm-campaign-stock-status-implementation-2026-10-28.md` + `validation/piranav/dm-campaign-stock-status-implementation-2026-10-28.md` | Uncommitted — pending Piranav commit instruction | YES | Live browser verification pending (need venv: `source backend/venv/Scripts/activate`) | Piranav to commit and push when ready | PASS |
+
+**Prompt saved:** `prompts/dm-dashboard/dm-campaign-stock-status-implementation.md`
+**10-folder check:**
+1. Prompt — DONE: `prompts/dm-dashboard/dm-campaign-stock-status-implementation.md`
+2. Evidence — DONE: `evidence/piranav/dm-campaign-stock-status-implementation-2026-10-28.md`
+3. Capability — N/A: extending existing DM Campaign feature; no new standalone capability
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added below
+6. Validation — DONE: `validation/piranav/dm-campaign-stock-status-implementation-2026-10-28.md`
+7. Source-map — N/A: source already confirmed in AIOS-2026-10-28-010 discovery; no new source introduced
+8. Docs — N/A: no new topic area
+9. Handover — N/A: all work in same session; Piranav commits when ready
+10. Reports — N/A: implementation task, not a data export
+11. Duplicate-risk — N/A: new uniquely-named files; no duplicate
+
+---
+
+### 2026-10-28 — DM Campaign Owner Tag Implementation Plan
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-28-006 | Read-only implementation plan for Owner column and Owner filter in DM Campaign Products tab. Approved tag dictionary confirmed (SONYA_TAGS 7 tags, SAJEEPAN_TAGS 8 tags). CRITICAL: feasibility audit's proposed data source (`sales_cache.collection_tag_mapping_products`, App DB) CANNOT be SQL-joined to PRODUCT_PERF_QUERY which runs on Business DB. Correct source: `listings.shopify_listing_tag` (same DB, 99.96% coverage). SQL design for 3 new CTEs, Python `_classify_owner(tags, has_listing)`, 9 frontend changes, 40+ test cases, and 4-stage implementation sequence produced. `Sonya`/`Sonya_N_C`/`Sonya Old` listed as PENDING (not in SONYA_TAGS until Piranav confirms). Feasibility audit evidence updated to correct cross-DB source error. | `evidence/piranav/dm-campaign-owner-tag-implementation-plan-2026-10-28.md` | `evidence/piranav/dm-campaign-owner-tag-implementation-plan-2026-10-28.md` + `validation/piranav/dm-campaign-owner-tag-implementation-plan-2026-10-28.md` | No code changed — planning only | YES | Piranav must approve plan (esp. P1–P4 decisions) before Stage 1 begins. Also: should `Sonya`/`Sonya_N_C`/`Sonya Old` be added to SONYA_TAGS? | Piranav to approve plan, then proceed with Stage 1 (backend constants + function + SQL + product dict) | PASS |
+
+**Prompt saved:** `prompts/discovery/dm-campaign-owner-tag-implementation-plan.md`
+**Critical correction documented:** Feasibility audit proposed wrong data source — `sales_cache` is App DB, cannot JOIN with Business DB. Correct source: `listings.shopify_listing_tag`.
+**10-folder check:**
+1. Prompt — DONE: `prompts/discovery/dm-campaign-owner-tag-implementation-plan.md`
+2. Evidence — DONE: `evidence/piranav/dm-campaign-owner-tag-implementation-plan-2026-10-28.md`
+3. Capability — N/A: planning session; no capability created or changed
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added
+6. Validation — DONE: `validation/piranav/dm-campaign-owner-tag-implementation-plan-2026-10-28.md`
+7. Source-map — N/A: `listings.shopify_listing_tag` confirmed in prior session; no new source introduced
+8. Docs — N/A: no new topic area
+9. Handover — N/A: plan is complete; Piranav reviews and approves before next session implements
+10. Reports — N/A: planning session, not a data export
+11. Duplicate-risk — N/A: new evidence file in existing piranav folder; confirmed no duplicate
+
+---
+
+### 2026-10-28 — DM Campaign Owner All-Unresolved Investigation
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-28-009 | Read-only investigation: all DM Campaign products show Owner = Unresolved after Stage 1+2 deployment. Root cause confirmed: stale snapshot in `public.admin_dm_campaign_products_snapshot` (App DB). Snapshot was written pre-Stage-1 — product objects lack `owner` key — frontend fallback `r.owner ?? 'Unresolved'` fires for every row. No code defect. No SQL bug. No regex mismatch. Fix: click Refresh button (forces snapshot recompute with new CTEs) OR set any custom date range (bypasses snapshot entirely). No code change required. | `evidence/piranav/dm-campaign-owner-unresolved-investigation-2026-10-28.md` | `evidence/piranav/dm-campaign-owner-unresolved-investigation-2026-10-28.md` | Read-only — no commit | YES | None — fix is operational (click Refresh), not a code change | Click Refresh on Products tab to trigger snapshot recompute. Confirm owners resolve after refresh. | PASS |
+
+---
+
+### 2026-10-28 — DM Campaign Stage 2 Frontend Owner UI
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-28-008 | Stage 2 frontend implementation of Owner UI in `DmCampaign.jsx`. Added: `OWNER_META` constant (5 colours), `OwnerBadge` component with `?? 'Unresolved'` fallback, `owner` state, owner filter in `filtered` useMemo, Owner `<select>` dropdown (6 options), Owner `<th>` column header, Owner `<td>` cell, both `colSpan={8}` → `colSpan={9}`, CSV header + values include Owner, ProductDetailModal Owner row + Shopify Tags chip row with `t.trim()` display and "No tags" fallback. Build PASS 5.48s. Backend tests 63/63 PASS. Browser/UI not verified (no dev server). No backend changes. No commit/push. | `evidence/piranav/dm-campaign-stage2-frontend-owner-2026-10-28.md` | `evidence/piranav/dm-campaign-stage2-frontend-owner-2026-10-28.md` + `validation/piranav/dm-campaign-stage2-frontend-owner-2026-10-28.md` | commit `6ed9d52` on `piranv-work` — pushed to `websitetecteam-arch/dm-dashboard` 2026-10-28 | YES | Browser/UI verification still pending | Verify UI live; merge piranv-work → main when Piranav approves | PASS |
+
+**Prompt saved:** `prompts/dm-dashboard/dm-campaign-stage2-frontend-owner.md`
+**10-folder check:**
+1. Prompt — DONE: `prompts/dm-dashboard/dm-campaign-stage2-frontend-owner.md`
+2. Evidence — DONE: `evidence/piranav/dm-campaign-stage2-frontend-owner-2026-10-28.md`
+3. Capability — N/A: Owner UI extends existing DM Campaign capability; no new capability class
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added
+6. Validation — DONE: `validation/piranav/dm-campaign-stage2-frontend-owner-2026-10-28.md`
+7. Source-map — N/A: no new data source; all fields from existing `owner`/`shopifyTags` backend keys
+8. Docs — N/A: no new topic area
+9. Handover — N/A: same workflow; Piranav verifies and approves commit
+10. Reports — N/A: implementation task, not a data export
+11. Duplicate-risk — N/A: new uniquely-named evidence/validation files; no duplicate
+
+---
+
+### 2026-10-28 — DM Campaign Stage 1 Backend Owner Classification
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-28-007 | Stage 1 backend implementation of product Owner classification in `dm_campaign.py`. Added SONYA_TAGS (7) and SAJEEPAN_TAGS (8) frozensets; added `_classify_owner(tags, has_listing)` returning Sonya/Sajeepan/No Tag/Conflict/Unresolved; added 3 SQL CTEs (product_pids, owner_parent, owner_tags) to PRODUCT_PERF_QUERY using `listings.shopify_listing_tag` (Business DB); extended final SELECT with `ot.tags, COALESCE(ot.has_listing, false)`; added `owner` and `shopifyTags` keys to product dict. Created `backend/tests/test_dm_campaign.py` with 63 unit tests — 63/63 PASS in 5.44s. `t.strip().lower()` normalization confirmed correct (leading spaces in DB). Frontend unchanged. No commit/push. | `evidence/piranav/dm-campaign-stage1-backend-owner-2026-10-28.md` | `evidence/piranav/dm-campaign-stage1-backend-owner-2026-10-28.md` + `validation/piranav/dm-campaign-stage1-backend-owner-2026-10-28.md` | commit `6ed9d52` on `piranv-work` — pushed to `websitetecteam-arch/dm-dashboard` 2026-10-28 | YES | P1–P3 decisions still open (sonya pending tags; Sixnyne class; Conflict investigation) | None — Stage 1 complete and committed | PASS |
+
+**Prompt saved:** `prompts/dm-dashboard/dm-campaign-stage1-backend-owner.md`
+**10-folder check:**
+1. Prompt — DONE: `prompts/dm-dashboard/dm-campaign-stage1-backend-owner.md`
+2. Evidence — DONE: `evidence/piranav/dm-campaign-stage1-backend-owner-2026-10-28.md`
+3. Capability — N/A: no new capability created; owner classification extends existing DM Campaign capability
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added
+6. Validation — DONE: `validation/piranav/dm-campaign-stage1-backend-owner-2026-10-28.md`
+7. Source-map — N/A: `listings.shopify_listing_tag` introduced and confirmed in prior session; no new source
+8. Docs — N/A: no new topic area
+9. Handover — N/A: no person handover; Piranav approves Stage 2 in same workflow
+10. Reports — N/A: implementation task, not a data export
+11. Duplicate-risk — N/A: evidence and validation files are new and uniquely named; confirmed no duplicate
+
+---
+
+### 2026-10-28 — DM Campaign Owner Tag Discovery
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-28-005 | Read-only live DB discovery of actual Shopify product owner tags for 5,124 DM campaign products. Produced tag frequency table, Sonya/Sajeepan candidate tag lists, conflict rate (730 products = 15.3% with broad candidate set), data quality finding (leading spaces require strip()), and 8 questions for Piranav. Feasibility evidence corrected: `_classify_owner()` must use `t.strip().lower()`. | `evidence/piranav/dm-campaign-owner-tag-discovery-2026-10-28.md` | `evidence/piranav/dm-campaign-owner-tag-discovery-2026-10-28.md` + `validation/piranav/dm-campaign-owner-tag-discovery-2026-10-28.md` | No code changed — read-only query session | YES | Piranav must confirm 8 questions (Q1–Q8) before implementation can proceed. Tag dictionary not finalised. | Piranav to confirm SONYA_TAGS and SAJEEPAN_TAGS canonical list; then proceed with implementation from feasibility audit plan | PASS |
+
+**Prompt saved:** `prompts/discovery/dm-campaign-owner-tag-discovery.md` (Rule 1 — captured retroactively; execution preceded save due to context compaction)
+**Feasibility evidence corrected:** `_classify_owner()` updated from `t.lower()` to `t.strip().lower()` in `evidence/piranav/dm-campaign-owner-tag-feasibility-2026-10-28.md`
+**10-folder check:**
+1. Prompt — DONE: `prompts/discovery/dm-campaign-owner-tag-discovery.md`
+2. Evidence — DONE: `evidence/piranav/dm-campaign-owner-tag-discovery-2026-10-28.md`
+3. Capability — N/A: no new system capability; this is a data discovery session
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added
+6. Validation — DONE: `validation/piranav/dm-campaign-owner-tag-discovery-2026-10-28.md`
+7. Source-map — N/A: `listings.shopify_listing_tag` was introduced in prior session and confirmed then; no new source
+8. Docs — N/A: no new topic area
+9. Handover — N/A: no person handover
+10. Reports — N/A: discovery session; tag frequency table is in evidence, not a separate reportable CSV export
+11. Duplicate-risk — N/A: new evidence file in existing piranav evidence folder; confirmed no duplicate
+
+---
+
+### 2026-10-28 — DM Campaign Owner Tag Feasibility Audit
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-28-004 | Read-only feasibility audit for adding Owner (Sonya/Sajeepan/No Tag) classification to DM Campaign Products tab using Shopify product tags. Tags confirmed available in `sales_cache.collection_tag_mapping_products.tags` JSONB, synced daily. Join chain confirmed. 5 backend + 9 frontend changes documented. 6 questions require human approval before implementation. | `evidence/piranav/dm-campaign-owner-tag-feasibility-2026-10-28.md` | `evidence/piranav/dm-campaign-owner-tag-feasibility-2026-10-28.md` + `validation/piranav/dm-campaign-owner-tag-feasibility-2026-10-28.md` | No code changed — feasibility audit only | YES | 6 questions require Piranav/GPT approval (Conflict state, Owner column visibility, tag freshness SLA, tags table ownership, modal scope, Unresolved vs No Tag) | Await Piranav/GPT approval on 6 questions, then implement | PASS |
+
+---
+
+### 2026-10-28 — DM Campaign Post-Sync Verification on main
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-28-003 | Post-sync code verification of DM Campaign — Overall Performance against main HEAD 8427e22. Compared all key files pre/post 304-commit sync. Audit findings confirmed accurate. One architecture change documented: AdminLayout moved from direct lazy import to taskRegistry/GrantedTaskPanel pattern during sync. No functional change to the page. | `evidence/piranav/dm-campaign-overall-performance-audit-2026-10-28.md` (updated, Post-Sync Verification section added) | Same evidence file — post-sync section added | No code changed — verification only. HEAD `8427e22`. | YES | Live-server verification still pending (snapshot table content, sub_source_id mapping) | Await Piranav/GPT approval before any DM Campaign modification | PASS |
+
+---
+
+### 2026-10-28 — dm-dashboard Git Sync to origin/main
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-28-002 | Safe fast-forward of local dm-dashboard main branch to origin/main (304 commits). piranv-work preserved clean. | `evidence/piranav/dm-dashboard-git-sync-main-2026-10-28.md` | `evidence/piranav/dm-dashboard-git-sync-main-2026-10-28.md` | No code authored — sync only. Local HEAD now `8427e22`. | YES | piranv-work branch not yet rebased onto new main | Rebase piranv-work onto main before next PR; get Piranav approval for next DM Campaign modification task | PASS |
+
+---
+
 ### 2026-10-26 — LEDSone FR Shopify Sales Analysis
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
