@@ -156,6 +156,28 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-10-28 — DM Campaign Single-Product Owner=No Tag + Stock=Unknown Root Cause (ENC10233)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-28-012 | Read-only investigation: product `shopify_gb_15388397830530_56874289561986` (SKU ENC10233) shows Owner=No Tag and Stock=Unknown. Owner root cause: `SJNEW26` is not in `SAJEEPAN_TAGS` or `SONYA_TAGS` — exact set membership check after `strip().lower()`, `"sjnew26" != "sj"`. No approved owner tag present. Stock root cause: `inventory_bool=false` on `inventory.products` for ENC10233 (id=43674) — second guard in `_classify_stock()` returns `"Unknown"` before UK stock (real value=0) is evaluated. UK row exists with stock=0 across all warehouses. Modal displaying `0` is correct (real raw stock, not None→0 conversion). All findings verified via live DB queries. No code or data changes made. | `evidence/piranav/dm-campaign-single-product-notag-unknown-ENC10233-2026-10-28.md` | `evidence/piranav/dm-campaign-single-product-notag-unknown-ENC10233-2026-10-28.md` + `validation/piranav/dm-campaign-single-product-notag-unknown-ENC10233-2026-10-28.md` | Read-only — no commit | YES | Piranav must confirm: (1) Is `SJNEW26` approved Sajeepan tag? (2) Is `inventory_bool=False` for ENC10233 intentional or data error? | Piranav decisions on both open questions → raise implementation task if fix approved | PASS |
+
+**Prompt saved:** `prompts/discovery/dm-campaign-single-product-notag-unknown-investigation.md`
+**10-folder check:**
+1. Prompt — DONE: `prompts/discovery/dm-campaign-single-product-notag-unknown-investigation.md`
+2. Evidence — DONE: `evidence/piranav/dm-campaign-single-product-notag-unknown-ENC10233-2026-10-28.md`
+3. Capability — N/A: investigation only; no new capability created
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added below
+6. Validation — DONE: `validation/piranav/dm-campaign-single-product-notag-unknown-ENC10233-2026-10-28.md`
+7. Source-map — N/A: no new data source; all queries on existing schemas
+8. Docs — N/A: no new topic area
+9. Handover — N/A: open questions go to Piranav for decision; no handover to another person
+10. Reports — N/A: investigation, not a data export
+11. Duplicate-risk — N/A: new uniquely-named files; confirmed no duplicate
+
+---
+
 ### 2026-10-28 — DM Campaign Stage 2 Frontend Owner UI
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
