@@ -27,7 +27,7 @@ This is the single folder for all bot-assigned tasks. Two types of tasks live he
 |---|---|---|---|
 | `C1-eod-not-delivered/` | EOD not submitted by 15:00 — write reason + proof | TODAY | PENDING |
 | `C4-uk-impressions-ctr/` | Turn UK impressions into clicks on worst pages | Fri 30 Oct | BLOCKED |
-| `C5-ga4-tracking/` | Fix GA4 purchase tracking on ledsone.co.uk | Fri 30 Oct | 50% |
+| `C5-ga4-tracking/` | Fix GA4 purchase tracking on ledsone.co.uk | Fri 30 Oct | DONE ✓ — fix applied 28 Oct, verify 5 Nov |
 | `C6-de-ctr-decline/` | Stop DE CTR decline (1.24% → 1.10%) | 02 Nov | OPEN |
 
 ---
