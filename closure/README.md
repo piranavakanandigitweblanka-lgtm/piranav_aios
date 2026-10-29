@@ -312,6 +312,28 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-10-29 — Homin GmbH Category Circles: Optional Arrow Setting
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-29-004 | Added `show_arrows` checkbox setting (default: true) to `sections/category-circles.liquid`. Both arrow buttons wrapped in Liquid conditionals. Backward-compatible — absent value resolves to schema default. Scroll/swipe unaffected when OFF. Single file changed, not published. | `sections/category-circles.liquid` | `evidence/piranav/homin-gmbh-shopify-theme-audit-2026-10-29.md` (Appendix B updated) | Not committed — awaiting Piranav git commit instruction | YES | Browser validation pending | Push to staging theme via Shopify CLI; verify toggle in Theme Editor | PASS |
+
+### 2026-10-29 — Homin GmbH Category Circles Fix Implementation
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-29-003 | Implemented 5 bug fixes in `sections/category-circles.liquid`: CC-BUG-001 (arrow overflow), CC-BUG-002 (placeholder contrast 0.35→0.6), CC-BUG-003 (4-item centering), CC-BUG-004 (no-URL span fallback), CC-BUG-005 (items filter label gap). Single file changed, no Shopify data modified, not published. | `sections/category-circles.liquid` | `evidence/piranav/homin-gmbh-shopify-theme-audit-2026-10-29.md` (Appendix B added) | Not committed — awaiting Piranav git commit instruction | YES | Browser validation pending; git commit + Shopify CLI push to staging theme pending | Run `shopify theme push --store homingmbh.myshopify.com` to push to staging theme, then verify visually at 375/768/1440px | PASS |
+
+### 2026-10-29 — Homin GmbH Category Circles Targeted Bug Audit
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-29-002 | Targeted read-only bug audit of `sections/category-circles.liquid`. Inspected section Liquid, CSS, JS, locale keys, template config (index.json), base.css interactions, and settings_data.json. 4 confirmed bugs and 1 potential bug identified. No theme files modified. | `evidence/piranav/homin-gmbh-shopify-theme-audit-2026-10-29.md` (Appendix A added) | Same evidence file — Appendix A appended | No code changed — read-only audit | YES | None | Fixes implemented in AIOS-2026-10-29-003 | PASS |
+
+**Confirmed bugs fixed:** CC-BUG-001 (arrow overflow clipping), CC-BUG-002 (placeholder contrast), CC-BUG-003 (5-column formula with 4 blocks), CC-BUG-004 (hash link fallback), CC-BUG-005 (items guard vs render loop logic gap).
+
+---
+
 ### 2026-10-28 — DM Campaign Owner Tag Feasibility Audit
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
@@ -4164,4 +4186,51 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 11. Duplicate-risk — N/A: all new uniquely-named files; confirmed no duplicate
 
 **Session Result: PASS — Phase 1 audit complete. 22 issues documented. No theme files changed.**
+
+---
+
+### 2026-10-29 — DM Dashboard SKU DE Listings Page — Phase 1 Discovery
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-29-SKUDE-DISC-001 | Phase 1 discovery only: trace SKU Stock Lookup implementation (frontend, navigation, backend router, UAM auth factory, DB connection, main.py registration) as a blueprint for a new SKU DE Listings page. No code written, no DB queried, no files changed. Blueprint covers: component structure, AdminLayout nav key, taskRegistry toolKey pattern, FastAPI router file, `make_task_auth("tools.SkuStockLookup")` pattern, `get_business_conn()` DB, confirmed SQL pattern from AIOS reports (sub_source=108, is_child=1, quantity col, ENC dedup). | `evidence/dm-dashboard/dm-dashboard-sku-de-listings-page-phase1-discovery-2026-10-29.md` | `evidence/dm-dashboard/dm-dashboard-sku-de-listings-page-phase1-discovery-2026-10-29.md` + `validation/piranav/dm-dashboard-sku-de-listings-phase1-discovery-validation-2026-10-29.md` | Read-only — no commit | YES | None — awaiting Piranav / GPT approval to begin Phase 2 implementation | Piranav to share blueprint with GPT; GPT to plan Phase 2 scope; then implement following the blueprint | PASS |
+
+**Prompt saved:** `prompts/discovery/dm-dashboard-new-page-uam-pattern-discovery.md`
+**10-folder check:**
+1. Prompt — DONE: `prompts/discovery/dm-dashboard-new-page-uam-pattern-discovery.md`
+2. Evidence — DONE: `evidence/dm-dashboard/dm-dashboard-sku-de-listings-page-phase1-discovery-2026-10-29.md`
+3. Capability — N/A: discovery only; no new capability deployed
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added
+6. Validation — DONE: `validation/piranav/dm-dashboard-sku-de-listings-phase1-discovery-validation-2026-10-29.md`
+7. Source-map — N/A: all data sources already tracked (listings.shopify_listings, inventory.products confirmed in prior sessions)
+8. Docs — N/A: discovery evidence covers this; no new topic area
+9. Handover — N/A: blueprint written; Piranav/GPT review before implementation
+10. Reports — N/A: discovery document is not a data export
+11. Duplicate-risk — N/A: new uniquely-named file in existing dm-dashboard folder; confirmed no duplicate
+
+**Session Result: PASS — Phase 1 discovery complete. Blueprint written. No dm-dashboard files changed.**
+
+---
+
+### 2026-10-29 — DM Dashboard SKU DE Listings Page — Phase 2 Implementation
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-29-SKUDE-IMPL-001 | Implement standalone SKU DE Listings page in dm-dashboard following SKU Stock Lookup pattern. Created: `sku_de_listings.py` (FastAPI router, UNION ALL SQL, make_task_auth("tools.SkuDeListings"), 400/502 validation), `SkuDeListings.jsx` (search input, KPI cards, status/type/stock filters, results table with Listing URL links), `test_sku_de_listings.py` (20 tests). Modified: `main.py` (+2 lines), `AdminLayout.jsx` (+1 nav entry), `taskRegistry.jsx` (+1 TOOLS entry). SQL verified live vs DB before implementation. 56/56 tests pass. No regression to sku_stock_lookup. | `backend/app/dashboard_pages/sku_de_listings.py` + `frontend/src/admin/pages/SkuDeListings.jsx` | `evidence/dm-dashboard/dm-dashboard-sku-de-listings-phase2-implementation-2026-10-29.md` + `validation/piranav/dm-dashboard-sku-de-listings-phase2-validation-2026-10-29.md` | Not yet committed — awaiting Piranav instruction | YES | None — awaiting Piranav commit + push + live verification | Piranav to commit 6 files on piranv-work, push to websitetecteam-arch (select that account in popup), live test with SKU e.g. LSCY290BG | PASS |
+
+**10-folder check:**
+1. Prompt — DONE: `prompts/discovery/dm-dashboard-new-page-uam-pattern-discovery.md` (reused from Phase 1); implementation pattern row added to PROMPT_REGISTER
+2. Evidence — DONE: `evidence/dm-dashboard/dm-dashboard-sku-de-listings-phase2-implementation-2026-10-29.md`
+3. Capability — N/A: follows existing SKU Stock Lookup capability pattern; no new architectural capability
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added for implementation pattern
+6. Validation — DONE: `validation/piranav/dm-dashboard-sku-de-listings-phase2-validation-2026-10-29.md` — 56/56 PASS
+7. Source-map — N/A: `listings.shopify_listings` and `inventory.products` already tracked
+8. Docs — N/A: evidence doc covers this
+9. Handover — N/A: no person handover; deployment steps in evidence doc §8
+10. Reports — N/A: implementation task, not a data export
+11. Duplicate-risk — N/A: all new uniquely-named files; no duplicate risk
+
+**Session Result: PASS — Phase 2 implementation complete. 20 tests pass. Awaiting Piranav commit + push.**
 
