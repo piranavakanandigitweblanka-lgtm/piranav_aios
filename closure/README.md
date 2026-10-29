@@ -125,6 +125,73 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-10-29 — DM Campaign Agu46-2 Shared Campaign Tag Removal
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-29-004 | Bug fix: remove `"agu46-2"` and `"agu 46-2"` from `SONYA_TAGS`. Confirmed by Piranav — shared campaign tags, not exclusive Sonya ownership signals. Root cause of false Conflict on `SJNEW26`+`Agu46-2` products. `SONYA_TAGS` reduced from 7 to 5 entries. 5 existing tests updated, 1 test renamed. `TestAgu462SharedTag` group added (7 new regression tests). 93/93 tests PASS. `git diff --check` clean. Working tree only — uncommitted. | `evidence/piranav/dm-campaign-agu46-2-removal-2026-10-29.md` | `evidence/piranav/dm-campaign-agu46-2-removal-2026-10-29.md` + `validation/piranav/dm-campaign-agu46-2-removal-2026-10-29.md` | Uncommitted — pending Piranav commit + push | YES | None | Piranav to review diff, commit to `piranv-work`, push — select **websitetecteam-arch** in GitHub account popup | PASS |
+
+**Prompt saved:** `prompts/dm-dashboard/dm-campaign-owner-tag-correction.md`
+**10-folder check:**
+1. Prompt — DONE: `prompts/dm-dashboard/dm-campaign-owner-tag-correction.md`
+2. Evidence — DONE: `evidence/piranav/dm-campaign-agu46-2-removal-2026-10-29.md`
+3. Capability — N/A: bug fix to existing owner classifier; no new capability
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added
+6. Validation — DONE: `validation/piranav/dm-campaign-agu46-2-removal-2026-10-29.md`
+7. Source-map — N/A: no new data source
+8. Docs — N/A: no new topic area
+9. Handover — N/A: same session; Piranav commits when ready
+10. Reports — N/A: code fix, not a data export
+11. Duplicate-risk — N/A: new uniquely-named files; no duplicate
+
+---
+
+### 2026-10-29 — DM Campaign SJNEW26 Tag Investigation + Implementation
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-29-002 | Read-only investigation — 9 live DB queries. 49 products with ` SJNEW26`. Zero approved SJ co-occurrence. `SJNEW` (no year) = 100% Sajeepan corroboration. Verdict: **INCONCLUSIVE** — Piranav confirmation required. | `evidence/piranav/dm-campaign-sjnew26-tag-investigation-2026-10-29.md` | same + validation | Read-only — no commit | YES | Resolved — Piranav confirmed same session | — | PASS |
+| AIOS-2026-10-29-003 | **Piranav confirmed 2026-10-29:** `SJNEW26` = Sajeepan's 2026 new product batch. Added `"sjnew26"` to `SAJEEPAN_TAGS` (now 9 tags). Updated `test_sajeepan_tags_count` → 9. Added `TestSJNEW26` group (10 tests) + 2 frozenset guard tests. 86/86 tests PASS. `git diff --check` clean. Uncommitted — in working tree for Piranav review. | `evidence/piranav/dm-campaign-sjnew26-tag-investigation-2026-10-29.md` (updated) | `validation/piranav/dm-campaign-sjnew26-tag-investigation-2026-10-29.md` (updated) | Uncommitted — pending Piranav commit + push | YES | None | Piranav to review diff, commit to `piranv-work`, push to `websitetecteam-arch` (account: `websitetecteam-arch`) | PASS |
+
+**Prompt saved:** N/A — investigation extends existing `dm-campaign-single-product-notag-unknown-investigation` pattern; no new reusable prompt required
+**10-folder check:**
+1. Prompt — SKIP: existing investigation prompt covers this pattern; skip noted above
+2. Evidence — DONE: `evidence/piranav/dm-campaign-sjnew26-tag-investigation-2026-10-29.md`
+3. Capability — N/A: no new capability; extends existing owner-tag investigation capability
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added
+6. Validation — DONE: `validation/piranav/dm-campaign-sjnew26-tag-investigation-2026-10-29.md`
+7. Source-map — N/A: `listings.shopify_listing_tag` already in source-map from prior sessions
+8. Docs — N/A: no new topic area
+9. Handover — N/A: decision required from Piranav; question documented in evidence
+10. Reports — N/A: investigation, not a data export
+11. Duplicate-risk — N/A: new uniquely-named files; searched before creating
+
+---
+
+### 2026-10-29 — DM Dashboard Full Git Main Sync + Project Stage Audit
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-29-001 | Read-only audit of DM Dashboard git state, project health, and DM Campaign Owner + Stock Status feature. Git: `piranv-work` clean and in sync with `origin/piranv-work`. Local `main` is 26 commits behind `origin/main` (safe fast-forward available — not pulled; not on `main` branch). Both `piranv-work` commits already merged into `origin/main` via Dev Tools. Backend 74/74 tests PASS. Frontend build clean (1.07s). Owner + Stock classification confirmed correct in source. ENC10233 (`SJNEW26`) owner=No Tag correct — `sjnew26` not in SAJEEPAN_TAGS by design. Stock Unknown correct — `inventory_bool=False` fires second guard before uk_stock evaluated. 4 pending tag decisions unresolved (P1–P4). | `evidence/piranav/dm-dashboard-git-audit-2026-10-29.md` | `evidence/piranav/dm-dashboard-git-audit-2026-10-29.md` | Read-only — no commit | YES | P1–P4 tag decisions pending Piranav approval. Local `main` not pulled (not on `main` branch). | Piranav: `git checkout main && git pull --ff-only origin main` to sync local main. Then decide P1–P4 tag additions. | PASS |
+
+**Prompt saved:** N/A — audit task; no reusable prompt required (skip noted per CLAUDE.md)
+**10-folder check:**
+1. Prompt — SKIP: pure read-only audit; no reusable prompt pattern
+2. Evidence — DONE: `evidence/piranav/dm-dashboard-git-audit-2026-10-29.md`
+3. Capability — N/A: no new capability created
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — SKIP: no prompt created; skip noted above
+6. Validation — DONE: test/build results recorded in evidence file
+7. Source-map — N/A: no new source introduced
+8. Docs — N/A: no new topic area
+9. Handover — N/A: same team, same workflow
+10. Reports — N/A: audit findings in evidence file; not a data export
+11. Duplicate-risk — N/A: new uniquely-named evidence file
+
+---
+
 ### 2026-10-28 — DM Campaign Owner Tag Implementation Plan
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
@@ -4073,4 +4140,28 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 **Tests:** 36/36 PASS (30 prior + 6 new). **Build:** PASS — 878ms. **Git diff:** 2 files only.
 
 **Session Result: PASS — Fix implemented. Not committed. Awaiting Piranav instruction.**
+
+---
+
+### 2026-10-29 — Homin GmbH Shopify Theme Phase 1 Read-Only Audit
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-29-HOMIN-001 | Phase 1 read-only discovery and UI/UX audit of Homin GmbH Shopify theme (`homingmbh-de-homingmbh-staging`). Theme is Dawn-based with 7 custom sections, 4 custom snippets, and 3 third-party app integrations. 22 issues found: 1 CRITICAL (Clarity loaded 3×), 5 HIGH (onclick div, font preload duplication, og:image http:, FAQ inline styles, lang attribute risk), 7 MEDIUM, 4 LOW, 5 DESIGN. Proposed 5-phase implementation plan (phases A–E). No theme files changed. Awaiting Piranav review and approval before Phase 2. | `evidence/piranav/homin-gmbh-shopify-theme-audit-2026-10-29.md` | `evidence/piranav/homin-gmbh-shopify-theme-audit-2026-10-29.md` + `validation/piranav/homin-gmbh-audit-validation-2026-10-29.md` | Read-only — no commit | YES | Piranav must review 22 findings and approve Phase 2 scope before any implementation begins | Review audit report; confirm priority order for Phase A fixes; instruct Claude to begin Phase 2 | PASS |
+
+**Prompt saved:** `prompts/shopify/shopify-theme-read-only-audit.md`
+**10-folder check:**
+1. Prompt — DONE: `prompts/shopify/shopify-theme-read-only-audit.md`
+2. Evidence — DONE: `evidence/piranav/homin-gmbh-shopify-theme-audit-2026-10-29.md`
+3. Capability — N/A: read-only audit; no new system capability
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added
+6. Validation — DONE: `validation/piranav/homin-gmbh-audit-validation-2026-10-29.md`
+7. Source-map — DONE: Homin theme path added to `source-map/README.md`
+8. Docs — DONE: `docs/homingmbh/README.md` updated with theme audit link
+9. Handover — N/A: awaiting Piranav approval; no person handover
+10. Reports — N/A: audit evidence file is the reportable output
+11. Duplicate-risk — N/A: all new uniquely-named files; confirmed no duplicate
+
+**Session Result: PASS — Phase 1 audit complete. 22 issues documented. No theme files changed.**
 
