@@ -41,6 +41,7 @@ The source map is the single place to look up "where does this file live?"
 | Component | Local Path | Git Tracked | Shopify Store | Notes |
 |---|---|---|---|---|
 | Full theme snapshot (UK) | `C:\Users\PC\Downloads\uk 2026.06.09\` | YES — in parent repo | `ledsone.myshopify.com` | Updated 2026-06-25 with predictive search fix, search input, 404 redesign |
+| Homin GmbH staging theme | `C:\Users\PC\Documents\piranav_aios\shopify_projects\homingmbh-de-homingmbh-staging\` | NO — untracked in parent repo | `homingmbh.myshopify.com` | Dawn-based, heavily customised. Phase 1 audit 2026-10-29. Commit before any push. |
 | Predictive search grid | `Downloads/uk 2026.06.09/sections/search-predictive-grid.liquid` | YES | ledsone | Fixed 2026-06-24: removed `product.available` filter |
 | Predictive search list | `Downloads/uk 2026.06.09/sections/search-predictive-list.liquid` | YES | ledsone | Same fix as grid — 2026-06-24 |
 | Main search section | `Downloads/uk 2026.06.09/sections/main-search.liquid` | YES | ledsone | Search input restored 2026-06-24 |

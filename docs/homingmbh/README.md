@@ -13,6 +13,7 @@
 |---|---|---|
 | `shopify-google-sign-in/` | Shopify Customer Accounts — Google Sign-In setup | LIVE — In production |
 | `google-search-console/` | Google Search Console setup SOP + verification | Active |
+| Theme audit (evidence) | Shopify theme Phase 1 read-only audit — 22 issues found, 5-phase plan | Phase 1 COMPLETE — Awaiting Phase 2 approval |
 
 ---
 
@@ -46,3 +47,5 @@ docs/
 | Google Sign-In capability | `capability/2026/09/2026-09-24/shopify-customer-google-signin.md` |
 | Google Sign-In handover | `handover/piranav/homingmbh-shopify-google-signin-2026-09-24.md` |
 | GSC SOP evidence | `evidence/piranav/homingmbh-gsc-sop-2026-09-24.md` |
+| Theme Phase 1 audit | `evidence/piranav/homin-gmbh-shopify-theme-audit-2026-10-29.md` |
+| Theme audit validation | `validation/piranav/homin-gmbh-audit-validation-2026-10-29.md` |
