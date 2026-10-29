@@ -4331,3 +4331,100 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 
 **Session Result: PASS — Phase 2 implementation complete. 47/47 new + 56/56 regression = 103/103 PASS. Awaiting commit.**
 
+---
+
+### 2026-10-29 — LED Inventory: SKU Source Verification & Data Refresh Audit
+
+| Field | Value |
+|---|---|
+| Requirement ID | DMDASH-LEDINV-SKUAUDIT-2026-10-29 |
+| Task | Read-only audit of SKU `PHSHF1PBRYB+LSMS320RE+ICST64E27` — verify source tables, match logic, stock values, and data refresh behaviour for DE market |
+| Asset Path | `evidence/dm-dashboard/dm-dashboard-led-inventory-sku-source-audit-2026-10-29.md` |
+| Evidence Path | `validation/piranav/dm-dashboard-led-inventory-sku-source-audit-validation-2026-10-29.md` |
+| GitHub / Commit | Pending — AIOS docs not yet committed |
+| Queryable | YES |
+| Blockers | Listings sync schedule unknown — external system (Linnworks/channel manager), no scheduler in dm-dashboard backend |
+| Next Step | (1) Commit AIOS docs to piranav_aios. (2) Identify external listings sync system and document in source-map/README.md. (3) Decide whether to add Listings tab UI note distinguishing Shopify quantity (452) from warehouse stock (27). |
+| Result | PASS |
+
+**10-Folder Asset Check:**
+1. Prompt — N/A: no new reusable prompt pattern (read-only audit, no build task)
+2. Evidence — DONE: `evidence/dm-dashboard/dm-dashboard-led-inventory-sku-source-audit-2026-10-29.md`
+3. Capability — N/A: no new system capability created
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — N/A: no new prompt
+6. Validation — DONE: `validation/piranav/dm-dashboard-led-inventory-sku-source-audit-validation-2026-10-29.md` — 11/12 PASS, 1 OPEN
+7. Source-map — OPEN: external listings sync system identified as gap — not yet documented
+8. Docs — N/A: evidence doc covers findings
+9. Handover — N/A
+10. Reports — N/A: investigation finding, not a data export
+11. Duplicate-risk — N/A: uniquely named file
+
+**Session Result: PASS — SKU found, data correct, no bug. Open gap: listings sync schedule unconfirmed (external system).**
+
+---
+
+### 2026-10-29 — Homin GmbH: banner-gallery.liquid Compatibility Verification
+
+| Field | Value |
+|---|---|
+| Requirement ID | AIOS-2026-10-29-009 |
+| Task | Read-only static code inspection of `sections/banner-gallery.liquid` — verify compatibility with Homin GmbH theme architecture |
+| Asset Path | `sections/banner-gallery.liquid` (read-only — not modified) |
+| Evidence Path | `evidence/piranav/homin-gmbh-shopify-theme-audit-2026-10-29.md` — Appendix E |
+| GitHub / Commit | No code changed — read-only audit |
+| Queryable | YES |
+| Blockers | NONE — verification complete. Awaiting Piranav/GPT approval before fix implementation. |
+| Next Step | Approve or reject the 4 FAIL findings. If approved, implement fixes in a separate session: (1) fix CSS height vars, (2) scope JS to section, (3) store setInterval reference, (4) add section lifecycle handlers. |
+| Result | PASS |
+
+**Prompt saved:** `prompts/shopify/shopify-section-compatibility-verification.md` (Rule 1)
+
+**10-Folder Asset Check:**
+1. Prompt — DONE: `prompts/shopify/shopify-section-compatibility-verification.md`
+2. Evidence — DONE: `evidence/piranav/homin-gmbh-shopify-theme-audit-2026-10-29.md` Appendix E
+3. Capability — N/A: no new system capability created; read-only audit
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: new row added
+6. Validation — DONE: `validation/piranav/homin-gmbh-audit-validation-2026-10-29.md` — verification session appended
+7. Source-map — N/A: no new file or data source introduced
+8. Docs — N/A: evidence file covers all findings
+9. Handover — N/A
+10. Reports — N/A: internal audit
+11. Duplicate-risk — N/A: Appendix E is new unique content in existing file
+
+**Session Result: PASS — 4 FAIL + 6 WARNING identified by static inspection. No files modified. Awaiting approval before fix work.**
+
+---
+
+### 2026-10-29 — Homin GmbH: banner-gallery.liquid Fix Implementation
+
+| Field | Value |
+|---|---|
+| Requirement ID | AIOS-2026-10-29-010 |
+| Task | Fix all 4 confirmed failures in `sections/banner-gallery.liquid`: (1) CSS height vars, (2) JS scope, (3) interval storage, (4) Theme Editor lifecycle |
+| Asset Path | `shopify_projects/homingmbh-de-homingmbh-staging/sections/banner-gallery.liquid` |
+| Evidence Path | `evidence/piranav/homin-gmbh-shopify-theme-audit-2026-10-29.md` — Appendix F |
+| GitHub / Commit | Pending — awaiting git commit |
+| Queryable | YES |
+| Blockers | Browser validation pending `shopify theme push` to staging |
+| Next Step | (1) Commit to git from `piranav_aios/` root. (2) `shopify theme push` to staging. (3) Browser-verify height slider, Theme Editor reload stability, carousel. |
+| Result | PASS |
+
+**Prompt saved:** `prompts/shopify/shopify-banner-gallery-fix.md` (Rule 1)
+
+**10-Folder Asset Check:**
+1. Prompt — DONE: `prompts/shopify/shopify-banner-gallery-fix.md`
+2. Evidence — DONE: `evidence/piranav/homin-gmbh-shopify-theme-audit-2026-10-29.md` Appendix F
+3. Capability — N/A: fix uses existing patterns; no new system capability
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: new row added
+6. Validation — DONE: `validation/piranav/homin-gmbh-audit-validation-2026-10-29.md` — Fix Session 4
+7. Source-map — N/A
+8. Docs — N/A
+9. Handover — N/A
+10. Reports — N/A
+11. Duplicate-risk — N/A
+
+**Session Result: PASS (code-level) — 4 fixes applied. Browser validation pending theme push.**
+
