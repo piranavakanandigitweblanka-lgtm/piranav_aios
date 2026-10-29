@@ -4234,3 +4234,26 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 
 **Session Result: PASS — Phase 2 implementation complete. 20 tests pass. Awaiting Piranav commit + push.**
 
+---
+
+### 2026-10-29 — DM Dashboard SKU DE Listings — Phase 3: Price Calculator + CSV Export
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-29-SKUDE-PHASE3-001 | Add global percentage price calculator and CSV export to SKU DE Listings page. New: `priceCalc.js` (calcPrice, parsePct, fmtCalcPrice, buildCsv, csvField, safeSku), `test_price_calc.mjs` (52 tests). Modified: `SkuDeListings.jsx` (+price adjustment controls, Calculated Price column, Export CSV button). All calc client-side — no backend changes. 52/52 Node tests + 56/56 backend regression + 0 lint warnings. | `frontend/src/lib/priceCalc.js` + `frontend/src/admin/pages/SkuDeListings.jsx` | `evidence/dm-dashboard/dm-dashboard-sku-de-listings-phase3-price-calc-csv-2026-10-29.md` + `validation/piranav/dm-dashboard-sku-de-listings-phase3-validation-2026-10-29.md` | Not yet committed — awaiting Piranav instruction | YES | None — awaiting Piranav commit + push | Commit 3 dm-dashboard files on piranv-work, push to websitetecteam-arch, live test with LSCY290BM at 12% increase | PASS |
+
+**10-folder check:**
+1. Prompt — N/A: extends existing implementation pattern already registered; no new reusable prompt
+2. Evidence — DONE: `evidence/dm-dashboard/dm-dashboard-sku-de-listings-phase3-price-calc-csv-2026-10-29.md`
+3. Capability — N/A: extends existing SkuDeListings page; no new standalone capability
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — N/A: no new reusable prompt pattern beyond Phase 2 entry
+6. Validation — DONE: `validation/piranav/dm-dashboard-sku-de-listings-phase3-validation-2026-10-29.md` — 52+56/108 PASS
+7. Source-map — N/A: no new data source
+8. Docs — N/A: evidence doc covers this
+9. Handover — N/A: no person handover
+10. Reports — N/A: implementation task
+11. Duplicate-risk — N/A: all new uniquely-named files
+
+**Session Result: PASS — Phase 3 complete. 52/52 Node + 56/56 backend + 0 lint. Awaiting commit.**
+
