@@ -3,7 +3,7 @@
 **Date:** 29 October 2026
 **Prepared by:** Claude Code
 **Branch:** `piranv-work` — clean, up to date with `origin/piranv-work`
-**Status:** IMPLEMENTED — 47/47 new tests PASS, 56/56 regression tests PASS. Awaiting commit + push + live verification.
+**Status:** IMPLEMENTED + UI UPDATED — 103/103 tests PASS. Commits `2021cb3` (Phase 2) + `b101431` (stock tab merge) pushed to piranv-work.
 
 ---
 
@@ -18,6 +18,12 @@
 | `frontend/src/admin/pages/LedInventory.jsx` | Single page component: market selector (UK/DE) + SKU Listings tab + Stock Lookup tab |
 | `backend/tests/test_led_inventory_listings.py` | 30 tests — market config, SQL structure, UK/DE queries, response shape, error handling |
 | `backend/tests/test_led_inventory_stock.py` | 17 tests — warehouse routing, fetch_stock_map, combo rule, regression |
+
+## 1b. UI Update — Stock sub-tabs merged (commit `b101431`)
+
+`StockLookupTab` in `LedInventory.jsx` was updated to display `SingleSkuStockTab` and `CsvBulkStockTab` simultaneously instead of switching between inner tabs. Both sections are labelled and separated by a divider. No logic, API calls, or market routing changed. 1 file, 0 lint warnings, 103/103 tests PASS.
+
+---
 
 ## 2. Files Modified (3)
 
