@@ -312,6 +312,18 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-10-29 — Homin GmbH Announcement Bar: Marquee Display Fix
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-29-006 | Fixed marquee CSS — removed `display:block` override that broke grid-item height, added `flex-shrink:0` to track, changed items to `display:flex`, added `white-space:nowrap` to message. Single file changed (`sections/announcement-bar.liquid` stylesheet block only). Not published. | `sections/announcement-bar.liquid` | `evidence/piranav/homin-gmbh-shopify-theme-audit-2026-10-29.md` (CC-FEATURE-003 added) | Not committed — awaiting Piranav git commit instruction | YES | Browser validation pending | Push to staging theme; verify marquee scrolls smoothly at full bar height | PASS |
+
+### 2026-10-29 — Homin GmbH Announcement Bar: Marquee Mode
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-29-005 | Added optional marquee mode to `sections/announcement-bar.liquid`. 5 new schema settings (marquee_enable, direction, speed, pause_hover, mobile). Pure CSS animation, no JS. Seamless loop via 2-copy technique. Reduced-motion fallback. Backward-compatible (default OFF). Single file changed, not published. | `sections/announcement-bar.liquid` | `evidence/piranav/homin-gmbh-shopify-theme-audit-2026-10-29.md` (Appendix B updated) | Not committed — awaiting Piranav git commit instruction | YES | Browser validation pending | Push to staging theme via Shopify CLI; verify marquee ON/OFF, all 5 settings, reduced motion | PASS |
+
 ### 2026-10-29 — Homin GmbH Category Circles: Optional Arrow Setting
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
@@ -4256,4 +4268,66 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 11. Duplicate-risk — N/A: all new uniquely-named files
 
 **Session Result: PASS — Phase 3 complete. 52/52 Node + 56/56 backend + 0 lint. Awaiting commit.**
+
+---
+
+### 2026-10-29 — DM Dashboard LED Inventory: Phase 1 Consolidation Audit
+
+| Field | Value |
+|---|---|
+| Requirement ID | DMDASH-LEDINV-AUDIT-2026-10-29 |
+| Task | Read-only audit of SKU DE Listings + SKU Stock Lookup pages. Verified UK/DE market differences (sub_source, currency implicit, UK Single/Other 6,596 SKUs, warehouse mapping). Proposed consolidation architecture for single LedInventory page with market selector. |
+| Asset Path | `evidence/dm-dashboard/dm-dashboard-led-inventory-phase1-consolidation-audit-2026-10-29.md` |
+| Evidence Path | same + `validation/piranav/dm-dashboard-led-inventory-phase1-audit-validation-2026-10-29.md` |
+| GitHub / Commit | piranav_aios — pending commit |
+| Queryable | YES |
+| Blockers | NONE — audit complete. Phase 2 requires Piranav + GPT review and approval before implementation. |
+| Next Step | GPT reviews audit findings and approves/adjusts consolidation architecture. Piranav confirms UAM key decision (`tools.LedInventory` vs per-page keys). Then proceed to Phase 2 implementation. |
+| Result | PASS |
+
+**10-Folder Asset Check:**
+1. Prompt — DONE: `prompts/discovery/dm-dashboard-new-page-uam-pattern-discovery.md` (existing prompt covers discovery pattern)
+2. Evidence — DONE: `evidence/dm-dashboard/dm-dashboard-led-inventory-phase1-consolidation-audit-2026-10-29.md`
+3. Capability — N/A: audit only — no new capability confirmed yet
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — pending update (see below)
+6. Validation — DONE: `validation/piranav/dm-dashboard-led-inventory-phase1-audit-validation-2026-10-29.md`
+7. Source-map — N/A: no new data source introduced
+8. Docs — N/A: evidence doc is the output
+9. Handover — N/A: no person handover
+10. Reports — N/A: audit — not a reportable data export
+11. Duplicate-risk — N/A: new uniquely-named file
+
+**Session Result: PASS — LED Inventory Phase 1 audit complete. No code changed. Architecture proposal written. Awaiting review.**
+
+---
+
+### 2026-10-29 — DM Dashboard LED Inventory: Phase 2 Implementation
+
+| Field | Value |
+|---|---|
+| Requirement ID | DMDASH-LEDINV-PHASE2-2026-10-29 |
+| Task | Implement consolidated LedInventory.jsx page with UK/DE market selector, SKU Listings tab (Combo/Single/ENC for UK, Combo/ENC for DE), and Stock Lookup tab. Server-side market config. Separate UAM keys (tools.LedInventoryListings + tools.LedInventoryStock). Price adjustment + CSV export from priceCalc.js. Existing pages preserved. |
+| Asset Path | `frontend/src/admin/pages/LedInventory.jsx`, `backend/app/dashboard_pages/led_inventory_listings.py`, `backend/app/dashboard_pages/led_inventory_stock.py`, `backend/app/core/market_config.py`, `frontend/src/lib/marketConfig.js` |
+| Evidence Path | `evidence/dm-dashboard/dm-dashboard-led-inventory-phase2-implementation-2026-10-29.md` |
+| GitHub / Commit | dm-dashboard — pending commit |
+| Queryable | YES |
+| Blockers | NONE — implementation complete. Awaiting: (1) commit + push, (2) UAM grant tools.LedInventoryListings to Piranav, (3) live test UK vs DE search results, (4) UAM migration for other staff. |
+| Next Step | Piranav commits + pushes. Tests live with LSCY290BG — UK should show Combo+Single+ENC, DE should show Combo+ENC only. Germany stock=0 confirms stock tab market routing. |
+| Result | PASS |
+
+**10-Folder Asset Check:**
+1. Prompt — DONE: `prompts/implementation/dm-dashboard-led-inventory-multi-market-page.md`
+2. Evidence — DONE: `evidence/dm-dashboard/dm-dashboard-led-inventory-phase2-implementation-2026-10-29.md`
+3. Capability — N/A: pattern follows existing pages (covered by Phase 1 audit capability notes)
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: new row added
+6. Validation — DONE: `validation/piranav/dm-dashboard-led-inventory-phase2-validation-2026-10-29.md` — 47/47 new + 56/56 regression PASS
+7. Source-map — N/A: no new data sources introduced
+8. Docs — N/A: evidence doc is the output
+9. Handover — N/A: no person handover
+10. Reports — N/A: implementation task
+11. Duplicate-risk — N/A: all new uniquely-named files
+
+**Session Result: PASS — Phase 2 implementation complete. 47/47 new + 56/56 regression = 103/103 PASS. Awaiting commit.**
 
