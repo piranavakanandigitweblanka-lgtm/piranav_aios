@@ -125,6 +125,53 @@ Our changed modules (`product_intelligence.py`, `shared.py`) are only referenced
 
 ---
 
+## Phase 4 — Automatic Campaign Discovery Phase 1 Checklist
+
+| # | Item | Result |
+|---|---|---|
+| 1 | Git safety check: branch=piranv-work, working tree clean, no uncommitted work | PASS |
+| 2 | All 4 backend files read in full, SJ_CAMPAIGN_IDS usage mapped | PASS |
+| 3 | `shared.py` Jefri pattern read — exact implementation understood | PASS |
+| 4 | `ads_product_scope.py` cross-module dependency confirmed | PASS |
+| 5 | DB query: all 7 SJ_CAMPAIGN_IDS confirmed group_name='SAJEEPAN' | PASS |
+| 6 | DB query: 8th campaign 23642703549 full details retrieved | PASS |
+| 7 | DB query: ENABLED campaigns on account 4503486236 with group_name='SAJEEPAN' — 9 total | PASS |
+| 8 | Critical finding: 22961854738 (experiment) ENABLED + group_name='SAJEEPAN' but absent from SJ_CAMPAIGN_IDS — flagged | PASS |
+| 9 | Two anomalous Sajeepan campaigns on account 6875441845 confirmed NOT group_name='SAJEEPAN' — correctly excluded | PASS |
+| 10 | Recommended architecture (refresh_sj_campaigns pattern) documented | PASS |
+| 11 | All risks documented: experiment campaign, frontend hardcoding, cache staleness | PASS |
+| 12 | Evidence file (Section 12) updated | PASS |
+| 13 | No code changes, no DB writes, no commits — inspection only constraint met | PASS |
+
+---
+
+## Phase 5 — Phase 2 Planning + Corrections Checklist
+
+| # | Item | Result |
+|---|---|---|
+| 1 | Git safety check: branch=piranv-work, working tree clean, post-fetch state verified | PASS |
+| 2 | Git sync plan documented: ff-only main, merge origin/main to piranv-work | PASS |
+| 3 | All 6 backend files read in full | PASS |
+| 4 | All 4 frontend files read in full | PASS |
+| 5 | Jefri pattern fully analysed: in-place mutation, TTL, fallback, empty/fail guards | PASS |
+| 6 | SJ_CAMPAIGN_IDS integer type requirement confirmed and documented | PASS |
+| 7 | `datetime`/`timedelta`/`timezone` confirmed already imported at shared.py line 154 | PASS |
+| 8 | `campaign_names` response addition design confirmed for req2 + req3 | PASS |
+| 9 | Frontend campShort closure pattern confirmed — no new API endpoint needed | PASS |
+| 10 | 9-file change list confirmed with change sizes | PASS |
+| 11 | 17-test test plan documented | PASS |
+| 12 | 16-step implementation sequence documented | PASS |
+| 13 | No application code changes, no commits, no pushes — planning constraint met | PASS |
+| 14 | Evidence file (Section 13) updated | PASS |
+| 15 | Full-repo grep for SJ_CAMP_NAMES + SJ_CAMPAIGN_IDS: 3 and 6 files confirmed, zero external refs | PASS |
+| 16 | FeedOptimization.jsx campShort() call sites: zero — dead code confirmed, no campaign_names needed in req4 | PASS |
+| 17 | RevenueProtection.jsx Object.entries(CAMP_NAMES) change sites: 2 dropdowns identified lines 134+169 | PASS |
+| 18 | dupCampOptions in ProductActionDashboard.jsx built from r.campaign_ids in API data — campShort closure sufficient | PASS |
+| 19 | Five-endpoint justification verified: each queries SJ_CAMPAIGN_IDS directly | PASS |
+| 20 | Evidence file (Section 14) updated — no duplicate documents | PASS |
+
+---
+
 ## Database Impact
 - No database writes made
 - `google_ads.campaigns.target_roas` read-only (already JOINed in existing SQL)
@@ -134,3 +181,30 @@ Our changed modules (`product_intelligence.py`, `shared.py`) are only referenced
 - No access_grants changes
 - No task_key changes
 - No staff permissions affected
+
+## Phase 6 — Phase 2 Implementation Checklist
+
+| # | Item | Result |
+|---|---|---|
+| 1 | shared.py: `from datetime import datetime, timedelta, timezone` added | PASS |
+| 2 | shared.py: `refresh_sj_campaigns()` created, mirrors Jefri pattern | PASS |
+| 3 | shared.py: fallback covers all 9 approved campaigns | PASS |
+| 4 | shared.py: `SJ_CAMPAIGN_IDS` is `list[int]`, in-place mutation preserved | PASS |
+| 5 | shared.py: `SJ_CAMPAIGN_NAME_BY_ID` string-keyed, in-place mutation | PASS |
+| 6 | shared.py: `SJ_CAMP_NAMES` removed | PASS |
+| 7 | feed_optimization.py: `refresh_sj_campaigns()` called at req4 entry | PASS |
+| 8 | feed_optimization.py: `SJ_CAMP_NAMES` replaced by `SJ_CAMPAIGN_NAME_BY_ID.get()` | PASS |
+| 9 | product_intelligence.py: `refresh_sj_campaigns()` called at req1 entry | PASS |
+| 10 | revenue_protection.py: `refresh_sj_campaigns()` called at req2 entry | PASS |
+| 11 | revenue_protection.py: `campaign_names` added to response | PASS |
+| 12 | product_action_dashboard.py: `refresh_sj_campaigns()` called at req3 entry | PASS |
+| 13 | product_action_dashboard.py: `campaign_names` added to response | PASS |
+| 14 | ads_product_scope.py: `refresh_sj_campaigns()` called at endpoint entry | PASS |
+| 15 | FeedOptimization.jsx: dead-code `SJ_CAMP_NAMES` + `campShort` removed | PASS |
+| 16 | ProductActionDashboard.jsx: `CAMP_NAMES` removed, closure added inside component | PASS |
+| 17 | RevenueProtection.jsx: `CAMP_NAMES` removed, closure added, both `Object.entries` updated | PASS |
+| 18 | `git diff --name-only` shows exactly 9 files, nothing extra | PASS |
+| 19 | Frontend build (npm run build): clean, 0 errors | PASS |
+| 20 | Backend tests: 0 new failures introduced | PASS |
+| 21 | No commits made (awaiting instruction) | PASS |
+| 22 | No DB writes, no Google Ads changes | PASS |

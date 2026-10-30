@@ -478,3 +478,167 @@ For any campaign in `SJ_CAMPAIGN_IDS` that has `target_roas IS NULL` in the DB:
 - **Implement Option A partial** for the 3 remaining fixes: `SJ_CAMP_NAMES` in `shared.py` + `FeedOptimization.jsx` + `ProductIntelligence.jsx` "6"→"7" labels.
 - These 4 changes can go in a single commit on `piranv-work`.
 - Do NOT patch `SJ_TARGET_ROAS` dict — it becomes unused after Option B and should be left as-is or cleaned up in a separate pass.
+
+---
+
+## Section 12 — Automatic Campaign Discovery Phase 1 (2026-10-30)
+
+**Req ID:** AIOS-2026-10-30-SAJ-DISCOVERY  
+**Scope:** Inspection only — no code changes, no DB writes, no commits.
+
+### Ownership signal confirmed
+
+All 7 existing `SJ_CAMPAIGN_IDS` confirmed: `group_name = 'SAJEEPAN'`, `group_id = 1018552369`, `account_id = 4503486236`.
+
+Query used: `WHERE group_name = 'SAJEEPAN' AND account_id = 4503486236 AND campaign_status = 'ENABLED'`
+
+### ENABLED campaign inventory (full result)
+
+| campaign_id | campaign_name | In SJ_CAMPAIGN_IDS |
+|---|---|---|
+| 21069663519 | Pmax \| Sajeepan \| Klarna CSS \| SJ_PENDANT_KLARNA | ✓ |
+| 21242723265 | Pmax \| Sajeepan \| Klarna CSS \| ALLACRSJ2 \| Accessories | ✓ |
+| 22079334413 | Pmax \| Sajeepan \| G CSS SJALL \| SJALL \| HERO | ✓ |
+| **22961854738** | **SJ-G-CSS-ALL-ROAS-400~SJ _Target_ROAS_Experiment** | **NOT IN LIST** |
+| 23110323532 | Pmax \| Sajeepan \| SHOPTIMISED CSS \| SJGB \| HIGH REVENUE PH | ✓ |
+| 23516313256 | Pmax \| Sajeepan \| Klarna CSS \| SJ_TOP_20 | ✓ |
+| 23590572906 | Pmax \| Sajeepan \| Shoptimised CSS \| SJGB \| zero conv2 | ✓ |
+| **23642703549** | **Pmax UK \| Sajeepan \| Shoptimised \| TH_NOC \| High impression** | **NOT IN LIST** |
+| 24092456136 | Pmax \| Sajeepan \| Klarna CSS \| SJ_Lighting_PH_KLARNA | ✓ |
+
+9 ENABLED campaigns total. 7 in `SJ_CAMPAIGN_IDS`. 2 untracked:
+- `23642703549` — TH_NOC campaign (our target 8th — budget £34.10, ROAS 3.20)
+- `22961854738` — Experiment campaign — **NEW FINDING**, group_name='SAJEEPAN', ENABLED — **requires Piranav decision before inclusion**
+
+### Architecture consumers of SJ_CAMPAIGN_IDS
+
+| File | Import | SQL params |
+|---|---|---|
+| `shared.py` | defined here | — |
+| `product_intelligence.py` | `SJ_CAMPAIGN_IDS` | 4 |
+| `revenue_protection.py` | `SJ_CAMPAIGN_IDS` | 6 |
+| `product_action_dashboard.py` | `SJ_CAMPAIGN_IDS` | 11 |
+| `feed_optimization.py` | `SJ_CAMPAIGN_IDS` + `SJ_CAMP_NAMES` | 2 + name lookup |
+| `ads_product_scope.py` | `SJ_CAMPAIGN_IDS` | STAFF_CONFIG |
+
+### Recommended implementation (Phase 2)
+
+Mirror `refresh_jefri_campaigns()` in `shared.py`:
+- New function: `refresh_sj_campaigns()` — query `group_name='SAJEEPAN' AND account_id=UK_ACCOUNT_ID AND campaign_status='ENABLED'`
+- 1h TTL cache, in-place list/dict mutation, hardcoded 7-campaign fallback
+- Call from all 5 consumer endpoints
+
+### Key risks flagged
+
+1. Campaign `22961854738` (experiment) has `group_name='SAJEEPAN'` and is ENABLED — dynamic discovery would auto-include it. **Requires explicit decision.**
+2. Frontend `CAMP_NAMES` in 3 JSX files stays hardcoded after backend dynamic discovery — renames won't propagate to UI labels automatically.
+3. Cache staleness ≤1h — same as Jefri (accepted precedent).
+
+---
+
+## Section 13 — Phase 2 Planning (2026-10-30)
+
+**Req ID:** AIOS-2026-10-30-SAJ-DISC-P2-PLAN  
+**Scope:** Planning only — no code changes, no commits.
+
+### Business decision confirmed
+
+Piranav approved: include ALL campaigns matching `group_name = 'SAJEEPAN' AND account_id = 4503486236 AND campaign_status = 'ENABLED'`. Campaign `22961854738` (experiment) explicitly included. Do not modify Google Ads group_name records.
+
+### Confirmed 9-campaign scope
+
+| campaign_id | Short label | Addition |
+|---|---|---|
+| 21069663519 | SJ_PENDANT_KLARNA | existing |
+| 21242723265 | ALLACRSJ2 Access. | existing |
+| 22079334413 | SJALL HERO | existing |
+| 22961854738 | ROAS Experiment | **NEW** |
+| 23110323532 | HIGH REVENUE PH | existing |
+| 23516313256 | SJ_TOP_20 | existing |
+| 23590572906 | zero conv2 | existing |
+| 23642703549 | TH_NOC High impression | **NEW** |
+| 24092456136 | SJ_Lighting_PH_KLARNA | existing |
+
+### Architecture decisions
+
+- `refresh_sj_campaigns()` in `shared.py` mirrors `refresh_jefri_campaigns()` exactly
+- `SJ_CAMPAIGN_IDS` preserved as integer list (SQL bigint compatibility)
+- `SJ_CAMP_NAMES` removed — replaced by `SJ_CAMPAIGN_NAME_BY_ID` (string-keyed, DB-driven)
+- `campaign_names: {id: name}` added to req2 + req3 API response (no new endpoint)
+- Frontend: `CAMP_NAMES` const removed from 3 JSX files; `campShort` becomes component-level closure over `data.campaign_names`
+- `ProductIntelligence.jsx` (req1): already fully dynamic — no change needed
+
+### Files to modify (9 total)
+
+Backend: `shared.py`, `product_intelligence.py`, `revenue_protection.py`, `product_action_dashboard.py`, `feed_optimization.py`, `ads_product_scope.py`
+Frontend: `FeedOptimization.jsx`, `ProductActionDashboard.jsx`, `RevenueProtection.jsx`
+
+### Awaiting Piranav approval to implement
+
+---
+
+## Section 14 — Phase 2 Plan Corrections (2026-10-30)
+
+**Req ID:** AIOS-2026-10-30-SAJ-DISC-P2-CORRECTIONS  
+**Scope:** Planning correction only — no code changes.
+
+### Full-repo SJ reference scan
+
+`SJ_CAMP_NAMES` — 3 files only: `shared.py` (definition), `feed_optimization.py` (import + usage), `FeedOptimization.jsx` (dead code).  
+`SJ_CAMPAIGN_IDS` — 6 files, all inside `dashboard_pages/`. Zero references outside `dashboard_pages/`. Admin and ai_chat directories confirmed clean.
+
+### FeedOptimization.jsx correction
+
+`campShort()` has ZERO call sites in `FeedOptimization.jsx` — confirmed by grep. It is dead code.  
+Campaign dropdown built from `p.camp_name` per product (line 245). All table cells use `p.camp_name` directly.  
+**req4 does NOT need `campaign_names` in API response.** Backend fix only: `SJ_CAMP_NAMES` → `SJ_CAMPAIGN_NAME_BY_ID` in `feed_optimization.py`. Frontend: remove dead code.
+
+### Corrected response-field mapping
+
+| Page | Needs `campaign_names`? | Source |
+|---|---|---|
+| ProductIntelligence (req1) | No — uses `data.campaigns[]` array | Already dynamic |
+| RevenueProtection (req2) | YES | Backend adds `{str(id): name for id in SJ_CAMPAIGN_IDS}` |
+| ProductActionDashboard (req3) | YES | Backend adds `{str(id): name for id in SJ_CAMPAIGN_IDS}` |
+| FeedOptimization (req4) | No — uses `p.camp_name` per row | Backend swaps `SJ_CAMP_NAMES` → `SJ_CAMPAIGN_NAME_BY_ID` |
+
+### RevenueProtection additional change sites
+
+Two `Object.entries(CAMP_NAMES).map(...)` dropdown patterns at lines 134 + 169 must change to `Object.entries(campaignNames).map(...)` — not just `campShort()` calls.
+
+### Corrected 9-file list
+
+Backend (6): `shared.py`, `product_intelligence.py`, `revenue_protection.py`, `product_action_dashboard.py`, `feed_optimization.py`, `ads_product_scope.py`  
+Frontend (3): `FeedOptimization.jsx` (dead code removal), `ProductActionDashboard.jsx` (CAMP_NAMES → closure), `RevenueProtection.jsx` (CAMP_NAMES + Object.entries → closure + campaignNames)
+
+## Section 15 — Phase 2 Implementation (2026-10-30)
+
+**Branch:** `piranv-work`  
+**Status:** COMPLETE — 9 files modified, build PASS, no new test failures
+
+### Files Changed
+
+| # | File | Change |
+|---|---|---|
+| 1 | `backend/app/dashboard_pages/shared.py` | Added `from datetime import datetime, timedelta, timezone`; replaced hardcoded `SJ_CAMPAIGN_IDS`/`SJ_CAMP_NAMES` with `_SJ_CAMPAIGNS_FALLBACK` (9 campaigns), derived `SJ_CAMPAIGNS`, `SJ_CAMPAIGN_IDS`, `SJ_CAMPAIGN_NAME_BY_ID`, and `refresh_sj_campaigns()` with 1h TTL |
+| 2 | `backend/app/dashboard_pages/feed_optimization.py` | Import swapped to `SJ_CAMPAIGN_NAME_BY_ID, refresh_sj_campaigns`; `refresh_sj_campaigns()` call added at req4 entry; `SJ_CAMP_NAMES` lookup replaced by `SJ_CAMPAIGN_NAME_BY_ID.get()` |
+| 3 | `backend/app/dashboard_pages/product_intelligence.py` | Import + `refresh_sj_campaigns()` call added at req1 entry |
+| 4 | `backend/app/dashboard_pages/revenue_protection.py` | Import + `refresh_sj_campaigns()` call at req2 entry; `campaign_names` field added to response |
+| 5 | `backend/app/dashboard_pages/product_action_dashboard.py` | Import + `refresh_sj_campaigns()` call at req3 entry; `campaign_names` field added to response |
+| 6 | `backend/app/dashboard_pages/ads_product_scope.py` | Import + `refresh_sj_campaigns()` call at ads_scope_sajeepan entry |
+| 7 | `frontend/src/dashboard_pages/FeedOptimization.jsx` | Removed dead-code `SJ_CAMP_NAMES` const + module-level `campShort` (no call sites) |
+| 8 | `frontend/src/dashboard_pages/ProductActionDashboard.jsx` | Removed hardcoded `CAMP_NAMES` const + module-level `campShort`; added `campaignNames = data?.campaign_names \|\| {}` and `campShort = (id) => campaignNames[id] \|\| id` inside component |
+| 9 | `frontend/src/dashboard_pages/RevenueProtection.jsx` | Removed `CAMP_NAMES` + module-level `campShort`; added closure inside component; changed both `Object.entries(CAMP_NAMES)` dropdown calls to `Object.entries(campaignNames)` |
+
+### Fix Applied During Implementation
+
+`datetime`, `timedelta`, `timezone` were NOT pre-imported in `shared.py` (only `import re` existed). Added `from datetime import datetime, timedelta, timezone` to fix `NameError` at collection time.
+
+### Test Results
+
+- Frontend build: **PASS** (Vite, 1.22s, 0 errors)
+- Backend tests (excluding pre-existing broken suites): **PASS** — 291 pass, 0 new failures introduced
+- Pre-existing failures (curl_cffi missing + pre-existing mock failures): unchanged vs baseline
+
+### Not Committed
+Awaiting Piranav commit instruction per standing restriction.

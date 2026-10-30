@@ -4566,3 +4566,85 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 10. Reports — N/A: not a data export
 11. Duplicate-risk — N/A: all changed files are unique, no new files created
 
+---
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub Commit | Queryable | Blockers | Next Step | Status |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-30-SAJ-DISCOVERY-P1 | Sajeepan Automatic Campaign Discovery Phase 1 — full inspection of SJ_CAMPAIGN_IDS architecture, group_name ownership signal, full ENABLED campaign inventory, 8th + 9th campaign identification, dynamic discovery design with risk analysis. Inspection only — no code changes, no DB writes, no commits. | Read-only | `evidence/sajeepan/sajeepan-campaign-lifecycle-audit-2026-10-30.md` (section 12) + `validation/piranav/sajeepan-campaign-lifecycle-audit-validation-2026-10-30.md` (phase 4) | Inspection only — no commit | YES | Campaign 22961854738 (experiment, group_name='SAJEEPAN', ENABLED but absent from SJ_CAMPAIGN_IDS) requires explicit Piranav decision before dynamic discovery implementation | Piranav decides: include/exclude experiment campaign. Then Phase 2 implementation: add `refresh_sj_campaigns()` to shared.py + call from 5 backend files. Also: `git pull origin main` on piranv-work before any Phase 2 commit. | PASS |
+
+**10-Folder Asset Check:**
+1. Prompt — N/A: existing prompt `prompts/dm-dashboard/sajeepan-campaign-config-audit.md` covers this investigation
+2. Evidence — DONE: `evidence/sajeepan/sajeepan-campaign-lifecycle-audit-2026-10-30.md` (section 12 added)
+3. Capability — N/A: inspection only, no new capability built
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — N/A: no new prompt pattern (inspection task covered by existing prompt)
+6. Validation — DONE: `validation/piranav/sajeepan-campaign-lifecycle-audit-validation-2026-10-30.md` (Phase 4 added)
+7. Source-map — N/A: no new data source introduced
+8. Docs — N/A: evidence captures all findings
+9. Handover — N/A
+10. Reports — N/A: not a data export
+11. Duplicate-risk — N/A: no new files created
+
+
+---
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub Commit | Queryable | Blockers | Next Step | Status |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-30-SAJ-DISC-P2-PLAN | Sajeepan Automatic Campaign Discovery Phase 2 Planning. Full architecture plan: git sync report, 9-campaign inventory confirmed, Jefri pattern analysis, backend refresh_sj_campaigns() design (shared.py + 5 consumer files), frontend campaign_names API response + closure pattern (3 JSX files), cache strategy, 17-test test plan, 16-step implementation sequence. Planning only — no code changes. Piranav approved campaign 22961854738 (experiment) inclusion. | Read-only | `evidence/sajeepan/sajeepan-campaign-lifecycle-audit-2026-10-30.md` (section 13) + `validation/piranav/sajeepan-campaign-lifecycle-audit-validation-2026-10-30.md` (phase 5) | Planning only — no commit | YES | None — plan complete, awaiting Piranav implementation approval | Piranav approves → implement 16-step sequence on piranv-work | PASS |
+
+**10-Folder Asset Check:**
+1. Prompt — N/A: existing prompt covers this
+2. Evidence — DONE: section 13 added
+3. Capability — N/A: planning only
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — N/A: no new prompt pattern
+6. Validation — DONE: phase 5 added
+7. Source-map — N/A: no new data source
+8. Docs — N/A
+9. Handover — N/A
+10. Reports — N/A
+11. Duplicate-risk — N/A
+
+| AIOS-2026-10-30-SAJ-DISC-P2-CORRECTIONS | Phase 2 plan corrections: full-repo SJ_CAMP_NAMES/SJ_CAMPAIGN_IDS reference scan (confirmed 3+6 files, zero external), FeedOptimization.jsx campShort confirmed dead code (no campaign_names needed in req4), RevenueProtection.jsx Object.entries(CAMP_NAMES) at lines 134+169 identified as additional change sites, dupCampOptions source confirmed, five-endpoint justification verified, corrected 9-file plan produced. Planning only — no code changes. | Read-only | `evidence/sajeepan/sajeepan-campaign-lifecycle-audit-2026-10-30.md` (section 14) + `validation/piranav/sajeepan-campaign-lifecycle-audit-validation-2026-10-30.md` (phase 5 items 15-20) | Planning only — no commit | YES | None — corrected plan complete, awaiting Piranav implementation approval | Piranav approves → execute 9-file implementation sequence on piranv-work | PASS |
+
+**10-Folder Asset Check:**
+1. Prompt — N/A: existing prompt covers this
+2. Evidence — DONE: section 14 added
+3. Capability — N/A: planning only
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — N/A
+6. Validation — DONE: phase 5 items 15-20 added
+7. Source-map — N/A
+8. Docs — N/A
+9. Handover — N/A
+10. Reports — N/A
+11. Duplicate-risk — N/A: evidence updated in-place, no new documents
+
+---
+
+## AIOS-2026-10-30-SAJ-DISC-P2-IMPL
+
+**Task:** Sajeepan Automatic Campaign Discovery — Phase 2 Implementation  
+**Date:** 2026-10-30  
+**Branch:** piranv-work  
+**Status:** PASS
+
+**Asset checklist:**
+1. Prompt — N/A: no new reusable prompt (implementation of approved plan)
+2. Evidence — `evidence/sajeepan/sajeepan-campaign-lifecycle-audit-2026-10-30.md` (Section 15 added)
+3. Capability — N/A: capability was documented in Phase 2 Planning closure
+4. Closure — this entry
+5. PROMPT_REGISTER — N/A: no new prompt
+6. Validation — `validation/piranav/sajeepan-campaign-lifecycle-audit-validation-2026-10-30.md` (Phase 6 added)
+7. Source-map — N/A: no new data sources
+8. Docs — N/A
+9. Handover — N/A
+10. Reports — N/A
+11. Duplicate-risk — N/A: updated existing files only
+
+**Files modified:** 9 (6 backend, 3 frontend)  
+**Frontend build:** PASS  
+**Backend tests:** 0 new failures  
+**Commit:** Not yet committed — awaiting Piranav instruction  
+**Queryability:** NO (local only, not pushed)  
+**Next step:** Piranav to review and instruct commit + push
