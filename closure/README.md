@@ -59,6 +59,32 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-10-30 — LEDSone DE Phase 0 Discovery + Energy Label Snippet Audit + Phase 2 Fixes
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| LEDSONE-DE-2026-10-30-001 | Phase 0 AIOS root + ledsone_de project discovery | `docs/shopify/ledsone-de-theme-architecture.md`, `source-map/README.md` | `evidence/shopify/ledsone_de/` (folder created) | Pending commit | YES | Myshopify domain for ledsone_de not confirmed | Confirm myshopify domain + Shopify CLI theme ID | PASS |
+| LEDSONE-DE-2026-10-30-002 | EU Energy Label snippet technical audit (read-only) | `prompts/shopify/ledsone-de-energy-label-snippet-audit.md` | `evidence/shopify/ledsone_de/energy-label-snippet-audit-2026-10-30.md` | Pending commit | YES | NONE | PASS |
+| LEDSONE-DE-2026-10-30-003 | EU Energy Label Phase 2 — all 8 fixes applied to `snippets/energy-label.liquid` (local only) | `shopify_projects/ledsone_de/snippets/energy-label.liquid` | `evidence/shopify/ledsone_de/energy-label-phase2-fixes-2026-10-30.md` | Pending commit | YES | Live browser test required post-deploy | Piranav to push via Shopify CLI to staging/dev theme, then test 13 regression scenarios | PASS (static) |
+| LEDSONE-DE-2026-10-30-004 | Collection product card energy label — read-only discovery. Architecture, AJAX safety, rendering chain, metafield gating confirmed. | `prompts/shopify/ledsone-de-collection-card-energy-label-discovery.md` | `evidence/shopify/ledsone_de/energy-label-collection-card-discovery-2026-10-30.md` | Pending commit | YES | Implementation requires Piranav approval + metafield definition in Shopify Admin | Approve architecture, define collection metafield, then implement 4 files | PASS — AWAITING APPROVAL |
+| LEDSONE-DE-2026-10-30-005 | Collection product card energy label — Phase 3 implementation. 4 files: energy-label-card.liquid (new), energy-label-card.css (new), main-collection-product.liquid (+4 lines), product-item.liquid (+1 line). Dual metafield gate. 12-scenario static PASS. LOCAL ONLY. | `snippets/energy-label-card.liquid`, `assets/energy-label-card.css`, `sections/main-collection-product.liquid`, `snippets/product-item.liquid` | `evidence/shopify/ledsone_de/energy-label-collection-card-implementation-2026-10-30.md` | Pending commit | YES | Metafield definitions required in Shopify Admin before live test; deploy awaiting Piranav approval | ~~Superseded by ROLLBACK~~ | ROLLED BACK — see LEDSONE-DE-2026-10-30-006 |
+| LEDSONE-DE-2026-10-30-006 | ROLLBACK — Collection card energy label implementation removed. Dual extra metafields (`custom.show_energy_label_on_cards` on Collection and Product) removed. Will reuse existing PDP metafields (`custom.energy_class`, `custom.energy_label_data_sheet`) for next implementation. 2 files deleted, 2 files restored to HEAD. Historical evidence preserved. | N/A (files deleted/restored) | `evidence/shopify/ledsone_de/energy-label-collection-card-implementation-2026-10-30.md` (historical — preserved) | Local only — no commit | YES | Next: redesign collection card snippet using existing PDP metafields only (no `show_energy_label_on_cards` boolean gates) | Await new implementation instruction | PASS |
+
+**10-folder check (Phase 2 + Phase 3 + Rollback session):**
+1. Prompt — DONE: Phase 2 + Phase 3 prompts exist. Rollback = no new prompt needed (corrective action, not a reusable pattern)
+2. Evidence — DONE: historical `energy-label-collection-card-implementation-2026-10-30.md` preserved. Rollback recorded in closure.
+3. Capability — N/A
+4. Closure — DONE: LEDSONE-DE-2026-10-30-005 updated to ROLLED BACK; LEDSONE-DE-2026-10-30-006 added
+5. PROMPT_REGISTER — No update needed for rollback
+6. Validation — DONE: Phase 3 section in validation file annotated as ROLLED BACK
+7. Source-map — DONE: card file entries removed from source-map
+8. Docs — DONE: architecture doc updated to remove card component entries
+9. Handover — N/A
+10. Reports — N/A
+11. Duplicate-risk — N/A
+
+---
+
 ### 2026-10-28 — DM Campaign Overall Performance — Discovery Audit
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |

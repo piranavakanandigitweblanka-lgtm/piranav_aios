@@ -1,0 +1,91 @@
+{%- comment -%}
+  Snippet: energy-label-card.liquid
+
+  Compact EU Energy Label for collection product cards.
+  Card shows: coloured arrow badge icon (clickable) + Produktdatenblatt link.
+  Click icon → <dialog> popup shows full EU label image.
+  No separate JS file. Works after AJAX filter/load-more.
+
+  Metafields (same as energy-label.liquid):
+    custom.energy_class                  — single_line_text
+    custom.energy_label_data_sheet       — List of File (image + PDF)
+
+  Styles: assets/energy-label-card.css
+{%- endcomment -%}
+
+{%- assign elc_sheets = product.metafields.custom.energy_label_data_sheet.value -%}
+
+{%- if elc_sheets != blank and elc_sheets.size > 0 -%}
+
+  {%- assign elc_image   = nil -%}
+  {%- assign elc_pdf_url = nil -%}
+
+  {%- for sheet in elc_sheets -%}
+    {%- if elc_image == nil and sheet.media_type == 'image' -%}
+      {%- assign elc_image = sheet -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- for sheet in elc_sheets -%}
+    {%- if elc_pdf_url == nil -%}
+      {%- if sheet.media_type == 'generic_file' or sheet.url contains '.pdf' -%}
+        {%- assign elc_pdf_url = sheet.url -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- assign elc_dialog_id = 'elc-dialog-' | append: product.id -%}
+
+  <div class="elc-row">
+
+    {%- if elc_image != nil -%}
+      <button
+        type="button"
+        class="elc-trigger"
+        onclick="document.getElementById('{{ elc_dialog_id }}').showModal()"
+        aria-label="Energieeffizienzlabel anzeigen"
+      >
+        <span class="elc-arrow" aria-hidden="true" style="background:#c0001a;">G</span>
+      </button>
+    {%- endif -%}
+
+    {%- if elc_pdf_url != nil -%}
+      <a
+        href="{{ elc_pdf_url }}"
+        class="elc-pdf-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Produktdatenblatt herunterladen"
+      >Produktdatenblatt</a>
+    {%- endif -%}
+
+  </div>
+
+  {%- if elc_image != nil -%}
+    <dialog
+      id="{{ elc_dialog_id }}"
+      class="elc-dialog"
+      onclick="if(event.target===this)this.close()"
+      aria-label="EU Energieeffizienzlabel"
+    >
+      <div class="elc-dialog__head">
+        <button
+          type="button"
+          class="elc-dialog__close"
+          onclick="this.closest('dialog').close()"
+          aria-label="Schließen"
+        >&times;</button>
+      </div>
+      <div class="elc-dialog__body">
+        {{- elc_image
+          | image_url: width: 1000
+          | image_tag:
+            loading: 'eager',
+            class: 'elc-dialog__img',
+            alt: 'EU Energieeffizienzlabel'
+        -}}
+      </div>
+    </dialog>
+  {%- endif -%}
+
+{%- endif -%}

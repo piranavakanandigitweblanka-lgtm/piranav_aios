@@ -29,7 +29,11 @@
 {%- elsif energy_class == 'G'    -%}{%- assign el_color = '#c0001a' -%}
 {%- endif -%}
 
-{%- assign el_letter = energy_class | default: '—' -%}
+{%- if energy_class == blank -%}
+  {%- assign el_letter = '—' -%}
+{%- else -%}
+  {%- assign el_letter = energy_class -%}
+{%- endif -%}
 
 {%- comment -%} Unique IDs per product {%- endcomment -%}
 {%- assign el_modal_id = 'energyLabelModal-' | append: product.id -%}
@@ -53,8 +57,8 @@
         <span
           class="el-arrow"
           aria-hidden="true"
-          style="background:{{ el_color }};"
-        >{{ el_letter }}</span>
+          style="background:#c0001a;"
+        >G</span>
 
         <span class="el-caption">
           Energie-<br>label
@@ -67,21 +71,7 @@
     <div class="el-datasheet-links">
 
       {%- for sheet in data_sheets -%}
-        {%- if sheet.media_type == 'image' -%}
-          {{
-            sheet
-            | image_url: width: 60
-            | image_tag:
-              loading: 'lazy',
-              class: 'el-ds-thumb',
-              alt: 'Energieeffizienzlabel'
-          }}
-          {%- break -%}
-        {%- endif -%}
-      {%- endfor -%}
-
-      {%- for sheet in data_sheets -%}
-        {%- if sheet.media_type == 'generic_file' -%}
+        {%- if sheet.media_type == 'generic_file' or sheet.url contains '.pdf' -%}
           <a
             href="{{ sheet.url }}"
             target="_blank"
@@ -146,7 +136,7 @@
               sheet
               | image_url: width: 1000
               | image_tag:
-                loading: 'lazy',
+                loading: 'eager',
                 class: 'el-energy-image',
                 alt: 'Energieeffizienzlabel'
             }}
@@ -162,8 +152,6 @@
   {{- '<!-- el-modal-teleport-end -->' -}}
 
 
-  {%- unless el_styles_loaded -%}
-    {%- assign el_styles_loaded = true -%}
   <style>
     .el-row {
       display: flex;
@@ -284,6 +272,7 @@
       position: fixed;
       inset: 0;
       width: 100vw;
+      height: 100vh;
       height: 100dvh;
       z-index: 2147483647;
       display: flex;
@@ -315,6 +304,7 @@
       display: flex;
       flex-direction: column;
       width: min(620px, calc(100vw - 32px));
+      max-height: calc(100vh - 32px);
       max-height: calc(100dvh - 32px);
       margin: 0;
       background: #fff;
@@ -382,6 +372,7 @@
       display: block;
       width: auto;
       max-width: 100%;
+      max-height: calc(100vh - 140px);
       max-height: calc(100dvh - 140px);
       height: auto;
       object-fit: contain;
@@ -397,6 +388,8 @@
 
     body.el-no-scroll {
       overflow: hidden;
+      position: fixed;
+      width: 100%;
     }
 
     @media (max-width: 749px) {
@@ -411,6 +404,7 @@
 
       .el-dialog {
         width: min(520px, calc(100vw - 32px));
+        max-height: calc(100vh - 32px);
         max-height: calc(100dvh - 32px);
         border-radius: 6px;
         align-self: auto;
@@ -436,7 +430,6 @@
     }
 
   </style>
-  {%- endunless -%}
 
 
   <script>
@@ -456,9 +449,12 @@
       var openers = document.querySelectorAll('[data-el-modal="' + modalId + '"]');
       var closers = document.querySelectorAll('[data-el-close="' + modalId + '"]');
       var lastFocus;
+      var savedScrollY = 0;
 
       function openModal() {
         lastFocus = document.activeElement;
+        savedScrollY = window.pageYOffset;
+        document.body.style.top = '-' + savedScrollY + 'px';
         modal.hidden = false;
         modal.setAttribute('aria-hidden', 'false');
         document.body.classList.add('el-no-scroll');
@@ -470,15 +466,18 @@
         modal.hidden = true;
         modal.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('el-no-scroll');
+        document.body.style.top = '';
+        window.scrollTo(0, savedScrollY);
         if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
       }
 
       openers.forEach(function (el) { el.addEventListener('click', openModal); });
       closers.forEach(function (el) { el.addEventListener('click', closeModal); });
 
-      document.addEventListener('keydown', function (e) {
+      function elKeydown(e) {
         if (e.key === 'Escape' && !modal.hidden) closeModal();
-      });
+      }
+      document.addEventListener('keydown', elKeydown);
 
       modal.addEventListener('keydown', function (e) {
         if (e.key !== 'Tab') return;
@@ -495,5 +494,12 @@
 
     })();
   </script>
+
+{%- elsif request.design_mode -%}
+  <div class="el-row" style="opacity:0.6;">
+    <p style="font-size:12px;color:#888;padding:6px 0;margin:0;font-family:inherit;">
+      [Energy label: metafield <code>custom.energy_label_data_sheet</code> is empty on this product.]
+    </p>
+  </div>
 
 {%- endif -%}

@@ -1,0 +1,135 @@
+/* energy-label-card.css
+   EU Energy Label thumbnail trigger + dialog popup for collection cards.
+   Class prefix: elc-* (no conflicts with el-* PDP styles or Umino theme).
+   Loaded once per collection page via main-collection-product.liquid.
+*/
+
+/* ── Row ── */
+.elc-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 14px;
+}
+
+/* ── Arrow badge trigger ── */
+.elc-trigger {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.elc-trigger:focus-visible {
+  outline: 2px solid #888;
+  outline-offset: 2px;
+}
+
+.elc-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 22px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: inherit;
+  clip-path: polygon(0 0, 80% 0, 100% 50%, 80% 100%, 0 100%);
+}
+
+/* ── PDF link — mirrors el-datasheet-link from energy-label.liquid ── */
+.elc-pdf-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #222;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  line-height: 1.3;
+}
+
+.elc-pdf-link:hover,
+.elc-pdf-link:focus-visible {
+  color: #000;
+  text-decoration-thickness: 2px;
+  outline: none;
+}
+
+.elc-pdf-link::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 16px;
+  flex-shrink: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath fill='%23555' d='M320 464c8.8 0 16-7.2 16-16V160H256c-17.7 0-32-14.3-32-32V48H64c-8.8 0-16 7.2-16 16V448c0 8.8 7.2 16 16 16H320zM0 64C0 28.7 28.7 0 64 0H229.5c17 0 33.3 6.7 45.3 18.7l90.5 90.5c12 12 18.7 28.3 18.7 45.3V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+/* ── Dialog popup ── */
+.elc-dialog {
+  width: fit-content;
+  max-width: min(380px, 90vw);
+  border: none;
+  border-radius: 6px;
+  padding: 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+
+.elc-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.elc-dialog__head {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 10px 0;
+}
+
+.elc-dialog__close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: #555;
+  padding: 0 2px;
+  font-family: inherit;
+}
+
+.elc-dialog__close:hover {
+  color: #000;
+}
+
+.elc-dialog__body {
+  padding: 8px 16px 16px;
+}
+
+.elc-dialog__img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ── Responsive ── */
+@media (max-width: 749px) {
+  .elc-arrow {
+    width: 30px;
+    height: 18px;
+    font-size: 10px;
+  }
+
+  .elc-pdf-link {
+    font-size: 12px;
+  }
+}

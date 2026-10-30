@@ -1,36 +1,46 @@
+{% assign faq_source = nil %}
 {% if product.metafields.custom.faq_schema != blank %}
-  <!-- Output the schema for Google/SEO -->
-  {{ product.metafields.custom.faq_schema }}
- 
-  <!-- Container where the Accordion UI will be injected -->
+  {% assign faq_source = 'product' %}
+{% elsif collection.metafields.custom.faq_schema != blank %}
+  {% assign faq_source = 'collection' %}
+{% elsif page.metafields.custom.faq_schema != blank %}
+  {% assign faq_source = 'page' %}
+{% endif %}
+
+{% if faq_source != nil %}
+  {% if faq_source == 'product' %}
+    {{ product.metafields.custom.faq_schema }}
+  {% elsif faq_source == 'collection' %}
+    {{ collection.metafields.custom.faq_schema }}
+  {% else %}
+    {{ page.metafields.custom.faq_schema }}
+  {% endif %}
+
   <div id="custom-faq-ui-container-{{ section.id }}"></div>
- 
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Find all JSON-LD scripts on the page
       const schemaScripts = document.querySelectorAll('script[type="application/ld+json"]');
       let faqList = null;
-     
-      // Loop through to find the FAQPage schema
+
       schemaScripts.forEach(function(script) {
         try {
           const json = JSON.parse(script.textContent);
           if (json['@type'] === 'FAQPage' && json.mainEntity) {
             faqList = json.mainEntity;
           }
-        } catch (e) {
-          // Ignore invalid JSON parsing errors
-        }
+        } catch (e) {}
       });
- 
-      // If FAQ data exists, build the HTML
+
       if (faqList && faqList.length > 0) {
         const container = document.getElementById('custom-faq-ui-container-{{ section.id }}');
-       
-        if(container) {
-          let html = '<div class="product-faq-wrapper" style="margin-top: 2rem;">';
-          html += '<h2 class="h2" style="margin-bottom: 1rem; text-align: center;">Frequently Asked Questions</h2>';
-         
+
+        if (container) {
+          let html = `
+            <div style="width: 100%; max-width: 1400px; margin: 2rem auto; padding: 0 20px; box-sizing: border-box;">
+              <h2 class="h2" style="margin-bottom: 1rem; text-align: center;">Häufig Gestellte Fragen</h2>
+          `;
+
           faqList.forEach(function(item) {
             if (item['@type'] === 'Question' && item.acceptedAnswer) {
               html += `
@@ -45,7 +55,7 @@
               `;
             }
           });
-         
+
           html += '</div>';
           container.innerHTML = html;
         }

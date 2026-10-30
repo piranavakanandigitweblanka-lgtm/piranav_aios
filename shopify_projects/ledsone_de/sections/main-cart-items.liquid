@@ -1,3 +1,4 @@
+{{ 'energy-label-card.css' | asset_url | stylesheet_tag }}
 {% liquid
   assign st = section.settings
   assign th_st = settings
@@ -209,6 +210,7 @@
                                       </div>
                                     {%- endif -%}
                                   </div>
+                                  {%- render 'energy-label-card', product: item.product -%}
                                 </td>
                                 <td
                                   class="cart-item__quantity"
