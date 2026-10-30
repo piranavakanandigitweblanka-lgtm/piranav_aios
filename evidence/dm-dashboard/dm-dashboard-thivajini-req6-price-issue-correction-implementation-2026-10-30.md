@@ -148,7 +148,30 @@ c_conv   = float(((uk_d * rate_d + _D_ADD) * _D_VAT).quantize(_D_CENTS, rounding
 
 ---
 
-## 10. Linked AIOS Files
+## 10. Branch Recovery — `piranv-work` (2026-10-30)
+
+**Issue:** Req 6 was committed onto `feature/thivajini-req6-price-issue-correction` instead of the approved `piranv-work` branch. Branch rule violation identified and corrected same session.
+
+**Recovery sequence:**
+1. Fetched latest remote refs — all stable
+2. Checked out local `piranv-work`
+3. Fast-forwarded to `origin/main` via `git merge --ff-only origin/main` (71 commits, no conflicts)
+4. Cherry-picked `e20108f` → new commit `2ec4e79` on `piranv-work`
+5. Validated: 4 files present, syntax PASS, 332 tests pass (22 pre-existing failures unchanged), frontend build `✓ 770ms`, all 5 formula cases PASS
+6. Pushed `origin piranv-work` — `b101431..2ec4e79`
+7. `origin/feature/thivajini-req6-price-issue-correction` preserved at `e20108f` — not deleted
+
+**Final remote state:**
+
+| Branch | Commit | Status |
+|---|---|---|
+| `origin/piranv-work` | `2ec4e79` | Contains Req 6 ✓ |
+| `origin/feature/thivajini-req6-price-issue-correction` | `e20108f` | Preserved (original) |
+| `origin/main` | `33df193` | Unchanged |
+
+---
+
+## 11. Linked AIOS Files
 
 | Type | Path |
 |---|---|
