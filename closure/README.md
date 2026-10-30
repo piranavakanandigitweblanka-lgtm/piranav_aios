@@ -4428,3 +4428,47 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 
 **Session Result: PASS (code-level) — 4 fixes applied. Browser validation pending theme push.**
 
+---
+
+### 2026-10-30 — Thivajini Req 6: Price Issue Correction — Pre-Implementation (Discovery + Corrections + Clarifications)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DMDASH-TV-REQ6-PREFLIGHT-2026-10-30 | Full pre-implementation investigation for Thivajini Req 6 (FR Price Issue Correction). Phase 2 data source discovery + 5 mandatory corrections from Piranav + 3 final clarifications. DB queries confirmed: FR count=5706 (active+draft only), UK/DE duplicate disambiguation via COUNT(DISTINCT price), no NULL prices in any duplicate group, no product ID available (only item_id + shop_inv_item_id), warehouse stock unique per SKU. | `prompts/dm-dashboard/dm-dashboard-thivajini-req6-price-issue-correction.md` | `evidence/dm-dashboard/dm-dashboard-thivajini-req6-price-issue-correction-preflight-2026-10-30.md` | Read-only — no code commit | YES | NONE — all clarifications resolved, awaited implementation approval | Implementation approved — proceed to Req 6 build | PASS |
+
+**10-Folder Asset Check:**
+1. Prompt — DONE: `prompts/dm-dashboard/dm-dashboard-thivajini-req6-price-issue-correction.md`
+2. Evidence — DONE: `evidence/dm-dashboard/dm-dashboard-thivajini-req6-price-issue-correction-preflight-2026-10-30.md`
+3. Capability — N/A: discovery only — no capability until implementation complete
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: new row added
+6. Validation — N/A: discovery pass — no implementation to validate
+7. Source-map — N/A: no new data source introduced (listings.shopify_listings and inventory tables already known)
+8. Docs — N/A: evidence file covers all findings
+9. Handover — N/A
+10. Reports — N/A: investigation, not a reportable output
+11. Duplicate-risk — N/A: preflight doc is uniquely named
+
+---
+
+### 2026-10-30 — Thivajini Req 6: Price Issue Correction — Implementation
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| DMDASH-TV-REQ6-IMPL-2026-10-30 | Implement Thivajini Req 6 FR Price Issue Correction. Created `price_issue_correction.py` (backend router GET /api/thivajini/req6) and `PriceIssueCorrection.jsx` (frontend). Modified `main.py` (+1 import + router registration) and `taskRegistry.jsx` (+1 entry). Two calculation methods (Normal + Converted), 5 KPI counts, duplicate SKU disambiguation, ECB rate integration, CHECK DATA logic. Build: ✓ 4.00s clean. 239 backend tests PASS (22 pre-existing failures in unrelated modules, 0 new regressions). Branch: `feature/thivajini-req6-price-issue-correction`. | `backend/app/dashboard_pages/price_issue_correction.py`, `frontend/src/dashboard_pages/PriceIssueCorrection.jsx`, `backend/app/main.py`, `frontend/src/taskRegistry.jsx` | `evidence/dm-dashboard/dm-dashboard-thivajini-req6-price-issue-correction-implementation-2026-10-30.md` | Pending commit — awaiting Piranav instruction | YES | Access grants row for `thivajini.PriceIssueCorrection` not yet created | Piranav to: (1) review code, (2) commit on branch, (3) push and open PR, (4) create access_grants row for Thivajini | PASS |
+
+**10-Folder Asset Check:**
+1. Prompt — DONE: `prompts/dm-dashboard/dm-dashboard-thivajini-req6-price-issue-correction.md` (updated with corrected KPI total)
+2. Evidence — DONE: `evidence/dm-dashboard/dm-dashboard-thivajini-req6-price-issue-correction-implementation-2026-10-30.md`
+3. Capability — N/A: extends existing Thivajini dashboard capability; no new system-level capability
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row already added at preflight stage
+6. Validation — DONE: `validation/piranav/dm-dashboard-thivajini-req6-price-issue-correction-validation-2026-10-30.md` — 22/22 static PASS, 0 new regressions, build clean
+7. Source-map — N/A: no new data source introduced
+8. Docs — N/A: evidence + validation cover all implementation details
+9. Handover — N/A: implementation complete; next step is standard PR + access grant
+10. Reports — N/A: not a reportable data output
+11. Duplicate-risk — N/A: all 4 modified/created files are uniquely named
+
+**Session Result: PASS — 4 files created/modified, build clean, 239 tests pass, 0 new regressions. Commit and access grant pending Piranav instruction.**
+
