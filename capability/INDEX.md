@@ -16,7 +16,7 @@
 - [2026-07 — Foundation (12 capabilities)](#2026-07)
 - [2026-08 — Dashboard + Shopify Ops (16 capabilities)](#2026-08)
 - [2026-09 — AI Assistants + SEO + DM Dashboard (41 capabilities)](#2026-09)
-- [2026-10 — Conduit + Shopify Fixes + Legal (10 capabilities)](#2026-10)
+- [2026-10 — Conduit + Shopify Fixes + Legal + DM Dashboard (11 capabilities)](#2026-10)
 - [DATE-UNCLEAR / REVIEW REQUIRED](#date-unclear--review-required)
 - [Duplicate Decisions Log](#duplicate-decisions-log)
 - [October 2026 Capability Coverage](#october-2026-capability-coverage)
@@ -141,7 +141,7 @@ Total: 41 capabilities | Projects: dm-dashboard, SR-02, Shopify, SEO, Sajeepan A
 
 ## 2026-10
 
-Total: 10 capabilities | Projects: Conduit/Shopify, ElectricalsOne, dm-dashboard, Legal
+Total: 11 capabilities | Projects: Conduit/Shopify, ElectricalsOne, dm-dashboard, Legal
 
 | Date | Capability | Canonical Path | Status | Owner | Evidence Path | Last Updated | Reuse Level | Related |
 |---|---|---|---|---|---|---|---|---|
@@ -155,6 +155,7 @@ Total: 10 capabilities | Projects: Conduit/Shopify, ElectricalsOne, dm-dashboard
 | 2026-10-08 | Shopify Collection-Specific Swatch Guard | `capability/2026/10/2026-10-08/shopify-collection-specific-swatch-guard-2026-10-08.md` | CODE COMPLETE — browser validation pending | Piranav | `conduit-stock-price-cards/02_implementation/CONDUIT-TASK6-finish-swatches-2026-10-08.md` | 2026-10-08 | High — any Shopify theme | `shopify-collection-card-stock-price-fix-2026-10-07.md` |
 | 2026-10-08 | Shopify Theme HTML Deduplication | `capability/2026/10/2026-10-08/shopify-theme-html-deduplication-pattern-2026-10-08.md` | CODE COMPLETE — size measurement pending | Piranav | `conduit-stock-price-cards/02_implementation/CONDUIT-STEP3-html-reduction-2026-10-08.md` | 2026-10-08 | High — any Shopify theme | `shopify-collection-specific-swatch-guard-2026-10-08.md` |
 | 2026-10-08 | IP Infringement Investigation + C&D Letter | `capability/2026/10/2026-10-08/ip-infringement-investigation-and-cease-desist.md` | ACTIVE | Piranav | `evidence/legal/lidsone-ip-infringement-2026-10-08.md` | 2026-10-08 | High — any brand protection case | — |
+| 2026-10-30 | Thivajini Price Issue Correction (Req 6) | `capability/2026/10/2026-10-30/dm-dashboard-thivajini-price-issue-correction.md` | LIVE on `piranv-work` — PR to main pending | Piranav | `evidence/dm-dashboard/dm-dashboard-thivajini-req6-price-issue-correction-implementation-2026-10-30.md` | 2026-10-30 | High — dual-method price comparison + ECB rate pattern | — |
 
 ---
 
@@ -212,8 +213,9 @@ Resolved as of 2026-10-08. Do NOT create new files for these — extend existing
 | 2026-10-08 | Conduit Task 6 swatch guard | `shopify-collection-specific-swatch-guard-2026-10-08.md` | COVERED |
 | 2026-10-08 | Conduit Step 3 HTML deduplication | `shopify-theme-html-deduplication-pattern-2026-10-08.md` | COVERED |
 | 2026-10-08 | IP Infringement C&D | `ip-infringement-investigation-and-cease-desist.md` | COVERED |
+| 2026-10-30 | Thivajini Req 6 — Price Issue Correction | `capability/2026/10/2026-10-30/dm-dashboard-thivajini-price-issue-correction.md` | COVERED |
 
-**10 of 11 items covered. 1 pending (PI-01).**
+**11 of 12 items covered. 1 pending (PI-01).**
 
 ---
 

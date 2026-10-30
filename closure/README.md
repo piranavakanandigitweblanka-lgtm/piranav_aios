@@ -4486,7 +4486,7 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 **10-Folder Asset Check:**
 1. Prompt — DONE: `prompts/dm-dashboard/dm-dashboard-thivajini-req6-price-issue-correction.md` (updated with corrected KPI total)
 2. Evidence — DONE: `evidence/dm-dashboard/dm-dashboard-thivajini-req6-price-issue-correction-implementation-2026-10-30.md`
-3. Capability — N/A: extends existing Thivajini dashboard capability; no new system-level capability
+3. Capability — DONE (2026-10-31 correction): `capability/2026/10/2026-10-30/dm-dashboard-thivajini-price-issue-correction.md` — created after session close, approved by Piranav
 4. Closure — DONE: this entry
 5. PROMPT_REGISTER — DONE: row already added at preflight stage
 6. Validation — DONE: `validation/piranav/dm-dashboard-thivajini-req6-price-issue-correction-validation-2026-10-30.md` — 22/22 static PASS, 0 new regressions, build clean
