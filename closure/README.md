@@ -4498,3 +4498,71 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 
 **Session Result: PASS — 4 files created/modified, build clean, 239 tests pass, 0 new regressions. Commit and access grant pending Piranav instruction.**
 
+---
+
+### 2026-10-30 — Sajeepan Work Discovery & Audit (Inspection Only)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-30-SAJ-DISCOVERY | Full inspection-only audit of all Sajeepan DM Dashboard pages. Inventoried: ProductIntelligence (req1), RevenueProtection (req2), ProductActionDashboard (req3), FeedOptimization (req4), automation_task.sajeepan_lens. Confirmed UAM task keys, DB route (Business DB only for all reqs), 7 campaign IDs in SJ_CAMPAIGN_IDS, 7th campaign (24092456136) missing from SJ_TARGET_ROAS + SJ_CAMP_NAMES, and "6 PMax Campaigns" hardcoded string in ProductIntelligence.jsx lines 221+446. No code changes made. | Read-only — no new files | Prior evidence files + source code | Read-only — no commit | YES | None | Proceed to Campaign Lifecycle Audit | PASS |
+
+---
+
+### 2026-10-30 — DM Dashboard Git Sync (Pre-Sajeepan)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-30-SAJEEPAN-GIT-SYNC | ff-only sync of both local `main` and `piranv-work` to `origin/main` at `ca09880`. 12 commits to main, 11 to piranv-work. No conflicts. Working tree clean. `origin/piranv-work` still at `2ec4e79` — 11 ahead, needs push when next code work is committed. | `evidence/piranav/dm-dashboard-git-audit-2026-10-29.md` (appended) | `evidence/piranav/dm-dashboard-git-audit-2026-10-29.md` | Read-only + ff-only merge — no code commit | YES | `origin/piranv-work` 11 ahead — needs `git push origin piranv-work` | Push when next commit goes on piranv-work | PASS |
+
+---
+
+### 2026-10-30 — Sajeepan Campaign Lifecycle & Configuration Audit
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-30-SAJ-CAMPAIGN-AUDIT | Full investigation of all 7 Sajeepan campaigns: DB inventory, lifecycle scenarios (new/removed/paused/renamed), sync architecture, hardcoded vs dynamic config, 6 vs 7 discrepancy root cause, ROAS mismatch. All 7 campaigns confirmed ENABLED. Campaign 24092456136 (SJ_Lighting_PH_KLARNA): £1,488.28 spend, 80 days, ROAS 300%. All 6 existing SJ_TARGET_ROAS values MISMATCHED vs DB. 6 vs 7 root cause: ProductIntelligence.jsx line 221 + 446 hardcoded "6". FeedOptimization.jsx missing 7th campaign. Recommended fix: Option A (4 additive edits) + Option B (DB-driven ROAS). 13 report sections delivered. No code changes. | `evidence/sajeepan/sajeepan-campaign-lifecycle-audit-2026-10-30.md` | `evidence/sajeepan/sajeepan-campaign-lifecycle-audit-2026-10-30.md` + `validation/piranav/sajeepan-campaign-lifecycle-audit-validation-2026-10-30.md` | Inspection only — no commit | YES | Awaiting Piranav approval to implement Option A (+Option B) | Piranav approves → implement 4 edits in shared.py, FeedOptimization.jsx, ProductIntelligence.jsx | PASS |
+
+**10-Folder Asset Check:**
+1. Prompt — DONE: `prompts/dm-dashboard/sajeepan-campaign-config-audit.md` (see below)
+2. Evidence — DONE: `evidence/sajeepan/sajeepan-campaign-lifecycle-audit-2026-10-30.md`
+3. Capability — N/A: investigation only; no new capability
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added (see PROMPT_REGISTER.md)
+6. Validation — DONE: `validation/piranav/sajeepan-campaign-lifecycle-audit-validation-2026-10-30.md`
+7. Source-map — N/A: no new data source (google_ads.campaigns already in source-map)
+8. Docs — N/A: evidence file covers all findings
+9. Handover — N/A
+10. Reports — N/A: investigation, not a data export
+11. Duplicate-risk — N/A: evidence file uniquely named; no duplicate
+
+**Session Result: PASS — full audit complete, 13/13 sections delivered, ROAS verification addendum added (section 10), ROAS source verification confirmed, implementation complete (Option A + B), awaiting Piranav commit approval.**
+
+---
+
+### 2026-10-30 — Sajeepan ROAS Source Verification (Pre-Implementation)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-30-SAJ-ROAS-VERIFY | Pre-implementation DB verification of `target_roas` field. Confirmed: (1) Source = `google_ads.campaigns.target_roas` (numeric, nullable). (2) Meaning = Google Ads bidding ROAS target (not performance ROAS) — set by Sajeepan via Google Ads UI, field `maximizeConversionValue.targetRoas`. (3) Sync freshness: campaign metadata syncs frequently (last write 2h ago today); 9-day lag is performance data only — `target_roas` is current. (4) All 7 campaigns confirmed non-NULL. (5) NULL fallback 300% is safe. (6) Removed campaigns retain `target_roas`. (7) Req1 SQL already JOINs `campaigns` table — adding `c.target_roas` is 1 SELECT token + 1 Python line. (8) Zero impact on other Sajeepan pages. (9) Sajeepan changes ROAS values frequently (multiple times/week) — Option A hardcoded patch will re-drift immediately. **Final recommendation: Option B for ROAS (DB-driven), Option A partial for names + "6"→"7" labels.** | `evidence/sajeepan/sajeepan-campaign-lifecycle-audit-2026-10-30.md` (section 10 appended) | Same file — section 10 | Inspection only — no commit | YES | NONE — approved and implemented | PASS |
+
+---
+
+### 2026-10-30 — Sajeepan Campaign Config Fix — Option A + B Implementation
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-10-30-SAJ-IMPL | Implemented Option B (DB-driven target_roas) + partial Option A (SJ_CAMP_NAMES + frontend names + "6"→"7" count fix). 4 files changed. `product_intelligence.py`: removed `SJ_TARGET_ROAS` import, added `c.target_roas` to SELECT + GROUP BY, replaced hardcoded lookup with `round(float(r["target_roas"]) * 100) if r["target_roas"] else 300`. `shared.py`: added `"24092456136": "SJ_Lighting_PH_KLARNA"` to `SJ_CAMP_NAMES`. `FeedOptimization.jsx`: added 7th campaign entry to `SJ_CAMP_NAMES`. `ProductIntelligence.jsx`: chip + footnote now dynamic `{campaigns.length \|\| 7}`. Backend: 660 passed, 27 pre-existing failures, 0 new regressions. Frontend: ✓ built in 1.25s. ROAS math verified for all 7 campaigns. Independent validation PASS. | `backend/app/dashboard_pages/product_intelligence.py`, `backend/app/dashboard_pages/shared.py`, `frontend/src/dashboard_pages/FeedOptimization.jsx`, `frontend/src/dashboard_pages/ProductIntelligence.jsx` | `evidence/sajeepan/sajeepan-campaign-lifecycle-audit-2026-10-30.md` (section 11) + `validation/piranav/sajeepan-campaign-lifecycle-audit-validation-2026-10-30.md` | `websitetecteam-arch/dm-dashboard` `piranv-work` commit `5af4a28` — pushed 2026-10-30 | YES | None | Open PR `piranv-work` → `main` on dm-dashboard | PASS |
+
+**10-Folder Asset Check:**
+1. Prompt — DONE: `prompts/dm-dashboard/sajeepan-campaign-config-audit.md` (covers both audit and implementation pattern)
+2. Evidence — DONE: `evidence/sajeepan/sajeepan-campaign-lifecycle-audit-2026-10-30.md` (section 11 added)
+3. Capability — N/A: extending existing Sajeepan pages; no new capability class
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row already registered at audit stage
+6. Validation — DONE: `validation/piranav/sajeepan-campaign-lifecycle-audit-validation-2026-10-30.md` (updated with Phase 3)
+7. Source-map — N/A: `google_ads.campaigns.target_roas` column — no new table, existing JOIN
+8. Docs — N/A: evidence covers all changes
+9. Handover — N/A
+10. Reports — N/A: not a data export
+11. Duplicate-risk — N/A: all changed files are unique, no new files created
+

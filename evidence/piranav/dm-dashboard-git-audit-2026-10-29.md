@@ -154,3 +154,48 @@ The `Unknown` classification is not a bug; it means "inventory tracking is disab
 | ENC10233 behaviour correct by design | VERIFIED (code trace) |
 | Live browser verification | NOT YET DONE |
 | Local `main` synced to `origin/main` | NOT DONE (need `git checkout main && git pull --ff-only`) |
+
+---
+
+## 2026-10-30 — Pre-Sajeepan-Fixes Sync
+
+**Date:** 2026-10-30  
+**Requirement ID:** AIOS-2026-10-30-SAJEEPAN-GIT-SYNC  
+**Type:** Git synchronization — ff-only, no code changes
+
+### State at start of session
+
+| Item | Value |
+|---|---|
+| Current branch | `piranv-work` |
+| HEAD before sync | `2ec4e79` feat(thivajini): Req 6 — FR Price Issue Correction |
+| Working tree | CLEAN |
+| `origin/main` | `ca09880` Merge pull request #149 |
+| `piranv-work` behind `origin/main` | 11 commits |
+| Local `main` behind `origin/main` | 12 commits |
+| piranv-work unique commits | 0 — pure fast-forward available |
+
+### Operations performed
+
+| Step | Command | Result |
+|---|---|---|
+| 1 | `git fetch origin` | All remote refs updated |
+| 2 | `git switch main` | Switched cleanly |
+| 3 | `git merge --ff-only origin/main` | `33df193..ca09880` — 12 commits, 16 files |
+| 4 | Verify `main` HEAD | `ca09880` = `origin/main` ✓ |
+| 5 | `git switch piranv-work` | Switched cleanly |
+| 6 | `git merge --ff-only origin/main` | `2ec4e79..ca09880` — 11 commits, 12 files |
+| 7 | Verify `piranv-work` HEAD | `ca09880` = `origin/main` ✓ |
+
+### State after sync
+
+| Item | Value |
+|---|---|
+| Current branch | `piranv-work` |
+| HEAD | `ca09880` — matches `origin/main` |
+| Local `main` | `ca09880` — matches `origin/main` |
+| `origin/piranv-work` | `2ec4e79` — **piranv-work is now 11 ahead** (needs push to update remote tracking) |
+| Working tree | CLEAN — nothing uncommitted |
+| Conflicts | NONE |
+
+> Note: `origin/piranv-work` still points to `2ec4e79`. Local piranv-work now shows "ahead 11" because it was ff-forwarded from main, not from its own remote. This is expected — a `git push origin piranv-work` will update the remote when next instructed.
