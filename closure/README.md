@@ -85,6 +85,27 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-11-02 — LEDSone DE Energy Label Search Page CSS Fix
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| LEDSONE-DE-2026-11-02-001 | Diagnosed and fixed energy label badge showing as black oval on search results page. Root cause: `energy-label-card.css` not loaded on `main-search.liquid`. Fix: added stylesheet_tag + hardened `.elc-trigger` with `!important` overrides. Pushed live. | `sections/main-search.liquid`, `assets/energy-label-card.css` | `evidence/shopify/ledsone_de/energy-label-search-css-fix-2026-11-02.md` | Pushed via Shopify CLI — pending AIOS git commit | YES | NONE | Commit changed files to git | PASS |
+
+**10-folder check:**
+1. Prompt — DONE: `prompts/shopify/ledsone-de-search-energy-label-css-fix.md`
+2. Evidence — DONE: `evidence/shopify/ledsone_de/energy-label-search-css-fix-2026-11-02.md`
+3. Capability — N/A: no new system capability
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added below
+6. Validation — DONE: `validation/piranav/energy-label-search-css-fix-validation-2026-11-02.md`
+7. Source-map — N/A: no new files or data sources introduced
+8. Docs — N/A: no new topic area
+9. Handover — N/A
+10. Reports — N/A
+11. Duplicate-risk — N/A
+
+---
+
 ### 2026-10-28 — DM Campaign Overall Performance — Discovery Audit
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
@@ -4565,6 +4586,50 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 9. Handover — N/A
 10. Reports — N/A: not a data export
 11. Duplicate-risk — N/A: all changed files are unique, no new files created
+
+---
+
+### 2026-11-02 — DM Campaign Overall Performance — Phase 2 Discovery + Phase 3 Data Accuracy
+
+| ID | Task | Asset | Evidence | Commit | Queryable | Blockers | Next Step | Status |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-11-02-001 | Phase 1 audit re-verification: independently re-verified all 6 Phase 1 bugs (BUG-01 through BUG-06) against source code. BUG-05 reclassified as intentional banker's rounding workaround. BUG-02 downgraded (sequential not concurrent connections). BUG-01 confirmed design-decision-gated. All others verified as genuine issues. | `evidence/piranav/dm-campaign-phase2-discovery-2026-11-02.md` | Same + `validation/piranav/dm-campaign-phase2-discovery-validation-2026-11-02.md` | Read-only — no commit | YES | BUG-01 requires Piranav/GPT design decision on ROAS display convention | Piranav to approve implementation sequence; lowest-risk start: BUG-06 | PASS |
+| AIOS-2026-11-02-002 | AIOS docs inventory (23 docs), requirements vs implementation comparison (all features confirmed), server discovery (Contabo 158.220.99.127 live ✅), local vs server code comparison (0 diff on DM Campaign files), data flow traced, date boundary + TZ confirmed. | Same | Same | Read-only — no commit | YES | None | Phase 3 complete — ready for implementation after Piranav/GPT approval | PASS |
+| DMDASH-DMCAMP-PHASE3 | Phase 3 data accuracy audit: independent SQL calculations vs local API comparison. All Time and 4 date ranges (Oct 1–7, Oct 1–21, Oct 1–31, single day Oct 21). All 7 KPIs verified exact match to 2dp. sub_source_id=38 + market_place='23' confirmed valid (43,887 UK Shopify orders). Date clamping (_resolve_range) confirmed correct. market_place_id_mapping id=23=UAE clarified as different system — not a bug. Local backend confirmed running on port 8499. | `evidence/piranav/dm-campaign-phase3-data-accuracy-2026-11-02.md` | `validation/piranav/dm-campaign-phase3-data-accuracy-validation-2026-11-02.md` | Read-only — no commit | YES | None — all data accurate | Piranav/GPT to approve BUG-01–06 implementation; data is verified correct, safe to proceed | PASS |
+
+**10-Folder Asset Check:**
+1. Prompt — DONE: `prompts/dashboard/dm-campaign-phase3-data-accuracy-audit.md` + 2 Phase 1/2 entries added to PROMPT_REGISTER
+2. Evidence — DONE: `evidence/piranav/dm-campaign-phase3-data-accuracy-2026-11-02.md`
+3. Capability — N/A (audit only, no new capability)
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: 3 new rows added (Phase 1, 2, 3 audit patterns)
+6. Validation — DONE: `validation/piranav/dm-campaign-phase3-data-accuracy-validation-2026-11-02.md`
+7. Source-map — N/A (no new data source introduced)
+8. Docs — N/A (evidence covers all findings)
+9. Handover — N/A
+10. Reports — N/A
+11. Duplicate-risk — N/A (new files have unique 2026-11-02 Phase 3 suffix)
+
+---
+
+### 2026-11-02 — DM Campaign Overall Performance — Phase 4 Frontend Integration & Functional Validation
+
+| ID | Task | Asset | Evidence | Commit | Queryable | Blockers | Next Step | Status |
+|---|---|---|---|---|---|---|---|---|
+| DMDASH-DMCAMP-PHASE4 | Phase 4 frontend integration and functional validation. Confirmed: Vite build CLEAN (510 modules, 0 errors), CORS preflight PASS (port 5199), KPI formatter trace all 7 KPIs verified, API auth flow tested (muguntha→200, piranav→403), date clamping display correct, all 6 bugs re-verified through code + API. 3 environment issues found: port mismatch (Vite must be 5199), Piranav lacks DmCampaign access_grants, API_URL fallback wrong port. Browser visual check BLOCKED — handover written for Muguntha. | `evidence/piranav/dm-campaign-phase4-frontend-validation-2026-11-02.md` | `validation/piranav/dm-campaign-phase4-frontend-validation-2026-11-02.md` | Read-only — no commit | YES | Browser visual check requires Muguntha login at http://localhost:5199 — see handover | Muguntha confirms browser rendering; Piranav adds DmCampaign access_grants via UAM; then Phase 5 implementation | PARTIALLY VERIFIED |
+
+**10-Folder Asset Check:**
+1. Prompt — DONE: `prompts/dashboard/dm-campaign-phase4-frontend-validation.md` + PROMPT_REGISTER row added
+2. Evidence — DONE: `evidence/piranav/dm-campaign-phase4-frontend-validation-2026-11-02.md`
+3. Capability — N/A (validation audit, no new capability)
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: Phase 4 row added
+6. Validation — DONE: `validation/piranav/dm-campaign-phase4-frontend-validation-2026-11-02.md`
+7. Source-map — N/A (no new data source)
+8. Docs — N/A
+9. Handover — DONE: `handover/piranav/dm-campaign-phase4-browser-test-handover-2026-11-02.md`
+10. Reports — N/A
+11. Duplicate-risk — N/A (new files have unique 2026-11-02 Phase 4 suffix)
 
 ---
 
