@@ -4646,5 +4646,26 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 **Frontend build:** PASS  
 **Backend tests:** 0 new failures  
 **Commit:** Not yet committed — awaiting Piranav instruction  
-**Queryability:** NO (local only, not pushed)  
+**Queryability:** NO (local only, not pushed)
+
+---
+
+### 2026-11-02 — SEMrush Backlinks Neon Upsert (Scheduled Run)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| SEO-BACKLINKS-20261102 | Scheduled SEMrush backlinks fetch + Neon DB upsert for ledsone.co.uk — automatic daily pipeline | `prompts/seo/semrush-backlinks-neon-upsert-prompt.md` (existing) | `evidence/seo/semrush-backlinks-neon-upsert-2026-11-02.md` | Pending commit | YES | SEMrush API units exhausted (no_api_units, trace: 7e1198f776c05812091234533a22b276). No data fetched, no DB rows written. | Piranav to top up SEMrush API units at https://www.semrush.com/mcp-access — next scheduled run will succeed automatically | FAIL — SEMrush no_api_units |
+
+**10-folder check:**
+1. Prompt — N/A: existing prompt `prompts/seo/semrush-backlinks-neon-upsert-prompt.md` used; no duplicate created (Rule 4)
+2. Evidence — DONE: `evidence/seo/semrush-backlinks-neon-upsert-2026-11-02.md`
+3. Capability — N/A: no new capability; existing pipeline failed before execution
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — N/A: existing row already covers this scheduled pipeline; failure run does not add new prompt
+6. Validation — DONE: `validation/piranav/semrush-backlinks-neon-upsert-2026-11-02.md`
+7. Source-map — N/A: no new data source introduced
+8. Docs — N/A: no new topic area
+9. Handover — N/A: no handover required; pipeline retries automatically
+10. Reports — N/A: no data was produced
+11. Duplicate-risk — N/A: new uniquely-named evidence files; no duplicate  
 **Next step:** Piranav to review and instruct commit + push
