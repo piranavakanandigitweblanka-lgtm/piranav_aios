@@ -1,9 +1,9 @@
 # Capability: Muguntha Budget Rule Alert System (MUGA-BRAS)
 
 **Date Confirmed:** 2026-10-12  
-**Last Updated:** 2026-11-02 — Phase 3: Budget Change Monitor module added  
+**Last Updated:** 2026-11-02 — Phase 4: Per-Campaign 30-Day Review Cycle added  
 **Confirmed By:** Piranav  
-**Status:** LIVE — rules corrected (Phase 1), Run Now + Telegram removed (Phase 2), Phase 3 budget change monitor module implemented (pending commit). 134/134 tests PASS.  
+**Status:** LIVE — rules corrected (Phase 1), Run Now + Telegram removed (Phase 2), Phase 3 budget change monitor implemented (pending commit), Phase 4 recurring review cycle implemented (pending commit). 183/183 tests PASS.  
 **Reusable:** YES — pattern applies to any rule-based alert system in dm-dashboard
 
 ---
@@ -80,6 +80,30 @@ Automatically evaluates Google Ads campaign budget performance against rule-base
 - `evidence/piranav/dm-campaign-phase3-implementation-2026-11-02.md`
 - `validation/piranav/muguntha-budget-rule-alert-step2-validation-2026-10-12.md`
 - `validation/piranav/dm-campaign-phase3-implementation-validation-2026-11-02.md`
+
+---
+
+## Phase 4: Per-Campaign 30-Day Review Cycle (2026-11-02)
+
+New module: `backend/app/dashboard_pages/muguntha_budget_review_cycle.py`
+
+| Component | Location |
+|---|---|
+| Review cycle module | `backend/app/dashboard_pages/muguntha_budget_review_cycle.py` |
+| Review cycle tests | `backend/tests/test_muguntha_budget_review_cycle.py` — 49 tests |
+| DB table | `muguntha_campaign_review_schedule` (dm_dashboard) |
+| Schedule | Every 1 day via `ScheduledSnapshot`, run_hour=8 |
+| Source | `google_ads.google_ads_change_events` (READ-ONLY) for seeding |
+
+**What Phase 4 does:**
+- Each in-scope campaign gets a continuous 30-day review cycle
+- First review = latest budget change date + 30 days
+- After each review fires, auto-inserts next PENDING row (cycle_start = previous review_due)
+- Uses two-step outbox: INSERT alert + UPDATE schedule.review_alert_id (Step 1 COMMIT), then Discord + atomic fired + next PENDING (Step 2 COMMIT)
+- Budget change (Phase 3) resets pending cycle from new change date; expires stale reserved alert (Mandatory Correction A)
+- Phase 4 alerts use status='review_required' and alert_source='campaign_review_cycle' — coexist with Phase 1 'pending' alerts
+- Historical seeding: pre_activation (review already passed) vs pending (review in future)
+- Discord message format: `📊 **30-day Budget Review — {campaign_name}**`
 
 ---
 
