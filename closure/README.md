@@ -85,6 +85,90 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-11-02 — Budget Alerts Phase 1: ROAS Rule Engine Correction
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| MUGA-BRAS-2026-11-02-001 | Corrected ROAS rule engine in muguntha_budget_alerts.py: 350–399% → +10%, 300–349% → +5%, 275–299% conversion gate (≥15), below 150% → decrease_15 (never pause), prev month ROAS <275% exception → decrease_10. Added conversions_30d to SQL query, DB schema and Discord message. 79/79 tests PASS. | `backend/app/dashboard_pages/muguntha_budget_alerts.py`, `backend/tests/test_muguntha_budget_alerts.py` | `evidence/dm-dashboard/muguntha-budget-rule-alert-phase1-rule-correction-2026-11-02.md` | Not committed — awaiting Piranav instruction | YES | NONE | Piranav to approve commit and push. Then Phase 2 (remove Run Now + Telegram). | PASS |
+
+**10-folder check:**
+1. Prompt — N/A: using existing Phase 1 prompt pattern from inspection session
+2. Evidence — DONE: `evidence/dm-dashboard/muguntha-budget-rule-alert-phase1-rule-correction-2026-11-02.md`
+3. Capability — DONE: `capability/2026/10/2026-10-12/muguntha-budget-alert-system.md` updated with corrected rules
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: `muguntha-budget-alerts-phase2-cleanup` row added (Phase 1 used existing inspection prompt pattern — no separate Phase 1 row needed)
+6. Validation — DONE: `validation/piranav/muguntha-budget-rule-alert-phase1-validation-2026-11-02.md`
+7. Source-map — N/A: no new data source
+8. Docs — N/A: no new topic area
+9. Handover — N/A: no handover needed
+10. Reports — N/A
+11. Duplicate-risk — N/A
+
+---
+
+### 2026-11-02 — Budget Alerts Phase 3: Early Change Monitoring Discovery
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| MUGA-BRAS-2026-11-02-003 | Phase 3 discovery: early budget change monitoring via google_ads_change_events. Schema confirmed (20 columns, row_hash UNIQUE). Sync lag median 8h. 106 budget events, 93 in Muguntha scope. 12 NULL campaign_id rows (skip). 4 NULL old_value rows (skip). Dedup: row_hash UNIQUE + created_at watermark. New table: muguntha_budget_change_monitor. New module: muguntha_budget_change_monitor.py. No frontend changes. Implementation plan + test plan documented. | `evidence/dm-dashboard/muguntha-budget-alerts-phase3-discovery-2026-11-02.md` | Same | No commit — discovery only | YES | NONE | Await Phase 3 implementation approval. Phase 1+2 commit still pending. | PASS |
+
+**10-folder check:**
+1. Prompt — DONE: `prompts/dashboard/muguntha-budget-alerts-phase3-discovery.md`
+2. Evidence — DONE: `evidence/dm-dashboard/muguntha-budget-alerts-phase3-discovery-2026-11-02.md`
+3. Capability — DONE: `capability/2026/10/2026-10-12/muguntha-budget-alert-system.md` updated
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added for `muguntha-budget-alerts-phase3-discovery`
+6. Validation — DONE: `validation/piranav/muguntha-budget-alerts-phase3-discovery-validation-2026-11-02.md`
+7. Source-map — N/A: google_ads_change_events was already known; no new source introduced
+8. Docs — N/A
+9. Handover — N/A
+10. Reports — N/A
+11. Duplicate-risk — N/A
+
+---
+
+### 2026-11-02 — Budget Alerts Phase 2: Run Now + Telegram Removal
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| MUGA-BRAS-2026-11-02-002 | Phase 2: Removed Run Evaluation Now button (frontend + backend endpoint) and all Telegram notification code. Discord-only. 79/79 tests PASS. | `backend/app/dashboard_pages/muguntha_budget_alerts.py`, `frontend/src/admin/pages/BudgetAlerts.jsx`, `backend/tests/test_muguntha_budget_alerts.py` | `evidence/dm-dashboard/muguntha-budget-alerts-phase2-cleanup-2026-11-02.md` | Not committed — awaiting Piranav instruction | YES | NONE | Piranav to approve commit + push (both Phase 1 and Phase 2 together). Then Phase 3: early budget change monitoring via google_ads_change_events. | PASS |
+
+**10-folder check:**
+1. Prompt — DONE: `prompts/dashboard/muguntha-budget-alerts-phase2-cleanup.md`
+2. Evidence — DONE: `evidence/dm-dashboard/muguntha-budget-alerts-phase2-cleanup-2026-11-02.md`
+3. Capability — DONE: `capability/2026/10/2026-10-12/muguntha-budget-alert-system.md` updated (Telegram removed, run-now removed, test count updated)
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added for `muguntha-budget-alerts-phase2-cleanup`
+6. Validation — DONE: `validation/piranav/muguntha-budget-alerts-phase2-cleanup-validation-2026-11-02.md`
+7. Source-map — N/A: no new data source
+8. Docs — N/A: no new topic area
+9. Handover — N/A: no handover needed
+10. Reports — N/A
+11. Duplicate-risk — N/A
+
+---
+
+### 2026-11-02 — Budget Alerts Phase 3: Early Budget Change Monitor — Implementation
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| MUGA-BRAS-2026-11-02-004 | Phase 3 implementation: new module `muguntha_budget_change_monitor.py` — polls google_ads_change_events every 2h, processes budget changes on Muguntha-scope campaigns, applies ROAS rules, assesses alignment, sends informational Discord alerts. Outbox pattern. First-run baseline. Watermark + overlap dedup. 134/134 tests PASS (55 new + 79 regression). Frontend build clean. main.py updated. | `backend/app/dashboard_pages/muguntha_budget_change_monitor.py`, `backend/tests/test_muguntha_budget_change_monitor.py`, `backend/app/main.py` | `evidence/piranav/dm-campaign-phase3-implementation-2026-11-02.md` | Not committed — awaiting Piranav instruction | YES | NONE | Piranav to approve commit + push for Phase 1 + Phase 2 + Phase 3 together from dm-dashboard/ dir (account: websitetecteam-arch) | PASS |
+
+**10-folder check:**
+1. Prompt — DONE: `prompts/dashboard/muguntha-budget-change-monitor-phase3-implementation.md`
+2. Evidence — DONE: `evidence/piranav/dm-campaign-phase3-implementation-2026-11-02.md`
+3. Capability — DONE: `capability/2026/10/2026-10-12/muguntha-budget-alert-system.md` updated below
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added
+6. Validation — DONE: `validation/piranav/dm-campaign-phase3-implementation-validation-2026-11-02.md`
+7. Source-map — N/A: no new data sources (google_ads_change_events was confirmed in Phase 3 discovery)
+8. Docs — N/A: no new topic area
+9. Handover — N/A
+10. Reports — N/A
+11. Duplicate-risk — N/A
+
+---
+
 ### 2026-11-02 — LEDSone DE Energy Label Search Page CSS Fix
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |

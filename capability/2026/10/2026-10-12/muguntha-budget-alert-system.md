@@ -1,8 +1,9 @@
 # Capability: Muguntha Budget Rule Alert System (MUGA-BRAS)
 
 **Date Confirmed:** 2026-10-12  
+**Last Updated:** 2026-11-02 — Phase 3: Budget Change Monitor module added  
 **Confirmed By:** Piranav  
-**Status:** LIVE — 42 campaigns with pending alerts. Next cycle: 2026-11-11  
+**Status:** LIVE — rules corrected (Phase 1), Run Now + Telegram removed (Phase 2), Phase 3 budget change monitor module implemented (pending commit). 134/134 tests PASS.  
 **Reusable:** YES — pattern applies to any rule-based alert system in dm-dashboard
 
 ---
@@ -17,23 +18,26 @@ Automatically evaluates Google Ads campaign budget performance against rule-base
 
 | Component | Location |
 |---|---|
-| Backend module | `backend/app/admin/muguntha_budget_alerts.py` |
+| Backend module | `backend/app/dashboard_pages/muguntha_budget_alerts.py` |
 | Frontend dashboard | `frontend/src/admin/pages/BudgetAlerts.jsx` |
 | Admin nav wiring | `frontend/src/admin/AdminLayout.jsx` (toolKey: `tools.AdminBudgetAlerts`) |
 | UAM registry | `taskRegistry.js` → `tools.AdminBudgetAlerts` |
-| Tests | `backend/tests/test_muguntha_budget_alerts.py` — 55/55 PASS |
+| Tests | `backend/tests/test_muguntha_budget_alerts.py` — 79/79 PASS |
 
 ---
 
-## Rule Engine
+## Rule Engine (corrected 2026-11-02)
 
-| ROAS Band | Condition | Alert Type |
+| ROAS Band | Action | Notes |
 |---|---|---|
-| < 1.0 | Budget gap > threshold | OVERSPEND |
-| 1.0–2.0 | Budget gap > threshold | UNDERSPEND |
-| 2.0–4.0 | Budget gap > threshold | REVIEW |
-| > 4.0 | No action | — |
-| Any | GBP cap breached | CAP_BREACH |
+| 400%+ | increase_20 | GBP cap: max 15% if budget > £150 |
+| 350–399% | increase_10 | |
+| 300–349% | increase_5 | |
+| 275–299% | increase_5 | Only if conversions ≥ 15; else low_conversions_review |
+| 200–274% | no_change | |
+| 175–199% | decrease_5 | |
+| 151–174% | decrease_10 | |
+| Below 150% | decrease_15 | If prev month ROAS < 275% → decrease_10 instead. Never pause immediately. |
 
 ---
 
@@ -48,10 +52,9 @@ Automatically evaluates Google Ads campaign budget performance against rule-base
 
 ## Notifications
 
-- **Telegram:** `TELEGRAM_BOT_TOKEN` + `MUGUNTHA_TELEGRAM_CHAT_ID` env vars
-- **Discord:** `DISCORD_BOT_TOKEN` + `MUGUNTHA_DISCORD_CHANNEL_ID` env vars
-- Both channels independent — failure in one does not block the other
-- Status persisted separately: `notified_telegram`, `notified_discord`
+- **Discord only:** `DISCORD_BOT_TOKEN` + `MUGUNTHA_DISCORD_CHANNEL_ID` env vars
+- Telegram removed (Phase 2, 2026-11-02)
+- Status persisted: `notified_discord`
 
 ---
 
@@ -74,4 +77,29 @@ Automatically evaluates Google Ads campaign budget performance against rule-base
 ## Evidence
 
 - `evidence/dm-dashboard/muguntha-budget-rule-alert-step2-implementation-2026-10-12.md`
+- `evidence/piranav/dm-campaign-phase3-implementation-2026-11-02.md`
 - `validation/piranav/muguntha-budget-rule-alert-step2-validation-2026-10-12.md`
+- `validation/piranav/dm-campaign-phase3-implementation-validation-2026-11-02.md`
+
+---
+
+## Phase 3: Budget Change Monitor (2026-11-02)
+
+New module: `backend/app/dashboard_pages/muguntha_budget_change_monitor.py`
+
+| Component | Location |
+|---|---|
+| Monitor module | `backend/app/dashboard_pages/muguntha_budget_change_monitor.py` |
+| Monitor tests | `backend/tests/test_muguntha_budget_change_monitor.py` — 55 tests |
+| DB tables | `muguntha_budget_change_monitor` + `muguntha_budget_change_monitor_watermark` (dm_dashboard) |
+| Schedule | Every 2 hours via `ScheduledSnapshot` |
+| Source | `google_ads.google_ads_change_events` (READ-ONLY, ledsone DB) |
+
+**What Phase 3 does:**
+- Polls `google_ads_change_events` every 2h for budget changes on UK/DE/FR accounts
+- Converts old_value/new_value from micros, looks up ROAS and conversions (30-day)
+- Applies `apply_budget_rule()` to get Muguntha's recommendation
+- Assesses alignment (follows/differs/informational) — never labels as violation
+- Sends informational Discord alert with all required fields
+- Outbox pattern: INSERT → Discord → UPDATE flag; retry on failure
+- First-run baseline: seeds watermark to NOW(), no historical events processed
