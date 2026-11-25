@@ -76,8 +76,17 @@
 ---
 
 ## Design Source
-- `C:\Users\PC\Downloads\piranav-handover-ledsone-us\piranav-handover-ledsone-us\ledsone-us-homepage-preview\index.html`
-- `C:\Users\PC\Downloads\piranav-handover-ledsone-us\piranav-handover-ledsone-us\design\Homepage-desktop-html\Main.dc.html`
+
+Approved handover design package — all sections built to match these files exactly:
+
+| File | Purpose |
+|---|---|
+| `C:\Users\PC\Downloads\piranav-handover-ledsone-us\piranav-handover-ledsone-us\ledsone-us-homepage-preview\index.html` | Full homepage preview HTML — layout, structure, content, all CSS tokens |
+| `C:\Users\PC\Downloads\piranav-handover-ledsone-us\piranav-handover-ledsone-us\design\Homepage-desktop-html\Main.dc.html` | Design file — exact CSS values, badge styles, spacing, button styles, colours |
+
+**Handover package root:** `C:\Users\PC\Downloads\piranav-handover-ledsone-us\piranav-handover-ledsone-us\`
+
+**Work log (Piranav-work repo):** `website/LEDSONE US/2026-11-25.md`
 
 ---
 
