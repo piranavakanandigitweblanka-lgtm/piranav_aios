@@ -1,0 +1,340 @@
+/* ============================================================
+   Featured Product Tabs — CSS ported from ledsone-us preview
+   Uses theme vars where available, preview vars as fallback
+   ============================================================ */
+
+/* ---- Local vars (preview colour tokens) ---- */
+.bls__fpt {
+  --fpt-ink:    #141414;
+  --fpt-paper:  #F4F2EE;
+  --fpt-pill:   #D8D3CB;
+  --fpt-muted:  #5B5B5B;
+  --fpt-brown:  #7A5414;
+  --fpt-red:    #B42318;
+  --fpt-gap:    20px;
+}
+
+/* ---- Section header ---- */
+.bls__fpt .fpt-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: var(--bls__section-header-margin, 2.8rem);
+}
+
+.bls__fpt .fpt-head__left {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.bls__fpt .fpt-h2 {
+  font-size: clamp(22px, 2.5vw, 32px);
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0;
+  color: var(--heading-color, var(--fpt-ink));
+}
+
+/* ---- View all link ---- */
+.bls__fpt .fpt-ulink {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--grey-color, var(--fpt-muted));
+  text-decoration: underline;
+  white-space: nowrap;
+  transition: var(--bls-transition, color .15s);
+  flex-shrink: 0;
+}
+
+.bls__fpt .fpt-ulink:hover {
+  color: var(--primary-color, var(--fpt-ink));
+}
+
+/* ---- Tab chip pills ---- */
+.bls__fpt .fpt-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bls__fpt .fpt-chip {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1.5px solid var(--fpt-pill);
+  background: #fff;
+  color: var(--fpt-ink);
+  min-height: 40px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s, color .15s, border-color .15s;
+  line-height: 1;
+}
+
+.bls__fpt .fpt-chip.is-active,
+.bls__fpt .fpt-chip:hover {
+  border-color: var(--fpt-ink);
+  background: var(--fpt-ink);
+  color: #fff;
+  font-weight: 700;
+}
+
+/* ---- Product grid ---- */
+.bls__fpt .fpt-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--fpt-columns, 4), minmax(0, 1fr));
+  gap: 28px 20px;
+}
+
+.bls__fpt .fpt-grid--hidden {
+  display: none;
+}
+
+/* ---- Product card ---- */
+.bls__fpt .fpt-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* ---- Product image ---- */
+.bls__fpt .fpt-media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: var(--fpt-paper);
+  border-radius: 16px;
+  overflow: hidden;
+  display: block;
+  text-decoration: none;
+}
+
+.bls__fpt .fpt-pimg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity .35s ease, transform .6s ease;
+}
+
+.bls__fpt .fpt-pimg--hover {
+  opacity: 0;
+}
+
+.bls__fpt .fpt-media:hover .fpt-pimg--hover {
+  opacity: 1;
+}
+
+.bls__fpt .fpt-media:hover .fpt-pimg:not(.fpt-pimg--hover) {
+  transform: scale(1.03);
+}
+
+/* ---- Badges (sale + custom label) ---- */
+.bls__fpt .fpt-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+  background: var(--fpt-red);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 9px;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.bls__fpt .fpt-badge--custom {
+  background: var(--fpt-ink);
+}
+
+/* ---- Wishlist icon ---- */
+.bls__fpt .fpt-wish {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  text-decoration: none;
+  color: var(--fpt-ink);
+  transition: box-shadow .2s;
+}
+
+.bls__fpt .fpt-wish:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,.14);
+}
+
+.bls__fpt .fpt-wish svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---- Product type ---- */
+.bls__fpt .fpt-ptype {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--fpt-brown);
+}
+
+/* ---- Product name ---- */
+.bls__fpt .fpt-pname {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  min-height: 42px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--color-link, var(--fpt-ink));
+  text-decoration: none;
+  transition: color .15s;
+}
+
+.bls__fpt .fpt-pname:hover {
+  color: var(--primary-color, var(--fpt-ink));
+}
+
+/* ---- Price ---- */
+.bls__fpt .fpt-price {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.bls__fpt .fpt-now {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-link, var(--fpt-ink));
+}
+
+.bls__fpt .fpt-was {
+  font-size: 14px;
+  color: var(--fpt-muted);
+  text-decoration: line-through;
+}
+
+/* ---- Card button ---- */
+.bls__fpt .fpt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .15s, color .15s, border-color .15s;
+  border: 1.5px solid transparent;
+  margin-top: auto;
+}
+
+.bls__fpt .fpt-btn--card {
+  border-color: var(--fpt-ink);
+  background: #fff;
+  color: var(--fpt-ink);
+  width: 100%;
+}
+
+.bls__fpt .fpt-btn--card:hover {
+  background: var(--fpt-ink);
+  color: #fff;
+}
+
+.bls__fpt .fpt-btn--disabled {
+  border-color: var(--fpt-pill);
+  color: var(--fpt-muted);
+  cursor: not-allowed;
+  background: #fff;
+  width: 100%;
+  pointer-events: none;
+}
+
+/* ============================================================
+   TABLET  ≤ 1199px  — 3 columns
+   ============================================================ */
+@media (max-width: 1199px) {
+  .bls__fpt .fpt-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px 14px;
+  }
+}
+
+/* ============================================================
+   MOBILE  ≤ 767px  — 2 columns, swipeable chips
+   ============================================================ */
+@media (max-width: 767px) {
+  .bls__fpt .fpt-head {
+    align-items: flex-start;
+  }
+
+  .bls__fpt .fpt-head__left {
+    width: 100%;
+  }
+
+  .bls__fpt .fpt-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+
+  .bls__fpt .fpt-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .bls__fpt .fpt-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 12px;
+  }
+
+  .bls__fpt .fpt-card {
+    gap: 8px;
+  }
+
+  .bls__fpt .fpt-media {
+    border-radius: 12px;
+  }
+
+  .bls__fpt .fpt-wish {
+    width: 36px;
+    height: 36px;
+    top: 8px;
+    right: 8px;
+  }
+
+  .bls__fpt .fpt-ptype  { font-size: 10.5px; }
+  .bls__fpt .fpt-pname  { font-size: 13.5px; min-height: 38px; }
+  .bls__fpt .fpt-now    { font-size: 16px; }
+  .bls__fpt .fpt-was    { font-size: 12.5px; }
+  .bls__fpt .fpt-btn--card { height: 42px; font-size: 13px; padding: 0 8px; }
+}
+
+/* ============================================================
+   Theme tablet/mobile padding helpers
+   ============================================================ */
+.bls__fpt.spt-tablet { padding-top: calc(var(--section-padding-top) * 0.75); }
+.bls__fpt.spb-tablet { padding-bottom: calc(var(--section-padding-bottom) * 0.75); }
+
+@media (max-width: 767px) {
+  .bls__fpt.spt-mobile { padding-top: calc(var(--section-padding-top) * 0.5); }
+  .bls__fpt.spb-mobile { padding-bottom: calc(var(--section-padding-bottom) * 0.5); }
+}

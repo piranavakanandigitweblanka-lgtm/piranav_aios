@@ -1,0 +1,191 @@
+/* ============================================================
+   LD Reviews — CSS from ledsone-us design file
+   ============================================================ */
+
+/* ---- Header row ---- */
+.bls__ld-reviews .ldr-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.bls__ld-reviews .ldr-heading {
+  margin: 0;
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--heading-color, #141414);
+}
+
+/* ---- CTA buttons ---- */
+.bls__ld-reviews .ldr-ctas {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.bls__ld-reviews .ldr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0 20px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .15s, color .15s, border-color .15s;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.bls__ld-reviews .ldr-btn--outline {
+  border: 1.5px solid #141414;
+  background: transparent;
+  color: #141414;
+}
+
+.bls__ld-reviews .ldr-btn--outline:hover {
+  background: #141414;
+  color: #fff;
+}
+
+.bls__ld-reviews .ldr-btn--ink {
+  background: #141414;
+  border: 1.5px solid #141414;
+  color: #fff;
+}
+
+.bls__ld-reviews .ldr-btn--ink:hover {
+  background: #1C2B5A;
+  border-color: #1C2B5A;
+}
+
+/* ---- Review grid ---- */
+.bls__ld-reviews .ldr-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* ---- Review card ---- */
+.bls__ld-reviews .ldr-card {
+  margin: 0;
+  border: 1px solid #E6E2DC;
+  border-radius: 16px;
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #fff;
+  transition: box-shadow .2s;
+}
+
+.bls__ld-reviews .ldr-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,.07);
+}
+
+/* ---- Stars ---- */
+.bls__ld-reviews .ldr-stars {
+  display: flex;
+  gap: 3px;
+}
+
+/* ---- Review title ---- */
+.bls__ld-reviews .ldr-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--heading-color, #141414);
+  line-height: 1.3;
+}
+
+/* ---- Review body ---- */
+.bls__ld-reviews .ldr-body {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #3A3A3A;
+  flex-grow: 1;
+}
+
+/* ---- Author ---- */
+.bls__ld-reviews .ldr-author {
+  font-size: 13px;
+  color: #5B5B5B;
+  margin-top: auto;
+}
+
+/* ============================================================
+   TABLET  ≤ 989px  — 2 columns
+   ============================================================ */
+@media (max-width: 989px) {
+  .bls__ld-reviews .ldr-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ============================================================
+   MOBILE  ≤ 767px  — horizontal swipe
+   ============================================================ */
+@media (max-width: 767px) {
+  .bls__ld-reviews .ldr-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .bls__ld-reviews .ldr-ctas {
+    width: 100%;
+  }
+
+  .bls__ld-reviews .ldr-btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .bls__ld-reviews .ldr-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    gap: 12px;
+    margin-left: calc(-1 * var(--bs-gutter-x, 15px));
+    margin-right: calc(-1 * var(--bs-gutter-x, 15px));
+    padding-left: var(--bs-gutter-x, 15px);
+    padding-right: var(--bs-gutter-x, 15px);
+    padding-bottom: 4px;
+  }
+
+  .bls__ld-reviews .ldr-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .bls__ld-reviews .ldr-card {
+    flex: 0 0 84%;
+    scroll-snap-align: start;
+    padding: 22px;
+  }
+
+  .bls__ld-reviews .ldr-title {
+    font-size: 15px;
+  }
+
+  .bls__ld-reviews .ldr-body {
+    font-size: 14px;
+  }
+}
+
+/* ============================================================
+   Theme padding helpers
+   ============================================================ */
+.bls__ld-reviews.spt-tablet { padding-top: calc(var(--section-padding-top) * 0.75); }
+.bls__ld-reviews.spb-tablet { padding-bottom: calc(var(--section-padding-bottom) * 0.75); }
+
+@media (max-width: 767px) {
+  .bls__ld-reviews.spt-mobile { padding-top: calc(var(--section-padding-top) * 0.5); }
+  .bls__ld-reviews.spb-mobile { padding-bottom: calc(var(--section-padding-bottom) * 0.5); }
+}

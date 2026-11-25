@@ -1,0 +1,262 @@
+{{ 'ld-trust-bar.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign st           = section.settings
+  assign container    = st.container
+  assign color_scheme = st.color_scheme
+  assign enabled_animations = settings.animations_enabled
+
+  assign spt_tablet = ''
+  if st.padding_top > 50
+    assign spt_tablet = ' spt-tablet'
+  endif
+  assign spt_mobile = ''
+  if st.padding_top > 30
+    assign spt_mobile = ' spt-mobile'
+  endif
+  assign spb_tablet = ''
+  if st.padding_bottom > 50
+    assign spb_tablet = ' spb-tablet'
+  endif
+  assign spb_mobile = ''
+  if st.padding_bottom > 30
+    assign spb_mobile = ' spb-mobile'
+  endif
+  assign reset_spacing = ''
+  if st.reset_spacing
+    assign reset_spacing = ' remove_spacing'
+  endif
+-%}
+
+{%- capture section_style -%}
+  --section-padding-top: {{ st.padding_top }}px;
+  --section-padding-bottom: {{ st.padding_bottom }}px;
+  --ldtrust-icon-color: {{ st.icon_color }};
+{%- endcapture -%}
+
+{%- comment -%}Icon SVG map{%- endcomment -%}
+{%- liquid
+  assign icon_shipping  = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>'
+  assign icon_video     = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M10 9l5 2.5-5 2.5z"/></svg>'
+  assign icon_returns   = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v4h4"/></svg>'
+  assign icon_star      = '<svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>'
+  assign icon_shield    = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 2l7 4v5c0 5-3.5 9-7 10C9.5 20 5 16 5 11V6z"/></svg>'
+  assign icon_support   = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'
+  assign icon_lock      = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>'
+  assign icon_gift      = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 13h18"/><path d="M8 8a2 2 0 1 1 4-4 2 2 0 0 1 4 4"/></svg>'
+-%}
+
+<section
+  class="bls__section{{ spt_tablet }}{{ spb_tablet }}{{ spt_mobile }}{{ spb_mobile }} color-{{ color_scheme }} gradient bls__ld-trust{{ reset_spacing }}"
+  style="{{ section_style | strip | strip_newlines }}"
+  id="{{ section.id }}"
+>
+  <div class="{{ container }} section-full">
+    <div class="ldtrust-bar {% if enabled_animations %}scroll-trigger animate--slide-in{% endif %}">
+
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign icon_key = block.settings.icon
+          assign svg = ''
+          case icon_key
+            when 'shipping'
+              assign svg = icon_shipping
+            when 'video'
+              assign svg = icon_video
+            when 'returns'
+              assign svg = icon_returns
+            when 'star'
+              assign svg = icon_star
+            when 'shield'
+              assign svg = icon_shield
+            when 'support'
+              assign svg = icon_support
+            when 'lock'
+              assign svg = icon_lock
+            when 'gift'
+              assign svg = icon_gift
+            else
+              assign svg = icon_shipping
+          endcase
+
+          assign link_url   = block.settings.link_url
+          assign link_label = block.settings.link_label
+        -%}
+
+        <div
+          class="ldtrust-item"
+          {{ block.shopify_attributes }}
+        >
+          <span class="ldtrust-icon">{{ svg }}</span>
+          <div class="ldtrust-text">
+            <b>{{ block.settings.title }}</b>
+            <span>
+              {%- if link_url != blank and link_label != blank -%}
+                {{ block.settings.subtitle }}
+                {%- if block.settings.subtitle != blank %} · {% endif -%}
+                <a href="{{ link_url }}">{{ link_label }}</a>
+              {%- else -%}
+                {{ block.settings.subtitle }}
+              {%- endif -%}
+            </span>
+          </div>
+        </div>
+
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "LD Trust Bar",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "container",
+      "label": "Container width",
+      "default": "container",
+      "options": [
+        { "value": "container",       "label": "Default"    },
+        { "value": "container-fluid", "label": "Fluid"      },
+        { "value": "strecth-width",   "label": "Stretch"    },
+        { "value": "full-width",      "label": "Full width" }
+      ]
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#1C2B5A"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "default": 28,
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "default": 0,
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "reset_spacing",
+      "label": "Remove section spacing",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Trust item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "shipping",
+          "options": [
+            { "value": "shipping", "label": "Shipping / truck"      },
+            { "value": "video",    "label": "Video / play"          },
+            { "value": "returns",  "label": "Returns / refresh"     },
+            { "value": "star",     "label": "Star / Trustpilot"     },
+            { "value": "shield",   "label": "Shield / secure"       },
+            { "value": "support",  "label": "Support / chat"        },
+            { "value": "lock",     "label": "Lock / payment"        },
+            { "value": "gift",     "label": "Gift"                  }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Trust item"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Supporting detail here"
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Link label (optional)"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link URL (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "LD Trust Bar",
+      "blocks": [
+        {
+          "type": "item",
+          "settings": {
+            "icon": "shipping",
+            "title": "Fast US shipping",
+            "subtitle": "Free over $34.99 · 24hr express available"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "icon": "video",
+            "title": "Install guides & videos",
+            "subtitle": "For every light we sell"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "icon": "returns",
+            "title": "Easy returns",
+            "subtitle": "See our return policy",
+            "link_label": "Return policy"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "icon": "star",
+            "title": "Rated on Trustpilot",
+            "subtitle": "Real reviews from real homes"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

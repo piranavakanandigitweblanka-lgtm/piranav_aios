@@ -1,0 +1,280 @@
+{{ 'ld-categories.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign st = section.settings
+  assign container   = st.container
+  assign color_scheme = st.color_scheme
+  assign heading     = st.heading
+  assign text_align  = st.text_alignment
+  assign view_all_label = st.view_all_label
+  assign view_all_url   = st.view_all_url
+  assign columns_desktop = st.columns_desktop
+  assign show_count  = st.show_count_product
+  assign gap         = st.column_gap
+  assign enabled_animations = settings.animations_enabled
+
+  assign spt_tablet = ''
+  if st.padding_top > 50
+    assign spt_tablet = ' spt-tablet'
+  endif
+  assign spt_mobile = ''
+  if st.padding_top > 30
+    assign spt_mobile = ' spt-mobile'
+  endif
+  assign spb_tablet = ''
+  if st.padding_bottom > 50
+    assign spb_tablet = ' spb-tablet'
+  endif
+  assign spb_mobile = ''
+  if st.padding_bottom > 30
+    assign spb_mobile = ' spb-mobile'
+  endif
+
+  assign reset_spacing = ''
+  if st.reset_spacing
+    assign reset_spacing = ' remove_spacing'
+  endif
+-%}
+
+{%- capture section_style -%}
+  --section-padding-top: {{ st.padding_top }}px;
+  --section-padding-bottom: {{ st.padding_bottom }}px;
+  --ldcat-columns: {{ columns_desktop }};
+  --ldcat-gap: {{ gap }}px;
+{%- endcapture -%}
+
+<section
+  class="bls__section{{ spt_tablet }}{{ spb_tablet }}{{ spt_mobile }}{{ spb_mobile }} color-{{ color_scheme }} gradient bls__ld-categories{{ reset_spacing }}"
+  style="{{ section_style | strip | strip_newlines }}"
+  id="{{ section.id }}"
+>
+  <div class="{{ container }} section-full">
+
+    {%- if heading != blank or view_all_url != blank -%}
+      <div class="bls__section-header {{ text_align }}{% if view_all_url != blank %} text-view-all{% endif %}">
+        {%- if heading != blank -%}
+          <h2 class="bls__section-heading {% if enabled_animations %}scroll-trigger animate--slide-in{% endif %}">
+            {{ heading }}
+          </h2>
+        {%- endif -%}
+        {%- if view_all_url != blank and view_all_label != blank -%}
+          <div class="links-view-all">
+            <a href="{{ view_all_url }}" class="ldcat-view-all">
+              {{ view_all_label }}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="ldcat-grid {% if enabled_animations %}scroll-trigger animate--slide-in{% endif %}">
+      {%- for block in section.blocks -%}
+        {%- assign col = collections[block.settings.collection] -%}
+        {%- assign custom_img = block.settings.image -%}
+        {%- assign label = block.settings.title_override -%}
+        {%- if label == blank -%}
+          {%- assign label = col.title -%}
+        {%- endif -%}
+        {%- assign href = col.url | default: '#' -%}
+
+        {%- if custom_img != blank -%}
+          {%- assign feat_img = custom_img -%}
+        {%- elsif col.featured_image != blank -%}
+          {%- assign feat_img = col.featured_image -%}
+        {%- else -%}
+          {%- assign feat_img = blank -%}
+        {%- endif -%}
+
+        <a
+          class="ldcat-item {% if enabled_animations %}scroll-trigger animate--slide-in{% endif %}"
+          href="{{ href }}"
+          {{ block.shopify_attributes }}
+          {% if enabled_animations %}data-cascade style="--animation-order: {{ forloop.index }};"{% endif %}
+        >
+          <span class="ldcat-img-wrap">
+            {%- if feat_img != blank -%}
+              <img
+                srcset="
+                  {%- if feat_img.width >= 180 -%}{{ feat_img | image_url: width: 180 }} 180w,{%- endif -%}
+                  {%- if feat_img.width >= 280 -%}{{ feat_img | image_url: width: 280 }} 280w,{%- endif -%}
+                  {%- if feat_img.width >= 400 -%}{{ feat_img | image_url: width: 400 }} 400w,{%- endif -%}
+                  {{ feat_img | image_url }} {{ feat_img.width }}w
+                "
+                src="{{ feat_img | image_url: width: 280 }}"
+                sizes="(min-width: 1200px) calc((100vw - 130px) / {{ columns_desktop }}), (min-width: 768px) 132px, 104px"
+                alt="{{ feat_img.alt | default: label | escape }}"
+                width="{{ feat_img.width }}"
+                height="{{ feat_img.height }}"
+                loading="lazy"
+                class="ldcat-img motion-reduce"
+              >
+            {%- else -%}
+              {{ 'collection-1' | placeholder_svg_tag: 'ldcat-placeholder' }}
+            {%- endif -%}
+          </span>
+          <span class="ldcat-name">{{ label }}</span>
+          {%- if show_count and col != blank -%}
+            <span class="ldcat-count">{{ col.products_count }} products</span>
+          {%- endif -%}
+        </a>
+
+      {%- endfor -%}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "LD Categories",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop by category"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Heading alignment",
+      "default": "text-left",
+      "options": [
+        { "value": "text-left",   "label": "Left"   },
+        { "value": "text-center", "label": "Center" },
+        { "value": "text-right",  "label": "Right"  }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "View all label",
+      "default": "View all products"
+    },
+    {
+      "type": "url",
+      "id": "view_all_url",
+      "label": "View all link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "container",
+      "label": "Container width",
+      "default": "container",
+      "options": [
+        { "value": "container",       "label": "Default"      },
+        { "value": "container-fluid", "label": "Fluid"        },
+        { "value": "strecth-width",   "label": "Stretch"      },
+        { "value": "full-width",      "label": "Full width"   }
+      ]
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "label": "Gap between items (px)",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count_product",
+      "label": "Show product count",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "default": 60,
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "default": 0,
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "reset_spacing",
+      "label": "Remove section spacing",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom image (overrides collection image)"
+        },
+        {
+          "type": "text",
+          "id": "title_override",
+          "label": "Custom label (overrides collection title)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "LD Categories",
+      "blocks": [
+        { "type": "category" },
+        { "type": "category" },
+        { "type": "category" },
+        { "type": "category" },
+        { "type": "category" }
+      ]
+    }
+  ]
+}
+{% endschema %}

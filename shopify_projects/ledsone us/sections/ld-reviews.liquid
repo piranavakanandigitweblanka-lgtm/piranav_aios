@@ -1,0 +1,285 @@
+{{ 'ld-reviews.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign st           = section.settings
+  assign container    = st.container
+  assign color_scheme = st.color_scheme
+  assign heading      = st.heading
+  assign google_label = st.google_label
+  assign google_url   = st.google_url
+  assign tp_label     = st.trustpilot_label
+  assign tp_url       = st.trustpilot_url
+  assign enabled_animations = settings.animations_enabled
+
+  assign spt_tablet = ''
+  if st.padding_top > 50
+    assign spt_tablet = ' spt-tablet'
+  endif
+  assign spt_mobile = ''
+  if st.padding_top > 30
+    assign spt_mobile = ' spt-mobile'
+  endif
+  assign spb_tablet = ''
+  if st.padding_bottom > 50
+    assign spb_tablet = ' spb-tablet'
+  endif
+  assign spb_mobile = ''
+  if st.padding_bottom > 30
+    assign spb_mobile = ' spb-mobile'
+  endif
+  assign reset_spacing = ''
+  if st.reset_spacing
+    assign reset_spacing = ' remove_spacing'
+  endif
+-%}
+
+{%- capture section_style -%}
+  --section-padding-top: {{ st.padding_top }}px;
+  --section-padding-bottom: {{ st.padding_bottom }}px;
+{%- endcapture -%}
+
+{%- comment -%} Star SVG snippet {%- endcomment -%}
+{%- capture star_svg -%}
+<svg width="16" height="16" viewBox="0 0 24 24" fill="#C98A1B" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>
+{%- endcapture -%}
+
+<section
+  class="bls__section{{ spt_tablet }}{{ spb_tablet }}{{ spt_mobile }}{{ spb_mobile }} color-{{ color_scheme }} gradient bls__ld-reviews{{ reset_spacing }}"
+  style="{{ section_style | strip | strip_newlines }}"
+  id="{{ section.id }}"
+>
+  <div class="{{ container }} section-full">
+
+    <!-- Header -->
+    <div class="ldr-head {% if enabled_animations %}scroll-trigger animate--slide-in{% endif %}">
+      {%- if heading != blank -%}
+        <h2 class="ldr-heading">{{ heading }}</h2>
+      {%- endif -%}
+      <div class="ldr-ctas">
+        {%- if google_url != blank -%}
+          <a class="ldr-btn ldr-btn--outline" href="{{ google_url }}" target="_blank" rel="noopener">
+            {{ google_label | default: 'Review us on Google' }}
+          </a>
+        {%- endif -%}
+        {%- if tp_url != blank -%}
+          <a class="ldr-btn ldr-btn--ink" href="{{ tp_url }}" target="_blank" rel="noopener">
+            {{ tp_label | default: 'Review us on Trustpilot' }}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <!-- Review cards -->
+    <div class="ldr-grid">
+      {%- for block in section.blocks -%}
+        {%- assign rating = block.settings.rating | plus: 0 -%}
+        <figure
+          class="ldr-card {% if enabled_animations %}scroll-trigger animate--slide-in{% endif %}"
+          {{ block.shopify_attributes }}
+          {% if enabled_animations %}data-cascade style="--animation-order: {{ forloop.index }};"{% endif %}
+        >
+          <!-- Stars -->
+          <div class="ldr-stars" role="img" aria-label="{{ rating }} out of 5 stars">
+            {%- for i in (1..5) -%}
+              {%- if i <= rating -%}
+                {{ star_svg }}
+              {%- else -%}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#E6E2DC" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+
+          <!-- Review title -->
+          {%- if block.settings.review_title != blank -%}
+            <div class="ldr-title">{{ block.settings.review_title }}</div>
+          {%- endif -%}
+
+          <!-- Review body -->
+          {%- if block.settings.review_body != blank -%}
+            <blockquote class="ldr-body">{{ block.settings.review_body }}</blockquote>
+          {%- endif -%}
+
+          <!-- Author -->
+          <figcaption class="ldr-author">{{ block.settings.author | default: 'Verified buyer' }}</figcaption>
+        </figure>
+      {%- endfor -%}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "LD Reviews",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What our customers say"
+    },
+    {
+      "type": "header",
+      "content": "Review buttons"
+    },
+    {
+      "type": "text",
+      "id": "google_label",
+      "label": "Google button label",
+      "default": "Review us on Google"
+    },
+    {
+      "type": "url",
+      "id": "google_url",
+      "label": "Google review link"
+    },
+    {
+      "type": "text",
+      "id": "trustpilot_label",
+      "label": "Trustpilot button label",
+      "default": "Review us on Trustpilot"
+    },
+    {
+      "type": "url",
+      "id": "trustpilot_url",
+      "label": "Trustpilot link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "container",
+      "label": "Container width",
+      "default": "container",
+      "options": [
+        { "value": "container",       "label": "Default"    },
+        { "value": "container-fluid", "label": "Fluid"      },
+        { "value": "strecth-width",   "label": "Stretch"    },
+        { "value": "full-width",      "label": "Full width" }
+      ]
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "default": 60,
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "default": 0,
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "reset_spacing",
+      "label": "Remove section spacing",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Star rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "text",
+          "id": "review_title",
+          "label": "Review title",
+          "default": "Great product!"
+        },
+        {
+          "type": "textarea",
+          "id": "review_body",
+          "label": "Review text",
+          "default": "Really happy with my purchase. Great quality and fast delivery."
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Author / source",
+          "default": "Verified buyer"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "LD Reviews",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "review_title": "I absolutely love these shades!",
+            "review_body": "The perfect replacement for broken glass ones. Excellent quality and finish, fit my pendants perfectly. Great value, highly recommend!",
+            "author": "Verified buyer"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "review_title": "Came totally complete",
+            "review_body": "Antique bulbs, fixings and mounting brackets included. All you need is an electrician to install them. Delivery was on time.",
+            "author": "Verified buyer"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "review_title": "Nice quality light fitting",
+            "review_body": "Some assembly required. As an electrical engineer I would suggest WAGO 221 connectors. It makes installation much easier.",
+            "author": "Verified buyer"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "review_title": "My third order to date",
+            "review_body": "Super quick delivery. Will always use these guys.",
+            "author": "Verified buyer"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -59,6 +59,29 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-11-25 — LEDSone US Homepage Sections + Header h_layout4 Fix
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| LEDSONE-US-2026-11-25-001 | ld-hero section — hero with dark copy panel, gold CTAs, right image + 2 tiles (navy + cream). Full schema controls. Matches preview exactly. | `sections/ld-hero.liquid`, `assets/ld-hero.css` | `evidence/shopify/ledsone_us/ledsone-us-homepage-sections-2026-11-25.md` | Local — not committed | YES | Live browser test pending — Piranav to upload to theme | Upload files, test responsive layout and hover states | PASS (static) |
+| LEDSONE-US-2026-11-25-002 | category-navigation.liquid — removed `display:none` (user manually edited). Section now visible on desktop and mobile. | `sections/category-navigation.liquid` | `evidence/shopify/ledsone_us/ledsone-us-homepage-sections-2026-11-25.md` | Local — not committed | YES | Live test pending | Upload to theme, verify desktop visibility | PASS (static) |
+| LEDSONE-US-2026-11-25-003 | header.liquid h_layout4 — `horizontal-menu` hidden on desktop (≥1200px) via `.ldh4-menu-mobile-only` class + `<style>` block. Mobile hamburger drawer unaffected. All other layouts untouched. | `snippets/header.liquid` | `evidence/shopify/ledsone_us/ledsone-us-homepage-sections-2026-11-25.md` | Local — not committed | YES | Live test pending | Upload header.liquid, test desktop hides menu, mobile drawer opens | PASS (static) |
+
+**10-folder check (2026-11-25):**
+1. Prompt — DONE: `prompts/shopify/ledsone-us-homepage-section-build.md`
+2. Evidence — DONE: `evidence/shopify/ledsone_us/ledsone-us-homepage-sections-2026-11-25.md`
+3. Capability — N/A — no new system capability (extends existing section-build pattern)
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added
+6. Validation — DONE: `validation/piranav/ledsone-us-sections-validation-2026-11-25.md`
+7. Source-map — N/A — no new data source introduced
+8. Docs — N/A — no new topic area
+9. Handover — N/A — no handover required
+10. Reports — N/A — no reportable data output
+11. Duplicate-risk — N/A — all files are new or single-truth edits
+
+---
+
 ### 2026-10-30 — LEDSone DE Phase 0 Discovery + Energy Label Snippet Audit + Phase 2 Fixes
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |

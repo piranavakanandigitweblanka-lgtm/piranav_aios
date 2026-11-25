@@ -106,16 +106,21 @@
   {% if section.settings.heading != blank %}
     <h2 class="visually-hidden">{{ section.settings.heading }}</h2>
   {% endif %}
-  
+
   <div class="page-width">
     <nav class="category-nav">
       {% for block in section.blocks %}
-        <a href="{{ block.settings.link | default: '#' }}" 
-           class="category-link {% if request.path contains block.settings.link %}active{% endif %}"
-           {{ block.shopify_attributes }}>
+        <a
+          href="{{ block.settings.link | default: '#' }}"
+          class="category-link {% if request.path contains block.settings.link %}active{% endif %}"
+          {{ block.shopify_attributes }}
+        >
           {{ block.settings.title }}
           {% if block.settings.tag != blank %}
-            <span class="category-tag" style="background-color: {{ block.settings.tag_color }}; color: {{ block.settings.tag_text_color }};">
+            <span
+              class="category-tag"
+              style="background-color: {{ block.settings.tag_color }}; color: {{ block.settings.tag_text_color }};"
+            >
               {{ block.settings.tag | upcase }}
             </span>
           {% endif %}
@@ -127,10 +132,10 @@
 
 <style>
   .category-nav-bar {
-    background: #f8f8f8;
+    {% comment %} background: #f8f8f8; {% endcomment %}
     border-top: 1px solid #e1e1e1;
     border-bottom: 1px solid #e1e1e1;
-    display: none;
+    {% comment %} display: none; {% endcomment %}
   }
 
   .category-nav {
@@ -191,13 +196,13 @@
     .category-nav-bar {
       display: block;
     }
-    
+
     .category-nav {
       justify-content: flex-start;
       padding: 12px 20px;
       gap: 20px;
     }
-    
+
     .category-link {
       font-size: 13px;
     }

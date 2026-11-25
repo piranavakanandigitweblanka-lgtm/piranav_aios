@@ -1,0 +1,283 @@
+{{ 'ld-hero.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign st           = section.settings
+  assign color_scheme = st.color_scheme
+  assign container    = st.container
+
+  assign spt_tablet = ''
+  if st.padding_top > 50
+    assign spt_tablet = ' spt-tablet'
+  endif
+  assign spt_mobile = ''
+  if st.padding_top > 30
+    assign spt_mobile = ' spt-mobile'
+  endif
+  assign spb_tablet = ''
+  if st.padding_bottom > 50
+    assign spb_tablet = ' spb-tablet'
+  endif
+  assign spb_mobile = ''
+  if st.padding_bottom > 30
+    assign spb_mobile = ' spb-mobile'
+  endif
+-%}
+
+<section
+  class="bls__section{{ spt_tablet }}{{ spb_tablet }}{{ spt_mobile }}{{ spb_mobile }} color-{{ color_scheme }} gradient bls__ld-hero"
+  style="--section-padding-top: {{ st.padding_top }}px; --section-padding-bottom: {{ st.padding_bottom }}px;"
+  id="{{ section.id }}"
+>
+  <div class="{{ container }} ldh-grid">
+
+    <!-- LEFT: copy panel -->
+    <div class="ldh-copy">
+      <div class="ldh-text">
+        {%- if st.eyebrow != blank -%}
+          <p class="ldh-eyebrow">{{ st.eyebrow }}</p>
+        {%- endif -%}
+        {%- if st.heading != blank -%}
+          <h2 class="ldh-heading">{{ st.heading }}</h2>
+        {%- endif -%}
+        {%- if st.body != blank -%}
+          <p class="ldh-body">{{ st.body }}</p>
+        {%- endif -%}
+      </div>
+      <div class="ldh-ctas">
+        {%- if st.btn1_label != blank -%}
+          <a class="ldh-btn ldh-btn--gold" href="{{ st.btn1_url }}">{{ st.btn1_label }}</a>
+        {%- endif -%}
+        {%- if st.btn2_label != blank -%}
+          <a class="ldh-btn ldh-btn--ghost" href="{{ st.btn2_url }}">{{ st.btn2_label }}</a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <!-- RIGHT: photo + 2 tiles -->
+    <div class="ldh-side">
+      {%- if st.photo != blank -%}
+        <a class="ldh-photo" href="{{ st.photo_url | default: '#' }}">
+          <img
+            src="{{ st.photo | image_url: width: 1400 }}"
+            srcset="{{ st.photo | image_url: width: 800 }} 800w, {{ st.photo | image_url: width: 1400 }} 1400w"
+            sizes="(min-width: 990px) 50vw, 100vw"
+            alt="{{ st.photo.alt | default: st.heading }}"
+            loading="eager"
+            fetchpriority="high"
+          >
+        </a>
+      {%- else -%}
+        <div class="ldh-photo ldh-photo--empty"></div>
+      {%- endif -%}
+
+      <div class="ldh-tiles">
+        <!-- Tile 1 — navy -->
+        {%- if st.tile1_title != blank -%}
+          <a class="ldh-tile ldh-tile--navy" href="{{ st.tile1_url | default: '#' }}">
+            {%- if st.tile1_kicker != blank -%}
+              <span class="ldh-tile__k">{{ st.tile1_kicker }}</span>
+            {%- endif -%}
+            <span class="ldh-tile__t">{{ st.tile1_title }}</span>
+            {%- if st.tile1_sub != blank -%}
+              <span class="ldh-tile__s">{{ st.tile1_sub }}</span>
+            {%- endif -%}
+          </a>
+        {%- endif -%}
+        <!-- Tile 2 — paper/cream -->
+        {%- if st.tile2_title != blank -%}
+          <a class="ldh-tile ldh-tile--paper" href="{{ st.tile2_url | default: '#' }}">
+            {%- if st.tile2_kicker != blank -%}
+              <span class="ldh-tile__k">{{ st.tile2_kicker }}</span>
+            {%- endif -%}
+            <span class="ldh-tile__t">{{ st.tile2_title }}</span>
+            {%- if st.tile2_sub != blank -%}
+              <span class="ldh-tile__s">{{ st.tile2_sub }}</span>
+            {%- endif -%}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "LD Hero",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Copy panel"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "BLACK FRIDAY · NOV 27 – 30"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Industrial lighting that hangs right, first time."
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Body text (use <strong> for gold highlight)",
+      "default": "Pendants, cluster lights, wall sconces and every fitting in between, with step-by-step install guides for each one. Save up to 20% this week with code <strong>20OFF</strong>."
+    },
+    {
+      "type": "header",
+      "content": "Button 1 (gold)"
+    },
+    {
+      "type": "text",
+      "id": "btn1_label",
+      "label": "Label",
+      "default": "Shop Black Friday deals"
+    },
+    {
+      "type": "url",
+      "id": "btn1_url",
+      "label": "URL"
+    },
+    {
+      "type": "header",
+      "content": "Button 2 (outline)"
+    },
+    {
+      "type": "text",
+      "id": "btn2_label",
+      "label": "Label",
+      "default": "Browse pendant lights"
+    },
+    {
+      "type": "url",
+      "id": "btn2_url",
+      "label": "URL"
+    },
+    {
+      "type": "header",
+      "content": "Right photo"
+    },
+    {
+      "type": "image_picker",
+      "id": "photo",
+      "label": "Photo"
+    },
+    {
+      "type": "url",
+      "id": "photo_url",
+      "label": "Photo link URL"
+    },
+    {
+      "type": "header",
+      "content": "Tile 1 (navy)"
+    },
+    {
+      "type": "text",
+      "id": "tile1_kicker",
+      "label": "Kicker label",
+      "default": "VOLUME DISCOUNTS"
+    },
+    {
+      "type": "text",
+      "id": "tile1_title",
+      "label": "Title",
+      "default": "Buy more, save big"
+    },
+    {
+      "type": "text",
+      "id": "tile1_sub",
+      "label": "Sub text",
+      "default": "46 products · Shop now →"
+    },
+    {
+      "type": "url",
+      "id": "tile1_url",
+      "label": "Link URL"
+    },
+    {
+      "type": "header",
+      "content": "Tile 2 (cream)"
+    },
+    {
+      "type": "text",
+      "id": "tile2_kicker",
+      "label": "Kicker label",
+      "default": "NEW · TRADE"
+    },
+    {
+      "type": "text",
+      "id": "tile2_title",
+      "label": "Title",
+      "default": "B2B accounts"
+    },
+    {
+      "type": "text",
+      "id": "tile2_sub",
+      "label": "Sub text",
+      "default": "Trade pricing for installers →"
+    },
+    {
+      "type": "url",
+      "id": "tile2_url",
+      "label": "Link URL"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "container",
+      "label": "Container width",
+      "default": "container",
+      "options": [
+        { "value": "container",       "label": "Default"    },
+        { "value": "container-fluid", "label": "Fluid"      },
+        { "value": "strecth-width",   "label": "Stretch"    },
+        { "value": "full-width",      "label": "Full width" }
+      ]
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "default": 20,
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "default": 40,
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "LD Hero"
+    }
+  ]
+}
+{% endschema %}

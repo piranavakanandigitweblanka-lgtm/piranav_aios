@@ -187,12 +187,12 @@
             </div>
             <div class="middle-bottom color-default-color-scheme">
               <div class="{{ container }} d-flex align-items-center col-menu-center bls_submenu-center">
-         <div class="col-header-left">
+                <div class="col-header-left">
                   {%- liquid
                     section 'vertical-menu'
                   -%}
-                </div> 
-                <div class="col-header-center">
+                </div>
+                <div class="col-header-center ldh4-menu-mobile-only">
                   {%- liquid
                     section 'horizontal-menu'
                   -%}
@@ -309,83 +309,89 @@
                 </div>
               </div>
             </div>
-            {%- when 'h_layout8' -%}
-              <div class="middle-top layout8 pt-20 pb-20">
-                <div class="{{ container }} d-flex align-items-center">
-                   <div class=" mb-col-3 col-header-toggle  d-inline-flex">
-                    {%- render 'toggle-menu' -%}
-                  </div>
-                  <div class="col-header-left mb-col-3 d-inline-flex justify-content-start">
-                    {%- liquid
-                      if top_search
-                        render 'top-search', layout8: true
-                      endif
-                    -%}
-                  </div>
-                  <div class="col-header-center mb-col-6 d-flex justify-content-center">
-                    {%- render 'logo', isTransparent: transparent -%}
-                  </div>
-                  <div class="col-header-right mb-col-3 d-flex justify-content-end align-items-center">
-                    {%- liquid
-                      if my_account
-                        render 'my-account'
-                      endif
-                      if wishlist
-                        render 'wishlist'
-                      endif
-                      if minicart and hidden_button_add_to_cart == false
-                        render 'minicart'
-                      endif
-                    -%}
-                  </div>
+          {%- when 'h_layout8' -%}
+            <div class="middle-top layout8 pt-20 pb-20">
+              <div class="{{ container }} d-flex align-items-center">
+                <div class=" mb-col-3 col-header-toggle  d-inline-flex">
+                  {%- render 'toggle-menu' -%}
                 </div>
-              </div>
-              <div class="middle-bottom color-default-color-scheme layout8 bottom-{{ container }} gradient">
-                <div class="{{ container }} d-flex justify-content-between align-items-center col-menu-center bls_submenu-center">
+                <div class="col-header-left mb-col-3 d-inline-flex justify-content-start">
                   {%- liquid
-                    section 'horizontal-menu'
+                    if top_search
+                      render 'top-search', layout8: true
+                    endif
                   -%}
-                  <div class="d-none-mb">
-                    {%- liquid
-                      if recently_viewed
-                        render 'recently-viewed'
-                      endif
-                    -%}
-                  </div>
+                </div>
+                <div class="col-header-center mb-col-6 d-flex justify-content-center">
+                  {%- render 'logo', isTransparent: transparent -%}
+                </div>
+                <div class="col-header-right mb-col-3 d-flex justify-content-end align-items-center">
+                  {%- liquid
+                    if my_account
+                      render 'my-account'
+                    endif
+                    if wishlist
+                      render 'wishlist'
+                    endif
+                    if minicart and hidden_button_add_to_cart == false
+                      render 'minicart'
+                    endif
+                  -%}
                 </div>
               </div>
+            </div>
+            <div class="middle-bottom color-default-color-scheme layout8 bottom-{{ container }} gradient">
+              <div class="{{ container }} d-flex justify-content-between align-items-center col-menu-center bls_submenu-center">
+                {%- liquid
+                  section 'horizontal-menu'
+                -%}
+                <div class="d-none-mb">
+                  {%- liquid
+                    if recently_viewed
+                      render 'recently-viewed'
+                    endif
+                  -%}
+                </div>
+              </div>
+            </div>
         {%- endcase -%}
       </div>
     </div>
   </div>
 
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "Organization",
+      "name": {{ shop.name | json }},
+      "sameAs": [
+        {{ settings.social_twitter_link | json }},
+        {{ settings.social_facebook_link | json }},
+        {{ settings.social_pinterest_link | json }},
+        {{ settings.social_instagram_link | json }},
+        {{ settings.social_tiktok_link | json }},
+        {{ settings.social_tumblr_link | json }},
+        {{ settings.social_snapchat_link | json }},
+        {{ settings.social_youtube_link | json }},
+        {{ settings.social_vimeo_link | json }}
+      ],
+      "url": {{ request.origin | append: page.url | json }}
+    }
+  </script>
 
-<script type="application/ld+json">
-  {
-    "@context": "http://schema.org",
-    "@type": "Organization",
-    "name": {{ shop.name | json }},
-    "sameAs": [
-      {{ settings.social_twitter_link | json }},
-      {{ settings.social_facebook_link | json }},
-      {{ settings.social_pinterest_link | json }},
-      {{ settings.social_instagram_link | json }},
-      {{ settings.social_tiktok_link | json }},
-      {{ settings.social_tumblr_link | json }},
-      {{ settings.social_snapchat_link | json }},
-      {{ settings.social_youtube_link | json }},
-      {{ settings.social_vimeo_link | json }}
-    ],
-    "url": {{ request.origin | append: page.url | json }}
-  }
-</script>
-
-
-      {% comment %}kuberan Add Category Navigation Bar {% endcomment %}
-<div class="">
-  {% section 'category-navigation' %}
-</div>
+  {% comment %}kuberan Add Category Navigation Bar {% endcomment %}
+  <div class="">
+    {% section 'category-navigation' %}
+  </div>
 </header>
+
+<style>
+  /* h_layout4 — hide horizontal-menu on desktop, allow mobile drawer */
+  .h_layout4 .ldh4-menu-mobile-only { display: none; }
+  @media (max-width: 1199px) {
+    .h_layout4 .ldh4-menu-mobile-only { display: block; }
+  }
+</style>
 
 <script type="application/ld+json">
   {
@@ -407,21 +413,20 @@
   }
 </script>
 {% comment %}
+  This file has been rewritten to preserve the original behavior.
 
-This file has been rewritten to preserve the original behavior.
-
----
-Changes:
-- from: "                      render 'top-search' | layout4: true"
-  to: "                      render 'top-search', layout4: true"
-  position: 6900..6956
-- from: "                    render 'top-search' | layout5: true"
-  to: "                    render 'top-search', layout5: true"
-  position: 9073..9127
-- from: "                    render 'top-search' | layout6: true"
-  to: "                    render 'top-search', layout6: true"
-  position: 10313..10367
-- from: "                        render 'top-search' | layout8: true"
-  to: "                        render 'top-search', layout8: true"
-  position: 13017..13075
+  ---
+  Changes:
+  - from: "                      render 'top-search' | layout4: true"
+    to: "                      render 'top-search', layout4: true"
+    position: 6900..6956
+  - from: "                    render 'top-search' | layout5: true"
+    to: "                    render 'top-search', layout5: true"
+    position: 9073..9127
+  - from: "                    render 'top-search' | layout6: true"
+    to: "                    render 'top-search', layout6: true"
+    position: 10313..10367
+  - from: "                        render 'top-search' | layout8: true"
+    to: "                        render 'top-search', layout8: true"
+    position: 13017..13075
 {% endcomment %}

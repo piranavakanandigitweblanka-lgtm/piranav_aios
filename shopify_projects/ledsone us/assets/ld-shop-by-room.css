@@ -1,0 +1,155 @@
+/* ============================================================
+   LD Shop by Room — CSS from ledsone-us design file
+   ============================================================ */
+
+/* ---- Heading ---- */
+.bls__ld-rooms .ldroom-heading {
+  margin: 0 0 28px;
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--heading-color, #141414);
+}
+
+/* ---- Grid ---- */
+.bls__ld-rooms .ldroom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+/* ---- Room card ---- */
+.bls__ld-rooms .ldroom-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 420px;
+  border-radius: 20px;
+  background: #2A251C;
+  color: #F4F2EE;
+  padding: 28px;
+  overflow: hidden;
+  isolation: isolate;
+  text-decoration: none;
+  transition: color .2s;
+}
+
+/* Dark gradient overlay — bottom-heavy */
+.bls__ld-rooms .ldroom-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    0deg,
+    rgba(23,21,15,.82) 0%,
+    rgba(23,21,15,.25) 45%,
+    rgba(23,21,15,0)   70%
+  );
+}
+
+/* ---- Background image ---- */
+.bls__ld-rooms .ldroom-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+  transition: transform .8s ease;
+}
+
+.bls__ld-rooms .ldroom-placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  object-fit: cover;
+}
+
+/* Hover: subtle zoom on image */
+.bls__ld-rooms .ldroom-card:hover .ldroom-img {
+  transform: scale(1.04);
+}
+
+/* ---- Text ---- */
+.bls__ld-rooms .ldroom-name {
+  font-size: 28px;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1.15;
+}
+
+.bls__ld-rooms .ldroom-meta {
+  font-size: 14px;
+  color: #D8D0C2;
+  margin-top: 4px;
+}
+
+/* ============================================================
+   TABLET  ≤ 989px  — 2 cards, shorter height
+   ============================================================ */
+@media (max-width: 989px) {
+  .bls__ld-rooms .ldroom-card {
+    min-height: 360px;
+  }
+}
+
+/* ============================================================
+   MOBILE  ≤ 767px  — horizontal swipe row
+   ============================================================ */
+@media (max-width: 767px) {
+  .bls__ld-rooms .ldroom-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    gap: 14px;
+    /* bleed to container edges */
+    margin-left: calc(-1 * var(--bs-gutter-x, 15px));
+    margin-right: calc(-1 * var(--bs-gutter-x, 15px));
+    padding-left: var(--bs-gutter-x, 15px);
+    padding-right: var(--bs-gutter-x, 15px);
+    padding-bottom: 4px;
+  }
+
+  .bls__ld-rooms .ldroom-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .bls__ld-rooms .ldroom-card {
+    flex: 0 0 72%;
+    min-height: 360px;
+    scroll-snap-align: start;
+    border-radius: 16px;
+    padding: 22px;
+  }
+
+  .bls__ld-rooms .ldroom-name {
+    font-size: 24px;
+  }
+}
+
+/* ============================================================
+   MOBILE SMALL  ≤ 479px
+   ============================================================ */
+@media (max-width: 479px) {
+  .bls__ld-rooms .ldroom-card {
+    flex: 0 0 84%;
+    min-height: 320px;
+  }
+}
+
+/* ============================================================
+   Theme padding helpers
+   ============================================================ */
+.bls__ld-rooms.spt-tablet { padding-top: calc(var(--section-padding-top) * 0.75); }
+.bls__ld-rooms.spb-tablet { padding-bottom: calc(var(--section-padding-bottom) * 0.75); }
+
+@media (max-width: 767px) {
+  .bls__ld-rooms.spt-mobile { padding-top: calc(var(--section-padding-top) * 0.5); }
+  .bls__ld-rooms.spb-mobile { padding-bottom: calc(var(--section-padding-bottom) * 0.5); }
+}
