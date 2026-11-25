@@ -15,7 +15,7 @@
 /* ---- Grid ---- */
 .bls__ld-rooms .ldroom-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(var(--ldroom-columns, 3), minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -108,11 +108,8 @@
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     gap: 14px;
-    /* bleed to container edges */
-    margin-left: calc(-1 * var(--bs-gutter-x, 15px));
-    margin-right: calc(-1 * var(--bs-gutter-x, 15px));
-    padding-left: var(--bs-gutter-x, 15px);
-    padding-right: var(--bs-gutter-x, 15px);
+    padding-left: 16px;
+    padding-right: 16px;
     padding-bottom: 4px;
   }
 

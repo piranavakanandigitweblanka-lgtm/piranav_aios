@@ -128,11 +128,8 @@
     scrollbar-width: none;
     gap: 14px;
     padding-bottom: 6px;
-    /* bleed to container edges so first item is flush */
-    margin-left: calc(-1 * var(--bs-gutter-x, 15px));
-    margin-right: calc(-1 * var(--bs-gutter-x, 15px));
-    padding-left: var(--bs-gutter-x, 15px);
-    padding-right: var(--bs-gutter-x, 15px);
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
   .ldcat-grid::-webkit-scrollbar {
