@@ -271,5 +271,6 @@ ACTIVE — first version created 2026-07-01. Recovered from 10 sessions (2026-06
 
 | 2026-10-15 | `promotion-automation-phase1e-data-investigation` | discovery | `prompts/dm-dashboard/promotion-automation-phase1e-data-investigation.md` | PROMO-01-E (closure 2026-10-15) | ACTIVE |
 | 2026-10-15 | `promotion-automation-phase2a-foundation` | implementation | `prompts/dm-dashboard/promotion-automation-phase2a-foundation.md` | PROMO-02-A (closure 2026-10-15) | ACTIVE |
+| 2026-11-26 | `homingmbh-pdp-thumbnail-position-redesign` | implementation | `prompts/shopify/homingmbh-pdp-thumbnail-position-redesign.md` | HOMING-2026-11-26-010 (closure 2026-11-26) | ACTIVE |
 
 | STEP-1-AUDIT | Promotion Automation Step 1 — Full system audit against 48 policy requirements | `prompts/dm-dashboard/promotion-automation-step1-audit.md` | 2026-10-15 |

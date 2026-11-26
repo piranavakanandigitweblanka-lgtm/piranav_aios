@@ -5066,3 +5066,35 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 - Mega menu experiment cleanly cancelled ✓
 - All AIOS evidence/validation files written ✓
 - Pending: D3/D4/D5 decisions, transformer product tagging, theme wiring approval, git commit + push (piranavakanandigitweblanka-lgtm)
+
+---
+
+### 2026-11-26 — Homingmbh DE Shopify — PDP Thumbnail Position UI Redesign — OPEN (HOMING-2026-11-26-010)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| HOMING-2026-11-26-010 | Homingmbh product page thumbnail redesign — electricalsone-style. Added `thumbnail_position` schema setting (Left / Bottom) to `sections/main-product.liquid`. Shared premium styling: 9rem×9rem thumbnails, 2px active border, 0.65 opacity effect for both positions. Bottom position: thumbnails move from left vertical strip (5.6rem) to horizontal scrollable row below main image. Left position: column widens from 5.6rem to 9rem with matching premium styling. Files written locally. `theme_bash` upload + `theme_commit` pending Piranav next session. | `sections/main-product.liquid`, `assets/section-main-product.css` | N/A — evidence file pending next session | Not committed — local only | YES | `theme_bash` upload blocked (user closed session). Files ready locally at `shopify_projects/homingmbh-de-homingmbh-staging/`. | Next session: `theme_bash` upload both files → `theme_commit` → preview Left and Bottom positions live → continue ATC button + stock indicator + info spacing. | **OPEN — local changes ready, upload pending** |
+
+**10-folder check (2026-11-26 Task 010 — PDP Thumbnail Redesign):**
+1. Prompt — PENDING: `prompts/shopify/homingmbh-pdp-thumbnail-position-redesign.md` — save next session
+2. Evidence — PENDING: write next session after live preview confirmed
+3. Capability — N/A: CSS/schema change, no new system capability
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — PENDING: add row next session when prompt file created
+6. Validation — PENDING: write after live preview confirmed
+7. Source-map — N/A
+8. Docs — N/A
+9. Handover — N/A
+10. Reports — N/A
+11. Duplicate-risk — N/A
+
+**Files changed locally (ready for upload):**
+- `shopify_projects/homingmbh-de-homingmbh-staging/sections/main-product.liquid` — schema setting + conditional `{% style %}` block added
+- `shopify_projects/homingmbh-de-homingmbh-staging/assets/section-main-product.css` — no net changes (override moved to liquid)
+
+**Root cause documented:** `base.css` lines 3933–3939 force `grid-template-columns: 5.6rem minmax(0,1fr)` with `flex-direction: column` — this is the custom CSS placing thumbnails in left vertical strip. Override scoped to `#MainProduct-{{ section.id }}` to avoid global CSS pollution.
+
+**Next session PDP backlog (🟡 Medium):**
+- ATC button: full-width, black, show price
+- Stock indicator: green progress bar + count text
+- Info column spacing: tighter hierarchy, price/variant/quantity breathing room
