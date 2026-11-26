@@ -59,6 +59,111 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-11-26 — Homingmbh DE Shopify — REQ-1 Navigation Restructure Discovery
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| HOMING-2026-11-26-005 | REQ-1 — Navigation restructure full discovery. Both reference documents read: (1) Homin GmbH Website Change Requirements.docx + (2) LEDSone DE Website Changes.xlsx (Navigation, Copy of Navigation, Footer sheets). Extracted all 9 categories, sub-items, filter values. Identified German translation gaps (23 sub-items + 2 headers untranslated). Footer: FAQ shipping + "Remove 2reviews". Collection cross-reference: 4 direct matches, 3 naming gaps, 1 missing (Hanfseil), 1 partial. 30+ sub-collections required. 11 approval decisions identified. Theme = ready (no code change needed for mega menu structure). | `prompts/shopify/homingmbh-nav-restructure-discovery.md` | `evidence/piranav/homingmbh-req1-nav-discovery-2026-11-26.md` | Not committed — AIOS docs only | YES | 11 decisions pending Piranav/Jefri approval (D1–D11 in evidence): Transformer collection, sub-collection scope, Hanfseil-Beleuchtung empty, Connector scope, Lamp Holder = Lampenfassungen?, Outdoor Lighting Cat 4, E27 Filter type, 23 German translations, Remove 2reviews IDs, IP67 header translation, 301 redirects. | Piranav to review D1–D11 and approve before implementation | OPEN |
+
+**10-folder check (2026-11-26 Task 5 — REQ-1 Discovery):**
+1. Prompt — DONE: `prompts/shopify/homingmbh-nav-restructure-discovery.md`
+2. Evidence — DONE: `evidence/piranav/homingmbh-req1-nav-discovery-2026-11-26.md`
+3. Capability — N/A — discovery task
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added
+6. Validation — DONE: `validation/piranav/homingmbh-req1-nav-discovery-2026-11-26.md`
+7. Source-map — N/A — no new data source
+8. Docs — N/A
+9. Handover — N/A
+10. Reports — N/A
+11. Duplicate-risk — N/A — all files are new
+
+---
+
+### 2026-11-26 — Homingmbh DE Shopify — REQ-6 SKU Visibility Configuration
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| HOMING-2026-11-26-004 | REQ-6 — Remove SKU from product detail page. Implemented via Shopify Theme Editor on Default product template. Show item number (SKU): OFF. Show brand: ON. Show weight: ON. No code changes. SKU data preserved in Admin. Storefront verified 2026-11-26: Artikelnr. hidden, Marke (Homin) visible, Versand & Rückgabe visible, Teilen visible. | `prompts/shopify/homingmbh-theme-editor-sku-visibility-config.md` | `evidence/piranav/homingmbh-req6-sku-visibility-config-2026-11-26.md` | Not committed — AIOS docs only | YES | NONE | NONE — task complete | **PASS** |
+
+**10-folder check (2026-11-26 Task 4 — REQ-6):**
+1. Prompt — DONE: `prompts/shopify/homingmbh-theme-editor-sku-visibility-config.md`
+2. Evidence — DONE: `evidence/piranav/homingmbh-req6-sku-visibility-config-2026-11-26.md`
+3. Capability — N/A — Theme Editor toggle, not a new system capability
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added
+6. Validation — DONE: `validation/piranav/homingmbh-req6-sku-visibility-config-2026-11-26.md` — storefront PASS confirmed 2026-11-26
+7. Source-map — N/A — no new data source
+8. Docs — N/A
+9. Handover — N/A
+10. Reports — N/A
+11. Duplicate-risk — N/A — all files are new
+
+---
+
+### 2026-11-26 — Homingmbh DE Shopify — Unmatched Product Analysis
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| HOMING-2026-11-26-003 | Unmatched product analysis — 7 products investigated. Root cause: 4 ACTIVE products have productType "Transformatoren & Netzteile" (mismatch vs collection rule "Netzteile & LED-Treiber"); 3 DRAFT products have English productTypes with no tags. Recommended fix for all 7 documented. Phase 1 (P1–P4) rated SAFE. Phase 2 (P5–P7) conditional — P6 requires Piranav decision. | `prompts/discovery/homingmbh-unmatched-product-analysis.md` | `evidence/piranav/homingmbh-unmatched-product-analysis-2026-11-26.md` | Not committed — AIOS docs only | YES | P6 requires Piranav decision: Pendelleuchten vs Deckenleuchten & Spinnenlampen | Piranav to approve Phase 1 fix (P1–P4 productType change) | PASS |
+
+**10-folder check (2026-11-26 Task 3):**
+1. Prompt — DONE: `prompts/discovery/homingmbh-unmatched-product-analysis.md`
+2. Evidence — DONE: `evidence/piranav/homingmbh-unmatched-product-analysis-2026-11-26.md`
+3. Capability — N/A — discovery/analysis task
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added
+6. Validation — DONE: `validation/piranav/homingmbh-unmatched-product-analysis-2026-11-26.md`
+7. Source-map — N/A — no new data source
+8. Docs — N/A
+9. Handover — N/A
+10. Reports — N/A
+11. Duplicate-risk — N/A — all files are new
+
+---
+
+### 2026-11-26 — Homingmbh DE Shopify — Collection List Discovery + Product List Discovery
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| HOMING-2026-11-26-002 | Complete collection list discovery — 17 collections fetched (1 page). All smart, productType-based rules. 3 parent groups + 13 leaf collections + Home page. 2 empty collections flagged. 7 unassigned products cross-validated with Task 1 gap report. | `prompts/discovery/homingmbh-shopify-collection-list-discovery.md` | `evidence/piranav/homingmbh-collection-list-discovery-2026-11-26.md` | Not committed — AIOS docs only | YES | NONE | Commit AIOS files; next task = tag audit or collection fix plan | PASS |
+
+**10-folder check (2026-11-26 Task 2):**
+1. Prompt — DONE: `prompts/discovery/homingmbh-shopify-collection-list-discovery.md`
+2. Evidence — DONE: `evidence/piranav/homingmbh-collection-list-discovery-2026-11-26.md`
+3. Capability — N/A — discovery task
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added
+6. Validation — DONE: `validation/piranav/homingmbh-collection-list-discovery-2026-11-26.md`
+7. Source-map — N/A — no new data source
+8. Docs — N/A — no new topic area
+9. Handover — N/A
+10. Reports — N/A
+11. Duplicate-risk — N/A — all files are new
+
+---
+
+### 2026-11-26 — Homingmbh DE Shopify — Complete Product List Discovery
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| HOMING-2026-11-26-001 | Complete product list discovery — 435 products fetched via paginated GraphQL (5 pages). Fields: ID, title, productType, vendor, status, tags. Gap report: 7 products with missing/partial tags flagged. | `prompts/discovery/homingmbh-shopify-product-list-discovery.md` | `evidence/piranav/homingmbh-product-list-discovery-2026-11-26.md` | Not committed — AIOS docs only | YES | NONE | Commit AIOS files; next task = collection discovery | PASS |
+
+**10-folder check (2026-11-26):**
+1. Prompt — DONE: `prompts/discovery/homingmbh-shopify-product-list-discovery.md`
+2. Evidence — DONE: `evidence/piranav/homingmbh-product-list-discovery-2026-11-26.md`
+3. Capability — N/A — discovery task, no new system capability
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: row added
+6. Validation — DONE: `validation/piranav/homingmbh-product-list-discovery-2026-11-26.md`
+7. Source-map — N/A — no new data source (Shopify MCP already established)
+8. Docs — N/A — no new topic area
+9. Handover — N/A — no handover required
+10. Reports — N/A — discovery output saved as evidence, not a separate report
+11. Duplicate-risk — N/A — all files are new
+
+---
+
 ### 2026-11-25 — LEDSone US Homepage Sections + Header h_layout4 Fix
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
@@ -4869,3 +4974,95 @@ READ-ONLY Shopify access. No product writes. No production deployment. No git pu
 **Security:** READ-ONLY Google Ads confirmed — no UPDATE/INSERT/DELETE to google_ads.* tables  
 **Commit:** Not yet — awaiting Piranav approval  
 **Next step:** Piranav to commit + push dm-dashboard (account: websitetecteam-arch), then commit + push AIOS docs (account: piranavakanandigitweblanka-lgtm)
+
+---
+
+### 2026-11-26 — Homingmbh DE Shopify — REQ-1 Cable Sub-Collections + Product Tagging (HOMING-2026-11-26-006)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| HOMING-2026-11-26-006 | REQ-1 — Kabel sub-collections creation + 45-product tagging. 4 automated smart collections created (Textilkabel×2T, Textilkabel×2R, Textilkabel×3T, Textilkabel×3R) with tag + inventory>0 conditions. All published to Online Store. 45 products tagged by SKU prefix (CL2T×10, CL2R×5, CL3T×18, CL3R×7 after inventory filter). Final collection counts: 10/4/18/7. 3 non-cable accessories excluded. 6 zero-stock products excluded by inventory condition. All existing product tags preserved. | `prompts/shopify/homingmbh-shopify-collection-creation-and-product-tagging.md` | `evidence/piranav/homingmbh-cable-collections-and-tagging-2026-11-26.md` | Not committed — AIOS docs only | YES | NONE | Commit all AIOS files when Piranav instructs | **PASS** |
+
+**10-folder check (2026-11-26 Task 6 — Kabel Collections + Tagging):**
+1. Prompt — DONE: `prompts/shopify/homingmbh-shopify-collection-creation-and-product-tagging.md`
+2. Evidence — DONE: `evidence/piranav/homingmbh-cable-collections-and-tagging-2026-11-26.md`
+3. Capability — N/A — Shopify GraphQL collection+tagging capability already tracked from earlier sessions
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: new row added
+6. Validation — DONE: `validation/piranav/homingmbh-cable-collections-and-tagging-2026-11-26.md`
+7. Source-map — N/A: no new data source; Shopify Admin GraphQL already tracked
+8. Docs — N/A: no new topic area
+9. Handover — N/A: Piranav continuing same project
+10. Reports — N/A: no reportable data export
+11. Duplicate-risk — N/A: new uniquely-named files, no duplicate truth risk
+
+---
+
+### 2026-11-26 — Homingmbh DE Shopify — REQ-1 Hauptnavigation Menu Creation (HOMING-2026-11-26-007)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| HOMING-2026-11-26-007 | REQ-1 — Hauptnavigation menu created via GraphQL API. 31-node menu: 5 top-level categories (Transformatoren, Wandleuchten, Lampenschirme, Kabel, Leuchtmittel) + 26 sub-items. Menu ID: `gid://shopify/Menu/353688650065`, handle: `hauptnavigation`. All existing menus (Main menu 7 items, Footer 3 items) confirmed unchanged. Hanfseil-Beleuchtung omitted per D2. Connector/Lamp Holder/Rohrleuchten omitted pending D3/D4/D5 decisions. NOT wired to live theme. | `prompts/shopify/homingmbh-shopify-menu-creation-graphql.md` | `evidence/piranav/homingmbh-hauptnavigation-creation-2026-11-26.md` | Not committed — AIOS docs only | YES | D3/D4/D5 decisions pending: Connector, Lamp Holder, Rohrleuchten German collections to confirm. Transformer product tagging 0-count issue open. | Piranav to confirm D3–D5 → add missing sub-items → wire to theme when approved | **PASS** |
+
+**10-folder check (2026-11-26 Task 7 — Hauptnavigation Creation):**
+1. Prompt — DONE: `prompts/shopify/homingmbh-shopify-menu-creation-graphql.md`
+2. Evidence — DONE: `evidence/piranav/homingmbh-hauptnavigation-creation-2026-11-26.md`
+3. Capability — N/A — menu creation via GraphQL already a known Shopify capability
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — DONE: new row added
+6. Validation — DONE: `validation/piranav/homingmbh-hauptnavigation-creation-2026-11-26.md`
+7. Source-map — N/A: no new data source
+8. Docs — N/A: no new topic area
+9. Handover — N/A
+10. Reports — N/A
+11. Duplicate-risk — N/A
+
+---
+
+### 2026-11-26 — Homingmbh DE Shopify — REQ-1 Theme Integration Audit (HOMING-2026-11-26-008)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| HOMING-2026-11-26-008 | REQ-1 — Theme integration audit (read-only). Live theme: `homingmbh staging` (ID 207642034513). Working copy: `Piranav work homingmbh staging` (ID 212301218129). Confirmed: mega menu snippets present, zero Liquid code changes needed. Only change required: `header-group.json` → `"menu": "hauptnavigation"` + `"menu_type_desktop": "mega"`. Two integration paths documented (Theme Editor GUI / working copy edit). NOT wired — awaiting Piranav approval. | N/A — audit only, no prompt file | `evidence/piranav/homingmbh-theme-integration-audit-2026-11-26.md` | Not committed — AIOS docs only | YES | Piranav must approve wiring before any `header-group.json` change or `theme_commit` | Piranav to approve → then update header-group.json on working copy → theme_commit → preview → publish | **PASS / OPEN** (audit complete; wiring pending approval) |
+
+**10-folder check (2026-11-26 Task 8 — Theme Integration Audit):**
+1. Prompt — N/A: read-only audit, no reusable prompt pattern was created; skip noted here
+2. Evidence — DONE: `evidence/piranav/homingmbh-theme-integration-audit-2026-11-26.md`
+3. Capability — N/A — theme audit capability already known
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — N/A: no new prompt registered for this task
+6. Validation — DONE: `validation/piranav/homingmbh-theme-integration-audit-2026-11-26.md`
+7. Source-map — N/A
+8. Docs — N/A
+9. Handover — N/A
+10. Reports — N/A
+11. Duplicate-risk — N/A
+
+---
+
+### 2026-11-26 — Homingmbh DE Shopify — Mega Menu 4-Row Experiment — Cancelled (HOMING-2026-11-26-009)
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| HOMING-2026-11-26-009 | Mega menu 4-row CSS grid experiment — cancelled and cleanly reverted. CSS written to working copy (`assets/component-mega-menu.css`) but Piranav cancelled before `theme_commit`. Original CSS restored exactly. Working copy pending state cleared (`"pending": []`). Live theme untouched throughout. No menus, collections, or products modified. Root cause of flat list rendering documented: `link.levels == 1` triggers `.mega-menu__list--condensed { display: block }` overriding the CSS grid. | N/A — experiment cancelled | `evidence/piranav/homingmbh-theme-integration-audit-2026-11-26.md` (Section 4) | Not committed — no changes remain | YES | NONE | Experiment closed. If 4-row layout needed in future: use documented CSS fix (grid-auto-flow: column + grid-template-rows: repeat(4, auto) + fix condensed override). | **PASS — cleanly cancelled** |
+
+**10-folder check (2026-11-26 Task 9 — Mega Menu Experiment Cancelled):**
+1. Prompt — N/A: experiment cancelled, no reusable prompt
+2. Evidence — DONE: included in `evidence/piranav/homingmbh-theme-integration-audit-2026-11-26.md` Section 4
+3. Capability — N/A
+4. Closure — DONE: this entry
+5. PROMPT_REGISTER — N/A
+6. Validation — DONE: `validation/piranav/homingmbh-theme-integration-audit-2026-11-26.md` (Task 009 section)
+7. Source-map — N/A
+8. Docs — N/A
+9. Handover — N/A
+10. Reports — N/A
+11. Duplicate-risk — N/A
+
+**Session summary 2026-11-26 (Tasks 006–009):**
+- 4 cable sub-collections created + 45 products tagged ✓
+- Hauptnavigation 31-node menu created ✓
+- Theme integration path documented ✓
+- Mega menu experiment cleanly cancelled ✓
+- All AIOS evidence/validation files written ✓
+- Pending: D3/D4/D5 decisions, transformer product tagging, theme wiring approval, git commit + push (piranavakanandigitweblanka-lgtm)
