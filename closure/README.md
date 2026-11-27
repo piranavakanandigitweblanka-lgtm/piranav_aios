@@ -59,6 +59,30 @@ Or as a table when multiple tasks exist in one session:
 
 ---
 
+### 2026-11-27 — LEDSone FR Google Ads Conversion Tracking Investigation
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| LEDSONE-FR-2026-11-27-001 | Investigate and partially configure Google Ads conversion tracking for ledsone.fr. Re-enabled Purchase(infinitePixel)29183. Tag Assistant test on thank-you page confirmed firing. | `reports/ledsone-fr/LEDSone_FR_Google_Ads_Conversion_Setup_Trainee_Report_27Nov2026.docx` | `evidence/piranav/ledsone-fr-google-ads-conversion-setup-2026-11-27.md` | Pending commit | YES | Purchase goal "Needs attention" warning unresolved. Fresh attribution not yet confirmed. Unpaid order policy unconfirmed. | Monitor Google Ads 24–48h for attributed conversions. Investigate Purchase goal warning. Confirm unpaid order policy with Piranav. | OPEN |
+
+**Prompt:** `prompts/discovery/ledsone-fr-google-ads-conversion-investigation.md`
+**Validation:** `validation/piranav/ledsone-fr-google-ads-conversion-validation-2026-11-27.md`
+**Word report:** `reports/ledsone-fr/LEDSone_FR_Google_Ads_Conversion_Setup_Trainee_Report_27Nov2026.docx`
+
+---
+
+### 2026-11-27 — Amazon vs Shopify US Gap Analysis
+
+| Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
+|---|---|---|---|---|---|---|---|---|
+| AIOS-2026-11-27-001 | Cross-platform gap analysis: Amazon US + CA + MX active SKUs not on Shopify US. Full export by product type. | `reports/amazon-shopify-us-gap-full-export-2026-11-27.csv` | `evidence/piranav/amazon-shopify-us-gap-analysis-2026-11-27.md` | Pending commit | YES | NONE | Action on gap: prioritise LIGHT_FIXTURE (1,502 SKUs, avg $99) for Shopify US listing | PASS |
+
+**Prompt:** `prompts/discovery/amazon-shopify-us-gap-analysis.md`
+**Validation:** `validation/piranav/amazon-shopify-us-gap-validation-2026-11-27.md`
+**Key numbers:** 3,438 gap SKUs / 146,783 units / Top type: LIGHT_FIXTURE 1,502 SKUs avg $99
+
+---
+
 ### 2026-11-26 — Homingmbh DE Shopify — REQ-1 Navigation Restructure Discovery
 
 | Req ID | Task | Asset Path | Evidence Path | GitHub / Commit | Queryable | Blockers | Next Step | Result |
